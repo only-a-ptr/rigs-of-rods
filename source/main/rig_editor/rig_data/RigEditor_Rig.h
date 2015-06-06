@@ -311,8 +311,8 @@ public:
 
 private:
 
-    /** Rig building utility function
-    */
+    // Rig building utility functions
+
     Node* FindNode(RigDef::Node::Ref const & node_ref, RigBuildingReport* logger = nullptr);
 
     bool GetWheelAxisNodes(RigDef::Node::Ref const & a1, RigDef::Node::Ref const & a2, Node*& axis_inner, Node*& axis_outer, RigBuildingReport* report);
@@ -346,7 +346,7 @@ private:
     std::list<CineCamera>             m_cinecameras;
     Ogre::AxisAlignedBox              m_aabb;
     unsigned int                      m_highest_node_id;
-
+    std::vector<Flare*>               m_flares;
     std::vector<LandVehicleWheel*>    m_wheels;
     
     /* PROPERTIES */
@@ -363,6 +363,7 @@ private:
     std::unique_ptr<Ogre::ManualObject>         m_nodes_hover_dynamic_mesh;
     std::unique_ptr<Ogre::ManualObject>         m_nodes_selected_dynamic_mesh;
     std::unique_ptr<RigWheelVisuals>            m_wheel_visuals;
+    std::unique_ptr<RigFlareVisuals>            m_flare_visuals;
 
     /* UTILITY */
     bool                 m_modified;

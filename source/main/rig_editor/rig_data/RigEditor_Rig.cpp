@@ -30,6 +30,7 @@
 #include "RigEditor_CineCamera.h"
 #include "RigEditor_CameraHandler.h"
 #include "RigEditor_Config.h"
+#include "RigEditor_Flare.h"
 #include "RigEditor_FlexBodyWheel.h"
 #include "RigEditor_HighlightBoxesDynamicMesh.h"
 #include "RigEditor_Json.h"
@@ -40,6 +41,7 @@
 #include "RigEditor_RigProperties.h"
 #include "RigEditor_RigElementsAggregateData.h"
 #include "RigEditor_RigWheelsAggregateData.h"
+#include "RigEditor_RigFlareVisuals.h"
 #include "RigEditor_RigWheelVisuals.h"
 
 #include <OgreManualObject.h>
@@ -124,7 +126,6 @@ Node* Rig::FindNode(RigDef::Node::Ref const & node_ref, RigBuildingReport* logge
     }
     return & result->second;
 }
-
 
 void Rig::Build(
         std::shared_ptr<RigDef::File> rig_def,
@@ -671,6 +672,12 @@ void Rig::Build(
     m_wheel_visuals = std::unique_ptr<RigWheelVisuals>(new RigWheelVisuals());
     m_wheel_visuals->Init(rig_editor);
     m_wheel_visuals->RefreshWheelsDynamicMeshes(parent_scene_node, rig_editor, m_wheels);
+
+    // FLARE VISUALS
+
+    m_flare_visuals = std::unique_ptr<RigFlareVisuals>(new RigFlareVisuals());
+    m_flare_visuals->Init(rig_editor);
+    m_flare_visuals->RefreshFlaresDynamicMeshes(parent_scene_node, rig_editor, m_flares);
 }
 
 bool Rig::GetWheelAxisNodes(RigDef::Node::Ref const & a1, RigDef::Node::Ref const & a2, Node*& axis_inner, Node*& axis_outer, RigBuildingReport* report)
@@ -801,6 +808,35 @@ void Rig::BuildFromModule(RigDef::File::Module* module, RigBuildingReport* repor
         m_wheels.push_back(meshwheel2);
     }
     
+    if (report != nullptr)
+    {
+        report->ClearCurrentSectionName();
+    }
+
+    // FLARES_2
+    if (report != nullptr)
+    {
+        report->SetCurrentSectionName("flares2");
+    }
+    auto flares2_end = module->flares_2.end();
+    for (auto itor = module->flares_2.begin(); itor != flares2_end; ++itor)
+    {
+        RigDef::Flare2 & def = *itor;
+        Node* node_x   = this->FindNode(def.reference_node, report);
+        Node* node_y   = this->FindNode(def.node_axis_x,    report);
+        Node* node_ref = this->FindNode(def.node_axis_y,    report);
+
+        if (node_x == nullptr || node_y == nullptr || node_ref == nullptr)
+        {
+            report->AddMessage(
+                        RigBuildingReport::Message::LEVEL_ERROR, 
+                        Ogre::String("Failed to find all nodes, skipping flare"));
+            continue;
+        }
+        auto flare = new Flare(def, node_ref, node_x, node_y);
+        m_flares.push_back(flare);
+    }
+
     if (report != nullptr)
     {
         report->ClearCurrentSectionName();
@@ -948,6 +984,7 @@ void Rig::AttachToScene(Ogre::SceneNode* parent_scene_node)
     parent_scene_node->attachObject(m_nodes_selected_dynamic_mesh.get());
 
     m_wheel_visuals->AttachToScene(parent_scene_node);
+    m_flare_visuals->AttachToScene(parent_scene_node);
 }
 
 void Rig::DetachFromScene()
@@ -956,6 +993,9 @@ void Rig::DetachFromScene()
     m_nodes_dynamic_mesh->detachFromParent();
     m_nodes_hover_dynamic_mesh->detachFromParent();
     m_nodes_selected_dynamic_mesh->detachFromParent();
+
+    m_wheel_visuals->DetachFromScene();
+    m_flare_visuals->DetachFromScene();
 }
 
 void Rig::DeselectAllNodes()
@@ -1343,6 +1383,14 @@ std::shared_ptr<RigDef::File> Rig::Export()
             break;
         }
         
+    }
+
+    // EXPORT FLARES
+    auto flares_end = m_flares.end();
+    for (auto itor = m_flares.begin(); itor != flares_end; ++itor)
+    {
+        Flare* flare = *itor;
+        output_module->flares_2.push_back(flare->GetUpdatedDefinition()); // Copy definition
     }
 
     // Return

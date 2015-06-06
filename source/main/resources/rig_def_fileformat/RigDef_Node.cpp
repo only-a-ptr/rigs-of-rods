@@ -76,6 +76,11 @@ void Node::Id::Invalidate()
     m_flags = 0;
 }
 
+Node::Ref Node::CreateRef()
+{
+    return Node::Ref(id.Str(), id.Num(), id.GetFlagsRaw(), 0);
+}
+
 Node::Ref::Ref(std::string const & id_str, unsigned int id_num, unsigned flags, unsigned line_number):
     m_flags(0),
     m_line_number(line_number),

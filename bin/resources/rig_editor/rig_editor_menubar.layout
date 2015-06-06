@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="MenuBar" skin="MenuBar" position="0 0 370 25" layer="Main" name="rig_editor_menubar">
         <Widget type="MenuItem" skin="" position="0 0 40 21" name="menubar_item_file">
@@ -62,6 +62,23 @@
                 </Widget>
             </Widget>
         </Widget>
+        
+        <Widget type="MenuItem" skin="" position="117 0 67 21" name="menubar_item_flares">
+            <Property key="Caption" value="Flares"/>
+            <Property key="MenuItemType" value="Popup"/>
+            <Widget type="PopupMenu" skin="PopupMenu" position="119 25 149 58" style="Popup" layer="Popup" name="flares_popup">
+                <Widget type="MenuItem" skin="" position="0 0 141 19" name="flares_popup_item_select_all">
+                    <Property key="Caption" value="[/+] Select all"/>
+                </Widget>
+                <Widget type="MenuItem" skin="" position="0 19 141 19" name="flares_popup_item_deselect_all">
+                    <Property key="Caption" value="[/-] Deselect all"/>
+                </Widget>
+                <Widget type="MenuItem" skin="" position="0 38 141 10">
+                    <Property key="MenuItemType" value="Separator"/>
+                </Widget>
+            </Widget>
+        </Widget>
+        
     </Widget>
     <CodeGeneratorSettings>
         <Property key="IncludeDirectory" value="D:\Projects\Git\RoR-NextStable\source\main\gui\panels"/>

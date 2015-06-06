@@ -82,6 +82,8 @@ public:
 
     RigDef::Node::Id const & GetId();
 
+    RigDef::Node::Ref GetRef();
+
     void SetDefinitionPosition(Ogre::Vector3 const & pos);
 
     Ogre::Vector3 const & GetDefinitionPosition();

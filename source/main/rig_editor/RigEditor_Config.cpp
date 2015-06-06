@@ -145,6 +145,15 @@ Config::Config(Ogre::String const & conf_file_path)
     node_selected_color       = conf_file.GetColourValue("node_selected_color_rgb");
     node_selected_point_size  = conf_file.GetFloat("node_selected_point_size");
 
+    // FLARES
+
+    flare_star_line_color                 = conf_file.GetColourValue("flare_star_line_color_rgb");
+    flare_star_half_size                  = conf_file.GetFloat("flare_star_half_size");
+    flare_selection_boxes_half_size       = conf_file.GetFloat("flare_selection_boxes_half_size");
+    flare_hover_highlight_boxes_half_size = conf_file.GetFloat("flare_hover_highlight_boxes_half_size");
+    flare_selection_boxes_color           = conf_file.GetColourValue("flare_selection_boxes_color_rgb");
+    flare_hover_highlight_boxes_color     = conf_file.GetColourValue("flare_hover_highlight_boxes_color_rgb");
+
     // CAMERA
 
     camera_near_clip_distance = conf_file.GetFloat("camera_near_clip_distance");

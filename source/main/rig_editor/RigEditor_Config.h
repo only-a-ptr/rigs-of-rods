@@ -110,6 +110,14 @@ struct Config
     Ogre::ColourValue   node_selected_color;
     float               node_selected_point_size;
 
+    /* Flare display */
+    Ogre::ColourValue   flare_star_line_color;
+    float               flare_star_half_size;
+    float               flare_selection_boxes_half_size;
+    float               flare_hover_highlight_boxes_half_size;
+    Ogre::ColourValue   flare_selection_boxes_color;
+    Ogre::ColourValue   flare_hover_highlight_boxes_color;
+
     /* Camera */
     float               camera_near_clip_distance;
     float               camera_far_clip_distance;

@@ -109,6 +109,11 @@ RigDef::Node::Id const & RigEditor::Node::GetId()
     return m_definition.id;
 }
 
+RigDef::Node::Ref RigEditor::Node::GetRef()
+{
+    return m_definition.CreateRef();
+}
+
 void RigEditor::Node::SetDefinitionPosition(Ogre::Vector3 const & pos)
 {
     m_definition.position = pos;

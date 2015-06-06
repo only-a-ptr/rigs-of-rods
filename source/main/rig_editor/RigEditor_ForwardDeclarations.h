@@ -39,6 +39,7 @@ namespace RoR
         class  CameraHandler;
         class  CineCamera;
         struct Config;
+        class  Flare;
         class  FlexBodyWheel;
         struct GuiPanelPositionData;
         class  GuiPopupDynamicListBase;
@@ -56,6 +57,7 @@ namespace RoR
         class  Node;
         class  Rig;
         class  RigProperties;
+        class  RigFlareVisuals;
         class  RigWheelVisuals;
 
         // Rig aggregate data
