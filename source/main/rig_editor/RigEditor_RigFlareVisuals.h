@@ -102,6 +102,13 @@ protected:
 		std::vector<Flare*> & flares
 		);
 
+    static void GenerateFlaresDynamicMesh(
+        Ogre::ManualObject* dyn_mesh, 
+        std::vector<Flare*> & flares, 
+        Ogre::ColourValue color, 
+        float half_size
+        );
+
 	std::unique_ptr<Ogre::ManualObject>         m_flares_dynamic_mesh;
 	std::unique_ptr<HighlightBoxesDynamicMesh>  m_flares_selected_dynamic_mesh;
 	std::unique_ptr<HighlightBoxesDynamicMesh>  m_flares_hovered_dynamic_mesh;

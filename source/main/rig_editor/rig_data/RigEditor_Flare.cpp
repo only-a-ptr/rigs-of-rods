@@ -48,6 +48,30 @@ Flare::Flare(RigDef::Flare2& source, Node* ref_node, Node* x_node, Node* y_node)
 Flare::~Flare()
 {}
 
+Ogre::Vector3 Flare::GetPosition()
+{
+    Ogre::Vector3 ref_pos = m_ref_node->GetPosition();
+    Ogre::Vector3 x_axis  = m_x_node->GetPosition() - ref_pos;
+    Ogre::Vector3 y_axis  = m_y_node->GetPosition() - ref_pos;
+    Ogre::Vector3 normal  = y_axis.crossProduct(x_axis);
+    normal.normalise();
+
+    return ref_pos + (x_axis * m_source.offset.x) + (y_axis * m_source.offset.y) + (normal * m_source.offset.z);
+}
+
+Ogre::Vector3 Flare::GetVisualPosition()
+{
+    Ogre::Vector3 ref_pos = m_ref_node->GetPosition();
+    Ogre::Vector3 x_axis  = m_x_node->GetPosition() - ref_pos;
+    Ogre::Vector3 y_axis  = m_y_node->GetPosition() - ref_pos;
+    Ogre::Vector3 normal  = y_axis.crossProduct(x_axis);
+    normal.normalise();
+
+    // Roughly matches calculation at gameplay, needs more work.
+    Ogre::Vector3 pos =  ref_pos + (x_axis * m_source.offset.x) + (y_axis * m_source.offset.y);
+    return pos - (0.1 * normal * m_source.offset.z);
+}
+
 RigDef::Flare2 & Flare::GetUpdatedDefinition()
 {
     m_source.reference_node = m_ref_node->GetRef();

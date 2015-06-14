@@ -95,18 +95,21 @@ void RigFlareVisuals::BuildFlaresGeometryDynamicMesh(
 	m_flares_dynamic_mesh->begin("rig-editor-skeleton-flares-material", Ogre::RenderOperation::OT_LINE_LIST);
 
 	// Process
-    auto flares_end = flares.end();
     Ogre::ColourValue color = rig_editor->GetConfig()->flare_star_line_color;
     float half_size = rig_editor->GetConfig()->flare_star_half_size;
-    auto dyn_mesh = m_flares_dynamic_mesh.get();
-	for (auto itor = flares.begin(); itor != flares_end; ++itor)
+    GenerateFlaresDynamicMesh(m_flares_dynamic_mesh.get(), flares, color, half_size);
+    // Finalize
+	m_flares_dynamic_mesh->end();
+}
+
+void RigFlareVisuals::GenerateFlaresDynamicMesh(Ogre::ManualObject* dyn_mesh, std::vector<Flare*> & flares, Ogre::ColourValue color, float half_size)
+{
+    auto flares_end = flares.end();
+    for (auto itor = flares.begin(); itor != flares_end; ++itor)
 	{
 		Flare* flare = *itor;
-        FlareVisualStar::AddStar(dyn_mesh, flare->GetReferenceNode()->GetPosition(), half_size, color);
+        FlareVisualStar::AddStar(dyn_mesh, flare->GetVisualPosition(), half_size, color);
 	}
-	
-	// Finalize
-	m_flares_dynamic_mesh->end();
 }
 
 void RigFlareVisuals::RefreshFlaresDynamicMeshes(
@@ -156,13 +159,7 @@ void RigFlareVisuals::UpdateFlaresGeometryDynamicMesh(
     Ogre::ColourValue color = rig_editor->GetConfig()->flare_star_line_color;
 
 	// Process
-	auto flares_end = flares.end();
-	for (auto flares_itor = flares.begin(); flares_itor != flares_end; ++flares_itor)
-	{
-        Flare* flare = *flares_itor;
-
-        FlareVisualStar::AddStar(dyn_mesh, flare->GetReferenceNode()->GetPosition(), half_size, color);
-	}
+	GenerateFlaresDynamicMesh(m_flares_dynamic_mesh.get(), flares, color, half_size);
 	
 	// Finalize
 	m_flares_dynamic_mesh->end();

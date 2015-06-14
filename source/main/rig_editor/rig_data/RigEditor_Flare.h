@@ -49,6 +49,10 @@ public:
 	~Flare();
 
     RigDef::Flare2 &       GetUpdatedDefinition();
+    /// Position, as specified by axes+offsets.
+    Ogre::Vector3          GetPosition();
+    /// Visual position is calculated in a special way.
+    Ogre::Vector3          GetVisualPosition();
 
 	// Getters
 	inline Node*           GetReferenceNode() const { return m_ref_node; }

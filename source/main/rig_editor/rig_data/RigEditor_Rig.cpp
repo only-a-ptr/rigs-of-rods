@@ -822,9 +822,9 @@ void Rig::BuildFromModule(RigDef::File::Module* module, RigBuildingReport* repor
     for (auto itor = module->flares_2.begin(); itor != flares2_end; ++itor)
     {
         RigDef::Flare2 & def = *itor;
-        Node* node_x   = this->FindNode(def.reference_node, report);
-        Node* node_y   = this->FindNode(def.node_axis_x,    report);
-        Node* node_ref = this->FindNode(def.node_axis_y,    report);
+        Node* node_x   = this->FindNode(def.node_axis_x,    report);
+        Node* node_y   = this->FindNode(def.node_axis_y,    report);
+        Node* node_ref = this->FindNode(def.reference_node, report);
 
         if (node_x == nullptr || node_y == nullptr || node_ref == nullptr)
         {
