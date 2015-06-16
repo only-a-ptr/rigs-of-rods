@@ -54,10 +54,14 @@ public:
     /// Visual position is calculated in a special way.
     Ogre::Vector3          GetVisualPosition();
 
+    void                   Update(RigAggregateFlaresData* data);
+
 	// Getters
-	inline Node*           GetReferenceNode() const { return m_ref_node; }
-    inline Node*           GetXNode() const         { return m_x_node; }
-    inline Node*           GetYNode() const         { return m_y_node; }
+	inline Node*           GetReferenceNode() const   { return m_ref_node; }
+    inline Node*           GetXNode() const           { return m_x_node; }
+    inline Node*           GetYNode() const           { return m_y_node; }
+    inline RigDef::Flare2& GetDefinition()            { return m_source; }
+    inline std::string&    GetMaterialFlareBinding()  { return m_materialflarebinding_material_name; }
 
     BITMASK_PROPERTY(m_flags,  1, IS_GEOMETRY_DIRTY,          IsGeometryDirty,         SetGeometryIsDirty)
 	BITMASK_PROPERTY(m_flags,  2, IS_SELECTION_STATE_DIRTY,   IsSelectionStateDirty,   SetSelectionStateIsDirty)
@@ -74,6 +78,7 @@ protected:
     RigEditor::Node*       m_x_node;
 	RigEditor::Node*       m_y_node;
     RigDef::Flare2         m_source;
+    std::string            m_materialflarebinding_material_name;
     unsigned int           m_flags;
 };
 

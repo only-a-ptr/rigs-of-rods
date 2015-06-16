@@ -55,8 +55,10 @@ public:
     void StretchWidthToScreen();
 
     void UpdateLandVehicleWheelsList(std::vector<RigEditor::LandVehicleWheel*> & list);
-
     void ClearLandVehicleWheelsList();
+
+    void UpdateFlaresList(std::vector<RigEditor::Flare*> & list);
+    void ClearFlaresList();
 
 private:
 
@@ -87,6 +89,7 @@ private:
     RigEditor::IMain*      m_rig_editor_interface;
 
     std::unique_ptr<RigEditor::GuiPopupWheelsList> m_wheels_list;
+    std::unique_ptr<RigEditor::GuiPopupFlaresList> m_flares_list;
 
 };
 

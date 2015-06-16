@@ -423,7 +423,51 @@ struct MixedBeamsAggregateData
 private:
     unsigned int m_flags;
 };
-    
+
+struct RigAggregateFlaresData
+{
+    // Element count
+    int num_elements;
+
+    // Element data fields
+    RigDef::Node::Ref  ref_node;
+    RigDef::Node::Ref  x_node;
+    RigDef::Node::Ref  y_node;
+    float              x_offset;
+    float              y_offset;
+    float              z_offset;
+    float              size;
+    std::string        flare_material_name;
+    std::string        materialflarebinding_material_name;
+    char               type;
+    int                control_number;
+    float              blink_delay_ms;
+
+    void Reset()
+    {
+        memset(this, 0, sizeof(RigAggregateFlaresData));
+        m_flags = 0xFFFFFFFF; // Make uniformity flags TRUE by default
+    }
+
+    void AddFlare(Flare* flare);
+
+    BITMASK_PROPERTY(m_flags,  1,  FIELD_REF_NODE_IS_UNIFORM         , IsRefNodeUniform         , SetIsRefNodeUniform         );
+    BITMASK_PROPERTY(m_flags,  2,  FIELD_X_NODE_IS_UNIFORM           , IsXNodeUniform           , SetIsXNodeUniform           );
+    BITMASK_PROPERTY(m_flags,  3,  FIELD_Y_NODE_IS_UNIFORM           , IsYNodeUniform           , SetIsYNodeUniform           );
+    BITMASK_PROPERTY(m_flags,  4,  FIELD_X_OFFSET_IS_UNIFORM         , IsXOffsetUniform         , SetIsXOffsetUniform         );
+    BITMASK_PROPERTY(m_flags,  5,  FIELD_Y_OFFSET_IS_UNIFORM         , IsYOffsetUniform         , SetIsYOffsetUniform         );
+    BITMASK_PROPERTY(m_flags,  6,  FIELD_Z_OFFSET_IS_UNIFORM         , IsZOffsetUniform         , SetIsZOffsetUniform         );
+    BITMASK_PROPERTY(m_flags,  7,  FIELD_SIZE_IS_UNIFORM             , IsSizeUniform            , SetIsSizeUniform            );
+    BITMASK_PROPERTY(m_flags,  8,  FIELD_FLARE_MAT_NAME_IS_UNIFORM   , IsFlareMatUniform        , SetIsFlareMatUniform        );
+    BITMASK_PROPERTY(m_flags,  9,  FIELD_MATFLAREBINDING_IS_UNIFORM  , IsMatFlareBindingUniform , SetIsMatFlareBindingUniform );
+    BITMASK_PROPERTY(m_flags, 10,  FIELD_TYPE_IS_UNIFORM             , IsTypeUniform            , SetIsTypeUniform            );
+    BITMASK_PROPERTY(m_flags, 11,  FIELD_CONTROL_NUMBER_IS_UNIFORM   , IsControlNumberUniform   , SetIsControlNumberUniform   );
+    BITMASK_PROPERTY(m_flags, 12,  FIELD_BLINK_DELAY_IS_UNIFORM      , IsBlinkDelayUniform      , SetIsBlinkDelayUniform      );
+
+protected:
+    unsigned int m_flags;
+};
+
 } // namespace RigEditor
 
 } // namespace RoR

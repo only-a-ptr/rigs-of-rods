@@ -884,15 +884,18 @@ bool Main::LoadRigDefFile(MyGUI::UString const & directory, MyGUI::UString const
 void Main::OnNewRigCreatedOrLoaded(Ogre::SceneNode* parent_scene_node)
 {
     m_rig->AttachToScene(parent_scene_node);
-    /* Handle mouse selection of nodes */
+    // Handle mouse selection of nodes
     m_rig->RefreshAllNodesScreenPositions(m_camera_handler);
     if (m_rig->RefreshMouseHoveredNode(m_input_handler->GetMouseMotionEvent().GetAbsolutePosition()))
     {
         m_rig->RefreshNodesDynamicMeshes(parent_scene_node);
     }
-    /* Update GUI */
+    // Update GUI
     m_gui_menubar->ClearLandVehicleWheelsList();
     m_gui_menubar->UpdateLandVehicleWheelsList(m_rig->GetWheels());
+
+    m_gui_menubar->ClearFlaresList();
+    m_gui_menubar->UpdateFlaresList(m_rig->GetFlares());
 }
 
 void Main::CommandCurrentRigDeleteSelectedNodes()
@@ -1073,6 +1076,70 @@ void Main::CommandRigSelectedCommands2UpdateAttributes(const RigAggregateCommand
 {
     m_rig->SelectedCommands2UpdateAttributes(data);
 }
+
+// ====================== Flares list =============================
+
+void Main::CommandScheduleSetFlareSelected(Flare* flare_ptr, int flare_index, bool state_selected)
+{
+    if (m_rig == nullptr)
+    {
+        return;
+    }
+    const bool selection_changes = m_rig->ScheduleSetFlareSelected(flare_ptr, flare_index, state_selected, this);
+    if (selection_changes)
+    {
+        if (state_selected)
+        {
+            this->SetIsSelectFlareScheduled(true);
+            this->SetIsDeselectFlareScheduled(false);
+        }
+        else
+        {
+            this->SetIsSelectFlareScheduled(false);
+            this->SetIsDeselectFlareScheduled(true);
+        }
+    }
+}
+
+void Main::CommandSetFlareHovered (Flare* flare_ptr, int flare_index, bool state_hovered)
+{
+    if (m_rig == nullptr)
+    {
+        return;
+    }
+	m_rig->SetFlareHovered(flare_ptr, flare_index, state_hovered, this);
+}
+
+void Main::CommandScheduleSetAllFlaresSelected(bool state_selected)
+{
+    if (m_rig == nullptr)
+    {
+        return;
+    }
+    if (m_rig->ScheduleSetAllFlaresSelected(state_selected, this))
+    {
+        if (state_selected)
+        {
+            this->SetIsSelectAllFlaresScheduled(true);
+            this->SetIsDeselectAllFlaresScheduled(false);        
+        }
+        else
+        {
+            this->SetIsSelectAllFlaresScheduled(false);
+            this->SetIsDeselectAllFlaresScheduled(true);
+        }
+    }
+}
+
+void Main::CommandSetAllFlaresHovered(bool state_hovered)
+{
+    if (m_rig != nullptr)
+    {
+	    m_rig->SetAllFlaresHovered(state_hovered, this);
+    }
+}
+
+// ====================== Wheels list =============================
 
 void Main::CommandScheduleSetWheelSelected(LandVehicleWheel* wheel_ptr, int wheel_index, bool state_selected)
 {

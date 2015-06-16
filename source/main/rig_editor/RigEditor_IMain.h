@@ -76,7 +76,13 @@ public:
     virtual void CommandSetWheelHovered (LandVehicleWheel* wheel_ptr, int wheel_index, bool state_hovered) = 0;
     virtual void CommandScheduleSetAllWheelsSelected(bool state_selected) = 0;
     virtual void CommandSetAllWheelsHovered(bool state_selected) = 0;
-    
+
+    // Flares list
+    virtual void CommandScheduleSetFlareSelected (Flare* flare_ptr, int flare_index, bool state_selected) = 0;
+    virtual void CommandSetFlareHovered          (Flare* flare_ptr, int flare_index, bool state_hovered) = 0;
+    virtual void CommandScheduleSetAllFlaresSelected(bool state_selected) = 0;
+    virtual void CommandSetAllFlaresHovered         (bool state_selected) = 0;
+
 };
 
 } // namespace RigEditor

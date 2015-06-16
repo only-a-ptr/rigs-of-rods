@@ -274,13 +274,18 @@ public:
 
     inline unsigned int GetNumSelectedBeams() const { return m_selected_beams.size(); }
 
-    // Update visuals
+    // ----- Update visuals -----
     void RefreshNodesDynamicMeshes(Ogre::SceneNode* parent_scene_node);
     void RefreshBeamsDynamicMesh();
+    // Wheels
     void RefreshWheelsDynamicMesh(Ogre::SceneNode* parent_scene_node, RigEditor::Main* rig_editor);
     void CheckAndRefreshWheelsSelectionHighlights(RigEditor::Main* rig_editor, Ogre::SceneNode* parent_scene_node, bool force = false);
     void CheckAndRefreshWheelsMouseHoverHighlights(RigEditor::Main* rig_editor, Ogre::SceneNode* parent_scene_node);
-    
+    // Flares
+    void RefreshFlaresDynamicMesh(Ogre::SceneNode* parent_scene_node, RigEditor::Main* rig_editor);
+    void CheckAndRefreshFlaresSelectionHighlights(RigEditor::Main* rig_editor, Ogre::SceneNode* parent_scene_node, bool force = false);
+    void CheckAndRefreshFlaresMouseHoverHighlights(RigEditor::Main* rig_editor, Ogre::SceneNode* parent_scene_node);
+
     // Node/beam updaters
     void SelectedNodesUpdateAttributes     (const RigAggregateNodesData      *data);
     void SelectedPlainBeamsUpdateAttributes(const RigAggregatePlainBeamsData *data);
@@ -308,6 +313,25 @@ public:
     bool PerformScheduledWheelSelectionUpdates(RigEditor::Main* rig_editor);
 
     inline std::vector<LandVehicleWheel*>& GetWheels() { return m_wheels; }
+
+    // FLARES
+
+    /// @return True if selection was changed.
+    bool SetFlareSelected(Flare* flare, int index, bool state_selected, RigEditor::Main* rig_editor);
+    /// @return True if selection will change
+    bool ScheduleSetFlareSelected(Flare* flare, int index, bool state_selected, RigEditor::Main* rig_editor);
+    void SetFlareHovered(Flare* flare, int index, bool state_hovered, RigEditor::Main* rig_editor);
+    /// @return True if selection was changed.
+    bool SetAllFlaresSelected(bool state_selected, RigEditor::Main* rig_editor);
+    bool ScheduleSetAllFlaresSelected(bool state_selected, RigEditor::Main* rig_editor);
+    void SetAllFlaresHovered(bool state_hovered, RigEditor::Main* rig_editor);
+    void QuerySelectedFlaresData(RigAggregateFlaresData* data);
+    /// @return True if any flare's geometry changed.
+    bool UpdateSelectedFlaresData(RigAggregateFlaresData* data);
+    /// @return True if selection was changed.
+    bool PerformScheduledFlareSelectionUpdates(RigEditor::Main* rig_editor);
+
+    inline std::vector<Flare*>& GetFlares() { return m_flares; }
 
 private:
 

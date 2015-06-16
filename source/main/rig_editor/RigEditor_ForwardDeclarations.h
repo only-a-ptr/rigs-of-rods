@@ -43,6 +43,7 @@ namespace RoR
         class  FlexBodyWheel;
         struct GuiPanelPositionData;
         class  GuiPopupDynamicListBase;
+        class  GuiPopupFlaresList;
         class  GuiPopupWheelsList;
         class  HighlightBoxesDynamicMesh;
         class  IMain;
@@ -69,6 +70,7 @@ namespace RoR
         struct RigAggregateCommands2Data;
         struct RigAggregateHydrosData;
         struct RigAggregateBeams2Data;
+        struct RigAggregateFlaresData;
 
     } // namespace RigEditor
 

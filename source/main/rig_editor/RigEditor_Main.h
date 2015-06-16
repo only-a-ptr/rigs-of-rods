@@ -110,15 +110,24 @@ public:
     virtual void CommandRigSelectedCommands2UpdateAttributes (const RigAggregateCommands2Data*  data);
 
     // Wheel list
-    virtual void CommandScheduleSetWheelSelected(LandVehicleWheel* wheel_ptr, int wheel_index, bool state_selected);
-    virtual void CommandSetWheelHovered (LandVehicleWheel* wheel_ptr, int wheel_index, bool state_hovered);
-    virtual void CommandScheduleSetAllWheelsSelected(bool state_selected);
-    virtual void CommandSetAllWheelsHovered(bool state_selected);
+    virtual void CommandScheduleSetWheelSelected     (LandVehicleWheel* wheel_ptr, int wheel_index, bool state_selected);
+    virtual void CommandSetWheelHovered              (LandVehicleWheel* wheel_ptr, int wheel_index, bool state_hovered);
+    virtual void CommandScheduleSetAllWheelsSelected (bool state_selected);
+    virtual void CommandSetAllWheelsHovered          (bool state_selected);
+
+    // Flare list
+    virtual void CommandScheduleSetFlareSelected     (Flare* flare_ptr, int flare_index, bool state_selected);
+    virtual void CommandSetFlareHovered              (Flare* flare_ptr, int flare_index, bool state_hovered);
+    virtual void CommandScheduleSetAllFlaresSelected (bool state_selected);
+    virtual void CommandSetAllFlaresHovered          (bool state_selected);
 
     // GUI callbacks
     void NotifyFileSelectorEnded(RoR::GUI::Dialog* dialog, bool result);
-
-    // State flags
+    
+    // --------------------------------------------
+    //                 State flags
+    // --------------------------------------------
+    // --- Wheels ---
     BITMASK_PROPERTY(m_state_flags,  1,  IS_SELECT_WHEEL_SCHEDULED,         IsSelectWheelScheduled,         SetIsSelectWheelScheduled);
     BITMASK_PROPERTY(m_state_flags,  2,  IS_DESELECT_WHEEL_SCHEDULED,       IsDeselectWheelScheduled,       SetIsDeselectWheelScheduled);
     BITMASK_PROPERTY(m_state_flags,  3,  IS_SELECT_ALL_WHEELS_SCHEDULED,    IsSelectAllWheelsScheduled,     SetIsSelectAllWheelsScheduled);
@@ -130,6 +139,19 @@ public:
     inline void ResetAllScheduledWheelSelectionChanges()
     {
         BITMASK_SET_0(m_state_flags, IS_SELECT_WHEEL_SCHEDULED | IS_DESELECT_WHEEL_SCHEDULED | IS_SELECT_ALL_WHEELS_SCHEDULED | IS_DESELECT_ALL_WHEELS_SCHEDULED);
+    }
+    // --- Flares ---
+    BITMASK_PROPERTY(m_state_flags,  5,  IS_SELECT_FLARE_SCHEDULED,         IsSelectFlareScheduled,         SetIsSelectFlareScheduled);
+    BITMASK_PROPERTY(m_state_flags,  6,  IS_DESELECT_FLARE_SCHEDULED,       IsDeselectFlareScheduled,       SetIsDeselectFlareScheduled);
+    BITMASK_PROPERTY(m_state_flags,  7,  IS_SELECT_ALL_FLARES_SCHEDULED,    IsSelectAllFlaresScheduled,     SetIsSelectAllFlaresScheduled);
+    BITMASK_PROPERTY(m_state_flags,  8,  IS_DESELECT_ALL_FLARES_SCHEDULED,  IsDeselectAllFlaresScheduled,   SetIsDeselectAllFlaresScheduled);
+    inline bool IsAnyFlareSelectionChangeScheduled() const
+    { 
+        return IsSelectFlareScheduled() || IsDeselectFlareScheduled() || IsSelectAllFlaresScheduled() || IsDeselectAllFlaresScheduled();
+    }
+    inline void ResetAllScheduledFlareSelectionChanges()
+    {
+        BITMASK_SET_0(m_state_flags, IS_SELECT_FLARE_SCHEDULED | IS_DESELECT_FLARE_SCHEDULED | IS_SELECT_ALL_FLARES_SCHEDULED | IS_DESELECT_ALL_FLARES_SCHEDULED);
     }
     
 private:

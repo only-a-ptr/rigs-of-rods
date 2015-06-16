@@ -112,7 +112,11 @@ struct Config
 
     /* Flare display */
     Ogre::ColourValue   flare_star_line_color;
+    Ogre::ColourValue   flare_star_hovered_line_color;
+    Ogre::ColourValue   flare_star_selected_line_color;
     float               flare_star_half_size;
+    float               flare_star_hovered_half_size;
+    float               flare_star_selected_half_size;
     float               flare_selection_boxes_half_size;
     float               flare_hover_highlight_boxes_half_size;
     Ogre::ColourValue   flare_selection_boxes_color;

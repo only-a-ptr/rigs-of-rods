@@ -29,6 +29,7 @@
 
 #include "RigDef_File.h"
 #include "RigEditor_Node.h"
+#include "RigEditor_RigElementsAggregateData.h"
 
 
 namespace RoR
@@ -79,6 +80,63 @@ RigDef::Flare2 & Flare::GetUpdatedDefinition()
     m_source.node_axis_y    = m_y_node->GetRef();
 
     return m_source;   
+}
+
+void Flare::Update(RigAggregateFlaresData *data)
+{
+    assert(data != nullptr);
+    if (data->num_elements == 0)
+    {
+        return;
+    }
+
+    // Position - nodes
+    bool position_changed = false;
+    if (data->IsRefNodeUniform() && data->ref_node != m_source.reference_node)
+    {
+        position_changed = true;
+        m_source.reference_node = data->ref_node;
+    }
+    if (data->IsXNodeUniform() && data->x_node != m_source.node_axis_x)
+    {
+        position_changed = true;
+        m_source.node_axis_x = data->x_node;
+    }
+    if (data->IsYNodeUniform() && data->y_node != m_source.node_axis_y)
+    {
+        position_changed = true;
+        m_source.node_axis_y = data->y_node;
+    }
+    // Position - offsets
+    if (data->IsXOffsetUniform() && data->x_offset != m_source.offset.x)
+    {
+        position_changed = true;
+        m_source.offset.x = data->x_offset;
+    }
+    if (data->IsYOffsetUniform() && data->y_offset != m_source.offset.y)
+    {
+        position_changed = true;
+        m_source.offset.z = data->y_offset;
+    }
+    if (data->IsZOffsetUniform() && data->z_offset != m_source.offset.z)
+    {
+        position_changed = true;
+        m_source.offset.z = data->z_offset;
+    }
+    // Update visuals?
+    if (position_changed)
+    {
+        this->SetGeometryIsDirty(true);
+    }
+
+    // ----- Other -----
+    if (data->IsSizeUniform           ()) { m_source.size = data->size; }
+    if (data->IsFlareMatUniform       ()) { m_source.material_name = data->flare_material_name; }
+    if (data->IsMatFlareBindingUniform()) { m_materialflarebinding_material_name = data->materialflarebinding_material_name; }
+    if (data->IsTypeUniform           ()) { m_source.type = RigDef::Flare2::Type(data->type); }
+    if (data->IsControlNumberUniform  ()) { m_source.control_number = data->control_number; }
+    if (data->IsBlinkDelayUniform     ()) { m_source.blink_delay_milis = data->blink_delay_ms; }
+
 }
 
 } // namespace RigEditor

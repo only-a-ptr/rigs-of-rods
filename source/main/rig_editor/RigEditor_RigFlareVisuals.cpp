@@ -217,10 +217,24 @@ void RigFlareVisuals::UpdateFlaresSelectionHighlightBoxes(
 		Flare* flare = *itor;
 		if (flare->IsSelected())
 		{
-            Ogre::Vector3 pos(flare->GetReferenceNode()->GetPosition());
-            Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
-            Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
-			m_flares_selected_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            { // Reference node
+                Ogre::Vector3 pos(flare->GetReferenceNode()->GetPosition());
+                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
+                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
+			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            }
+            { // X node
+                Ogre::Vector3 pos(flare->GetXNode()->GetPosition());
+                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
+                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
+			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            }
+            { // Y node
+                Ogre::Vector3 pos(flare->GetYNode()->GetPosition());
+                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
+                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
+			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            }
 		}
 	}
 	m_flares_selected_dynamic_mesh->EndUpdate();
@@ -234,13 +248,13 @@ void RigFlareVisuals::UpdateFlaresMouseHoverHighlightBoxes(
 		Ogre::SceneNode* parent_scene_node
 		)
 {
-	// Check if any wheel is hovered
+	// Check if any element is hovered
 	auto end = flares.end();
 	bool hovered_found = false;
 	for (auto itor = flares.begin(); itor != end; ++itor)
 	{
-		Flare* wheel = *itor;
-		if (wheel->IsHovered())
+		Flare* element = *itor;
+		if (element->IsHovered())
 		{
 			hovered_found = true;
 			break;
@@ -261,12 +275,26 @@ void RigFlareVisuals::UpdateFlaresMouseHoverHighlightBoxes(
 	for (auto itor = flares.begin(); itor != end; ++itor)
 	{
 		Flare* flare = *itor;
-		if (flare->IsSelected())
+		if (flare->IsHovered())
 		{
-            Ogre::Vector3 pos(flare->GetReferenceNode()->GetPosition());
-            Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
-            Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
-			m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            { // Reference node
+                Ogre::Vector3 pos(flare->GetReferenceNode()->GetPosition());
+                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
+                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
+			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            }
+            { // X node
+                Ogre::Vector3 pos(flare->GetXNode()->GetPosition());
+                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
+                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
+			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            }
+            { // Y node
+                Ogre::Vector3 pos(flare->GetYNode()->GetPosition());
+                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
+                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
+			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+            }
 		}
 	}
 	m_flares_hovered_dynamic_mesh->EndUpdate();

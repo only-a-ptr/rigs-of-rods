@@ -863,15 +863,13 @@ void Rig::RefreshAllNodesScreenPositions(CameraHandler* camera_handler)
 
 bool Rig::RefreshMouseHoveredNode(Vector2int const & mouse_position)
 {
-    /*
-    Lookup method: for each node
-        - Compute mouse offset
-        - Convert it's components to abs()
-        - Pick the larger component as 'distance'
-        - Compare 'distance' to previous node
-
-    Finally, compare result node's 'distance' to configured box.
-    */
+    // Lookup method: for each node
+    //    - Compute mouse offset
+    //    - Convert it's components to abs()
+    //    - Pick the larger component as 'distance'
+    //    - Compare 'distance' to previous node
+    //
+    // Finally, compare result node's 'distance' to configured box.
 
     auto itor = m_nodes.begin();
     Node* result = m_mouse_hovered_node;
@@ -2125,6 +2123,183 @@ void Rig::GatherBeamPresets(JsonExporter& exporter)
         if (editor_cinecam.m_definition.beam_defaults.get() != nullptr)
             exporter.AddBeamPreset(editor_cinecam.m_definition.beam_defaults.get());
     }
+}
+
+// =============================== Flares ============================
+
+void Rig::CheckAndRefreshFlaresSelectionHighlights(RigEditor::Main* rig_editor, Ogre::SceneNode* parent_scene_node, bool force)
+{
+	if (m_flare_visuals->IsSelectionDirty() || force)
+	{
+		m_flare_visuals->UpdateFlaresSelectionHighlightBoxes(m_flares, rig_editor, parent_scene_node);	
+	}
+}
+
+void Rig::CheckAndRefreshFlaresMouseHoverHighlights(RigEditor::Main* rig_editor, Ogre::SceneNode* parent_scene_node)
+{
+	if (m_flare_visuals->IsHoverDirty())
+	{
+		m_flare_visuals->UpdateFlaresMouseHoverHighlightBoxes(m_flares, rig_editor, parent_scene_node);
+	}
+}
+
+bool Rig::SetFlareSelected(Flare* flare, int index, bool state_selected, RigEditor::Main* rig_editor)
+{
+	if (flare->IsSelected() == state_selected)
+	{
+		return false; // No change
+	}
+	flare->SetIsSelected(state_selected);
+	m_flare_visuals->SetIsSelectionDirty(true);
+    return true;
+}
+
+bool Rig::ScheduleSetFlareSelected(Flare* flare, int index, bool state_selected, RigEditor::Main* rig_editor)
+{
+    if (state_selected)
+    {
+        if (!flare->IsScheduledForSelect() && !flare->IsSelected())
+        {
+            flare->SetIsScheduledForDeselect(false);
+            flare->SetIsScheduledForSelect(true);
+            return true;
+        }
+    }
+    else
+    {
+        if (!flare->IsScheduledForDeselect() && flare->IsSelected())
+        {
+            flare->SetIsScheduledForSelect(false);
+            flare->SetIsScheduledForDeselect(true);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Rig::PerformScheduledFlareSelectionUpdates(RigEditor::Main* rig_editor)
+{
+    bool any_change = false;
+    auto end = m_flares.end();
+    auto itor = m_flares.begin();
+    for (; itor != end; ++itor)
+    {
+        Flare* flare = *itor;
+        if (flare->IsScheduledForSelect() && !flare->IsSelected())
+        {
+            any_change = true;
+            flare->SetIsSelected(true);
+            flare->SetIsScheduledForSelect(false);
+            flare->SetIsScheduledForDeselect(false);
+        }
+        else if (flare->IsScheduledForDeselect() && flare->IsSelected())
+        {
+            any_change = true;
+            flare->SetIsSelected(false);
+            flare->SetIsScheduledForSelect(false);
+            flare->SetIsScheduledForDeselect(false);
+        }
+    }
+    if (any_change)
+    {
+        m_flare_visuals->SetIsSelectionDirty(true);
+    }
+    return any_change;
+}
+
+void Rig::SetFlareHovered(Flare* flare, int index, bool state_hovered, RigEditor::Main* rig_editor)
+{
+	if (flare->IsHovered() == state_hovered)
+	{
+		return; // No change
+	}
+	// Update hover state and visuals
+	flare->SetIsHovered(state_hovered);
+	m_flare_visuals->SetIsHoverDirty(true);
+}
+
+bool Rig::SetAllFlaresSelected(bool state_selected, RigEditor::Main* rig_editor)
+{
+	bool anything_changed = false;
+	auto end = m_flares.end();
+	for (auto itor = m_flares.begin(); itor != end; ++itor)
+	{
+		Flare* flare = *itor;
+		if (flare->IsSelected() != state_selected)
+		{
+			anything_changed = true;
+			flare->SetIsSelected(state_selected);
+		}
+	}
+	if (anything_changed)
+	{
+		m_flare_visuals->SetIsSelectionDirty(true);
+        return true;
+	}
+    return false;
+}
+
+bool Rig::ScheduleSetAllFlaresSelected(bool state_selected, RigEditor::Main* rig_editor)
+{
+	bool anything_changed = false;
+	auto end = m_flares.end();
+    auto itor = m_flares.begin();
+	for (; itor != end; ++itor)
+	{
+		Flare* flare = *itor;
+        anything_changed = anything_changed || ScheduleSetFlareSelected(flare, -1, state_selected, rig_editor);
+	}
+	return anything_changed;
+}
+
+void Rig::SetAllFlaresHovered(bool state_hovered, RigEditor::Main* rig_editor)
+{
+	bool anything_changed = false;
+	auto end = m_flares.end();
+	for (auto itor = m_flares.begin(); itor != end; ++itor)
+	{
+		Flare* flare = *itor;
+		if (flare->IsHovered() != state_hovered)
+		{
+			anything_changed = true;
+			flare->SetIsHovered(state_hovered);
+		}
+	}
+	if (anything_changed)
+	{
+		m_flare_visuals->SetIsHoverDirty(true);
+	}
+}
+
+void Rig::QuerySelectedFlaresData(RigAggregateFlaresData* out_data)
+{
+    assert(out_data != nullptr);
+    out_data->Reset();
+    auto end = m_flares.end();
+    auto itor = m_flares.begin();
+    for (; itor != end; ++itor)
+    {
+        Flare* flare = *itor;
+        if (flare->IsSelected())
+        {
+            out_data->AddFlare(flare);
+        }
+    }
+}
+
+bool Rig::UpdateSelectedFlaresData(RigAggregateFlaresData* data)
+{
+    assert(data != nullptr);
+    bool is_geometry_dirty = false;
+    std::for_each(m_flares.begin(), m_flares.end(), [data, &is_geometry_dirty](Flare* flare)
+    {
+        if (flare->IsSelected())
+        {
+            flare->Update(data);
+            is_geometry_dirty = is_geometry_dirty || flare->IsGeometryDirty();
+        }
+    });
+    return is_geometry_dirty;
 }
 
 // ----------------------------------------------------------------------------

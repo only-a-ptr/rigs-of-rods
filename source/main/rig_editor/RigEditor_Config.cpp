@@ -148,7 +148,13 @@ Config::Config(Ogre::String const & conf_file_path)
     // FLARES
 
     flare_star_line_color                 = conf_file.GetColourValue("flare_star_line_color_rgb");
+    flare_star_hovered_line_color         = conf_file.GetColourValue("flare_star_hovered_line_color");
+    flare_star_selected_line_color        = conf_file.GetColourValue("flare_star_selected_line_color");
+
     flare_star_half_size                  = conf_file.GetFloat("flare_star_half_size");
+    flare_star_hovered_half_size          = conf_file.GetFloat("flare_star_hovered_half_size");
+    flare_star_selected_half_size         = conf_file.GetFloat("flare_star_selected_half_size");
+    
     flare_selection_boxes_half_size       = conf_file.GetFloat("flare_selection_boxes_half_size");
     flare_hover_highlight_boxes_half_size = conf_file.GetFloat("flare_hover_highlight_boxes_half_size");
     flare_selection_boxes_color           = conf_file.GetColourValue("flare_selection_boxes_color_rgb");
