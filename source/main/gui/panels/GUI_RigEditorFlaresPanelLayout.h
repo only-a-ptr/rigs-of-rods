@@ -41,8 +41,8 @@ protected:
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_ref_node_set_button, "ref_node_set_button");
 	MyGUI::Button* m_ref_node_set_button;
 
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_x_node_caption, "x_node_caption");
-	MyGUI::TextBox* m_x_node_caption;
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_x_node_label, "x_node_label");
+	MyGUI::TextBox* m_x_node_label;
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_x_node_editbox, "x_node_editbox");
 	MyGUI::EditBox* m_x_node_editbox;
@@ -58,6 +58,9 @@ protected:
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_y_node_set_button, "y_node_set_button");
 	MyGUI::Button* m_y_node_set_button;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_swap_xy_nodes_button, "swap_xy_nodes_button");
+	MyGUI::Button* m_swap_xy_nodes_button;
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_size_label, "size_label");
 	MyGUI::TextBox* m_size_label;
@@ -80,8 +83,8 @@ protected:
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_control_number_label, "control_number_label");
 	MyGUI::TextBox* m_control_number_label;
 
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_tooltip_editbox, "tooltip_editbox");
-	MyGUI::TextBox* m_tooltip_editbox;
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_tooltip_label, "tooltip_label");
+	MyGUI::TextBox* m_tooltip_label;
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_x_offset_editbox, "x_offset_editbox");
 	MyGUI::EditBox* m_x_offset_editbox;
@@ -94,6 +97,9 @@ protected:
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_size_scale_button, "size_scale_button");
 	MyGUI::Button* m_size_scale_button;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_grab_button, "grab_button");
+	MyGUI::Button* m_grab_button;
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorFlaresPanelLayout, m_flare_material_label, "flare_material_label");
 	MyGUI::TextBox* m_flare_material_label;

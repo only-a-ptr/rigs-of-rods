@@ -56,14 +56,41 @@ protected:
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_file_popup_item_close, "file_popup_item_close");
 	MyGUI::MenuItem* m_file_popup_item_close;
 
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_file_popup_item_properties, "file_popup_item_properties");
-	MyGUI::MenuItem* m_file_popup_item_properties;
-
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_file_popup_item_land_properties, "file_popup_item_land_properties");
-	MyGUI::MenuItem* m_file_popup_item_land_properties;
-
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_file_popup_item_quit, "file_popup_item_quit");
 	MyGUI::MenuItem* m_file_popup_item_quit;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_menubar_item_project, "menubar_item_project");
+	MyGUI::MenuItem* m_menubar_item_project;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_project_popup, "project_popup");
+	MyGUI::PopupMenu* m_project_popup;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_project_popup_item_properties, "project_popup_item_properties");
+	MyGUI::MenuItem* m_project_popup_item_properties;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_project_popup_item_land_properties, "project_popup_item_land_properties");
+	MyGUI::MenuItem* m_project_popup_item_land_properties;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_project_popup_item_wheels, "project_popup_item_wheels");
+	MyGUI::MenuItem* m_project_popup_item_wheels;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_project_popup_item_flares, "project_popup_item_flares");
+	MyGUI::MenuItem* m_project_popup_item_flares;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_menubar_item_editor, "menubar_item_editor");
+	MyGUI::MenuItem* m_menubar_item_editor;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_editor_popup, "editor_popup");
+	MyGUI::PopupMenu* m_editor_popup;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_editor_popup_item_background_images, "editor_popup_item_background_images");
+	MyGUI::MenuItem* m_editor_popup_item_background_images;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_editor_popup_item_mirror, "editor_popup_item_mirror");
+	MyGUI::MenuItem* m_editor_popup_item_mirror;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_editor_popup_item_settings, "editor_popup_item_settings");
+	MyGUI::MenuItem* m_editor_popup_item_settings;
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_menubar_item_help, "menubar_item_help");
 	MyGUI::MenuItem* m_menubar_item_help;
@@ -79,18 +106,6 @@ protected:
 
 	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_wheels_popup_item_deselect_all, "wheels_popup_item_deselect_all");
 	MyGUI::MenuItem* m_wheels_popup_item_deselect_all;
-
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_menubar_item_flares, "menubar_item_flares");
-	MyGUI::MenuItem* m_menubar_item_flares;
-
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_flares_popup, "flares_popup");
-	MyGUI::PopupMenu* m_flares_popup;
-
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_flares_popup_item_select_all, "flares_popup_item_select_all");
-	MyGUI::MenuItem* m_flares_popup_item_select_all;
-
-	ATTRIBUTE_FIELD_WIDGET_NAME(RigEditorMenubarLayout, m_flares_popup_item_deselect_all, "flares_popup_item_deselect_all");
-	MyGUI::MenuItem* m_flares_popup_item_deselect_all;
 
 	//%LE Widget_Declaration list end
 };

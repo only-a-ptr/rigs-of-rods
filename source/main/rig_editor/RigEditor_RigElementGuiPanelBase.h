@@ -213,7 +213,6 @@ protected:
 
     // GUI panel utility
     void AlignToScreen(RigEditor::GuiPanelPositionData* position_data);
-
     RigEditor::IMain* m_rig_editor_interface;
     unsigned int m_flags;
 

@@ -92,33 +92,33 @@ void Flare::Update(RigAggregateFlaresData *data)
 
     // Position - nodes
     bool position_changed = false;
-    if (data->IsRefNodeUniform() && data->ref_node != m_source.reference_node)
+    if (data->WasRefNodeUpdated() && data->ref_node != m_source.reference_node)
     {
         position_changed = true;
         m_source.reference_node = data->ref_node;
     }
-    if (data->IsXNodeUniform() && data->x_node != m_source.node_axis_x)
+    if (data->WasXNodeUpdated() && data->x_node != m_source.node_axis_x)
     {
         position_changed = true;
         m_source.node_axis_x = data->x_node;
     }
-    if (data->IsYNodeUniform() && data->y_node != m_source.node_axis_y)
+    if (data->WasYNodeUpdated() && data->y_node != m_source.node_axis_y)
     {
         position_changed = true;
         m_source.node_axis_y = data->y_node;
     }
     // Position - offsets
-    if (data->IsXOffsetUniform() && data->x_offset != m_source.offset.x)
+    if (data->WasXOffsetUpdated() && data->x_offset != m_source.offset.x)
     {
         position_changed = true;
         m_source.offset.x = data->x_offset;
     }
-    if (data->IsYOffsetUniform() && data->y_offset != m_source.offset.y)
+    if (data->WasYOffsetUpdated() && data->y_offset != m_source.offset.y)
     {
         position_changed = true;
         m_source.offset.z = data->y_offset;
     }
-    if (data->IsZOffsetUniform() && data->z_offset != m_source.offset.z)
+    if (data->WasZOffsetUpdated() && data->z_offset != m_source.offset.z)
     {
         position_changed = true;
         m_source.offset.z = data->z_offset;
@@ -130,13 +130,27 @@ void Flare::Update(RigAggregateFlaresData *data)
     }
 
     // ----- Other -----
-    if (data->IsSizeUniform           ()) { m_source.size = data->size; }
-    if (data->IsFlareMatUniform       ()) { m_source.material_name = data->flare_material_name; }
-    if (data->IsMatFlareBindingUniform()) { m_materialflarebinding_material_name = data->materialflarebinding_material_name; }
-    if (data->IsTypeUniform           ()) { m_source.type = RigDef::Flare2::Type(data->type); }
-    if (data->IsControlNumberUniform  ()) { m_source.control_number = data->control_number; }
-    if (data->IsBlinkDelayUniform     ()) { m_source.blink_delay_milis = data->blink_delay_ms; }
+    if (data->WasSizeUpdated           ()) { m_source.size = data->size; }
+    if (data->WasFlareMatUpdated       ()) { m_source.material_name = data->flare_material_name; }
+    if (data->WasMatFlareBindingUpdated()) { m_materialflarebinding_material_name = data->materialflarebinding_material_name; }
+    if (data->WasTypeUpdated           ()) { m_source.type = RigDef::Flare2::Type(data->type); }
+    if (data->WasControlNumberUpdated  ()) { m_source.control_number = data->control_number; }
+    if (data->WasBlinkDelayUpdated     ()) { m_source.blink_delay_milis = data->blink_delay_ms; }
 
+}
+
+const wchar_t* Flare::GetTypeNameW()
+{
+    switch (m_source.type)
+    {
+        case RigDef::Flare2::TYPE_b_BRAKELIGHT:    return L"Brake";
+        case RigDef::Flare2::TYPE_f_HEADLIGHT:     return L"Headlight";
+        case RigDef::Flare2::TYPE_l_LEFT_BLINKER:  return L"Signal left";
+        case RigDef::Flare2::TYPE_R_REVERSE_LIGHT: return L"Reverse";
+        case RigDef::Flare2::TYPE_r_RIGHT_BLINKER: return L"Signal right";
+        case RigDef::Flare2::TYPE_u_USER:          return L"User";
+        default:                                   return L"Unknown";
+    }
 }
 
 } // namespace RigEditor

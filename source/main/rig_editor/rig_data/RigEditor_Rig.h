@@ -209,6 +209,11 @@ public:
         return m_mouse_hovered_node;
     }
 
+    inline Node* GetLastSelectedNode() const
+    {
+        return m_last_selected_node;
+    }
+
     void AttachToScene(Ogre::SceneNode* parent_scene_node);
     void DetachFromScene();
 
@@ -238,7 +243,6 @@ public:
     void DeleteSelectedNodes();
 
     bool DeleteNode(Node* node);
-
     bool DeleteBeam(Beam* beam);
 
     void DeleteBeam(std::vector<RigEditor::Beam*>::iterator & delete_itor);
@@ -379,6 +383,7 @@ private:
 
     /* STATE */
     Node*                m_mouse_hovered_node;
+    Node*                m_last_selected_node;
     std::list<Beam*>     m_selected_beams;
 
     /* VISUALS */

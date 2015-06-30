@@ -95,6 +95,22 @@ Config::Config(Ogre::String const & conf_file_path)
     gui_shocks2_panel_position.margin_bottom_px  = conf_file.GetInt( "gui_shocks2_panel_margin_bottom_px");
     gui_shocks2_panel_position.margin_top_px     = conf_file.GetInt( "gui_shocks2_panel_margin_top_px");
 
+    // FLARES panels
+    
+    gui_flares_list_panel_position.anchor_right      = conf_file.GetBool("gui_flares_list_panel_anchor_right");
+	gui_flares_list_panel_position.anchor_bottom     = conf_file.GetBool("gui_flares_list_panel_anchor_bottom");
+	gui_flares_list_panel_position.margin_left_px    = conf_file.GetInt( "gui_flares_list_panel_margin_left_px");
+	gui_flares_list_panel_position.margin_right_px   = conf_file.GetInt( "gui_flares_list_panel_margin_right_px");
+	gui_flares_list_panel_position.margin_bottom_px  = conf_file.GetInt( "gui_flares_list_panel_margin_bottom_px");
+	gui_flares_list_panel_position.margin_top_px     = conf_file.GetInt( "gui_flares_list_panel_margin_top_px");
+
+    gui_flares_edit_panel_position.anchor_right      = conf_file.GetBool("gui_flares_edit_panel_anchor_right");
+	gui_flares_edit_panel_position.anchor_bottom     = conf_file.GetBool("gui_flares_edit_panel_anchor_bottom");
+	gui_flares_edit_panel_position.margin_left_px    = conf_file.GetInt( "gui_flares_edit_panel_margin_left_px");
+	gui_flares_edit_panel_position.margin_right_px   = conf_file.GetInt( "gui_flares_edit_panel_margin_right_px");
+	gui_flares_edit_panel_position.margin_bottom_px  = conf_file.GetInt( "gui_flares_edit_panel_margin_bottom_px");
+	gui_flares_edit_panel_position.margin_top_px     = conf_file.GetInt( "gui_flares_edit_panel_margin_top_px");
+
     // WHEEL panels
 
     gui_meshwheels2_panel_position.anchor_right      = conf_file.GetBool("gui_meshwheels2_panel_anchor_right");
@@ -148,17 +164,17 @@ Config::Config(Ogre::String const & conf_file_path)
     // FLARES
 
     flare_star_line_color                 = conf_file.GetColourValue("flare_star_line_color_rgb");
-    flare_star_hovered_line_color         = conf_file.GetColourValue("flare_star_hovered_line_color");
-    flare_star_selected_line_color        = conf_file.GetColourValue("flare_star_selected_line_color");
+    flare_star_hovered_line_color         = conf_file.GetColourValue("flare_star_hovered_line_color_rgb");
+    flare_star_selected_line_color        = conf_file.GetColourValue("flare_star_selected_line_color_rgb");
 
     flare_star_half_size                  = conf_file.GetFloat("flare_star_half_size");
     flare_star_hovered_half_size          = conf_file.GetFloat("flare_star_hovered_half_size");
     flare_star_selected_half_size         = conf_file.GetFloat("flare_star_selected_half_size");
     
-    flare_selection_boxes_half_size       = conf_file.GetFloat("flare_selection_boxes_half_size");
-    flare_hover_highlight_boxes_half_size = conf_file.GetFloat("flare_hover_highlight_boxes_half_size");
-    flare_selection_boxes_color           = conf_file.GetColourValue("flare_selection_boxes_color_rgb");
-    flare_hover_highlight_boxes_color     = conf_file.GetColourValue("flare_hover_highlight_boxes_color_rgb");
+    flare_node_highlight_hover_color      = conf_file.GetColourValue("flare_node_highlight_hover_color");
+    flare_node_highlight_selected_color   = conf_file.GetColourValue("flare_node_highlight_selected_color");
+    flare_node_highlight_hover_size       = conf_file.GetFloat("flare_node_highlight_hover_size");
+    flare_node_highlight_selected_size    = conf_file.GetFloat("flare_node_highlight_selected_size");
 
     // CAMERA
 

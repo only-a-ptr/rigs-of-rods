@@ -62,6 +62,8 @@ public:
 
 private:
 
+    inline RigEditor::GuiPopupWheelsList* GetWheelsList() { return m_wheels_list.get(); }
+
     /* Event handlers */
 
     void OpenJsonItemClicked(MyGUI::Widget* sender);
@@ -83,6 +85,7 @@ private:
     void MenubarItemHelpClicked(MyGUI::Widget* sender);
 
     inline RigEditor::GuiPopupWheelsList* GetWheelsList() { return m_wheels_list.get(); }
+    void FlaresListItemClicked(MyGUI::Widget* sender);
 
 private:
 

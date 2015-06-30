@@ -32,6 +32,7 @@
 #include "RigDef_Prerequisites.h"
 #include "RigEditor_IMain.h"
 #include "RigEditor_ForwardDeclarations.h"
+#include "RigEditor_PointListDynamicMesh.h"
 #include "RoRPrerequisites.h"
 
 namespace RoR
@@ -102,16 +103,10 @@ protected:
 		std::vector<Flare*> & flares
 		);
 
-    static void GenerateFlaresDynamicMesh(
-        Ogre::ManualObject* dyn_mesh, 
-        std::vector<Flare*> & flares, 
-        Ogre::ColourValue color, 
-        float half_size
-        );
+    static void GenerateFlaresDynamicMesh(Ogre::ManualObject* dyn_mesh, std::vector<Flare*> & flares, Config* config);
 
 	std::unique_ptr<Ogre::ManualObject>         m_flares_dynamic_mesh;
-	std::unique_ptr<HighlightBoxesDynamicMesh>  m_flares_selected_dynamic_mesh;
-	std::unique_ptr<HighlightBoxesDynamicMesh>  m_flares_hovered_dynamic_mesh;
+    std::unique_ptr<PointListDynamicMesh>       m_node_highlight_dyn_mesh;
 	unsigned int                                m_flags;
 };
 

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="Window" skin="WindowCX" position="0 0 200 665" layer="Main" name="flares_list_panel">
+        <Property key="Caption" value="Flares"/>
+        <Widget type="Button" skin="CheckBox" position="5 5 20 20" name="display_checkbox"/>
+        <Widget type="TextBox" skin="TextBox" position="30 5 155 20" align="HStretch Top" name="display_label">
+            <Property key="TextAlign" value="Left VCenter"/>
+            <Property key="Caption" value="Display in editor"/>
+        </Widget>
+        <Widget type="ListBox" skin="ListBox" position="0 110 190 520" align="Stretch" name="items_listbox"/>
+        <Widget type="Button" skin="Button" position="5 50 180 20" align="HStretch Top" name="select_all_button">
+            <Property key="Caption" value="Select all"/>
+            <Property key="TextAlign" value="Left VCenter"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="5 90 180 20" align="HStretch Top" name="deselect_all_button">
+            <Property key="Caption" value="Deselect all"/>
+        </Widget>
+        <Widget type="Button" skin="Button" position="5 30 180 20" align="HStretch Top" name="add_new_button">
+            <Property key="Caption" value="[+] Add new"/>
+            <Property key="TextAlign" value="Left VCenter"/>
+        </Widget>
+        <Widget type="ComboBox" skin="ComboBox" position="5 70 180 20" align="HStretch Top" name="select_by_type_combobox">
+            <Property key="Caption" value="Select by type..."/>
+            <Property key="Static" value="true"/>
+            <Property key="ReadOnly" value="true"/>
+            <Property key="AddItem" value="f - Headlight"/>
+            <Property key="AddItem" value="t - Tail light"/>
+            <Property key="AddItem" value="b - Brake light"/>
+            <Property key="AddItem" value="R - Reverse light"/>
+            <Property key="AddItem" value="l - Signal left (&quot;blinker&quot;)"/>
+            <Property key="AddItem" value="r - Signal right (&quot;blinker&quot;)"/>
+        </Widget>
+    </Widget>
+    <CodeGeneratorSettings>
+        <Property key="IncludeDirectory" value="D:\projects\git\rigs-of-rods\source\main\gui\panels"/>
+        <Property key="PanelName" value="RigEditorFlaresListPanelLayout"/>
+        <Property key="PanelNamespace" value="foo"/>
+        <Property key="SourceDirectory" value="D:\projects\git\rigs-of-rods\source\main\gui\panels"/>
+    </CodeGeneratorSettings>
+</MyGUI>

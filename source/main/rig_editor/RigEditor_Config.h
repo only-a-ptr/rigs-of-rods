@@ -66,6 +66,8 @@ struct Config
     GuiPanelPositionData   gui_shocks2_panel_position;
     GuiPanelPositionData   gui_meshwheels2_panel_position;
     GuiPanelPositionData   gui_flexbodywheels_panel_position;
+    GuiPanelPositionData   gui_flares_list_panel_position;
+    GuiPanelPositionData   gui_flares_edit_panel_position;
     
     /* Rig manipulation HUD */
     int                 node_mouse_box_halfsize_px;
@@ -117,10 +119,10 @@ struct Config
     float               flare_star_half_size;
     float               flare_star_hovered_half_size;
     float               flare_star_selected_half_size;
-    float               flare_selection_boxes_half_size;
-    float               flare_hover_highlight_boxes_half_size;
-    Ogre::ColourValue   flare_selection_boxes_color;
-    Ogre::ColourValue   flare_hover_highlight_boxes_color;
+    Ogre::ColourValue   flare_node_highlight_hover_color;
+    Ogre::ColourValue   flare_node_highlight_selected_color;
+    float               flare_node_highlight_hover_size;
+    float               flare_node_highlight_selected_size;
 
     /* Camera */
     float               camera_near_clip_distance;

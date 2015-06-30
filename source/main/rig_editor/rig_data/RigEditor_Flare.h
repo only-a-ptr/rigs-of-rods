@@ -56,6 +56,8 @@ public:
 
     void                   Update(RigAggregateFlaresData* data);
 
+    const wchar_t*         GetTypeNameW();
+
 	// Getters
 	inline Node*           GetReferenceNode() const   { return m_ref_node; }
     inline Node*           GetXNode() const           { return m_x_node; }

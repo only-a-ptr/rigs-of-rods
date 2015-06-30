@@ -439,7 +439,7 @@ struct RigAggregateFlaresData
     float              size;
     std::string        flare_material_name;
     std::string        materialflarebinding_material_name;
-    char               type;
+    int                type;
     int                control_number;
     float              blink_delay_ms;
 
@@ -451,6 +451,9 @@ struct RigAggregateFlaresData
 
     void AddFlare(Flare* flare);
 
+    inline unsigned int* GetFlagsPtr() { return &m_flags; }
+
+    // Uniformity bits
     BITMASK_PROPERTY(m_flags,  1,  FIELD_REF_NODE_IS_UNIFORM         , IsRefNodeUniform         , SetIsRefNodeUniform         );
     BITMASK_PROPERTY(m_flags,  2,  FIELD_X_NODE_IS_UNIFORM           , IsXNodeUniform           , SetIsXNodeUniform           );
     BITMASK_PROPERTY(m_flags,  3,  FIELD_Y_NODE_IS_UNIFORM           , IsYNodeUniform           , SetIsYNodeUniform           );
@@ -463,6 +466,29 @@ struct RigAggregateFlaresData
     BITMASK_PROPERTY(m_flags, 10,  FIELD_TYPE_IS_UNIFORM             , IsTypeUniform            , SetIsTypeUniform            );
     BITMASK_PROPERTY(m_flags, 11,  FIELD_CONTROL_NUMBER_IS_UNIFORM   , IsControlNumberUniform   , SetIsControlNumberUniform   );
     BITMASK_PROPERTY(m_flags, 12,  FIELD_BLINK_DELAY_IS_UNIFORM      , IsBlinkDelayUniform      , SetIsBlinkDelayUniform      );
+    // RESERVED               13
+    // RESERVED               14
+    // RESERVED               15
+    // RESERVED               16
+
+    // Update bits
+    BITMASK_PROPERTY(m_flags, 17,  FIELD_REF_NODE_WAS_UPDATED        , WasRefNodeUpdated         , SetWasRefNodeUpdated         );
+    BITMASK_PROPERTY(m_flags, 18,  FIELD_X_NODE_WAS_UPDATED          , WasXNodeUpdated           , SetWasXNodeUpdated           );
+    BITMASK_PROPERTY(m_flags, 19,  FIELD_Y_NODE_WAS_UPDATED          , WasYNodeUpdated           , SetWasYNodeUpdated           );
+    BITMASK_PROPERTY(m_flags, 20,  FIELD_X_OFFSET_WAS_UPDATED        , WasXOffsetUpdated         , SetWasXOffsetUpdated         );
+    BITMASK_PROPERTY(m_flags, 21,  FIELD_Y_OFFSET_WAS_UPDATED        , WasYOffsetUpdated         , SetWasYOffsetUpdated         );
+    BITMASK_PROPERTY(m_flags, 22,  FIELD_Z_OFFSET_WAS_UPDATED        , WasZOffsetUpdated         , SetWasZOffsetUpdated         );
+    BITMASK_PROPERTY(m_flags, 23,  FIELD_SIZE_WAS_UPDATED            , WasSizeUpdated            , SetWasSizeUpdated            );
+    BITMASK_PROPERTY(m_flags, 24,  FIELD_FLARE_MAT_NAME_WAS_UPDATED  , WasFlareMatUpdated        , SetWasFlareMatUpdated        );
+    BITMASK_PROPERTY(m_flags, 25,  FIELD_MATFLAREBINDING_WAS_UPDATED , WasMatFlareBindingUpdated , SetWasMatFlareBindingUpdated );
+    BITMASK_PROPERTY(m_flags, 26,  FIELD_TYPE_WAS_UPDATED            , WasTypeUpdated            , SetWasTypeUpdated            );
+    BITMASK_PROPERTY(m_flags, 27,  FIELD_CONTROL_NUMBER_WAS_UPDATED  , WasControlNumberUpdated   , SetWasControlNumberUpdated   );
+    BITMASK_PROPERTY(m_flags, 28,  FIELD_BLINK_DELAY_WAS_UPDATED     , WasBlinkDelayUpdated      , SetWasBlinkDelayUpdated      );
+
+    inline bool IsAnythingUpdated() const
+    {
+        return (m_flags | 0x0000FFFFu) != 0u;
+    }
 
 protected:
     unsigned int m_flags;

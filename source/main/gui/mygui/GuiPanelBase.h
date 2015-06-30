@@ -25,6 +25,10 @@
 
 #pragma once
 
+#include "ForwardDeclarations.h"
+#include "RigEditor_ForwardDeclarations.h"
+#include "RigEditor_Config.h"
+
 #include <MyGUI_Common.h>
 #include <MyGUI_Prerequest.h> // Forward declarations
 #include <MyGUI_Window.h>
@@ -63,6 +67,38 @@ public:
         { 
             Show();
         } 
+    }
+
+    void AlignToScreen(RigEditor::GuiPanelPositionData* position_data)
+    {
+	    MyGUI::IntSize screenSize = m_panel_widget->getParentSize();
+	    int x = position_data->margin_left_px; // Anchor: left
+	    int y = position_data->margin_top_px; // Anchor: top
+	    if (position_data->anchor_right)
+	    {
+		    x = screenSize.width - GetWidthPixels() - position_data->margin_right_px;
+	    }
+	    if (position_data->anchor_bottom)
+	    {
+		    y = screenSize.height - GetHeightPixels() - position_data->margin_bottom_px;
+	    }
+	    SetPosition(x, y);
+    }
+
+    void StretchToScreen(RigEditor::GuiPanelPositionData* position_data, bool stretch_horizontal, bool stretch_vertical)
+    {
+	    this->AlignToScreen(position_data);
+        MyGUI::IntSize screen_size = m_panel_widget->getParentSize();
+        MyGUI::IntSize panel_size = m_panel_widget->getSize();
+        if (stretch_horizontal)
+        {
+            panel_size.width -= (position_data->margin_left_px + position_data->margin_right_px);
+        }
+        if (stretch_vertical)
+        {
+            panel_size.height -= (position_data->margin_top_px + position_data->margin_bottom_px);
+        }
+        m_panel_widget->setSize(panel_size);
     }
 
     inline void Hide()                    { m_panel_widget->setVisible(false); }

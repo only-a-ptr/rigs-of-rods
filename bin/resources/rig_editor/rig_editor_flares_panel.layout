@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="Window" skin="Window" position="0 0 325 460" layer="Main" name="flares_panel">
         <Property key="Caption" value="Flares"/>
@@ -22,7 +22,7 @@
         <Widget type="Button" skin="Button" position="235 25 75 20" name="ref_node_set_button">
             <Property key="Caption" value="Set"/>
         </Widget>
-        <Widget type="TextBox" skin="TextBox" position="5 45 95 20" name="x_node_caption">
+        <Widget type="TextBox" skin="TextBox" position="5 45 95 20" name="x_node_label">
             <Property key="Caption" value="Left/Right:"/>
             <Property key="TextAlign" value="Right VCenter"/>
         </Widget>
@@ -38,7 +38,7 @@
         <Widget type="Button" skin="Button" position="235 65 75 20" name="y_node_set_button">
             <Property key="Caption" value="Set"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="65 85 245 20">
+        <Widget type="Button" skin="Button" position="65 85 245 20" name="swap_xy_nodes_button">
             <Property key="Caption" value="Invert flare orientation"/>
         </Widget>
         <Widget type="TextBox" skin="TextBox" position="5 215 95 20" name="size_label">
@@ -77,14 +77,14 @@
             <Property key="Caption" value="Control number:"/>
             <Property key="TextAlign" value="Left VCenter"/>
         </Widget>
-        <Widget type="TextBox" skin="TextBox" position="5 400 305 20" name="tooltip_editbox"/>
+        <Widget type="TextBox" skin="TextBox" position="5 400 305 20" name="tooltip_label"/>
         <Widget type="EditBox" skin="EditBox" position="100 130 125 20" name="x_offset_editbox"/>
         <Widget type="EditBox" skin="EditBox" position="100 150 125 20" name="y_offset_editbox"/>
         <Widget type="EditBox" skin="EditBox" position="100 170 125 20" name="z_offset_editbox"/>
         <Widget type="Button" skin="Button" position="215 215 95 20" name="size_scale_button">
             <Property key="Caption" value="Scale!"/>
         </Widget>
-        <Widget type="Button" skin="Button" position="225 130 85 60">
+        <Widget type="Button" skin="Button" position="225 130 85 60" name="grab_button">
             <Property key="Caption" value="Grab!"/>
         </Widget>
         <Widget type="TextBox" skin="TextBox" position="40 195 235 20">

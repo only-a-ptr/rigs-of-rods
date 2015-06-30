@@ -58,7 +58,7 @@ public:
     virtual void CommandSaveContentOfRigPropertiesWindow() = 0;
 
     virtual void CommandShowLandVehiclePropertiesWindow() = 0;
-    
+
     virtual void CommandSaveLandVehiclePropertiesWindowData() = 0;
 
     virtual void CommandShowHelpWindow() = 0;
@@ -72,17 +72,26 @@ public:
     virtual void CommandRigSelectedCommands2UpdateAttributes (const RigAggregateCommands2Data*  data) = 0;
 
     // Land vehicle wheel list
-    virtual void CommandScheduleSetWheelSelected(LandVehicleWheel* wheel_ptr, int wheel_index, bool state_selected) = 0;
-    virtual void CommandSetWheelHovered (LandVehicleWheel* wheel_ptr, int wheel_index, bool state_hovered) = 0;
-    virtual void CommandScheduleSetAllWheelsSelected(bool state_selected) = 0;
-    virtual void CommandSetAllWheelsHovered(bool state_selected) = 0;
+    virtual void CommandScheduleSetWheelSelected     (LandVehicleWheel* wheel_ptr, int wheel_index, bool state_selected) = 0;
+    virtual void CommandSetWheelHovered              (LandVehicleWheel* wheel_ptr, int wheel_index, bool state_hovered) = 0;
+    virtual void CommandScheduleSetAllWheelsSelected (bool state_selected) = 0;
+    virtual void CommandSetAllWheelsHovered          (bool state_selected) = 0;
 
     // Flares list
-    virtual void CommandScheduleSetFlareSelected (Flare* flare_ptr, int flare_index, bool state_selected) = 0;
-    virtual void CommandSetFlareHovered          (Flare* flare_ptr, int flare_index, bool state_hovered) = 0;
-    virtual void CommandScheduleSetAllFlaresSelected(bool state_selected) = 0;
-    virtual void CommandSetAllFlaresHovered         (bool state_selected) = 0;
+    virtual void CommandShowFlaresList               () = 0;
+    virtual void CommandScheduleSetFlareSelected     (Flare* flare_ptr, int flare_index, bool state_selected) = 0;
+    virtual void CommandSetFlareHovered              (Flare* flare_ptr, int flare_index, bool state_hovered) = 0;
+    virtual void CommandScheduleSetAllFlaresSelected (bool state_selected) = 0;
+    virtual void CommandSetAllFlaresHovered          (bool state_selected) = 0;
 
+    // GETTERS
+
+    virtual RigEditor::Node*      GetCurrentRigLastSelectedNode() = 0;
+
+    // FACTORIES
+
+    virtual PointListDynamicMesh*    CreateInstanceOfPointListDynamicMesh(float point_size, size_t estimate_point_count) = 0;
+    virtual LineListDynamicMesh*     CreateInstanceOfLineListDynamicMesh(size_t estimate_line_count) = 0;
 };
 
 } // namespace RigEditor

@@ -32,6 +32,7 @@
 #include "RigEditor_Flare.h"
 #include "RigEditor_Main.h"
 #include "RigEditor_Node.h"
+#include "RigEditor_PointListDynamicMesh.h"
 
 #include <OgreTechnique.h>
 #include <OgreSceneManager.h>
@@ -44,14 +45,11 @@ using namespace RigEditor;
 void RigFlareVisuals::Init(RigEditor::Main* rig_editor)
 {
 	// SELECTION + HOVER MESHES
-	HighlightBoxesDynamicMesh* dyna_mesh_select = new HighlightBoxesDynamicMesh();
-    HighlightBoxesDynamicMesh* dyna_mesh_hover  = new HighlightBoxesDynamicMesh();
-	
-    dyna_mesh_select->Initialize(rig_editor, rig_editor->GetOgreSceneManager(), "rig-editor-flares-selected-dynamic-mesh", 10);
-    dyna_mesh_hover ->Initialize(rig_editor, rig_editor->GetOgreSceneManager(), "rig-editor-flares-hovered-dynamic-mesh",  2);
-
-	m_flares_selected_dynamic_mesh = std::unique_ptr<HighlightBoxesDynamicMesh>(dyna_mesh_select);
-	m_flares_hovered_dynamic_mesh  = std::unique_ptr<HighlightBoxesDynamicMesh>(dyna_mesh_hover);
+	m_node_highlight_dyn_mesh = std::unique_ptr<PointListDynamicMesh>(
+        rig_editor->CreateInstanceOfPointListDynamicMesh(
+            rig_editor->GetConfig()->flare_node_highlight_hover_size, 
+            10));
+    
 }
 
 void RigFlareVisuals::BuildFlaresGeometryDynamicMesh(
@@ -95,20 +93,26 @@ void RigFlareVisuals::BuildFlaresGeometryDynamicMesh(
 	m_flares_dynamic_mesh->begin("rig-editor-skeleton-flares-material", Ogre::RenderOperation::OT_LINE_LIST);
 
 	// Process
-    Ogre::ColourValue color = rig_editor->GetConfig()->flare_star_line_color;
-    float half_size = rig_editor->GetConfig()->flare_star_half_size;
-    GenerateFlaresDynamicMesh(m_flares_dynamic_mesh.get(), flares, color, half_size);
+    GenerateFlaresDynamicMesh(m_flares_dynamic_mesh.get(), flares, rig_editor->GetConfig());
     // Finalize
 	m_flares_dynamic_mesh->end();
 }
 
-void RigFlareVisuals::GenerateFlaresDynamicMesh(Ogre::ManualObject* dyn_mesh, std::vector<Flare*> & flares, Ogre::ColourValue color, float half_size)
+void RigFlareVisuals::GenerateFlaresDynamicMesh(Ogre::ManualObject* dyn_mesh, std::vector<Flare*> & flares, Config* config)
 {
+    Ogre::ColourValue color       = config->flare_star_line_color;
+    Ogre::ColourValue color_hover = config->flare_star_hovered_line_color;
+    float half_size               = config->flare_star_half_size;
+    float half_size_hover         = config->flare_star_hovered_half_size;
+
     auto flares_end = flares.end();
     for (auto itor = flares.begin(); itor != flares_end; ++itor)
 	{
 		Flare* flare = *itor;
-        FlareVisualStar::AddStar(dyn_mesh, flare->GetVisualPosition(), half_size, color);
+        float curr_half_size = flare->IsHovered() ? half_size_hover : half_size;
+        Ogre::ColourValue curr_color = flare->IsHovered() ? color_hover : color;
+
+        FlareVisualStar::AddStar(dyn_mesh, flare->GetVisualPosition(), curr_half_size, curr_color);
 	}
 }
 
@@ -151,15 +155,13 @@ void RigFlareVisuals::UpdateFlaresGeometryDynamicMesh(
 		std::vector<Flare*> & flares
 		)
 {
-	assert(m_flares_dynamic_mesh.get() != nullptr);
+    auto dyn_mesh = m_flares_dynamic_mesh.get();
+	assert(dyn_mesh != nullptr);
 	// Init
-	auto dyn_mesh = m_flares_dynamic_mesh.get();
     dyn_mesh->beginUpdate(0);
-    float half_size = rig_editor->GetConfig()->flare_star_half_size;
-    Ogre::ColourValue color = rig_editor->GetConfig()->flare_star_line_color;
 
 	// Process
-	GenerateFlaresDynamicMesh(m_flares_dynamic_mesh.get(), flares, color, half_size);
+	GenerateFlaresDynamicMesh(dyn_mesh, flares, rig_editor->GetConfig());
 	
 	// Finalize
 	m_flares_dynamic_mesh->end();
@@ -202,14 +204,18 @@ void RigFlareVisuals::UpdateFlaresSelectionHighlightBoxes(
 	}
 	if (!selected_found)
 	{
-		m_flares_selected_dynamic_mesh->DetachFromScene();
+		//m_flares_selected_dynamic_mesh->DetachFromScene(); // TODO: recode
 		this->SetIsSelectionDirty(false);
 		return;
 	}
 
+    // ######## TODO: rewrite this ############
+
 	// Update selection highlight
-	float size              = rig_editor->GetConfig()->flare_selection_boxes_half_size;
+	/*float size              = rig_editor->GetConfig()->flare_selection_boxes_half_size;
     Ogre::ColourValue color = rig_editor->GetConfig()->flare_selection_boxes_color;
+    float starbox_size              = rig_editor->GetConfig()->flare_hover_starbox_half_size;
+    Ogre::ColourValue starbox_color = rig_editor->GetConfig()->flare_hover_starbox_color;
 
 	m_flares_selected_dynamic_mesh->BeginUpdate();
 	for (auto itor = flares.begin(); itor != end; ++itor)
@@ -235,10 +241,17 @@ void RigFlareVisuals::UpdateFlaresSelectionHighlightBoxes(
                 Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
 			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
             }
+            { // Starbox
+                Ogre::Vector3 pos(flare->GetVisualPosition());
+                Ogre::Vector3 aabb_max(pos.x + starbox_size, pos.y + starbox_size, pos.z + starbox_size);
+                Ogre::Vector3 aabb_min(pos.x - starbox_size, pos.y - starbox_size, pos.z - starbox_size);
+			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, starbox_color);
+            }
 		}
 	}
 	m_flares_selected_dynamic_mesh->EndUpdate();
 	m_flares_selected_dynamic_mesh->AttachToScene(parent_scene_node);
+    */
 	this->SetIsSelectionDirty(false);
 }
 
@@ -262,16 +275,16 @@ void RigFlareVisuals::UpdateFlaresMouseHoverHighlightBoxes(
 	}
 	if (!hovered_found)
 	{
-		m_flares_hovered_dynamic_mesh->DetachFromScene();
+		this->m_node_highlight_dyn_mesh->DetachFromScene();
 		this->SetIsHoverDirty(false);
 		return;
 	}
 
 	// Update hover highlight
-    float size              = rig_editor->GetConfig()->flare_hover_highlight_boxes_half_size;
-    Ogre::ColourValue color = rig_editor->GetConfig()->flare_hover_highlight_boxes_color;
+    float size                      = rig_editor->GetConfig()->flare_node_highlight_hover_size;
+    Ogre::ColourValue color         = rig_editor->GetConfig()->flare_node_highlight_hover_color;
 
-	m_flares_hovered_dynamic_mesh->BeginUpdate();
+	m_node_highlight_dyn_mesh->BeginUpdate();
 	for (auto itor = flares.begin(); itor != end; ++itor)
 	{
 		Flare* flare = *itor;
@@ -279,26 +292,22 @@ void RigFlareVisuals::UpdateFlaresMouseHoverHighlightBoxes(
 		{
             { // Reference node
                 Ogre::Vector3 pos(flare->GetReferenceNode()->GetPosition());
-                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
-                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
-			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+                m_node_highlight_dyn_mesh->AddPoint(pos, color);
+                
             }
             { // X node
                 Ogre::Vector3 pos(flare->GetXNode()->GetPosition());
-                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
-                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
-			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+                m_node_highlight_dyn_mesh->AddPoint(pos, color);
             }
             { // Y node
                 Ogre::Vector3 pos(flare->GetYNode()->GetPosition());
-                Ogre::Vector3 aabb_max(pos.x + size, pos.y + size, pos.z + size);
-                Ogre::Vector3 aabb_min(pos.x - size, pos.y - size, pos.z - size);
-			    m_flares_hovered_dynamic_mesh->AddBox(aabb_max, aabb_min, color);
+                m_node_highlight_dyn_mesh->AddPoint(pos, color);
             }
 		}
 	}
-	m_flares_hovered_dynamic_mesh->EndUpdate();
-	m_flares_hovered_dynamic_mesh->AttachToScene(parent_scene_node);
+	m_node_highlight_dyn_mesh->EndUpdate();
+	m_node_highlight_dyn_mesh->AttachToScene(parent_scene_node);
+    this->UpdateFlaresGeometryDynamicMesh(rig_editor, flares);
 	this->SetIsHoverDirty(false);
 }
 
@@ -323,8 +332,9 @@ void FlareVisualStar::AddStar(Ogre::ManualObject* dyn_mesh, Ogre::Vector3 positi
     AddLine(dyn_mesh, x, y, z+h, x, y, z-h, color);
 
     // Diagonal
-    AddLine(dyn_mesh, x+h, y+h, z+h, x-h, y-h, z-h, color);
-    AddLine(dyn_mesh, x+h, y+h, z-h, x-h, y-h, z+h, color);
-    AddLine(dyn_mesh, x-h, y+h, z+h, x+h, y-h, z-h, color);
-    AddLine(dyn_mesh, x-h, y+h, z-h, x+h, y-h, z+h, color);
+    const float l = h * 0.7;
+    AddLine(dyn_mesh, x+l, y+l, z+l, x-l, y-l, z-l, color);
+    AddLine(dyn_mesh, x+l, y+l, z-l, x-l, y-l, z+l, color);
+    AddLine(dyn_mesh, x-l, y+l, z+l, x+l, y-l, z-l, color);
+    AddLine(dyn_mesh, x-l, y+l, z-l, x+l, y-l, z+l, color);
 }
