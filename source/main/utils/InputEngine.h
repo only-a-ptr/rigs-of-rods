@@ -219,11 +219,18 @@ enum events
 	EV_COMMANDS_82, //!< Command 82
 	EV_COMMANDS_83, //!< Command 83
 	EV_COMMANDS_84, //!< Command 84
+	EV_COMMON_ACCELERATE_SIMULATION, //!< accelerate the simulation speed
+	EV_COMMON_DECELERATE_SIMULATION, //!< decelerate the simulation speed
+	EV_COMMON_RESET_SIMULATION_PACE, //!< reset the simulation speed
 	EV_COMMON_AUTOLOCK, //!< unlock autolock hook node
 	EV_COMMON_CONSOLEDISPLAY, //!< show / hide the console
 	EV_COMMON_CONSOLEMODE, //!< toggle appearance of console
 	EV_COMMON_ENTER_CHATMODE, //!< enter the chat mode
 	EV_COMMON_ENTER_OR_EXIT_TRUCK, //!< enter or exit a truck
+	EV_COMMON_ENTER_NEXT_TRUCK, //!< enter next truck
+	EV_COMMON_ENTER_PREVIOUS_TRUCK, //!< enter previous truck
+	EV_COMMON_REMOVE_CURRENT_TRUCK, //!< remove current truck
+	EV_COMMON_RESPAWN_LAST_TRUCK, //!< respawn last truck
 	EV_COMMON_FOV_LESS, //!<decreases the current FOV value
 	EV_COMMON_FOV_MORE, //!<increases the current FOV value
 	EV_COMMON_FULLSCREEN_TOGGLE,
@@ -232,6 +239,7 @@ enum events
 	EV_COMMON_NETCHATDISPLAY,
 	EV_COMMON_NETCHATMODE,
 	EV_COMMON_OUTPUT_POSITION, //!< write current position to log (you can open the logfile and reuse the position)
+	EV_COMMON_GET_NEW_VEHICLE, //!< get new vehicle
 	EV_COMMON_PRESSURE_LESS, //!< decrease tire pressure (note: only very few trucks support this)
 	EV_COMMON_PRESSURE_MORE, //!< increase tire pressure (note: only very few trucks support this)
 	EV_COMMON_QUIT_GAME, //!< exit the game
@@ -249,7 +257,7 @@ enum events
 	EV_COMMON_SECURE_LOAD, //!< tie a load to the truck
 	EV_COMMON_SEND_CHAT, //!< send the chat text
 	EV_COMMON_SHOW_SKELETON, //!< toggle skeleton display mode
-	EV_COMMON_START_TRUCK_EDITOR, //!< start the old truck editor
+	EV_COMMON_TOGGLE_TERRAIN_EDITOR, //!< toggle terrain editor
 	EV_COMMON_TOGGLE_CUSTOM_PARTICLES, //!< toggle particle cannon
 	EV_COMMON_TOGGLE_MAT_DEBUG, //!< debug purpose - dont use
 	EV_COMMON_TOGGLE_RENDER_MODE, //!< toggle render mode (solid, wireframe and points)
@@ -258,6 +266,7 @@ enum events
 	EV_COMMON_TOGGLE_TRUCK_BEACONS, //!< toggle truck beacons
 	EV_COMMON_TOGGLE_TRUCK_LIGHTS, //!< toggle truck front lights
 	EV_COMMON_TRUCK_INFO, //!< toggle truck HUD
+	EV_COMMON_TRUCK_DESCRIPTION, //!< toggle truck description
 	EV_COMMON_TRUCK_REMOVE,
 	EV_GRASS_LESS, //!< EXPERIMENTAL: remove some grass
 	EV_GRASS_MORE, //!< EXPERIMENTAL: add some grass
@@ -276,6 +285,8 @@ enum events
 	EV_SURVEY_MAP_ZOOM_OUT, //!< decrease survey map scale
 
 	EV_TRUCK_ACCELERATE, //!< accelerate the truck
+	EV_TRUCK_ACCELERATE_MODIFIER_25, //!< accelerate with 25 percent pedal input
+	EV_TRUCK_ACCELERATE_MODIFIER_50, //!< accelerate with 50 percent pedal input
 	EV_TRUCK_ANTILOCK_BRAKE, //!< toggle antilockbrake system
 	EV_TRUCK_AUTOSHIFT_DOWN, //!< shift automatic transmission one gear down
 	EV_TRUCK_AUTOSHIFT_UP, //!< shift automatic transmission one gear up
@@ -283,6 +294,8 @@ enum events
 	EV_TRUCK_BLINK_RIGHT, //!< toggle right direction indicator (blinker)
 	EV_TRUCK_BLINK_WARN, //!< toggle all direction indicators
 	EV_TRUCK_BRAKE, //!< brake
+	EV_TRUCK_BRAKE_MODIFIER_25, //!< brake with 25 percent pedal input
+	EV_TRUCK_BRAKE_MODIFIER_50, //!< brake with 50 percent pedal input
 	EV_TRUCK_CRUISE_CONTROL, //!< toggle cruise control
 	EV_TRUCK_CRUISE_CONTROL_ACCL,//!< increase target speed / rpm
 	EV_TRUCK_CRUISE_CONTROL_DECL,//!< decrease target speed / rpm
@@ -337,6 +350,7 @@ enum events
 	EV_TRUCK_TOGGLE_CONTACT, //!< toggle ignition
 	EV_TRUCK_TOGGLE_FORWARDCOMMANDS, //!< toggle forwardcommands
 	EV_TRUCK_TOGGLE_IMPORTCOMMANDS, //!< toggle importcommands
+	EV_TRUCK_TOGGLE_VIDEOCAMERA, //!< toggle videocamera update
 	EV_TRUCK_TRACTION_CONTROL, //!< toggle antilockbrake system
 
 	// position storage now
@@ -375,7 +389,6 @@ enum events
 
 	EV_TRUCKEDIT_RELOAD,
 	EV_TOGGLESHADERS,
-	EV_GETNEWVEHICLE,
 
 
 	// the end, DO NOT MODIFY

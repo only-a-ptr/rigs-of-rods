@@ -1,34 +1,35 @@
 /*
-This source file is part of Rigs of Rods
-Copyright 2005-2012 Pierre-Michel Ricordel
-Copyright 2007-2012 Thomas Fischer
+    This source file is part of Rigs of Rods
+    Copyright 2005-2012 Pierre-Michel Ricordel
+    Copyright 2007-2012 Thomas Fischer
+    Copyright 2013-2016 Petr Ohlidal
 
-For more information, see http://www.rigsofrods.com/
+    For more information, see http://www.rigsofrods.com/
 
-Rigs of Rods is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License version 3, as
-published by the Free Software Foundation.
+    Rigs of Rods is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3, as
+    published by the Free Software Foundation.
 
-Rigs of Rods is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    Rigs of Rods is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef __IMPROVEDCONFIGFILE_H_
-#define __IMPROVEDCONFIGFILE_H_
 
 #include "RoRPrerequisites.h"
-#include <Ogre.h>
+#include "ConfigFile.h"
 
-namespace Ogre
-{
+#include <OgreConfigFile.h>
+#include <OgreDataStream.h>
+#include <OgreException.h>
+#include <OgreString.h>
 
-class ImprovedConfigFile : public Ogre::ConfigFile
+class ImprovedConfigFile : public RoR::ConfigFile
 {
 public:
 	ImprovedConfigFile() : separators("="), filename()
@@ -41,23 +42,23 @@ public:
 	}
 
 	// note: saving is only supported for direct loaded files atm!
-	void load(const String& filename, const String& separators = "=", bool trimWhitespace=true)
+	void load(const Ogre::String& filename, const Ogre::String& separators = "=", bool trimWhitespace=true)
 	{
 		this->separators = separators;
 		this->filename = filename;
 		ConfigFile::load(filename, separators, trimWhitespace);
 	}
 	
-	void load(const DataStreamPtr& ptr, const String& separators, bool trimWhitespace)
+	void load(const Ogre::DataStreamPtr& ptr, const Ogre::String& separators, bool trimWhitespace)
 	{
 		this->separators = separators;
 		this->filename = "";
 		ConfigFile::load(ptr, separators, trimWhitespace);
 	}
 
-	void loadFromString(const Ogre::String str, const String& separators, bool trimWhitespace)
+	void loadFromString(const Ogre::String str, const Ogre::String& separators, bool trimWhitespace)
 	{
-		Ogre::DataStreamPtr ds(DataStreamPtr(OGRE_NEW Ogre::MemoryDataStream((void*)str.c_str(), str.size(), false, true)));
+		Ogre::DataStreamPtr ds(Ogre::DataStreamPtr(OGRE_NEW Ogre::MemoryDataStream((void*)str.c_str(), str.size(), false, true)));
 		this->separators = separators;
 		this->filename = "";
 		ConfigFile::load(ds, separators, trimWhitespace);
@@ -77,13 +78,16 @@ public:
 	{
 		if (!fn.length())
 		{
-			OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Saving of the configuration File is only allowed when the configuration was not loaded using the resource system!", "ImprovedConfigFile::save");
-			return false;
+            OGRE_EXCEPT(Ogre::Exception::ERR_INTERNAL_ERROR,
+                "Saving of the configuration File is only allowed"
+                    "when the configuration was not loaded using the resource system!",
+                "ImprovedConfigFile::save");
+            return false;
 		}
 		FILE *f = fopen(fn.c_str(), "w");
 		if (!f)
 		{
-			OGRE_EXCEPT(Exception::ERR_FILE_NOT_FOUND, "Cannot open File '"+fn+"' for writing.", "ImprovedConfigFile::save");
+			OGRE_EXCEPT(Ogre::Exception::ERR_FILE_NOT_FOUND, "Cannot open File '"+fn+"' for writing.", "ImprovedConfigFile::save");
 			return false;
 		}
 
@@ -116,7 +120,7 @@ public:
 			// known key, delete old first
 			set->erase(key);
 		// add key
-		set->insert(std::multimap<String, String>::value_type(key, value));
+		set->insert(std::multimap<Ogre::String, Ogre::String>::value_type(key, value));
 	}
 
 	// type specific implementations

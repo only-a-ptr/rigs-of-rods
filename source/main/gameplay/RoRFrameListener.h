@@ -25,7 +25,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Ogre.h>
 #include <OgreFrameListener.h>
-#include <pthread.h>
 
 class RoRFrameListener: public Ogre::FrameListener, public Ogre::WindowEventListener, public ZeroedMemoryAllocator
 {
@@ -36,17 +35,22 @@ public:
 	RoRFrameListener();
 	virtual ~RoRFrameListener();
 
-	ChatSystem *netChat;
+	bool frameEnded(const Ogre::FrameEvent& evt);
+	bool frameStarted(const Ogre::FrameEvent& evt); // Override frameStarted event to process that (don't care about frameEnded)
 
-	bool freeTruckPosition; // Used for initial truck loading
+	bool updateEvents(float dt);
+	double getTime() { return m_time; }
 
-	float netcheckGUITimer;
+	void hideGUI(bool hidden);
 
-	int loading_state;
-	
-	Ogre::Vector3 reload_pos;
+	void reloadCurrentTruck();
 
-	void setSimPaused(bool state) { isSimPaused = state; }
+	void setDirectionArrow(char *text, Ogre::Vector3 position);
+
+	void showLoad(int type, const Ogre::String &instance, const Ogre::String &box);
+	void windowResized(Ogre::RenderWindow* rw); // TODO: make this private, it's public for legacy reasons.
+
+	void setSimPaused(bool state);
 
 	void StartRaceTimer();
 
@@ -54,99 +58,69 @@ public:
 
 	void UpdateRacingGui();
 
-	bool IsRaceInProgress()
-	{
-		return m_race_in_progress;
-	}
+	bool IsRaceInProgress() { return m_race_in_progress; }
+
+	void SetReloadPos(Ogre::Vector3 position) { m_reload_pos = position; }
+
+	int m_loading_state;
 
 protected:
-
-#ifdef USE_MPLATFORM
-	MPlatform_Base *mplatform;
-#endif //USE_MPLATFORM
-
-	Dashboard *dashboard;
-	DOFManager *dof;
-	ForceFeedback *forcefeedback;
-	HeatHaze *heathaze;
-
-	Ogre::Quaternion reload_dir;
-	Ogre::Real mTimeUntilNextToggle; // just to stop toggles flipping too fast
-	Ogre::Vector3 dirArrowPointed;
-	Ogre::Vector3 persostart;
-
-	unsigned long      m_race_start_time;
-	bool               m_race_in_progress;
-	float			   m_race_bestlap_time;
-
-	bool dirvisible;
-	bool enablePosStor;
-	bool flipflop;
-	bool hidegui;
-	bool mTruckInfoOn;
-	bool pressure_pressed;
-
-	bool isSimPaused;
-
-	char screenshotformat[256];
-	
-	collision_box_t *reload_box;
-	double rtime;
-
-	float clutch;
-	float terrainxsize;
-	float terrainzsize;
-	//float truckx, trucky, truckz;
-
-	int mStatsOn;
-	int netPointToUID;
-	int raceStartTime;
-
-	bool updateTruckMirrors(float dt);
-
-	void updateIO(float dt);
 
 	// WindowEventListener
 	void windowMoved(Ogre::RenderWindow* rw);
 	void windowClosed(Ogre::RenderWindow* rw);
 	void windowFocusChange(Ogre::RenderWindow* rw);
 
-public: // public methods
+	void updateForceFeedback(float dt);
 
-	bool RTSSgenerateShadersForMaterial(Ogre::String curMaterialName, Ogre::String normalTextureName);
-	bool frameEnded(const Ogre::FrameEvent& evt);
-	bool frameStarted(const Ogre::FrameEvent& evt); // Override frameStarted event to process that (don't care about frameEnded)
+	DOFManager *m_dof;
+	ForceFeedback *m_forcefeedback;
+	HeatHaze *m_heathaze;
 
-	bool updateEvents(float dt);
-	double getTime() { return rtime; }
-	int getNetPointToUID() { return netPointToUID; }
+	CacheEntry *m_last_cache_selection;
+	Skin *m_last_skin_selection;
+	std::vector<Ogre::String> m_last_vehicle_configs;
 
-	void checkRemoteStreamResultsChanged();
-	void hideGUI(bool visible);
-	void hideMap();
-	void InitTrucks(
-        bool loadmanual, 
-        std::string const & selected, 
-        int cache_entry_number = -1,
-        std::string const & selectedExtension = "",
-        const std::vector<Ogre::String> *truckconfig = nullptr,
-        bool enterTruck = false,
-        Skin *skin = nullptr
-        );
+	Ogre::Real m_time_until_next_toggle; // just to stop toggles flipping too fast
 
-	void netDisconnectTruck(int number);
-	void pauseSim(bool value);
-	void reloadCurrentTruck();
+	bool m_is_dir_arrow_visible;
+	Ogre::Vector3 m_dir_arrow_pointed;
 
-	void RTSSgenerateShaders(Ogre::Entity *entity, Ogre::String normalTextureName);
-	void setDirectionArrow(char *text, Ogre::Vector3 position);
+	float m_last_simulation_speed; // previously used time ratio between real time (evt.timeSinceLastFrame) and physics time ('dt' used in calcPhysics)
 
-	void setNetPointToUID(int uid);
-	void showLoad(int type, const Ogre::String &instance, const Ogre::String &box);
-	void showspray(bool s);
-	void shutdown_final();
-	void Restart();
-	void windowResized(Ogre::RenderWindow* rw); // TODO: make this private, it's public for legacy reasons.
+	int m_last_screenshot_id;
+	Ogre::String m_last_screenshot_date;
+
+	unsigned long m_race_start_time;
+	bool          m_race_in_progress;
+	float         m_race_bestlap_time;
+
+	double        m_time;
+
+	bool m_hide_gui;
+	bool m_truck_info_on;
+	bool m_pressure_pressed;
+	bool m_is_sim_paused;
+
+	float m_netcheck_gui_timer;
+	
+	collision_box_t *m_reload_box;
+
+	bool m_advanced_truck_repair;
+	float m_advanced_truck_repair_timer;
+
+	bool m_is_pace_reset_pressed;
+
+	bool m_is_position_storage_enabled;
+
+	int m_stats_on;
+
+	char m_screenshot_format[256];
+
+	Ogre::Vector3 m_reload_pos;
+	Ogre::Quaternion m_reload_dir;
+
+	void finalizeTruckSpawning(Beam *local_truck, Beam *previous_truck);
 };
 
 #endif // __RoRFrameListener_H_

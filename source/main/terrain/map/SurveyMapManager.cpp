@@ -56,6 +56,16 @@ SurveyMapManager::SurveyMapManager() :
 	init();
 }
 
+SurveyMapManager::~SurveyMapManager()
+{
+	gEnv->surveyMap = nullptr;
+
+	for (SurveyMapEntity *e : mMapEntities)
+	{
+		if (e) delete e;
+	}
+}
+
 void SurveyMapManager::init()
 {
 	mMapSize = gEnv->terrainManager->getMaxTerrainSize();
@@ -93,7 +103,7 @@ SurveyMapEntity *SurveyMapManager::getMapEntityByName(String name)
 	{
 		return mNamedEntities[name];
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool SurveyMapManager::getVisibility()
@@ -203,7 +213,8 @@ void SurveyMapManager::setMapCenter(Ogre::Vector3 position, float maxOffset,  bo
 
 void SurveyMapManager::setWindowPosition(int x, int y, float size)
 {
-	int realx, realy;
+	int realx = 0;
+	int realy = 0;
 
 	updateRenderMetrics();
 
@@ -277,7 +288,6 @@ void SurveyMapManager::update(Ogre::Real dt)
 
 	if (mMapMode == SURVEY_MAP_NONE) return;
 
-	static bool needsUpdate = true;
 	switch (mMapMode)
 	{
 	case SURVEY_MAP_SMALL:
@@ -406,7 +416,7 @@ void SurveyMapManager::Update(Beam ** vehicles, int num_vehicles)
 		SurveyMapEntity *e = getMapEntityByName("Truck"+TOSTRING(vehicles[t]->trucknum));
 		if (e)
 		{
-			e->setState(DESACTIVATED);
+			e->setState(SIMULATED);
 			e->setVisibility(true);
 			e->setPosition(vehicles[t]->getPosition().x, vehicles[t]->getPosition().z);
 			e->setRotation(Radian(vehicles[t]->getHeadingDirectionAngle()));

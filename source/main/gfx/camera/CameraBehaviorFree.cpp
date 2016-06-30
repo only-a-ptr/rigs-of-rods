@@ -23,12 +23,9 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Application.h"
 #include "Console.h"
-#include "IHeightFinder.h"
+#include "GUIManager.h"
 #include "InputEngine.h"
 #include "Language.h"
-#include "mygui/BaseLayout.h"
-#include "TerrainManager.h"
-#include "GUIManager.h"
 
 using namespace Ogre;
 using namespace RoR;
@@ -37,9 +34,9 @@ void CameraBehaviorFree::update(const CameraManager::CameraContext &ctx)
 {
 	Degree mRotX(0.0f);
 	Degree mRotY(0.0f);
-	Degree mRotScale(ctx.mRotScale * 0.25f);
+	Degree mRotScale(ctx.mRotScale * 10.0f * ctx.mDt);
 	Vector3 mTrans(Vector3::ZERO);
-	Real mTransScale(ctx.mTransScale * 0.25f);
+	Real mTransScale(ctx.mTransScale * 10.0f * ctx.mDt);
 
 	if ( RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_LSHIFT) || RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_RSHIFT) )
 	{
@@ -48,7 +45,7 @@ void CameraBehaviorFree::update(const CameraManager::CameraContext &ctx)
 	}
 	if ( RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_LCONTROL) )
 	{
-		mRotScale   *= 20.0f;
+		mRotScale   *= 6.0f;
 		mTransScale *= 20.0f;
 	}
 	if ( RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_LMENU) )
@@ -103,13 +100,6 @@ void CameraBehaviorFree::update(const CameraManager::CameraContext &ctx)
 	gEnv->mainCamera->pitch(mRotY);
 
 	Vector3 camPosition = gEnv->mainCamera->getPosition() + gEnv->mainCamera->getOrientation() * mTrans.normalisedCopy() * mTransScale;
-
-	if ( gEnv->terrainManager && gEnv->terrainManager->getHeightFinder() )
-	{
-		float h = gEnv->terrainManager->getHeightFinder()->getHeightAt(camPosition.x, camPosition.z) + 1.0f;
-
-		camPosition.y = std::max(h, camPosition.y);
-	}
 
 	gEnv->mainCamera->setPosition(camPosition);
 }

@@ -890,6 +890,24 @@ eventInfo_t eventInfo[] = {
 		_L("Command 84")
 	},
 	{
+		"COMMON_ACCELERATE_SIMULATION",
+		EV_COMMON_ACCELERATE_SIMULATION,
+		"Keyboard CTRL+EQUALS",
+		_L("accelerate the simulation")
+	},
+	{
+		"COMMON_DECELERATE_SIMULATION",
+		EV_COMMON_DECELERATE_SIMULATION,
+		"Keyboard SHIFT+EQUALS",
+		_L("decelerate the simulation")
+	},
+	{
+		"COMMON_RESET_SIMULATION_PACE",
+		EV_COMMON_RESET_SIMULATION_PACE,
+		"Keyboard BACKSLASH",
+		_L("reset the simulation pace")
+	},
+	{
 		"COMMON_CONSOLEDISPLAY",
 		EV_COMMON_CONSOLEDISPLAY,
 		"Keyboard EXPL+GRAVE",
@@ -920,6 +938,30 @@ eventInfo_t eventInfo[] = {
 		_L("enter or exit a truck")
 	},
 	{
+		"COMMON_ENTER_NEXT_TRUCK",
+		EV_COMMON_ENTER_NEXT_TRUCK,
+		"Keyboard EXPL+CTRL+RBRACKET",
+		_L("enter next truck")
+	},
+	{
+		"COMMON_ENTER_PREVIOUS_TRUCK",
+		EV_COMMON_ENTER_PREVIOUS_TRUCK,
+		"Keyboard EXPL+CTRL+LBRACKET",
+		_L("enter previous truck")
+	},
+	{
+		"COMMON_REMOVE_CURRENT_TRUCK",
+		EV_COMMON_REMOVE_CURRENT_TRUCK,
+		"Keyboard EXPL+CTRL+DELETE",
+		_L("remove current truck")
+	},
+	{
+		"COMMON_RESPAWN_LAST_TRUCK",
+		EV_COMMON_RESPAWN_LAST_TRUCK,
+		"Keyboard EXPL+CTRL+PERIOD",
+		_L("respawn last truck")
+	},
+	{
 		"COMMON_HIDE_GUI",
 		EV_COMMON_HIDE_GUI,
 		"Keyboard EXPL+U",
@@ -948,6 +990,12 @@ eventInfo_t eventInfo[] = {
 		EV_COMMON_OUTPUT_POSITION,
 		"Keyboard H",
 		_L("write current position to log (you can open the logfile and reuse the position)")
+	},
+	{
+		"COMMON_GET_NEW_VEHICLE",
+		EV_COMMON_GET_NEW_VEHICLE,
+		"Keyboard EXPL+CTRL+G",
+		_L("get new vehicle")
 	},
 	{
 		"COMMON_PRESSURE_LESS",
@@ -1016,10 +1064,10 @@ eventInfo_t eventInfo[] = {
 		_L("toggle skeleton display mode")
 	},
 	{
-		"COMMON_START_TRUCK_EDITOR",
-		EV_COMMON_START_TRUCK_EDITOR,
+		"COMMON_TOGGLE_TERRAIN_EDITOR",
+		EV_COMMON_TOGGLE_TERRAIN_EDITOR,
 		"Keyboard EXPL+SHIFT+Y",
-		_L("start the old truck editor")
+		_L("toggle terrain editor")
 	},
 	{
 		"COMMON_TOGGLE_CUSTOM_PARTICLES",
@@ -1068,6 +1116,12 @@ eventInfo_t eventInfo[] = {
 		EV_COMMON_TRUCK_INFO,
 		"Keyboard EXPL+T",
 		_L("toggle truck HUD")
+	},
+	{
+		"COMMON_TRUCK_DESCRIPTION",
+		EV_COMMON_TRUCK_DESCRIPTION,
+		"Keyboard EXPL+CTRL+T",
+		_L("toggle truck description")
 	},
 	{
 		"COMMON_FOV_LESS",
@@ -1178,6 +1232,18 @@ eventInfo_t eventInfo[] = {
 		_L("accelerate the truck")
 	},
 	{
+		"TRUCK_ACCELERATE_MODIFIER_25",
+		EV_TRUCK_ACCELERATE_MODIFIER_25,
+		"Keyboard ALT+UP",
+		_L("accelerate with 25 percent pedal input")
+	},
+	{
+		"TRUCK_ACCELERATE_MODIFIER_50",
+		EV_TRUCK_ACCELERATE_MODIFIER_50,
+		"Keyboard CTRL+UP",
+		_L("accelerate with 50 percent pedal input")
+	},
+	{
 		"TRUCK_AUTOSHIFT_DOWN",
 		EV_TRUCK_AUTOSHIFT_DOWN,
 		"Keyboard PGDOWN",
@@ -1212,6 +1278,18 @@ eventInfo_t eventInfo[] = {
 		EV_TRUCK_BRAKE,
 		"Keyboard DOWN",
 		_L("brake")
+	},
+	{
+		"TRUCK_BRAKE_MODIFIER_25",
+		EV_TRUCK_BRAKE_MODIFIER_25,
+		"Keyboard ALT+DOWN",
+		_L("brake with 25 percent pedal input")
+	},
+	{
+		"TRUCK_BRAKE_MODIFIER_50",
+		EV_TRUCK_BRAKE_MODIFIER_50,
+		"Keyboard CTRL+DOWN",
+		_L("brake with 50 percent pedal input")
 	},
 	{
 		"TRUCK_HORN",
@@ -1296,6 +1374,12 @@ eventInfo_t eventInfo[] = {
 		EV_TRUCK_ANTILOCK_BRAKE,
 		"Keyboard EXPL+SHIFT+B",
 		_L("toggle antilock brake")
+	},
+	{
+		"TRUCK_TOGGLE_VIDEOCAMERA",
+		EV_TRUCK_TOGGLE_VIDEOCAMERA,
+		"Keyboard EXPL+CTRL+V",
+		_L("toggle videocamera")
 	},
 	{
 		"TRUCK_TRACTION_CONTROL",
@@ -1704,8 +1788,6 @@ eventInfo_t eventInfo[] = {
 	{ "TRUCKEDIT_RELOAD", EV_TRUCKEDIT_RELOAD, "Keyboard EXPL+SHIFT+CTRL+R", _L("reload truck") },
 	
 	{ "TOGGLESHADERS", EV_TOGGLESHADERS, "Keyboard EXPL+SHIFT+CTRL+S", _L("toggle shader usage") },
-
-	{ "GETNEWVEHICLE", EV_GETNEWVEHICLE, "Keyboard EXPL+CTRL+G", _L("get new vehicle") },
 
 
 	// the end, DO NOT MODIFY

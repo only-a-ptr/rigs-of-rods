@@ -1,17 +1,32 @@
-# ensure cmake features we need
-CMAKE_MINIMUM_REQUIRED( VERSION 2.6.2 )
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
-# done with cmake check
+cmake_minimum_required( VERSION 3.0.2 )
+
+
+set( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+
 
 # WIN32: remove MinSizeRel, Debug builds : unsupported
 if (WIN32) 
 	set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Release" CACHE STRING "" FORCE)
 endif()
-	
-project(RoR)
-include(CMakeMacros.txt)
+
+
+################################################################################
+# Project definition
+################################################################################
+set(PROJECT_NAME_SHORT "RoR")
+set(PROJECT_NAME_LONG  "Rigs of Rods")
+
+project( ${PROJECT_NAME_SHORT} VERSION 0.4.6.0 )
+
+
+################################################################################
+# Available build options
+################################################################################
+option( BUILD_DEV_VERSION  "Disable this for official releases"            ON  )
+option( BUILD_DOC_DOXYGEN  "Build documentation from sources with Doxygen" OFF )
+
+
+include(Macros)
 
 
 # check 64 bit
@@ -36,9 +51,9 @@ SET(CMAKE_USE_RELATIVE_PATHS OFF)
 
 # setup paths
 SET(ROR_DEPENDENCY_DIR       "${RoR_SOURCE_DIR}/source/dependencies")
-SET(RUNTIME_OUTPUT_DIRECTORY "${RoR_SOURCE_DIR}/bin/")
-SET(LIBRARY_OUTPUT_DIRECTORY "${RoR_SOURCE_DIR}/lib/")
-SET(ARCHIVE_OUTPUT_DIRECTORY "${RoR_SOURCE_DIR}/lib/")
+SET(RUNTIME_OUTPUT_DIRECTORY "${RoR_BINARY_DIR}/bin/")
+SET(LIBRARY_OUTPUT_DIRECTORY "${RoR_BINARY_DIR}/lib/")
+SET(ARCHIVE_OUTPUT_DIRECTORY "${RoR_BINARY_DIR}/lib/")
 SET(EXECUTABLE_OUTPUT_PATH   ${RUNTIME_OUTPUT_DIRECTORY})
 SET(LIBRARY_OUTPUT_PATH      ${RUNTIME_OUTPUT_DIRECTORY})
 SET(RoR_Dependencies_CMAKE_DIR "${ROR_DEPENDENCY_DIR}/cmake")
@@ -58,7 +73,6 @@ set(CMAKE_DEBUG_POSTFIX _d)
 mark_as_advanced(
   CMAKE_DEBUG_POSTFIX
   CMAKE_BACKWARDS_COMPATIBILITY
-  Boost_LIB_DIAGNOSTIC_DEFINITIONS
   EXECUTABLE_OUTPUT_PATH
   LIBRARY_OUTPUT_PATH
 )
@@ -94,8 +108,8 @@ if(WIN32)
 ELSEIF(UNIX)
   set(CMAKE_CXX_FLAGS                       "-std=c++11 ${CMAKE_CXX_FLAGS}")
   set(CMAKE_CXX_FLAGS_DEBUG                 "${CMAKE_CXX_FLAGS_DEBUG}          -Og -g -Wall")
-  set(CMAKE_CXX_FLAGS_RELEASE               "${CMAKE_CXX_FLAGS_RELEASE}        -O2 -ffast-math -DNDEBUG")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO        "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -ffast-math -g")
+  set(CMAKE_CXX_FLAGS_RELEASE               "${CMAKE_CXX_FLAGS_RELEASE}        -O2 -ffast-math -DNDEBUG -Wno-deprecated-declarations -Wno-terminate")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO        "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -ffast-math -g -fno-omit-frame-pointer -Wno-deprecated-declarations -Wno-terminate")
   set(CMAKE_CXX_FLAGS_MINSIZEREL            "${CMAKE_CXX_FLAGS_MINSIZEREL}     -Os -ffast-math -DNDEBUG")
 
   set(CMAKE_EXE_LINKER_FLAGS_DEBUG          "${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
@@ -107,7 +121,15 @@ ELSEIF(UNIX)
   set(CMAKE_MODULE_LINKER_FLAGS_DEBUG       "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -Og -ggdb")
 endif(WIN32)
 
-include(CMakeDependenciesConfig.txt)
+
+################################################################################
+# Check for dependencies
+################################################################################
+include(DependenciesConfig)
 
 
-add_subdirectory(source)
+################################################################################
+# Recurse into subdirectories
+################################################################################
+add_subdirectory( source )
+add_subdirectory( doc )

@@ -156,15 +156,23 @@ COMMANDS_83                    Keyboard             EXPL+CTRL+SHIFT+ALT+F11
 COMMANDS_84                    Keyboard             EXPL+CTRL+SHIFT+ALT+F12 
 
 ; COMMON
+COMMON_ACCELERATE_SIMULATION   Keyboard             CTRL+EQUALS 
+COMMON_DECELERATE_SIMULATION   Keyboard             SHIFT+EQUALS 
+COMMON_RESET_SIMULATION_PACE   Keyboard             BACKSLASH 
 COMMON_CONSOLEDISPLAY          Keyboard             EXPL+GRAVE 
 COMMON_CONSOLEMODE             Keyboard             EXPL+CTRL+GRAVE 
 COMMON_ENTER_OR_EXIT_TRUCK     Keyboard             RETURN 
+COMMON_ENTER_NEXT_TRUCK        Keyboard             EXPL+CTRL+RBRACKET 
+COMMON_ENTER_PREVIOUS_TRUCK    Keyboard             EXPL+CTRL+LBRACKET 
+COMMON_REMOVE_CURRENT_TRUCK    Keyboard             EXPL+CTRL+DELETE 
+COMMON_RESPAWN_LAST_TRUCK      Keyboard             EXPL+CTRL+PERIOD 
 COMMON_FULLSCREEN_TOGGLE       Keyboard             EXPL+ALT+RETURN 
 COMMON_HIDE_GUI                Keyboard             U 
 COMMON_LOCK                    Keyboard             EXPL+L 
 COMMON_AUTOLOCK                Keyboard             EXPL+ALT+L 
 COMMON_ROPELOCK                Keyboard             EXPL+CTRL+L 
 COMMON_OUTPUT_POSITION         Keyboard             H 
+COMMON_GET_NEW_VEHICLE         Keyboard             EXPL+CTRL+G 
 COMMON_PRESSURE_LESS           Keyboard             LBRACKET 
 COMMON_PRESSURE_MORE           Keyboard             RBRACKET 
 COMMON_QUIT_GAME               Keyboard             ESCAPE 
@@ -172,20 +180,21 @@ COMMON_REPLAY_BACKWARD         Keyboard             EXPL+LEFT
 COMMON_REPLAY_FAST_BACKWARD    Keyboard             EXPL+SHIFT+LEFT 
 COMMON_REPLAY_FAST_FORWARD     Keyboard             EXPL+SHIFT+RIGHT 
 COMMON_REPLAY_FORWARD          Keyboard             EXPL+RIGHT 
-COMMON_RESCUE_TRUCK            Keyboard             R 
+COMMON_RESCUE_TRUCK            Keyboard             EXPL+R 
 COMMON_RESET_TRUCK             Keyboard             EXPL+I 
 COMMON_SCREENSHOT              Keyboard             SYSRQ 
 COMMON_SECURE_LOAD             Keyboard             O 
 COMMON_SHOW_SKELETON           Keyboard             K 
-COMMON_START_TRUCK_EDITOR      Keyboard             SHIFT+Y 
+COMMON_TOGGLE_TERRAIN_EDITOR   Keyboard             EXPL+CTRL+Y 
 COMMON_TOGGLE_CUSTOM_PARTICLES Keyboard             G 
-COMMON_TOGGLE_MAT_DEBUG        Keyboard             EXPL+CTRL+F 
+COMMON_TOGGLE_MAT_DEBUG        Keyboard             EXPL+CTRL+SHIFT+F 
 COMMON_TOGGLE_RENDER_MODE      Keyboard             E 
 COMMON_TOGGLE_REPLAY_MODE      Keyboard             J 
 COMMON_TOGGLE_STATS            Keyboard             EXPL+F 
 COMMON_TOGGLE_TRUCK_BEACONS    Keyboard             M 
 COMMON_TOGGLE_TRUCK_LIGHTS     Keyboard             N 
 COMMON_TRUCK_INFO              Keyboard             EXPL+T 
+COMMON_TRUCK_DESCRIPTION       Keyboard             EXPL+CTRL+T 
 COMMON_FOV_LESS                Keyboard             EXPL+NUMPAD7 
 COMMON_FOV_MORE                Keyboard             EXPL+CTRL+NUMPAD7
 
@@ -212,6 +221,8 @@ MENU_UP                        Keyboard             UP
 
 ; TRUCK
 TRUCK_ACCELERATE               Keyboard             UP 
+TRUCK_ACCELERATE_MODIFIER_25   Keyboard             ALT+UP 
+TRUCK_ACCELERATE_MODIFIER_50   Keyboard             CTRL+UP 
 TRUCK_ANTILOCK_BRAKE           Keyboard             EXPL+SHIFT+B 
 TRUCK_AUTOSHIFT_DOWN           Keyboard             PGDOWN 
 TRUCK_AUTOSHIFT_UP             Keyboard             PGUP 
@@ -219,6 +230,8 @@ TRUCK_BLINK_LEFT               Keyboard             COMMA
 TRUCK_BLINK_RIGHT              Keyboard             PERIOD 
 TRUCK_BLINK_WARN               Keyboard             MINUS 
 TRUCK_BRAKE                    Keyboard             DOWN 
+TRUCK_BRAKE_MODIFIER_25        Keyboard             ALT+DOWN 
+TRUCK_BRAKE_MODIFIER_50        Keyboard             CTRL+DOWN 
 TRUCK_CRUISE_CONTROL           Keyboard             EXPL+SPACE 
 TRUCK_CRUISE_CONTROL_READJUST  Keyboard             EXPL+CTRL+SPACE 
 TRUCK_CRUISE_CONTROL_ACCL      Keyboard             EXPL+CTRL+R 
@@ -247,4 +260,5 @@ TRUCK_TOGGLE_AXLE_LOCK         Keyboard             W
 TRUCK_TOGGLE_CONTACT           Keyboard             X 
 TRUCK_TOGGLE_FORWARDCOMMANDS   Keyboard             EXPL+CTRL+SHIFT+F 
 TRUCK_TOGGLE_IMPORTCOMMANDS    Keyboard             EXPL+CTRL+SHIFT+I 
+TRUCK_TOGGLE_VIDEOCAMERA       Keyboard             EXPL+CTRL+V 
 TRUCK_TRACTION_CONTROL         Keyboard             EXPL+SHIFT+V 

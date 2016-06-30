@@ -147,13 +147,10 @@ Collisions::Collisions() :
 		debugmo = gEnv->sceneManager->createManualObject();
 		debugmo->begin("tracks/debug/collision/triangle", RenderOperation::OT_TRIANGLE_LIST);
 	}
-
-	pthread_mutex_init(&scriptcallback_mutex, NULL);
 }
 
 Collisions::~Collisions()
 {
-	pthread_mutex_destroy(&scriptcallback_mutex);
 }
 
 void Collisions::resizeMemory(long newSize)
@@ -874,21 +871,20 @@ bool Collisions::envokeScriptCallback(collision_box_t *cbox, node_t *node)
 {
 	bool handled = false;
 
+#ifdef USE_ANGELSCRIPT
 	// check if this box is active anymore
 	if (!eventsources[cbox->eventsourcenum].enabled)
 		return false;
 	
-	MUTEX_LOCK(&scriptcallback_mutex);
+	std::lock_guard<std::mutex> lock(m_scriptcallback_mutex);
 	// this prevents that the same callback gets called at 2k FPS all the time, serious hit on FPS ...
 	if (last_called_cbox != cbox)
 	{
-#ifdef USE_ANGELSCRIPT
 		if (!ScriptEngine::getSingleton().envokeCallback(eventsources[cbox->eventsourcenum].scripthandler, &eventsources[cbox->eventsourcenum], node))
 			handled = true;
-#endif //USE_ANGELSCRIPT
 		last_called_cbox = cbox;
 	}
-	MUTEX_UNLOCK(&scriptcallback_mutex);
+#endif //USE_ANGELSCRIPT
 
 	return handled;
 }
@@ -898,7 +894,7 @@ void Collisions::clearEventCache()
 	last_called_cbox = 0;
 }
 
-bool Collisions::collisionCorrect(Vector3 *refpos)
+bool Collisions::collisionCorrect(Vector3 *refpos, bool envokeScriptCallbacks)
 {
 	// find the correct cell
 	bool contacted=false;
@@ -916,6 +912,8 @@ bool Collisions::collisionCorrect(Vector3 *refpos)
 	collision_tri_t *minctri=0;
 	float minctridist=100.0;
 	Vector3 minctripoint;
+
+	bool isScriptCallbackEnvoked = false;
 
 	for (k=0; k<cell->size(); k++)
 	{
@@ -938,9 +936,10 @@ bool Collisions::collisionCorrect(Vector3 *refpos)
 				// now test with the inner box
 				if (Pos > cbox->relo && Pos < cbox->rehi)
 				{
-					if (cbox->eventsourcenum!=-1 && permitEvent(cbox->event_filter))
+					if (cbox->eventsourcenum!=-1 && permitEvent(cbox->event_filter) && envokeScriptCallbacks)
 					{
 						envokeScriptCallback(cbox);
+						isScriptCallbackEnvoked = true;
 					}
 					if (cbox->camforced && !forcecam)
 					{
@@ -969,9 +968,10 @@ bool Collisions::collisionCorrect(Vector3 *refpos)
 
 			} else
 			{
-				if (cbox->eventsourcenum!=-1 && permitEvent(cbox->event_filter))
+				if (cbox->eventsourcenum!=-1 && permitEvent(cbox->event_filter) && envokeScriptCallbacks)
 				{
 					envokeScriptCallback(cbox);
+					isScriptCallbackEnvoked = true;
 				}
 				if (cbox->camforced && !forcecam)
 				{
@@ -1006,7 +1006,10 @@ bool Collisions::collisionCorrect(Vector3 *refpos)
 			}
 		}
 	}
-		
+
+	if (envokeScriptCallbacks && !isScriptCallbackEnvoked)
+		clearEventCache();
+
 	// process minctri collision
 	if (minctri)
 	{
@@ -1053,7 +1056,7 @@ int Collisions::enableCollisionTri(int number, bool enable)
 	return 0;
 }
 
-bool Collisions::nodeCollision(node_t *node, int contacted, float dt, float* nso, ground_model_t** ogm)
+bool Collisions::nodeCollision(node_t *node, bool contacted, float dt, float* nso, ground_model_t** ogm)
 {
 	bool smoky = false;
 	// float corrf=1.0;
@@ -1076,7 +1079,7 @@ bool Collisions::nodeCollision(node_t *node, int contacted, float dt, float* nso
 			if ((*cell)[k] != (int)UNUSED_CELLELEMENT && (*cell)[k] < MAX_COLLISION_BOXES)
 			{
 				collision_box_t *cbox = &collision_boxes[(*cell)[k]];
-				if (node->AbsPosition > cbox->lo - node->collRadius && node->AbsPosition < cbox->hi + node->collRadius)
+				if (node->AbsPosition > cbox->lo && node->AbsPosition < cbox->hi)
 				{
 					if (cbox->refined || cbox->selfrotated)
 					{
@@ -1090,7 +1093,7 @@ bool Collisions::nodeCollision(node_t *node, int contacted, float dt, float* nso
 							Pos=Pos+cbox->selfcenter;
 						}
 						// now test with the inner box
-						if (Pos > cbox->relo - node->collRadius && Pos < cbox->rehi + node->collRadius)
+						if (Pos > cbox->relo && Pos < cbox->rehi)
 						{
 							if (cbox->eventsourcenum!=-1 && permitEvent(cbox->event_filter))
 							{
@@ -1105,23 +1108,23 @@ bool Collisions::nodeCollision(node_t *node, int contacted, float dt, float* nso
 							{
 								// collision, process as usual
 								// we have a collision
-								contacted++;
+								contacted=true;
 								// setup smoke
 								//float ns=node->Velocity.length();
 								smoky=true;
 								//*nso=ns;
 								// determine which side collided
-								float min=Pos.z-(cbox->relo - node->collRadius).z;
+								float min=Pos.z-(cbox->relo).z;
 								Vector3 normal=Vector3(0,0,-1);
-								float t=(cbox->rehi + node->collRadius).z-Pos.z;
+								float t=(cbox->rehi).z-Pos.z;
 								if (t<min){min=t; normal=Vector3(0,0,1);}; //north
-								t=Pos.x-(cbox->relo - node->collRadius).x;
+								t=Pos.x-(cbox->relo).x;
 								if (t<min) {min=t; normal=Vector3(-1,0,0);}; //west
-								t=(cbox->rehi + node->collRadius).x-Pos.x;
+								t=(cbox->rehi).x-Pos.x;
 								if (t<min) {min=t; normal=Vector3(1,0,0);}; //east
-								t=Pos.y-(cbox->relo - node->collRadius).y;
+								t=Pos.y-(cbox->relo).y;
 								if (t<min) {min=t; normal=Vector3(0,-1,0);}; //down
-								t=(cbox->rehi + node->collRadius).y-Pos.y;
+								t=(cbox->rehi).y-Pos.y;
 								if (t<min) {min=t; normal=Vector3(0,1,0);}; //up
 
 								// we need the normal, and the depth
@@ -1148,7 +1151,7 @@ bool Collisions::nodeCollision(node_t *node, int contacted, float dt, float* nso
 						if (!cbox->virt)
 						{
 							// we have a collision
-							contacted++;
+							contacted=true;
 							// setup smoke
 							//float ns=node->Velocity.length();
 							smoky=true;
@@ -1199,7 +1202,7 @@ bool Collisions::nodeCollision(node_t *node, int contacted, float dt, float* nso
 	if (minctri)
 	{
 		// we have a contact
-		contacted++;
+		contacted=true;
 		// setup smoke
 		//float ns=node->Velocity.length();
 		smoky=true;
@@ -1372,7 +1375,7 @@ bool Collisions::groundCollision(node_t *node, float dt, ground_model_t** ogm, f
 	return false;
 }
 
-void Collisions::primitiveCollision(node_t *node, Vector3 &force, Vector3 &velocity, Vector3 &normal, float dt, ground_model_t* gm, float* nso, float penetration, float reaction)
+void primitiveCollision(node_t *node, Vector3 &force, const Vector3 &velocity, const Vector3 &normal, float dt, ground_model_t* gm, float* nso, float penetration, float reaction)
 {
 	// normal velocity
 

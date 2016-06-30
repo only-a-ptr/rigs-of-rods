@@ -20,7 +20,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "Road2.h"
 
 #include "Collisions.h"
-#include "ResourceBuffer.h"
 #include "IHeightFinder.h"
 #include "TerrainManager.h"
 
@@ -41,8 +40,6 @@ Road2::~Road2()
 	if (snode)
 	{
 		snode->removeAndDestroyAllChildren();
-		delete snode;
-		snode=0;
 	}
 	if (!msh.isNull())
 	{
@@ -51,10 +48,9 @@ Road2::~Road2()
 	}
 	if (registeredCollTris.size() > 0)
 	{
-		for (std::vector<int>::iterator it = registeredCollTris.begin(); it != registeredCollTris.end(); it++)
+		for (int number : registeredCollTris)
 		{
-			//coll->enableCollisionTri(*it, false);
-			gEnv->collisions->removeCollisionTri(*it);
+			gEnv->collisions->removeCollisionTri(number);
 		}
 	}
 }
@@ -553,7 +549,7 @@ void Road2::createMesh()
 	};
 	/// Create the mesh via the MeshManager
 	Ogre::String mesh_name = Ogre::String("RoadSystem-").append(Ogre::StringConverter::toString(mid));
-	msh = MeshManager::getSingleton().createManual(mesh_name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, new ResourceBuffer());
+	msh = MeshManager::getSingleton().createManual(mesh_name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 	mainsub = msh->createSubMesh();
 	mainsub->setMaterialName("road2");
@@ -644,4 +640,6 @@ void Road2::createMesh()
 
 	/// Notify Mesh object that it has been loaded
 	msh->load();
+
+	free (vertices);
 };

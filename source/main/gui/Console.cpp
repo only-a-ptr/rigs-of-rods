@@ -27,25 +27,20 @@
 #include "Beam.h"
 #include "BeamFactory.h"
 #include "Character.h"
-#include "ChatSystem.h"
 #include "GUIManager.h"
 #include "GUIMenu.h"
 #include "IHeightFinder.h"
-#include "HighScoreWindow.h"
+#include "IWater.h"
 #include "Language.h"
 #include "MainThread.h"
 #include "Network.h"
 #include "OverlayWrapper.h"
 #include "RoRFrameListener.h"
-#include "RoRPrerequisites.h"
+#include "RoRVersion.h"
 #include "Scripting.h"
 #include "Settings.h"
 #include "TerrainManager.h"
 #include "Utils.h"
-#include "RoRVersion.h"
-#include "IWater.h"
-
-#include <boost/lexical_cast.hpp>
 
 #if MYGUI_PLATFORM == MYGUI_PLATFORM_LINUX
 #include <iconv.h>
@@ -289,7 +284,7 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 				else if (args[1] == "jupiter")
 					gValue = -50;
 				else
-					gValue = boost::lexical_cast<float>(args[1].c_str());
+					gValue = std::stof(args[1]);
 			} else
 			{
 				putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_SYSTEM_REPLY, _L("Current gravity is: ") + StringConverter::toString(gEnv->terrainManager->getGravity()), "information.png");
@@ -305,7 +300,7 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 			{
 				IWater* water = gEnv->terrainManager->getWater();
 				water->setCamera(gEnv->mainCamera);
-				water->setHeight(boost::lexical_cast<float>(args[1].c_str()));
+				water->setHeight(std::stof(args[1]));
 				water->update();
 				putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_SYSTEM_REPLY, _L("Water level set to: ") + StringConverter::toString(water->getHeight()), "information.png");
 			}
@@ -315,7 +310,7 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 			}
 			return;
 		}
-		else if (args[0] == "/pos" && (gEnv->frameListener->loading_state == TERRAIN_LOADED || gEnv->frameListener->loading_state == ALL_LOADED))
+		else if (args[0] == "/pos" && (gEnv->frameListener->m_loading_state == TERRAIN_LOADED || gEnv->frameListener->m_loading_state == ALL_LOADED))
 		{
 			Beam *b = BeamFactory::getSingleton().getCurrentTruck();
 			if (!b && gEnv->player)
@@ -331,11 +326,11 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 
 			return;
 		}
-		else if (args[0] == "/goto" && (gEnv->frameListener->loading_state == TERRAIN_LOADED || gEnv->frameListener->loading_state == ALL_LOADED))
+		else if (args[0] == "/goto" && (gEnv->frameListener->m_loading_state == TERRAIN_LOADED || gEnv->frameListener->m_loading_state == ALL_LOADED))
 		{
 			if (args.size() != 4)
 			{
-				putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_HELP, ChatSystem::commandColour + _L("usage: /goto x y z"), "information.png");
+				putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_HELP, RoR::Color::CommandColour + _L("usage: /goto x y z"), "information.png");
 				return;
 			}
 
@@ -355,7 +350,7 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 
 			return;
 		}
-		else if (args[0] == "/terrainheight" && (gEnv->frameListener->loading_state == TERRAIN_LOADED || gEnv->frameListener->loading_state == ALL_LOADED))
+		else if (args[0] == "/terrainheight" && (gEnv->frameListener->m_loading_state == TERRAIN_LOADED || gEnv->frameListener->m_loading_state == ALL_LOADED))
 		{
 			if (!gEnv->terrainManager->getHeightFinder()) return;
 			Vector3 pos = Vector3::ZERO;
@@ -392,7 +387,7 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 
 		}
 #ifdef USE_ANGELSCRIPT
-		else if (args[0] == "/as" && (gEnv->frameListener->loading_state == TERRAIN_LOADED || gEnv->frameListener->loading_state == ALL_LOADED))
+		else if (args[0] == "/as" && (gEnv->frameListener->m_loading_state == TERRAIN_LOADED || gEnv->frameListener->m_loading_state == ALL_LOADED))
 		{
 			// we want to notify any running scripts that we might change something (prevent cheating)
 			ScriptEngine::getSingleton().triggerEvent(SE_ANGELSCRIPT_MANIPULATIONS);
@@ -402,7 +397,7 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 			StringUtil::trim(command);
 			if (command.empty()) return;
 
-			String nmsg = ChatSystem::scriptCommandColour + ">>> " + ChatSystem::normalColour + command;
+			String nmsg = RoR::Color::ScriptCommandColour + ">>> " + RoR::Color::NormalColour + command;
 			putMessage(CONSOLE_MSGTYPE_SCRIPT, CONSOLE_LOCAL_SCRIPT, nmsg, "script_go.png");
 			int res = ScriptEngine::getSingleton().executeString(command);
 			return;

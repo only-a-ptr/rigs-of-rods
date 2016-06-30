@@ -22,24 +22,24 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <OgrePrerequisites.h>
 #include <OgreTimer.h>
-#include <vector>
 
 #include "RoRPrerequisites.h"
 #include "PerVehicleCameraContext.h"
 #include "RigDef_Prerequisites.h"
 
 #include "BeamData.h"
-#include "IThreadTask.h"
-#include "Streamable.h"
+
+#include <memory>
+
+class Task;
 
 /** 
 * Represents an entire rig (any vehicle type)
 * Contains logic related to physics, network, sound, threading, rendering. It's a bit of a monster class :(
 */
 class Beam :
-	public IThreadTask,
 	public rig_t,
-	public Streamable
+	public ZeroedMemoryAllocator
 {
 	friend class RigSpawner;
 	friend class RigInspector; // Debug utility class
@@ -91,18 +91,19 @@ public:
 
 	void updateNetworkInfo();
 
-	
-	void activate();
-	void desactivate();
-	void addPressure(float v);
+	bool addPressure(float v);
 	float getPressure();
-	Ogre::Vector3 getPosition();
 	void resetAngle(float rot);
 	void resetPosition(float px, float pz, bool setInitPosition, float miny);
-	void resetPosition(float px, float pz, bool setInitPosition);
 
-	Ogre::Vector3 getVehiclePosition();
+	float getRotation();
+	Ogre::Vector3 getDirection();
+	Ogre::Vector3 getPosition();
 
+	/**
+	* Returns the average truck velocity calculated using the truck positions of the last two frames
+	*/
+	Ogre::Vector3 getVelocity() { return velocity; };
 
 	/**
 	* Moves vehicle.
@@ -117,6 +118,16 @@ public:
 	void reset(bool keepPosition = false); 
 
 	/**
+	* Call this one to displace a truck
+	*/
+	void displace(Ogre::Vector3 translation, float rotation); 
+
+	/**
+	 * Return the rotation center of the truck
+	 */
+	Ogre::Vector3 getRotationCenter();
+
+	/**
 	* Spawns vehicle.
 	*/
 	bool LoadTruck(
@@ -126,15 +137,15 @@ public:
 		Ogre::Vector3 const & spawn_position,
 		Ogre::Quaternion & spawn_rotation,
 		collision_box_t *spawn_box,
-		bool preloaded_with_terrain = false,
         int cache_entry_number = -1
 	);
 
-	/**
-	* TIGHT-LOOP; Called once by frame and is responsible for animation of all the trucks!
-	* the instance called is the one of the current ACTIVATED truck
-	*/
-	bool frameStep(int steps);
+	bool replayStep();
+
+	void updateForceFeedback(int steps);
+	void updateAngelScriptEvents(float dt);
+	void updateVideocameras(float dt);
+	void handleResetRequests(float dt);
 
 	void setupDefaultSoundSources();
 
@@ -201,7 +212,23 @@ public:
 	void setReplayMode(bool rm);
 	int savePosition(int position);
 	int loadPosition(int position);
-	void updateTruckPosition();
+
+	/**
+	 * Virtually moves the truck at most 'direction.length()' meters towards 'direction' trying to resolve any collisions
+	 * Returns a minimal offset by which the truck needs to be moved to resolve any collisions
+	 */
+	Ogre::Vector3 calculateCollisionOffset(Ogre::Vector3 direction);
+
+	/**
+	 * Moves the truck at most 'direction.length()' meters towards 'direction' to resolve any collisions
+	 */
+	void resolveCollisions(Ogre::Vector3 direction);
+
+	/**
+	 * Auto detects an ideal collision avoidance direction (front, back, left, right, up)
+	 * Then moves the truck at most 'max_distance' meters towards that direction to resolve any collisions
+	 */
+	void resolveCollisions(float max_distance, bool consider_up);
 
 	/**
 	* Ground.
@@ -212,9 +239,6 @@ public:
 	* Creates or updates skidmarks. No side effects.
 	*/
 	void updateSkidmarks();
-
-	bool navigateTo(Ogre::Vector3 &in);
-
 
 	/**
 	* Prepares vehicle for in-cabin camera use.
@@ -233,25 +257,28 @@ public:
 	void updateProps();
 
 	/**
-	* TIGHT-LOOP; Logic: display, sound, particles
-	* @see updateVisualPrepare
-	* @see updateVisualFinal
+	* TIGHT-LOOP; Logic: display (+overlays +particles), sound
+	* Does a mixture of tasks:
+	* - Sound: updates sound sources; plays aircraft radio chatter; 
+	* - Particles: updates particles (dust, exhausts, custom)
+	* - Display: updates wings; updates props; updates rig-skeleton + cab fade effect; updates debug overlay
 	*/
 	void updateVisual(float dt=0);
 
 	/**
-	* TIGHT-LOOP; Logic: display (+flexbodies +overlays +particles), sound, threading
-	* Does a mixture of tasks:
-	* - Sound: updates sound sources; plays aircraft radio chatter; 
-	* - Particles: updates particles (dust, exhausts, custom)
-	* - Display: updates wings; updates props; updates rig-skeleton + cab fade effect; updates flexbodies; updates debug overlay
+	* TIGHT-LOOP; Logic: flexbodies
 	*/
-	void updateVisualPrepare(float dt=0);
+	void updateFlexbodiesPrepare();
+	void updateFlexbodiesFinal();
 
 	/**
-	* TIGHT-LOOP; Logic: display (+flexbodies), threading
+	 * Waits until all flexbody tasks are finished, but does not update the hardware buffers
+	 */
+	void joinFlexbodyTasks();
+
+	/**
+	* TIGHT-LOOP; Logic: display
 	*/
-	void updateVisualFinal(float dt=0);
 	void updateLabels(float dt=0);
 
 	/**
@@ -275,10 +302,6 @@ public:
 	*/
 	void updateSimpleSkeleton();
 
-	/** 
-	* TIGHT-LOOP; Display; changes coloring of the "skeleton" (visual rig) mesh.
-	*/
-	void updateSkeletonColouring(int doUpdate);
 	void resetAutopilot();
 	void disconnectAutopilot();
 	void scaleTruck(float value);
@@ -303,7 +326,6 @@ public:
 	
 	//! @{ calc forces euler division
 	void calcTruckEngine(bool doUpdate, Ogre::Real dt);
-	void calcBeams(bool doUpdate, Ogre::Real dt, int step, int maxsteps);
 	void calcAnimatedProps(bool doUpdate, Ogre::Real dt);
 	void calcHooks(bool doUpdate);
 	void calcForceFeedBack(bool doUpdate);
@@ -338,11 +360,12 @@ public:
 	std::vector< std::vector< int > > nodebeamconnections;
 
 	// wheel speed in m/s
-	float WheelSpeed;
+	float WheelSpeed = 0.f;
 	float getWheelSpeed() { return WheelSpeed; }
 	Ogre::Vector3 getGForces();
 
 	int stabcommand; //!< Stabilization; values: { -1, 0, 1 }
+	int m_request_skeletonview_change; //!< Request activation(1) / deactivation(-1) of skeletonview
 	bool m_skeletonview_is_active; //!< Visibility of "skeleton" (visual rig) { false = not visible, true = visible }
 	float stabratio;
 	//direction
@@ -360,6 +383,7 @@ public:
 
 	bool canwork;
 	bool replaymode;
+	Ogre::Real replayPrecision;
 	bool watercontact;
 	bool watercontactold;
 	int locked;
@@ -367,11 +391,10 @@ public:
 	int oldreplaypos;
 	int replaylen;
 	int replaypos;
-	int sleepcount;
+	float sleeptime;
 	//can this be driven?
 	int previousGear;
 	ground_model_t *submesh_ground_model;
-	bool requires_wheel_contact;
 	int parkingbrake;
 	int lights;
 	bool reverselight;
@@ -395,6 +418,7 @@ public:
 	bool disableTruckTruckCollisions;
 	bool disableTruckTruckSelfCollisions;
 	int currentcamera;
+	int m_custom_camera_node;
 	
 	int first_wheel_node;
 	int netbuffersize;
@@ -458,19 +482,23 @@ public:
 	bool getBeaconMode();
 	void setBlinkType(blinktype blink);
 	blinktype getBlinkType();
-	void deleteNetTruck();
-	
+
 	float getHeadingDirectionAngle();
 	bool getCustomParticleMode();
 	int getLowestNode();
-	void preMapLabelRenderUpdate(bool mode, float cheight=0);
 	
-	float global_dt;
-	float oldframe_global_dt;
 	bool simulated;
 	int airbrakeval;
 	Ogre::Vector3 cameranodeacc;
 	int cameranodecount;
+
+	bool m_is_videocamera_disabled;
+
+	int m_source_id;
+	int m_stream_id;
+	std::map<int, int> m_stream_results;
+
+	void receiveStreamData(unsigned int type, int source, unsigned int streamid, char *buffer, unsigned int len);
 
 	/**
 	* Sets visibility of all beams on this vehicle
@@ -492,8 +520,12 @@ public:
 
 	bool inRange(float num, float min, float max);
 
-	int getTruckTime();
-	int getNetTruckTimeOffset();
+	/**
+	* Returns the position of the node
+	* @param the nuber of the node
+    * @return vector3 of the world position for the node
+	*/	
+	Ogre::Vector3 getNodePosition(int nodeNumber);
 	Ogre::Real getMinimalCameraRadius();
 
 	Replay *getReplay();
@@ -503,6 +535,8 @@ public:
 	bool isTied();
 	bool isLocked();
 
+	bool isPreloadedWithTerrain() { return m_preloaded_with_terrain; };
+
 	// Inline getters
 	inline Ogre::SceneNode*                 getSceneNode()            { return beamsRoot; }
 	inline RoR::PerVehicleCameraContext*    GetCameraContext()        { return &m_camera_context; }
@@ -511,7 +545,18 @@ public:
 	DashBoardManager *dash;
 #endif // USE_MYGUI
 
+	void updateDashBoards(float dt);
+
+	void updateBoundingBox();
+	void calculateAveragePosition();
+
 	//! @{ physic related functions
+	void preUpdatePhysics(float dt);
+	void postUpdatePhysics(float dt);
+
+	/**
+	* TIGHT LOOP; Physics; 
+	*/
 	bool calcForcesEulerPrepare(int doUpdate, Ogre::Real dt, int step = 0, int maxsteps = 1);
 
 	/**
@@ -523,29 +568,10 @@ public:
 	* TIGHT LOOP; Physics; 
 	*/
 	void calcForcesEulerFinal(int doUpdate, Ogre::Real dt, int step = 0, int maxsteps = 1);
-	void intraTruckCollisions(Ogre::Real dt);
-	void interTruckCollisions(Ogre::Real dt);
 
-	/**
-	* Overrides IThreadTask::run()
-	*/
-	void run();
-	void onComplete();
-
-	enum ThreadTask {
-		THREAD_BEAMFORCESEULER,
-		THREAD_INTER_TRUCK_COLLISIONS
-	};
-
-	ThreadTask thread_task;
-
-	int curtstep;
-	int tsteps;
-
-	// flexable pthread stuff
-	int flexable_task_count;
-	pthread_cond_t flexable_task_count_cv;
-	pthread_mutex_t flexable_task_count_mutex;
+        // TODO may be removed soon
+	PointColDetector* IntraPointCD() { return intraPointCD; }
+	PointColDetector* InterPointCD() { return interPointCD; }
 
 protected:
 
@@ -556,8 +582,12 @@ protected:
 	void calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps);
 
 	/**
+	* TIGHT LOOP; Physics & sound - only beams between multiple truck (noshock or ropes)
+	*/
+	void calcBeamsInterTruck(int doUpdate, Ogre::Real dt, int step, int maxsteps);
+
+	/**
 	* TIGHT LOOP; Physics; 
-	* @param doUpdate Unused (overwritten in function)
 	*/
 	void calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps);
 
@@ -586,6 +616,7 @@ protected:
 	// flexable stuff
 	std::bitset<MAX_WHEELS> flexmesh_prepare;
 	std::bitset<MAX_FLEXBODIES> flexbody_prepare;
+	std::vector<std::shared_ptr<Task>> flexbody_tasks;
 
 	// linked beams (hooks)
 	std::list<Beam*> linkedBeams;
@@ -594,26 +625,26 @@ protected:
 	void calc_masses2(Ogre::Real total, bool reCalc=false);
 	void calcNodeConnectivityGraph();
 	void moveOrigin(Ogre::Vector3 offset); //move physics origin
-	void changeOrigin(Ogre::Vector3 newOrigin); //change physics origin
 
-	void updateDashBoards(float &dt);
-	
-	Ogre::Vector3 position;
+	Ogre::Vector3 position; // average node position
 	Ogre::Vector3 iPosition; // initial position
-	Ogre::Vector3 lastposition;
-	Ogre::Vector3 lastlastposition;
 	Ogre::Real minCameraRadius;
 
+	Ogre::Vector3 lastposition;
+	Ogre::Vector3 velocity; // average node velocity (compared to the previous frame step)
+
 	Ogre::Real replayTimer;
-	Ogre::Real replayPrecision;
 
 	ground_model_t *lastFuzzyGroundModel;
+
+	bool high_res_wheelnode_collisions;
+
+	void addInterTruckBeam(beam_t* beam);
+	void removeInterTruckBeam(beam_t* beam);
 
 	// this is for managing the blinkers on the truck:
 	blinktype blinkingtype;
 
-	bool deleting;
-	
 	Ogre::Real hydrolen;
 	
 	Ogre::SceneNode *smokeNode;
@@ -634,8 +665,18 @@ protected:
 	int mousenode;
 	Ogre::Vector3 mousepos;
 	float mousemoveforce;
-	int reset_requested;
 	float m_spawn_rotation;
+	bool m_is_cinecam_rotation_center;
+	bool m_preloaded_with_terrain;
+
+	enum ResetRequest {
+		REQUEST_RESET_NONE,
+		REQUEST_RESET_ON_INIT_POS,
+		REQUEST_RESET_ON_SPOT,
+		REQUEST_RESET_FINAL
+	};
+
+	ResetRequest m_reset_request;
 
 	std::vector<Ogre::String> m_truck_config;
 
@@ -645,11 +686,10 @@ protected:
 	char *netb1; //!< Network; Triple buffer for incoming data
 	char *netb2; //!< Network; Triple buffer for incoming data
 	char *netb3; //!< Network; Triple buffer for incoming data
-	pthread_mutex_t net_mutex;
-	Ogre::Timer *nettimer;
 	int net_toffset;
 	int netcounter;
 	Ogre::MovableText *netMT; //, *netDist;
+	bool m_hide_own_net_label;
 
 	// network properties
 	Ogre::String networkUsername;
@@ -670,8 +710,6 @@ protected:
 	float cabFadeTime;
 	int cabFadeMode; //<! Cab fading effect; values { -1, 0, 1, 2 }
 	// cab fading stuff - end
-	bool lockSkeletonchange;
-	bool floating_origin_enable;
 
 	Ogre::ManualObject *simpleSkeletonManualObject;
 	Ogre::SceneNode *simpleSkeletonNode;
@@ -694,9 +732,7 @@ protected:
 
 	// overloaded from Streamable:
 	Ogre::Timer netTimer;
-	int last_net_time;
 	void sendStreamSetup();
-	void receiveStreamData(unsigned int &type, int &source, unsigned int &streamid, char *buffer, unsigned int &len);
 
 	// dustpools
 	DustPool *dustp;

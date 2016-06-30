@@ -151,9 +151,6 @@ bool ContentManager::init(void)
 	// by default, display everything in the depth map
 	//Ogre::MovableObject::setDefaultVisibilityFlags(DEPTHMAP_ENABLED | 0x00000001 | 0x00000004);
 
-	ColoredTextAreaOverlayElementFactory *cef = new ColoredTextAreaOverlayElementFactory();
-	OverlayManager::getSingleton().addOverlayElementFactory(cef);
-
 #ifdef USE_MYGUI
 	AddResourcePack(ResourcePack::MYGUI);
 	AddResourcePack(ResourcePack::DASHBOARDS);

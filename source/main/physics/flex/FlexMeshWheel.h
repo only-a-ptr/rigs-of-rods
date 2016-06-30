@@ -52,19 +52,23 @@ public:
 		MaterialReplacer *material_replacer
 	);
 
+	~FlexMeshWheel();
+
 	Ogre::Entity *getRimEntity() { return rimEnt; };
 
 	Ogre::Vector3 updateVertices();
 	Ogre::Vector3 updateShadowVertices();
 
 	// Flexable
-	bool flexitPrepare(Beam* b);
+	bool flexitPrepare();
 	void flexitCompute();
 	Ogre::Vector3 flexitFinal();
 
 	void setVisible(bool visible);
 
 private:
+
+	Ogre::Vector3 flexit_center;
 
 	MaterialReplacer *mr;
 	

@@ -31,7 +31,6 @@
 #include "Application.h"
 #include "BeamFactory.h"
 #include "Console.h"
-#include "GUI_RigEditorMenubar.h"
 #include "Language.h"
 #include "OgreSubsystem.h"
 #include "RoRWindowEventUtilities.h"
@@ -85,7 +84,7 @@ void GUIManager::destroy()
 
 void GUIManager::createGui()
 {
-	String gui_logfilename = SSETTING("Log Path", "") + "mygui.log";
+	String gui_logfilename = SSETTING("Log Path", "") + "MyGUI.log";
 
 	mPlatform = new MyGUI::OgrePlatform();
 	mPlatform->initialise(RoR::Application::GetOgreSubsystem()->GetRenderWindow(), ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, gui_logfilename); // use cache resource group so preview images are working
@@ -175,6 +174,13 @@ void GUIManager::PushNotification(String Title, UTFString text)
 	if (!m_gui_SimUtils) return;
 
 	m_gui_SimUtils->PushNotification(Title, text);
+}
+
+void GUIManager::HideNotification()
+{
+	if (!m_gui_SimUtils) return;
+
+	m_gui_SimUtils->HideNotification();
 }
 
 void GUIManager::windowResized(Ogre::RenderWindow* rw)
@@ -457,18 +463,42 @@ void GUIManager::pushMessageChatBox(Ogre::String txt)
 	m_gui_ChatBox->pushMsg(txt);
 }
 
-void GUIManager::SetNetChat(ChatSystem *c)
-{
-	if (m_gui_ChatBox.get() == nullptr)
-		m_gui_ChatBox = std::unique_ptr<GUI::GameChatBox>(new GUI::GameChatBox());
-
-	m_gui_ChatBox->setNetChat(c);
-}
-
 void GUIManager::ShowVehicleDescription()
 {
 	if (m_vehicle_description.get() == nullptr)
 		m_vehicle_description = std::unique_ptr<GUI::VehicleDescription>(new GUI::VehicleDescription());
 
 	m_vehicle_description->Show();
+}
+
+void GUIManager::HideVehicleDescription()
+{
+	if (m_vehicle_description.get() != nullptr)
+		m_vehicle_description->Hide();
+}
+
+void GUIManager::ToggleVehicleDescription()
+{
+	if (m_vehicle_description.get() == nullptr || !m_vehicle_description->getVisible())
+		ShowVehicleDescription();
+	else
+		HideVehicleDescription();
+}
+
+void GUIManager::hideGUI(bool hidden)
+{
+	if (m_gui_SimUtils)
+	{
+		if (hidden)
+		{
+			m_gui_SimUtils->HideNotification();
+			m_gui_SimUtils->HideFPSBox();
+			m_gui_SimUtils->HideTruckInfoBox();
+			if (m_gui_ChatBox.get() != nullptr)
+			{
+				m_gui_ChatBox->Hide();
+			}
+		}
+		m_gui_SimUtils->DisableNotifications(hidden);
+	}
 }

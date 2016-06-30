@@ -40,21 +40,18 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "SoundScriptManager.h"
 #include "Water.h"
 #include "TerrainManager.h"
-#include "ThreadPool.h"
+#include "VehicleAI.h"
 
 using namespace Ogre;
 
 void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 {
-	Beam** trucks = BeamFactory::getSingleton().getTrucks();
-	int numtrucks = BeamFactory::getSingleton().getTruckCount();
-
 	IWater *water = 0;
 	if (gEnv->terrainManager)
 		water = gEnv->terrainManager->getWater();
 
 	increased_accuracy = false;
-	float inverted_dt = 1.0f / dt;
+
 
 	//engine callback
 	if (engine)
@@ -373,7 +370,7 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 
 	BES_STOP(BES_CORE_AnimatedProps);
 
-	if (state==ACTIVATED) //force feedback sensors
+	if (this == BeamFactory::getSingleton().getCurrentTruck()) //force feedback sensors
 	{
 		if (doUpdate)
 		{
@@ -440,8 +437,8 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 		collisionBoundingBoxes[i].setMaximum(collisionBoundingBoxes[i].getMaximum() + Vector3(0.05f, 0.05f, 0.05f));
 
 		predictedCollisionBoundingBoxes[i].setExtents(collisionBoundingBoxes[i].getMinimum(), collisionBoundingBoxes[i].getMaximum());
-		predictedCollisionBoundingBoxes[i].merge(collisionBoundingBoxes[i].getMinimum() + nodes[0].Velocity * dt);
-		predictedCollisionBoundingBoxes[i].merge(collisionBoundingBoxes[i].getMaximum() + nodes[0].Velocity * dt);
+		predictedCollisionBoundingBoxes[i].merge(collisionBoundingBoxes[i].getMinimum() + nodes[0].Velocity);
+		predictedCollisionBoundingBoxes[i].merge(collisionBoundingBoxes[i].getMaximum() + nodes[0].Velocity);
 	}
 
 	// anti-explosion guard
@@ -455,7 +452,7 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 		tBoundingBox.getMinimum().y + tBoundingBox.getMaximum().y +
 		tBoundingBox.getMinimum().z + tBoundingBox.getMaximum().z, -1e9, 1e9))
 	{
-		reset_requested = 1; // truck exploded, schedule reset
+		m_reset_request = REQUEST_RESET_ON_INIT_POS; // truck exploded, schedule reset
 		return; // return early to avoid propagating invalid values
 	}
 
@@ -463,8 +460,8 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 	boundingBox.setMaximum(tBoundingBox.getMaximum() + Vector3(0.05f, 0.05f, 0.05f));
 
 	predictedBoundingBox.setExtents(boundingBox.getMinimum(), boundingBox.getMaximum());
-	predictedBoundingBox.merge(boundingBox.getMinimum() + nodes[0].Velocity * dt);
-	predictedBoundingBox.merge(boundingBox.getMaximum() + nodes[0].Velocity * dt);
+	predictedBoundingBox.merge(boundingBox.getMinimum() + nodes[0].Velocity);
+	predictedBoundingBox.merge(boundingBox.getMaximum() + nodes[0].Velocity);
 
 	BES_STOP(BES_CORE_Nodes);
 		
@@ -535,27 +532,10 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 	//water buoyance
 	if (free_buoycab && water)
 	{
-		if (!(step%20))
+		for (int i=0; i<free_buoycab; i++)
 		{
-			//clear forces
-			for (int i=0; i<free_buoycab; i++)
-			{
-				int tmpv=buoycabs[i]*3;
-				nodes[cabs[tmpv]].buoyanceForce=0;
-				nodes[cabs[tmpv+1]].buoyanceForce=0;
-				nodes[cabs[tmpv+2]].buoyanceForce=0;
-			}
-			//add forces
-			for (int i=0; i<free_buoycab; i++)
-			{
-				int tmpv=buoycabs[i]*3;
-				buoyance->computeNodeForce(&nodes[cabs[tmpv]], &nodes[cabs[tmpv+1]], &nodes[cabs[tmpv+2]], doUpdate, buoycabtypes[i]);
-			}
-		}
-		//apply forces
-		for (int i=0; i<free_node; i++)
-		{
-			nodes[i].Forces+=nodes[i].buoyanceForce;
+			int tmpv = buoycabs[i] * 3;
+			buoyance->computeNodeForce(&nodes[cabs[tmpv]], &nodes[cabs[tmpv+1]], &nodes[cabs[tmpv+2]], doUpdate == 1, buoycabtypes[i]);
 		}
 	}
 
@@ -659,18 +639,19 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 	BES_START(BES_CORE_Wheels);
 
 	// driving aids traction control & anti-lock brake pulse
-	tcalb_timer += dt;
-	if (tcalb_timer >= 25.0f)
+	tc_timer  += dt;
+	alb_timer += dt;
+
+	if (alb_timer >= alb_pulse_time)
 	{
-		tcalb_timer = 0.0f;
+		alb_timer = 0.0f;
+		alb_pulse_state = !alb_pulse_state;
 	}
-
-	unsigned int timer = (int)(tcalb_timer * 2000.0f);
-	if (!(timer % tc_pulse)) tc_pulse_state = !tc_pulse_state;
-	if (!(timer % alb_pulse)) alb_pulse_state = !alb_pulse_state;
-
-	tc_pulse_state = std::max(tc_pulse == 1, tc_pulse_state);
-	alb_pulse_state = std::max(alb_pulse == 1, alb_pulse_state);
+	if (tc_timer >= tc_pulse_time)
+	{
+		tc_timer = 0.0f;
+		tc_pulse_state = !tc_pulse_state;
+	}
 
 	bool tc_active = false;
 	bool alb_active = false;
@@ -696,8 +677,6 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 			total_torque = (free_axle == 0) ? engine_torque : intertorque[i];
 		}
 
-		// braking
-		// ignore all braking code if the current wheel is not braked...
 		if (wheels[i].braked)
 		{
 			// handbrake
@@ -717,101 +696,57 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 				dbrake = brakeforce * abs(hydrodirstate);
 			}
 
-			if ((brake != 0.0 || dbrake != 0.0 || hbrake != 0.0) && braked_wheels != 0)
+			if ((brake != 0.0 || dbrake != 0.0 || hbrake != 0.0) && braked_wheels != 0 && fabs(wheels[i].speed) > 0.0f)
 			{
-				if (curspeed > 1.5f)
+				float brake_coef = 1.0f;
+				float antilock_coef = 1.0f;
+				// anti-lock braking
+				if (alb_mode && alb_pulse_state && (brake > 0.0f || dbrake > 0.0f) && curspeed > fabs(wheels[i].speed) && curspeed > alb_minspeed)
 				{
-					float antilock_coef = 1.0f;
-					wheels[i].firstLock = false;
-					if (alb_mode && alb_pulse_state && curspeed > alb_minspeed)
-					{
-						antilock_coef = fabs(wheels[i].speed) / curspeed;
-						antilock_coef = pow(antilock_coef, alb_ratio);
-
-						// limit brakeforce when wheels are in the air
-						antilock_coef = std::min(antilock_coef, 5.0f);
-
-						alb_active = std::max(alb_active, (antilock_coef < 0.9));
-					}
-					// don't use to antilock_coef for handbrake
-					if (wheels[i].speed > 0)
-						total_torque -= brake * antilock_coef + dbrake * antilock_coef + hbrake;
-					else
-						total_torque += brake * antilock_coef + dbrake * antilock_coef + hbrake;
-
-					if (antilock_coef >= 1.0f && antilockbrake)
-					{
-						antilockbrake = !antilockbrake;
-					}
-				} else
-				{
-					if (fabs(wheels[i].speed) > 0.0f)
-					{
-						total_torque -= (wheels[i].speed/fabs(wheels[i].speed))*(brake + dbrake + hbrake);
-					}
-					// new halt position brake
-					if (slopeBrake)
-					{
-						if  (!wheels[i].firstLock)
-						{
-							// first time here after a brake was attached, store the wheels rotation vector
-							wheels[i].firstLock = true;
-							wheels[i].lastRotationVec = fast_normalise(wheels[i].refnode0->RelPosition-wheels[i].nodes[0]->RelPosition);
-						} else
-						{
-							// second time here after a brake was attached, determine offset angle the wheel has from last stored vector
-							Vector3 lastwheelposition = wheels[i].lastRotationVec;
-							Vector3 wheelposition = fast_normalise(wheels[i].refnode0->RelPosition-wheels[i].nodes[0]->RelPosition);
-							Radian anglerad = wheelposition.angleBetween(lastwheelposition);
-							float angle = anglerad.valueDegrees();
-
-							// and now turn the wheel gently back into the stored position
-							if (angle)
-							{
-								Vector3 dirv = (nodes[cameranodepos[0]].RelPosition-nodes[cameranodedir[0]].RelPosition).normalisedCopy();
-								Degree pitchangle = Radian(asin(dirv.dotProduct(Vector3::UNIT_Y)));
-
-								// avoid auto rotating the wheel, especially when steering while slopebraking
-								if (angle > slopeBrakeRelAngle)
-								{
-									wheels[i].firstLock = false;
-								}
-								if (angle > slopeBrakeAttAngle)
-								{
-									float slopetorque = pow(angle - slopeBrakeAttAngle, slopeBrakeFactor);
-									slopetorque = std::min(slopetorque, brakeforce * 2.0f);
-
-									if (pitchangle > Degree(1))       // we are rolling back
-										total_torque += slopetorque;
-									else if (pitchangle < Degree(-1)) // we are rolling forth
-										total_torque -= slopetorque;
-								}
-							}
-						}
-					}
+					antilock_coef = fabs(wheels[i].speed) / curspeed;
+					antilock_coef = pow(antilock_coef, alb_ratio);
+					alb_active = (antilock_coef < 0.9);
 				}
-			} else
-			{
-				// all brakes are released, reset slopebrake firstLock
-				wheels[i].firstLock = false;
+				if (fabs(wheels[i].speed) < 1.0f)
+				{
+					if (wheels[i].firstLock)
+					{
+						wheels[i].avgSpeed = 0.0f;
+						wheels[i].firstLock = false;
+					}
+					// anti-jitter
+					if (fabs(wheels[i].avgSpeed) < 2.0f)
+					{
+						brake_coef = pow(fabs(wheels[i].speed), 2.0f);
+					} else 
+					{
+						brake_coef = pow(fabs(wheels[i].speed), 0.5f);
+					}
+					// anti-skidding
+					wheels[i].avgSpeed += wheels[i].speed;
+					wheels[i].avgSpeed = std::max(-10.0f, std::min(wheels[i].avgSpeed, 10.0f));
+					float speed_diff = wheels[i].speed - wheels[i].lastSpeed;
+					float speed_prediction = wheels[i].speed + 0.5f * speed_diff;
+					if (speed_prediction * wheels[i].avgSpeed < 0.0f)
+					{
+						brake_coef = 0.0f;
+					}
+				} else {
+					wheels[i].firstLock = true;
+				}
+
+				if (wheels[i].speed > 0)
+					total_torque -= ((brake + dbrake) * antilock_coef + hbrake) * brake_coef;
+				else
+					total_torque += ((brake + dbrake) * antilock_coef + hbrake) * brake_coef;
 			}
-			// the truck is still sliding and the brake might not locked the wheel yet (pbrake at high speed?)
-			// or the accelerator is pressed
-			// or the antilockbrake is still active
-			// -> reset firstlock
-			if (fabs(curspeed) > 0.75f || currentAcc > 0.0f || alb_active)
-			{
-				wheels[i].firstLock = false;
-			}
-			// reset alb_actibve after firstLock check!
-			if (hbrake != 0.0)
-			{
-				alb_active = false;
-			}
+		} else
+		{
+			wheels[i].firstLock = true;
 		}
 
-		// traction control, ignore tc code if wheel is not propulsed or accelerator is pressed
-		if (wheels[i].propulsed > 0 && tc_mode && tc_pulse_state && currentAcc > 0.0f)
+		// traction control
+		if (tc_mode && tc_pulse_state && wheels[i].propulsed > 0 && currentAcc > 0.0f && fabs(wheels[i].speed) > curspeed)
 		{
 			curspeed = std::max(0.5f, curspeed);
 
@@ -819,15 +754,13 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 			float wheelslip = 1.0f + tc_wheelslip;
 			// wheelslip allowed doubles up to tc_fade, a tribute to RoRs wheelspeed calculation and friction
 			wheelslip += tc_wheelslip * (curspeed / tc_fade);
-			// add wheelslip as activation offset
-			float torque_coef = (curspeed * wheelslip) / fabs(wheels[i].speed);
 
-			if (torque_coef < 1.0f)
+			if (fabs(wheels[i].speed) > curspeed * wheelslip)
 			{
+				float torque_coef = (curspeed * wheelslip) / fabs(wheels[i].speed);
 				torque_coef = pow(torque_coef, tc_ratio);
 				total_torque *= torque_coef;
-
-				tc_active = std::max(tc_active, torque_coef < 0.9f);
+				tc_active = (torque_coef < 0.9f);
 			}
 		}
 
@@ -940,6 +873,7 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 
 	for (int i=0; i<free_wheel; i++)
 	{
+		wheels[i].lastSpeed = wheels[i].speed;
 		wheels[i].speed = newspeeds[i];
 	}
 	if (proped_wheels)
@@ -983,6 +917,8 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 	//auto shock adjust
 	if (free_active_shock && doUpdate)
 	{
+		stabsleep -= dt * maxsteps;
+
 		Vector3 dir = nodes[cameranodepos[0]].RelPosition-nodes[cameranoderoll[0]].RelPosition;
 		dir.normalise();
 		float roll = asin(dir.dotProduct(Vector3::UNIT_Y));
@@ -1227,42 +1163,6 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 			}
 		}
 
-		// only process ties if there is enough force available <- why are ties related to engine rpm?
-		if (canwork)
-		{
-			bool requestpower = false;
-			// go through all ties and process them
-			for (std::vector<tie_t>::iterator it=ties.begin(); it!=ties.end(); it++)
-			{
-				// only process tying ties
-				if (!it->tying) continue;
-
-				// division through zero guard
-				if (it->beam->refL == 0 || it->beam->L == 0) continue;
-
-				float clen = it->beam->L / it->beam->refL;
-				if (clen > it->beam->commandShort)
-				{
-					float dl = it->beam->L;
-					it->beam->L *= (1.0 - it->beam->commandRatioShort * dt / it->beam->L);
-					dl = fabs(dl - it->beam->L);
-					requestpower = true;
-					active++;
-					work += fabs(it->beam->stress) * dl;
-				} else
-				{
-					// tying finished, end reached
-					it->tying = false;
-				}
-
-				// check if we hit a certain force limit, then abort the tying process
-				if (fabs(it->beam->stress) > it->beam->maxtiestress)
-					it->tying = false;
-			}
-			if (requestpower)
-				requested++;
-		}
-
 		// now process normal commands
 		for (int i=0; i<=MAX_COMMANDS; i++)
 		{
@@ -1347,7 +1247,7 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 						if (bbeam_dir*beams[bbeam].autoMovingMode > 0)
 							v = 1;
 
-						if (beams[bbeam].commandNeedsEngine && ((engine && !engine->running) || !canwork)) continue;
+						if (beams[bbeam].commandNeedsEngine && ((engine && !engine->isRunning()) || !canwork)) continue;
 
 						if (v > 0.0f && beams[bbeam].commandEngineCoupling > 0.0f)
 							requestpower = true;
@@ -1400,7 +1300,7 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 				float v = 0.0f;
 				int rota = std::abs(commandkey[i].rotators[j]) - 1;
 
-				if (rotators[rota].rotatorNeedsEngine && ((engine && !engine->running) || !canwork)) continue;
+				if (rotators[rota].rotatorNeedsEngine && ((engine && !engine->isRunning()) || !canwork)) continue;
 
 				if (rotaInertia)
 				{
@@ -1426,10 +1326,11 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 
 		if (engine)
 		{
-			engine->hydropump = work;
-			engine->prime     = requested;
+			engine->setHydroPumpWork(work);
+			engine->setPrime(requested);
 		}
-		if (doUpdate && state==ACTIVATED)
+
+		if (doUpdate && this == BeamFactory::getSingleton().getCurrentTruck())
 		{
 #ifdef USE_OPENAL
 			if (active > 0)
@@ -1488,6 +1389,31 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 	}
 
 	BES_STOP(BES_CORE_Commands);
+
+	// go through all ties and process them
+	for (std::vector<tie_t>::iterator it=ties.begin(); it!=ties.end(); it++)
+	{
+		// only process tying ties
+		if (!it->tying) continue;
+
+		// division through zero guard
+		if (it->beam->refL == 0 || it->beam->L == 0) continue;
+
+		float clen = it->beam->L / it->beam->refL;
+		if (clen > it->beam->commandShort)
+		{
+			it->beam->L *= (1.0 - it->beam->commandRatioShort * dt / it->beam->L);
+		} else
+		{
+			// tying finished, end reached
+			it->tying = false;
+		}
+
+		// check if we hit a certain force limit, then abort the tying process
+		if (fabs(it->beam->stress) > it->beam->maxtiestress)
+			it->tying = false;
+	}
+
 	BES_START(BES_CORE_Replay);
 
 	// we also store a new replay frame
@@ -1501,20 +1427,26 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 			if (nbuff)
 			{
 				for (int i=0; i<free_node; i++)
-					nbuff[i].pos = nodes[i].AbsPosition;
+				{
+					nbuff[i].position = nodes[i].AbsPosition;
+					nbuff[i].velocity = nodes[i].Velocity;
+					nbuff[i].forces   = nodes[i].Forces;
+				}
+			}
 
-				// store beams
-				beam_simple_t *bbuff = (beam_simple_t *)replay->getWriteBuffer(1);
+			// store beams
+			beam_simple_t *bbuff = (beam_simple_t *)replay->getWriteBuffer(1);
+			if (bbuff)
+			{
 				for (int i=0; i<free_beam; i++)
 				{
-					bbuff[i].scale = beams[i].scale;
 					bbuff[i].broken = beams[i].broken;
 					bbuff[i].disabled = beams[i].disabled;
 				}
-
-				replay->writeDone();
-				replayTimer = 0.0f;
 			}
+
+			replay->writeDone();
+			replayTimer = 0.0f;
 		}
 	}
 
@@ -1524,13 +1456,13 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 bool Beam::calcForcesEulerPrepare(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 {
 	if (dt==0.0) return false;
-	if (state >= SLEEPING) return false;
-	if (deleting) return false;
-	if (reset_requested) return false;
+	if (m_reset_request) return false;
+	if (state != SIMULATED) return false;
 
 	BES_START(BES_CORE_WholeTruckCalc);
 
 	forwardCommands();
+	calcBeamsInterTruck(doUpdate, dt, step, maxsteps);
 
 	return true;
 }
@@ -1539,7 +1471,6 @@ void Beam::calcForcesEulerFinal(int doUpdate, Ogre::Real dt, int step, int maxst
 {
 	calcHooks();
 	calcRopes();
-	updateSkeletonColouring(doUpdate);
 
 	BES_STOP(BES_CORE_WholeTruckCalc);
 }
@@ -1550,15 +1481,10 @@ void Beam::calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 	// Springs
 	for (int i=0; i<free_beam; i++)
 	{
-		Vector3 dis(Vector3::ZERO);
-		// Trick for exploding stuff
-		if (!beams[i].disabled)
+		if (!beams[i].disabled && !beams[i].p2truck)
 		{
 			// Calculate beam length
-			if (!beams[i].p2truck)
-				dis = beams[i].p1->RelPosition - beams[i].p2->RelPosition;
-			else
-				dis = beams[i].p1->AbsPosition - beams[i].p2->AbsPosition;
+			Vector3 dis = beams[i].p1->RelPosition - beams[i].p2->RelPosition;
 
 			Real dislen = dis.squaredLength();
 			Real inverted_dislen = fast_invSqrt(dislen);
@@ -1650,7 +1576,7 @@ void Beam::calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 			float len = std::abs(slen);
 			if (len > beams[i].minmaxposnegstress)
 			{
-				if ((beams[i].type==BEAM_NORMAL || beams[i].type==BEAM_INVISIBLE) && beams[i].bounded!=SHOCK1 && k!=0.0f)
+				if ((beams[i].type == BEAM_NORMAL || beams[i].type == BEAM_INVISIBLE) && beams[i].bounded != SHOCK1 && k != 0.0f)
 				{
 					// Actual deformation tests
 					if (slen > beams[i].maxposstress && difftoBeamL < 0.0f) // compression
@@ -1666,10 +1592,17 @@ void Beam::calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 						if (beams[i].L > 0.0f && Lold > beams[i].L)
 						{
 							beams[i].maxposstress *= Lold / beams[i].L;
+							beams[i].minmaxposnegstress = std::min(beams[i].maxposstress, -beams[i].maxnegstress);
+							beams[i].minmaxposnegstress = std::min(beams[i].minmaxposnegstress, beams[i].strength);
 						}
 						// For the compression case we do not remove any of the beam's
 						// strength for structure stability reasons
 						//beams[i].strength += deform * k * 0.5f;
+						if (beamdeformdebug)
+						{
+							LOG(" YYY Beam " + TOSTRING(i) + " just deformed with extension force " + TOSTRING(len) + 
+									" / " + TOSTRING(beams[i].strength) + ". It was between nodes " + TOSTRING(beams[i].p1->id) + " and " + TOSTRING(beams[i].p2->id) + ".");
+						}
 					} else if (slen < beams[i].maxnegstress && difftoBeamL > 0.0f) // expansion
 					{
 						increased_accuracy = true;
@@ -1682,23 +1615,15 @@ void Beam::calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 						if (Lold > 0.0f && beams[i].L > Lold)
 						{
 							beams[i].maxnegstress *= beams[i].L / Lold;
+							beams[i].minmaxposnegstress = std::min(beams[i].maxposstress, -beams[i].maxnegstress);
+							beams[i].minmaxposnegstress = std::min(beams[i].minmaxposnegstress, beams[i].strength);
 						}
 						beams[i].strength -= deform * k;
-					}
-#ifdef USE_OPENAL
-					// Sound effect
-					// Sound volume depends on the energy lost due to deformation (which gets converted to sound (and thermal) energy)
-					/*
-					SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_CREAK, deform*k*(difftoBeamL+deform*0.5f));
-					SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_CREAK);
-					*/
-#endif  //USE_OPENAL
-					beams[i].minmaxposnegstress = std::min(beams[i].maxposstress, -beams[i].maxnegstress);
-					beams[i].minmaxposnegstress = std::min(beams[i].minmaxposnegstress, beams[i].strength);
-					if (beamdeformdebug)
-					{
-						LOG(" YYY Beam " + TOSTRING(i) + " just deformed with extension force " + TOSTRING(len) + 
-								" / " + TOSTRING(beams[i].strength) + ". It was between nodes " + TOSTRING(beams[i].p1->id) + " and " + TOSTRING(beams[i].p2->id) + ".");
+						if (beamdeformdebug)
+						{
+							LOG(" YYY Beam " + TOSTRING(i) + " just deformed with extension force " + TOSTRING(len) + 
+									" / " + TOSTRING(beams[i].strength) + ". It was between nodes " + TOSTRING(beams[i].p1->id) + " and " + TOSTRING(beams[i].p2->id) + ".");
+						}
 					}
 				}
 
@@ -1777,28 +1702,178 @@ void Beam::calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 	BES_STOP(BES_CORE_Beams);
 }
 
+void Beam::calcBeamsInterTruck(int doUpdate, Ogre::Real dt, int step, int maxsteps)
+{
+	for (int i=0; i<static_cast<int>(interTruckBeams.size()); i++)
+	{
+		if (!interTruckBeams[i]->disabled && interTruckBeams[i]->p2truck)
+		{
+			// Calculate beam length
+			Vector3 dis = interTruckBeams[i]->p1->AbsPosition - interTruckBeams[i]->p2->AbsPosition;
+
+			Real dislen = dis.squaredLength();
+			Real inverted_dislen = fast_invSqrt(dislen);
+			
+			dislen *= inverted_dislen;
+
+			// Calculate beam's deviation from normal
+			Real difftoBeamL = dislen - interTruckBeams[i]->L;
+
+			Real k = interTruckBeams[i]->k;
+			Real d = interTruckBeams[i]->d;
+
+			if (interTruckBeams[i]->bounded == ROPE && difftoBeamL < 0.0f)
+			{
+				k  = 0.0f;
+				d *= 0.1f;
+			}
+
+			// Calculate beam's rate of change
+			Vector3 v = interTruckBeams[i]->p1->Velocity - interTruckBeams[i]->p2->Velocity;
+
+			float slen = -k * (difftoBeamL) - d * v.dotProduct(dis) * inverted_dislen;
+			interTruckBeams[i]->stress = slen;
+
+			// Fast test for deformation
+			float len = std::abs(slen);
+			if (len > interTruckBeams[i]->minmaxposnegstress)
+			{
+				if ((interTruckBeams[i]->type == BEAM_NORMAL || interTruckBeams[i]->type == BEAM_INVISIBLE) && interTruckBeams[i]->bounded != SHOCK1 && k != 0.0f)
+				{
+					// Actual deformation tests
+					if (slen > interTruckBeams[i]->maxposstress && difftoBeamL < 0.0f) // compression
+					{
+						Real yield_length = interTruckBeams[i]->maxposstress / k;
+						Real deform = difftoBeamL + yield_length * (1.0f - interTruckBeams[i]->plastic_coef);
+						Real Lold = interTruckBeams[i]->L;
+						interTruckBeams[i]->L += deform;
+						interTruckBeams[i]->L = std::max(MIN_BEAM_LENGTH, interTruckBeams[i]->L);
+						slen = slen - (slen - interTruckBeams[i]->maxposstress) * 0.5f;
+						len = slen;
+						if (interTruckBeams[i]->L > 0.0f && Lold > interTruckBeams[i]->L)
+						{
+							interTruckBeams[i]->maxposstress *= Lold / interTruckBeams[i]->L;
+							interTruckBeams[i]->minmaxposnegstress = std::min(interTruckBeams[i]->maxposstress, -interTruckBeams[i]->maxnegstress);
+							interTruckBeams[i]->minmaxposnegstress = std::min(interTruckBeams[i]->minmaxposnegstress, interTruckBeams[i]->strength);
+						}
+						// For the compression case we do not remove any of the beam's
+						// strength for structure stability reasons
+						//interTruckBeams[i]->strength += deform * k * 0.5f;
+						if (beamdeformdebug)
+						{
+							LOG(" YYY Beam " + TOSTRING(i) + " just deformed with extension force " + TOSTRING(len) + 
+									" / " + TOSTRING(interTruckBeams[i]->strength) + ". It was between nodes " + TOSTRING(interTruckBeams[i]->p1->id) + " and " + TOSTRING(interTruckBeams[i]->p2->id) + ".");
+						}
+					} else if (slen < interTruckBeams[i]->maxnegstress && difftoBeamL > 0.0f) // expansion
+					{
+						Real yield_length = interTruckBeams[i]->maxnegstress / k;
+						Real deform = difftoBeamL + yield_length * (1.0f - interTruckBeams[i]->plastic_coef);
+						Real Lold = interTruckBeams[i]->L;
+						interTruckBeams[i]->L += deform;
+						slen = slen - (slen - interTruckBeams[i]->maxnegstress) * 0.5f;
+						len = -slen;
+						if (Lold > 0.0f && interTruckBeams[i]->L > Lold)
+						{
+							interTruckBeams[i]->maxnegstress *= interTruckBeams[i]->L / Lold;
+							interTruckBeams[i]->minmaxposnegstress = std::min(interTruckBeams[i]->maxposstress, -interTruckBeams[i]->maxnegstress);
+							interTruckBeams[i]->minmaxposnegstress = std::min(interTruckBeams[i]->minmaxposnegstress, interTruckBeams[i]->strength);
+						}
+						interTruckBeams[i]->strength -= deform * k;
+						if (beamdeformdebug)
+						{
+							LOG(" YYY Beam " + TOSTRING(i) + " just deformed with extension force " + TOSTRING(len) + 
+									" / " + TOSTRING(interTruckBeams[i]->strength) + ". It was between nodes " + TOSTRING(interTruckBeams[i]->p1->id) + " and " + TOSTRING(interTruckBeams[i]->p2->id) + ".");
+						}
+					}
+				}
+
+				// Test if the beam should break
+				if (len > interTruckBeams[i]->strength)
+				{
+					// Sound effect.
+					// Sound volume depends on springs stored energy
+#ifdef USE_OPENAL
+					SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_BREAK, 0.5*k*difftoBeamL*difftoBeamL);
+					SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_BREAK);
+#endif //OPENAL
+
+					//Break the beam only when it is not connected to a node
+					//which is a part of a collision triangle and has 2 "live" beams or less
+					//connected to it.
+					if (!((interTruckBeams[i]->p1->contacter && nodeBeamConnections(interTruckBeams[i]->p1->pos)<3) || (interTruckBeams[i]->p2->contacter && nodeBeamConnections(interTruckBeams[i]->p2->pos)<3)))
+					{
+						slen = 0.0f;
+						interTruckBeams[i]->broken     = true;
+						interTruckBeams[i]->disabled   = true;
+
+						if (beambreakdebug)
+						{
+							LOG(" XXX Beam " + TOSTRING(i) + " just broke with force " + TOSTRING(len) + 
+									" / " + TOSTRING(interTruckBeams[i]->strength) + ". It was between nodes " + TOSTRING(interTruckBeams[i]->p1->id) + " and " + TOSTRING(interTruckBeams[i]->p2->id) + ".");
+						}
+
+						// detachergroup check: beam[i] is already broken, check detacher group# == 0/default skip the check ( performance bypass for beams with default setting )
+						// only perform this check if this is a master detacher beams (positive detacher group id > 0)
+						if (interTruckBeams[i]->detacher_group > 0)
+						{
+							// cycle once through the other beams
+							for (int j = 0; j < free_beam; j++)
+							{
+								// beam[i] detacher group# == checked beams detacher group# -> delete & disable checked beam
+								// do this with all master(positive id) and minor(negative id) beams of this detacher group
+								if (abs(beams[j].detacher_group) == interTruckBeams[i]->detacher_group)
+								{
+									beams[j].broken     = true;
+									beams[j].disabled   = true;
+									if (beambreakdebug)
+									{
+										LOG("Deleting Detacher BeamID: " + TOSTRING(j) + ", Detacher Group: " + TOSTRING(interTruckBeams[i]->detacher_group)+  ", trucknum: " + TOSTRING(trucknum));
+									}
+								}
+							}
+						}
+					} else
+					{
+						interTruckBeams[i]->strength = 2.0f * interTruckBeams[i]->minmaxposnegstress;
+					}
+				}
+			}
+
+			// At last update the beam forces
+			Vector3 f = dis;
+			f *= (slen * inverted_dislen);
+			interTruckBeams[i]->p1->Forces += f;
+			interTruckBeams[i]->p2->Forces -= f;
+		}
+	}
+}
+
 void Beam::calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 {
 	IWater *water = 0;
+	float gravity = -9.81f;
 	if (gEnv->terrainManager)
+	{
 		water = gEnv->terrainManager->getWater();
+		gravity = gEnv->terrainManager->getGravity();
+	}
 
 	for (int i=0; i<free_node; i++)
 	{
-		//if (_isnan(nodes[i].Position.length())) LOG("Node is NaN "+TOSTRING(i));
-
 		// wetness
-		if (nodes[i].wetstate==DRIPPING && !nodes[i].contactless && !nodes[i].disable_particles)
+		if (doUpdate)
 		{
-			nodes[i].wettime += dt;
-			if (nodes[i].wettime > 5.0)
+			if (nodes[i].wetstate == DRIPPING && !nodes[i].contactless && !nodes[i].disable_particles)
 			{
-				nodes[i].wetstate = DRY; //dry!
-			} else if (doUpdate)
-			{
-				if (!nodes[i].iswheel && dripp) dripp->allocDrip(nodes[i].smoothpos, nodes[i].Velocity, nodes[i].wettime);
-				//also for hot engine
-				if (nodes[i].isHot && dustp) dustp->allocVapour(nodes[i].smoothpos, nodes[i].Velocity, nodes[i].wettime);
+				nodes[i].wettime += dt * maxsteps;
+				if (nodes[i].wettime > 5.0)
+				{
+					nodes[i].wetstate = DRY;
+				} else
+				{
+					if (!nodes[i].iswheel && dripp) dripp->allocDrip(nodes[i].AbsPosition, nodes[i].Velocity, nodes[i].wettime);
+					if (nodes[i].isHot && dustp) dustp->allocVapour(nodes[i].AbsPosition, nodes[i].Velocity, nodes[i].wettime);
+				}
 			}
 		}
 
@@ -1806,11 +1881,11 @@ void Beam::calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 		if (!nodes[i].contactless)
 		{
 			nodes[i].collTestTimer += dt;
-			if (nodes[i].contacted || nodes[i].collTestTimer>0.005 || (nodes[i].iswheel && nodes[i].collTestTimer>0.0025) || increased_accuracy)
+			if (nodes[i].contacted || nodes[i].collTestTimer>0.005 || ((nodes[i].iswheel || nodes[i].wheelid != -1) && (high_res_wheelnode_collisions || nodes[i].collTestTimer>0.0025)) || increased_accuracy)
 			{
 				float ns = 0;
 				ground_model_t *gm = 0; // this is used as result storage, so we can use it later on
-				int contacted = 0;
+				bool contacted = false;
 				// reverted this construct to the old form, don't mess with it, the binary operator is intentionally!
 				if ((contacted=gEnv->collisions->groundCollision(&nodes[i], nodes[i].collTestTimer, &gm, &ns)) | gEnv->collisions->nodeCollision(&nodes[i], contacted, nodes[i].collTestTimer, &ns, &gm))
 				{
@@ -1900,7 +1975,7 @@ void Beam::calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 		// prepare next loop (optimisation)
 		// we start forces from zero
 		// start with gravity
-		nodes[i].Forces = nodes[i].gravimass;
+		nodes[i].Forces = Vector3(0, nodes[i].mass * gravity, 0);
 
 		if (fuseAirfoil)
 		{
@@ -1909,69 +1984,62 @@ void Beam::calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps)
 		} else if (!disableDrag)
 		{
 			// add viscous drag (turbulent model)
-			if ((step&7) && !increased_accuracy)
-			{
-				// fasttrack drag
-				nodes[i].Forces += nodes[i].lastdrag;
-			} else
-			{
-				Real speed = approx_sqrt(nodes[i].Velocity.squaredLength()); //we will (not) reuse this
-				// plus: turbulences
-				Real defdragxspeed = DEFAULT_DRAG * speed;
-				//Real maxtur=defdragxspeed*speed*0.01f;
-				nodes[i].lastdrag =- defdragxspeed * nodes[i].Velocity;
-				Real maxtur = defdragxspeed * speed * 0.005f;
-				nodes[i].lastdrag += maxtur * Vector3(frand_11(), frand_11(), frand_11());
-				nodes[i].Forces += nodes[i].lastdrag;
-			}
+			Real speed = approx_sqrt(nodes[i].Velocity.squaredLength()); //we will (not) reuse this
+			Real defdragxspeed = DEFAULT_DRAG * speed;
+			Vector3 drag = -defdragxspeed * nodes[i].Velocity;
+			// plus: turbulences
+			Real maxtur = defdragxspeed * speed * 0.005f;
+			drag += maxtur * Vector3(frand_11(), frand_11(), frand_11());
+			nodes[i].Forces += drag;
 		}
 
-		//if in water
-		if (water && water->isUnderWater(nodes[i].AbsPosition))
+		if (water)
 		{
-			//basic buoyance
-			watercontact = true;
-
-			if (free_buoycab == 0)
+			if (water->isUnderWater(nodes[i].AbsPosition))
 			{
-				// water drag (turbulent)
-				Real speed = approx_sqrt(nodes[i].Velocity.squaredLength()); //we will (not) reuse this
-				nodes[i].Forces -= (DEFAULT_WATERDRAG * speed) * nodes[i].Velocity;
-				nodes[i].Forces += nodes[i].buoyancy * Vector3::UNIT_Y;
-				// basic splashing
-				if (doUpdate && water->getHeight() - nodes[i].AbsPosition.y < 0.2 && nodes[i].Velocity.squaredLength() > 4.0 && !nodes[i].disable_particles)
+				watercontact = true;
+				if (free_buoycab == 0)
 				{
-					if (splashp) splashp->allocSplash(nodes[i].AbsPosition, nodes[i].Velocity);
-					if (ripplep) ripplep->allocRipple(nodes[i].AbsPosition, nodes[i].Velocity);
+					// water drag (turbulent)
+					Real speed = approx_sqrt(nodes[i].Velocity.squaredLength()); //we will (not) reuse this
+					nodes[i].Forces -= (DEFAULT_WATERDRAG * speed) * nodes[i].Velocity;
+					// basic buoyance
+					nodes[i].Forces += nodes[i].buoyancy * Vector3::UNIT_Y;
+					// basic splashing
+					if (doUpdate && water->getHeight() - nodes[i].AbsPosition.y < 0.2 && nodes[i].Velocity.squaredLength() > 4.0 && !nodes[i].disable_particles)
+					{
+						if (splashp) splashp->allocSplash(nodes[i].AbsPosition, nodes[i].Velocity);
+						if (ripplep) ripplep->allocRipple(nodes[i].AbsPosition, nodes[i].Velocity);
+					}
 				}
-			}
-			// engine stall
-			if (i == cinecameranodepos[0] && engine)
+				// engine stall
+				if (i == cinecameranodepos[0] && engine)
+				{
+					engine->stop();
+				}
+				nodes[i].wetstate = WET;
+			} else if (nodes[i].wetstate == WET)
 			{
-				engine->stop();
+				nodes[i].wetstate = DRIPPING;
+				nodes[i].wettime = 0.0f;
 			}
-			// wetness
-			nodes[i].wetstate = WET;
-		} else if (nodes[i].wetstate == WET)
-		{
-			nodes[i].wetstate = DRIPPING;
-			nodes[i].wettime = 0;
 		}
 	}
 }
 
 void Beam::forwardCommands()
 {
+	Beam *current_truck = BeamFactory::getSingleton().getCurrentTruck();
 	Beam** trucks = BeamFactory::getSingleton().getTrucks();
 	int numtrucks = BeamFactory::getSingleton().getTruckCount();
 
 	// forward things to trailers
-	if (numtrucks > 1 && state==ACTIVATED && forwardcommands)
+	if (numtrucks > 1 && this == current_truck && forwardcommands)
 	{
 		for (int i=0; i<numtrucks; i++)
 		{
 			if (!trucks[i]) continue;
-			if (trucks[i]->state==DESACTIVATED && trucks[i]->importcommands)
+			if (trucks[i] != current_truck && trucks[i]->importcommands)
 			{
 				// forward commands
 				for (int j=1; j<=MAX_COMMANDS; j++)
@@ -2018,6 +2086,7 @@ void Beam::calcHooks()
 				{
 					it->beam->mSceneNode->attachObject(it->beam->mEntity);
 				}
+				addInterTruckBeam(it->beam);
 			} else
 			{
 				if (it->beam->L < it->beam->commandShort)
@@ -2054,6 +2123,7 @@ void Beam::calcHooks()
 								it->beam->p2truck  = false;
 								it->beam->L        = (nodes[0].AbsPosition - it->hookNode->AbsPosition).length();
 								it->beam->disabled = true;
+								removeInterTruckBeam(it->beam);
 							}
 						}
 					}
@@ -2084,21 +2154,3 @@ void Beam::calcRopes()
 	BES_STOP(BES_CORE_Ropes);
 }
 
-void Beam::updateSkeletonColouring(int doUpdate)
-{
-	BES_START(BES_CORE_SkeletonColouring);
-	if ((m_skeletonview_is_active && doUpdate) || replay)
-	{
-		for (int i=0; i<free_beam; i++)
-		{
-            if (!beams[i].broken && !beams[i].disabled)
-            {
-				float ratio = beams[i].stress / beams[i].minmaxposnegstress;
-                beams[i].scale = pow(ratio, 4) * 100.0f * sign(ratio);
-            } else if (beams[i].mSceneNode) {
-                beams[i].mSceneNode->detachAllObjects();
-            }
-		}
-	}
-	BES_STOP(BES_CORE_SkeletonColouring);
-}

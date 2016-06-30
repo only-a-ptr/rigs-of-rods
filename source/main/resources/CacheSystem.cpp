@@ -248,7 +248,6 @@ CacheSystem::CacheValidityState CacheSystem::IsCacheValid()
 {
 	String cfgfilename = getCacheConfigFilename(false);
 	ImprovedConfigFile cfg;
-	ConfigFile ff;
 	if (!resourceExistsInAllGroups(cfgfilename))
 	{
 		LOG("unable to load config file: "+cfgfilename);
@@ -258,8 +257,8 @@ CacheSystem::CacheValidityState CacheSystem::IsCacheValid()
 	String group = ResourceGroupManager::getSingleton().findGroupContainingResource(cfgfilename);
 	DataStreamPtr stream=ResourceGroupManager::getSingleton().openResource(cfgfilename, group);
 	cfg.load(stream, "\t:=", false);
-	String shaone = cfg.getSetting("shaone");
-	String cacheformat = cfg.getSetting("cacheformat");
+	String shaone = cfg.GetString("shaone");
+	String cacheformat = cfg.GetString("cacheformat");
 
 	if (shaone == "" || shaone != currentSHA1)
 	{
@@ -451,7 +450,15 @@ void CacheSystem::parseModAttribute(const String& line, CacheEntry& t)
 		// Set
 		t.categoryid = StringConverter::parseInt(params[1]);
 		category_usage[t.categoryid] = category_usage[t.categoryid] + 1;
-		t.categoryname=categories[t.categoryid].title;
+		if (categories.find(t.categoryid) != categories.end())
+		{
+			t.categoryname = categories[t.categoryid].title;
+		}
+		else
+		{
+			t.categoryid = -1;
+			t.categoryname = "Unsorted";
+		}
 	}
 	else if (attrib == "uniqueid")
 	{
@@ -1316,7 +1323,7 @@ void CacheSystem::fillTruckDetailInfo(CacheEntry &entry, Ogre::DataStreamPtr str
 
 	/* RETRIEVE DATA */
 
-	boost::shared_ptr<RigDef::File> def = parser.GetFile();
+	std::shared_ptr<RigDef::File> def = parser.GetFile();
 
 	/* Description */
 	std::vector<Ogre::String>::iterator desc_itor = def->description.begin();
@@ -1339,7 +1346,7 @@ void CacheSystem::fillTruckDetailInfo(CacheEntry &entry, Ogre::DataStreamPtr str
 	}
 
 	/* Modules (previously called "sections") */
-	std::map<Ogre::String, boost::shared_ptr<RigDef::File::Module>>::iterator module_itor = def->modules.begin();
+	std::map<Ogre::String, std::shared_ptr<RigDef::File::Module>>::iterator module_itor = def->modules.begin();
 	for ( ; module_itor != def->modules.end(); module_itor++ )
 	{
 		entry.sectionconfigs.push_back(module_itor->second->name);
@@ -1349,7 +1356,7 @@ void CacheSystem::fillTruckDetailInfo(CacheEntry &entry, Ogre::DataStreamPtr str
 	/* TODO: Handle engines in modules */
 	if (def->root_module->engine != nullptr)
 	{
-		boost::shared_ptr<RigDef::Engine> engine = def->root_module->engine;
+		std::shared_ptr<RigDef::Engine> engine = def->root_module->engine;
 		entry.numgears   = engine->gear_ratios.size();
 		entry.minrpm     = engine->shift_down_rpm;
 		entry.maxrpm     = engine->shift_up_rpm;
@@ -1445,7 +1452,7 @@ void CacheSystem::fillTruckDetailInfo(CacheEntry &entry, Ogre::DataStreamPtr str
 		+ def->root_module->mesh_wheels_2.size() 
 		);
 
-	/* NOTE: boost::shared_ptr cleans everything up. */
+	/* NOTE: std::shared_ptr cleans everything up. */
 }
 
 int CacheSystem::addUniqueString(std::set<Ogre::String> &list, Ogre::String str)
@@ -1505,6 +1512,9 @@ Ogre::String CacheSystem::detectFilesMiniType(String filename)
 
 	if (resourceExistsInAllGroups(filename+".png"))
 		return "png";
+	
+	if (resourceExistsInAllGroups(filename+".jpg"))
+		return "jpg";
 
 	return "none";
 }
@@ -1577,7 +1587,6 @@ void CacheSystem::generateFileCache(CacheEntry &entry, Ogre::String directory)
 		if (files->empty())
 		{
 			deleteFileCache(const_cast<char*>(dst.c_str()));
-			return;
 		}
 
 		size_t fsize = 0;
@@ -1782,7 +1791,7 @@ String CacheSystem::filenamesSHA1()
 					bool vipfile = false;
 					for (std::vector<Ogre::String>::iterator sit=known_extensions.begin();sit!=known_extensions.end();sit++)
 					{
-						if ((iterFiles->filename.find("."+*sit) != String::npos && iterFiles->filename.find(".dds") == String::npos && iterFiles->filename.find(".png") == String::npos)
+						if ((iterFiles->filename.find("."+*sit) != String::npos && iterFiles->filename.find(".dds") == String::npos && iterFiles->filename.find(".png") == String::npos && iterFiles->filename.find(".jpg") == String::npos)
 						 || (iterFiles->filename.find(".zip") != String::npos))
 						{
 							vipfile = true;

@@ -24,8 +24,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RoRPrerequisites.h"
 
-#include "IManager.h"
-
 #ifdef USE_PAGED
 #include "BatchPage.h"
 #include "GrassLoader.h"
@@ -35,7 +33,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "TreeLoader3D.h"
 #endif //USE_PAGED
 
-class TerrainObjectManager : public IManager
+class TerrainObjectManager : public ZeroedMemoryAllocator
 {
 public:
 
@@ -45,6 +43,7 @@ public:
 	void loadObjectConfigFile(Ogre::String filename);
 
 	void loadObject(const Ogre::String &name, const Ogre::Vector3 &pos, const Ogre::Vector3 &rot, Ogre::SceneNode *bakeNode, const Ogre::String &instancename, const Ogre::String &type, bool enable_collisions = true, int scripthandler = -1, bool uniquifyMaterial = false);
+	void moveObjectVisuals(const Ogre::String& instancename, const Ogre::Vector3& pos);
 	void unloadObject(const Ogre::String &instancename);
 
 	void loadPreloadedTrucks();
@@ -60,6 +59,18 @@ public:
 		Ogre::Vector3 position;
 		Ogre::Quaternion rotation;
 	} localizer_t;
+
+	typedef struct object_t
+	{
+		Ogre::String name;
+		Ogre::Vector3 position;
+		Ogre::Vector3 rotation;
+		Ogre::Vector3 initial_position;
+		Ogre::Vector3 initial_rotation;
+		Ogre::SceneNode *node;
+	} object_t;
+
+	std::vector<object_t> getObjects() { return objects; };
 
 	bool update(float dt);
 
@@ -94,6 +105,8 @@ protected:
 
 	std::vector<truck_prepare_t> truck_preload;
 
+	bool background_loading;
+	bool use_rt_shader_system;
 
 #ifdef USE_PAGED
 	typedef struct
@@ -112,21 +125,21 @@ protected:
 	int free_localizer;
 
 	std::vector<animated_object_t> animatedObjects;
+	std::vector<MeshObject*> meshObjects;
 
 	typedef struct loadedObject_t
 	{
 		Ogre::SceneNode *sceneNode;
 		Ogre::String instanceName;
 		bool enabled;
-		int loadType;
 		std::vector <int> collBoxes;
 		std::vector <int> collTris;
 	} loadedObject_t;
+
 	std::map< std::string, loadedObject_t> loadedObjects;
 
-	virtual size_t getMemoryUsage();
+	std::vector< object_t > objects;
 
-	virtual void freeResources();
 	void proceduralTests();
 };
 

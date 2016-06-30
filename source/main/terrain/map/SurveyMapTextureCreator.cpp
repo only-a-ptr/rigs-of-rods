@@ -19,9 +19,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "SurveyMapTextureCreator.h"
 
-#include "BeamFactory.h"
 #include "IWater.h"
-#include "ResourceBuffer.h"
 #include "SurveyMapManager.h"
 #include "TerrainManager.h"
 
@@ -81,5 +79,4 @@ void SurveyMapTextureCreator::preRenderTargetUpdate()
 
 void SurveyMapTextureCreator::postRenderTargetUpdate()
 {
-
 }

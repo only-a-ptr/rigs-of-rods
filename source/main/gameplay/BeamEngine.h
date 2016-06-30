@@ -28,7 +28,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 class BeamEngine : public ZeroedMemoryAllocator
 {
-	friend class Beam;
 	friend class RigSpawner;
 	friend class RigInspector; // Debug utility class
 
@@ -92,6 +91,16 @@ public:
 	void setRPM(float rpm);
 
 	/**
+	* Set current engine prime.
+	*/
+	void setPrime(int p);
+
+	/**
+	* Set current hydro pump work.
+	*/
+	void setHydroPumpWork(float work);
+
+	/**
 	* Set current wheel spinning speed.
 	*/
 	void setSpin(float rpm);
@@ -130,6 +139,7 @@ public:
 	bool isRunning() { return running; };
 	char getType() { return type; };
 	float getAccToHoldRPM(float rpm);
+	float getTurboPower();
 	float getEnginePower(float rpm);
 	float getEngineTorque() { return engineTorque; };
 	float getIdleMixture();
@@ -172,6 +182,7 @@ public:
 
 	enum shiftmodes {AUTOMATIC, SEMIAUTO, MANUAL, MANUAL_STICK, MANUAL_RANGES};
 	enum autoswitch {REAR, NEUTRAL, DRIVE, TWO, ONE, MANUALMODE};
+	enum turbomode {OLD, NEW};
 
 protected:
 
@@ -197,6 +208,7 @@ protected:
 	bool contact; //!< Engine
 	bool hasair; //!< Engine attribute
 	bool hasturbo; //!< Engine attribute
+	int turbomode; //!<Engine attribute
 	bool running; //!< Engine state
 	char type; //!< Engine attribute {'t' = truck (default), 'c' = car}
 	float brakingTorque; //!< Engine
@@ -246,15 +258,11 @@ protected:
 	float turboInertiaFactor;
 	int numTurbos;
 	int maxTurboRPM;
-	float turbotorque;
-	float turboInertia;
 	float EngineAddiTorque[MAXTURBO];
 	float turboEngineRpmOperation;
 	float turboMaxPSI;
-	float turboPSI;
 	bool b_BOV;
 	float curBOVTurboRPM[MAXTURBO];
-	float turboBOVtorque;
 	int minBOVPsi;
 	bool b_WasteGate;
 	float minWGPsi;

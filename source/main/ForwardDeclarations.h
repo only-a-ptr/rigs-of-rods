@@ -57,7 +57,7 @@ namespace MyGUI
 struct node_t;
 struct beam_t;
 struct shock_t;
-struct collcab_rate_t;
+struct eventsource_t;
 struct soundsource_t;
 struct contacter_t;
 struct rigidifier_t;
@@ -80,7 +80,9 @@ struct hook_t;
 struct ground_model_t;
 struct client_t;
 struct authorinfo_t;
+struct header_t;
 struct user_info_t;
+struct stream_register_t;
 
 namespace MOC
 {
@@ -140,7 +142,7 @@ class MapTextureCreator;
 class MaterialFunctionMapper;
 class MaterialReplacer;
 class MeshObject;
-class Mirrors;
+class Mirror;
 class Network;
 class OverlayWrapper;
 class OutProtocol;
@@ -181,6 +183,7 @@ class TruckHUD;
 class Turbojet;
 class Turboprop;
 class VideoCamera;
+class VehicleAI;
 class Water;
 
 #ifdef USE_SOCKETW

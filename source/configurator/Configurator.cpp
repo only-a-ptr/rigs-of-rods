@@ -31,7 +31,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <memory>
 
 mode_t getumask(void)
 {
@@ -40,6 +39,8 @@ mode_t getumask(void)
 	return mask;
 }
 #endif
+
+#include <memory>
 
 #include "statpict.h"
 #include <wx/cmdline.h>
@@ -282,7 +283,6 @@ private:
 	wxCheckBox *dev_mode;
 	wxCheckBox *mblur;
 	wxCheckBox *mirror;
-	wxCheckBox *nocrashrpt;
 	wxCheckBox *particles;
 	wxCheckBox *posstor;
 	wxCheckBox *replaymode;
@@ -549,10 +549,10 @@ void initLanguage(wxString languagePath, wxString userpath)
 	try
 	{
 		wxString rorcfg=userpath + dirsep + wxT("config") + dirsep + wxT("RoR.cfg");
-		Ogre::ImprovedConfigFile cfg;
+		ImprovedConfigFile cfg;
 		// Don't trim whitespace
 		cfg.load((const char*)rorcfg.mb_str(wxConvUTF8), "=:\t", false);
-		wxString langSavedName = conv(cfg.getSetting("Language"));
+		wxString langSavedName = conv(cfg.GetString("Language"));
 
 		if(langSavedName.size() > 0)
 			language = const_cast<wxLanguageInfo *>(getLanguageInfoByName(langSavedName));
@@ -651,7 +651,7 @@ bool MyApp::extractZipFiles(const wxString& aZipFile, const wxString& aTargetDir
 {
 	bool ret = true;
 	//wxFileSystem fs;
-	std::auto_ptr<wxZipEntry> entry(new wxZipEntry());
+	std::unique_ptr<wxZipEntry> entry(new wxZipEntry());
 	do
 	{
 		wxFileInputStream in(aZipFile);
@@ -711,7 +711,7 @@ bool MyApp::checkUserPath()
 		if(!wxFileName::DirExists(UserPath))
 			wxFileName::Mkdir(UserPath);
 
-		std::auto_ptr< wxZipEntry > entry;
+		std::unique_ptr< wxZipEntry > entry;
 
 		// first: figure out the zip path
 		wxFileName skeletonZip = wxFileName(ProgramPath, wxEmptyString);
@@ -827,12 +827,6 @@ bool MyApp::OnInit()
 		initLogging();
 		initLanguage(wxT("languages"), UserPath);
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-		// add windows specific crash handler. It will create nice memory dumps, so we can track the error
-		//LPVOID lpvState = Install(NULL, NULL, NULL);
-		//AddFile(lpvState, conv("configlog.txt"), conv("Rigs of Rods Configurator Crash log"));
-#endif
-
 		// call the base class initialization method, currently it only parses a
 		// few common command-line options but it could be do more in the future
 		if ( !wxApp::OnInit() )
@@ -840,7 +834,7 @@ bool MyApp::OnInit()
 
 		wxLogStatus(wxT("Creating dialog"));
 		// create the main application window
-		wxString title = wxString::Format(_("Rigs of Rods version %s configuration"), wxT(ROR_VERSION_STRING));
+		wxString title = wxString::Format(_("Rigs of Rods version %s configuration"), wxString(ROR_VERSION_STRING, wxConvUTF8).c_str());
 		MyDialog *dialog = new MyDialog(title, this);
 
 		// and show it (the frames, unlike simple controls, are not shown when
@@ -979,7 +973,7 @@ MyDialog::MyDialog(const wxString& title, MyApp *_app) : wxDialog(NULL, wxID_ANY
 	wxStaticText *dText2 = new wxStaticText(ctsetPanel, -1, _("Since 0.4.5, you can use the ingame key mapping system. \nYou can also edit the input mappings by hand by using a texteditor.\nThe input mappings are stored in the following file:\nMy Documents\\Rigs of Rods\\config\\input.map"), wxPoint(10,10));
 
 #if wxCHECK_VERSION(2, 8, 0)
-	wxHyperlinkCtrl *link1 = new wxHyperlinkCtrl(ctsetPanel, -1, _("(more help here)"), _("http://www.rigsofrods.com/wiki/pages/Input.map"), wxPoint(10, 100));
+	wxHyperlinkCtrl *link1 = new wxHyperlinkCtrl(ctsetPanel, -1, _("(more help here)"), _("http://docs.rigsofrods.org/gameplay/controls-config/#config-file-inputmap"), wxPoint(10, 100));
 #endif // version 2.8
 
 	wxPanel *ffPanel=new wxPanel(ctbook, -1);
@@ -1087,7 +1081,7 @@ MyDialog::MyDialog(const wxString& title, MyApp *_app) : wxDialog(NULL, wxID_ANY
 	x_row2 = 300;
 
 	addAboutTitle(_("Version"), x_row1, y);
-	dText = new wxStaticText(aboutPanel, -1, wxString::Format(_("Rigs of Rods version: %s"), wxT(ROR_VERSION_STRING)), wxPoint(x_row1 + 15, y));
+	dText = new wxStaticText(aboutPanel, -1, wxString::Format(_("Rigs of Rods version: %s"), wxString(ROR_VERSION_STRING, wxConvUTF8).c_str()), wxPoint(x_row1 + 15, y));
 	y += dText->GetSize().GetHeight() + 2;
 
 	dText = new wxStaticText(aboutPanel, -1, wxString::Format(_("Network Protocol version: %s"), wxString(RORNET_VERSION, wxConvUTF8).c_str()), wxPoint(x_row1 + 15, y));
@@ -1196,10 +1190,6 @@ MyDialog::MyDialog(const wxString& title, MyApp *_app) : wxDialog(NULL, wxID_ANY
 	dofdebug->SetToolTip(_("Shows the DOF debug display on the screen in order to identify DOF problems"));
 	y+=15;
 
-	nocrashrpt=new wxCheckBox(debugPanel, -1, _("Disable Crash Reporting"), wxPoint(10, y));
-	nocrashrpt->SetToolTip(_("Disables the crash handling system. Only use for debugging purposes"));
-	y+=25;
-	
 	dText = new wxStaticText(debugPanel, -1, _("Input Grabbing:"), wxPoint(10,y+3));
 	inputgrab=new wxValueChoice(debugPanel, -1, wxPoint(x_row1, y), wxSize(200, -1), 0);
 	inputgrab->AppendValueItem(wxT("All"),         _("All"));
@@ -2054,7 +2044,6 @@ void MyDialog::SetDefaults()
 	inputgrab->SetSelection(0);          // All
 	mblur->SetValue(false);
 	mirror->SetValue(true);
-	nocrashrpt->SetValue(false);
 	particles->SetValue(true);
 	posstor->SetValue(false);
 	presel_map->SetValue(wxString());
@@ -2131,7 +2120,6 @@ void MyDialog::getSettingsControls()
 	settings["Mirrors"] = (mirror->GetValue()) ? "Yes" : "No";
 	settings["Motion blur"] = (mblur->GetValue()) ? "Yes" : "No";
 	settings["Multi-threading"] = (thread->GetValue()) ? "No" : "Yes";
-	settings["NoCrashRpt"] = (nocrashrpt->GetValue()) ? "Yes" : "No";
 	settings["Particles"] = (particles->GetValue()) ? "Yes" : "No";
 	settings["Position Storage"] = (posstor->GetValue()) ? "Yes" : "No";
 	settings["Preselected Map"] = conv(presel_map->GetValue());
@@ -2253,7 +2241,6 @@ void MyDialog::updateSettingsControls()
 	st = settings["Mirrors"]; if (st.length()>0) mirror->SetValue(st=="Yes");
 	st = settings["Motion blur"]; if (st.length()>0) mblur->SetValue(st=="Yes");
 	st = settings["Multi-threading"]; if (st.length()>0) thread->SetValue(st=="No");
-	st = settings["NoCrashRpt"]; if (st.length()>0) nocrashrpt->SetValue(st=="Yes");
 	st = settings["Particles"]; if (st.length()>0) particles->SetValue(st=="Yes");
 	st = settings["Position Storage"]; if (st.length()>0) posstor->SetValue(st=="Yes");
 	st = settings["Replay mode"]; if (st.length()>0) replaymode->SetValue(st=="Yes");
@@ -2312,7 +2299,7 @@ void MyDialog::updateSettingsControls()
 bool MyDialog::LoadConfig()
 {
 	//RoR config
-	Ogre::ImprovedConfigFile cfg;
+	ImprovedConfigFile cfg;
 	try
 	{
 		wxLogStatus(wxT("Loading RoR.cfg"));

@@ -42,10 +42,10 @@ PointColDetector::PointColDetector()
 PointColDetector::~PointColDetector() {
 }
 
-void PointColDetector::update(Beam* truck) {
+void PointColDetector::update(Beam* truck, bool ignorestate) {
 	int contacters_size = 0;
 
-	if (truck && truck->state < SLEEPING) {
+	if (truck && (ignorestate || truck->state < SLEEPING)) {
 		m_trucks.resize(1, truck);
 		contacters_size += truck->free_contacter;
 	} else {
@@ -62,19 +62,32 @@ void PointColDetector::update(Beam* truck) {
 	kdtree[0].end = -object_list_size;
 }
 
-void PointColDetector::update(Beam* truck, Beam** trucks, const int numtrucks) {
+void PointColDetector::update(Beam* truck, Beam** trucks, const int numtrucks, bool ignorestate) {
 	bool update_required = false;
 	int contacters_size = 0;
 
-	if (truck && truck->state < SLEEPING) {
+	if (truck && (ignorestate || truck->state < SLEEPING)) {
 		truck->collisionRelevant = false;
 		m_trucks.resize(numtrucks);
 		for (int t = 0; t < numtrucks; t++) {
-			if (t != truck->trucknum && trucks[t] && trucks[t]->state < SLEEPING && truck->boundingBox.intersects(trucks[t]->boundingBox)) {
+			if (t != truck->trucknum && trucks[t] && (ignorestate || trucks[t]->state < SLEEPING) && truck->boundingBox.intersects(trucks[t]->boundingBox)) {
 				update_required = update_required || (m_trucks[t] != trucks[t]);
 				m_trucks[t] = trucks[t];
 				truck->collisionRelevant = true;
 				contacters_size += trucks[t]->free_contacter;
+				if (truck->nodes[0].Velocity.squaredDistance(trucks[t]->nodes[0].Velocity) > 25)
+				{
+					for (int i=0; i<truck->free_collcab; i++)
+					{
+						truck->intra_collcabrate[i].rate = 0;
+						truck->inter_collcabrate[i].rate = 0;
+					}
+					for (int i=0; i<trucks[t]->free_collcab; i++)
+					{
+						trucks[t]->intra_collcabrate[i].rate = 0;
+						trucks[t]->inter_collcabrate[i].rate = 0;
+					}
+				}
 			} else {
 				m_trucks[t] = 0;
 			}
@@ -107,7 +120,7 @@ void PointColDetector::update_structures_for_contacters() {
 	int refi = 0;
 
 	//Insert all contacters, into the list of points to consider when building the kdtree
-	for (int t = 0; t < m_trucks.size(); t++) {
+	for (int t = 0; t < static_cast<int>(m_trucks.size()); t++) {
 		if (m_trucks[t]) {
 			for (int i = 0; i < m_trucks[t]->free_contacter; ++i) {
 				ref_list[refi].pidref = &pointid_list[refi];

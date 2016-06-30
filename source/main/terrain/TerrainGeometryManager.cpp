@@ -24,21 +24,151 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "TerrainManager.h"
 #include "ShadowManager.h"
 #include "OgreTerrainPSSMMaterialGenerator.h"
+#include "Utils.h"
 
 using namespace Ogre;
 
 #define XZSTR(X,Z)   String("[") + TOSTRING(X) + String(",") + TOSTRING(Z) + String("]")
 
 TerrainGeometryManager::TerrainGeometryManager(TerrainManager *terrainManager) :
-	  terrainManager(terrainManager)
-	, disableCaching(false)
+	  disableCaching(false)
+	, mHeightData(nullptr)
 	, mTerrainsImported(false)
+	, m_is_flat(true)
+	, terrainManager(terrainManager)
 {
 }
 
 TerrainGeometryManager::~TerrainGeometryManager()
 {
 	mTerrainGroup->removeAllTerrains();
+}
+
+/// @author Ported from OGRE engine, www.ogre3d.org, file OgreTerrain.cpp
+void TerrainGeometryManager::getTerrainPositionAlign(Real x, Real y, Real z, Terrain::Alignment align, Vector3* outTSpos)
+{
+	switch(align)
+	{
+	case Terrain::ALIGN_X_Z:
+		outTSpos->x = (x - mBase - mPos.x) / ((mSize - 1) * mScale);
+		outTSpos->y = (z + mBase - mPos.z) / ((mSize - 1) * -mScale);
+		outTSpos->z = y;
+		break;
+	case Terrain::ALIGN_Y_Z:
+		outTSpos->x = (z - mBase - mPos.z) / ((mSize - 1) * -mScale);
+		outTSpos->y = (y + mBase - mPos.y) / ((mSize - 1) * mScale);
+		outTSpos->z = x;
+		break;
+	case Terrain::ALIGN_X_Y:
+		outTSpos->x = (x - mBase - mPos.x) / ((mSize - 1) * mScale);
+		outTSpos->y = (y - mBase - mPos.y) / ((mSize - 1) * mScale);
+		outTSpos->z = z;
+		break;
+	};
+}
+
+/// @author Ported from OGRE engine, www.ogre3d.org, file OgreTerrain.cpp
+float TerrainGeometryManager::getHeightAtPoint(long x, long y)
+{
+	// clamp
+	x = std::min(x, (long)mSize - 1L);
+	x = std::max(x, 0L);
+	y = std::min(y, (long)mSize - 1L);
+	y = std::max(y, 0L);
+
+	return mHeightData[y * mSize + x];
+}
+
+/// @author Ported from OGRE engine, www.ogre3d.org, file OgreTerrain.cpp
+float TerrainGeometryManager::getHeightAtTerrainPosition(Real x, Real y)
+{
+	// get left / bottom points (rounded down)
+	Real factor = (Real)mSize - 1.0f;
+	Real invFactor = 1.0f / factor;
+
+	long startX = static_cast<long>(x * factor);
+	long startY = static_cast<long>(y * factor);
+	long endX = startX + 1;
+	long endY = startY + 1;
+
+	// now get points in terrain space (effectively rounding them to boundaries)
+	// note that we do not clamp! We need a valid plane
+	Real startXTS = startX * invFactor;
+	Real startYTS = startY * invFactor;
+	Real endXTS = endX * invFactor;
+	Real endYTS = endY * invFactor;
+
+	// now clamp
+	endX = std::min(endX, (long)mSize-1);
+	endY = std::min(endY, (long)mSize-1);
+
+	// get parametric from start coord to next point
+	Real xParam = (x - startXTS) / invFactor;
+	Real yParam = (y - startYTS) / invFactor;
+
+
+	/* For even / odd tri strip rows, triangles are this shape:
+	even     odd
+	3---2   3---2
+	| / |   | \ |
+	0---1   0---1
+	*/
+
+	// Build all 4 positions in terrain space, using point-sampled height
+	Vector3 v0 (startXTS, startYTS, getHeightAtPoint(startX, startY));
+	Vector3 v1 (endXTS, startYTS, getHeightAtPoint(endX, startY));
+	Vector3 v2 (endXTS, endYTS, getHeightAtPoint(endX, endY));
+	Vector3 v3 (startXTS, endYTS, getHeightAtPoint(startX, endY));
+	// define this plane in terrain space
+	Plane plane;
+	if (startY % 2)
+	{
+		// odd row
+		bool secondTri = ((1.0 - yParam) > xParam);
+		if (secondTri)
+			plane.redefine(v0, v1, v3);
+		else
+			plane.redefine(v1, v2, v3);
+	}
+	else
+	{
+		// even row
+		bool secondTri = (yParam > xParam);
+		if (secondTri)
+			plane.redefine(v0, v2, v3);
+		else
+			plane.redefine(v0, v1, v2);
+	}
+
+	// Solve plane equation for z
+	return (-plane.normal.x * x 
+			-plane.normal.y * y
+			- plane.d) / plane.normal.z;
+}
+
+/// @author Ported from OGRE engine, www.ogre3d.org, file OgreTerrain.cpp
+float TerrainGeometryManager::getHeightAtWorldPosition(float x, float z)
+{
+	Vector3 terrPos;
+	getTerrainPositionAlign(x, 0.0f, z, mAlign, &terrPos);
+	return getHeightAtTerrainPosition(terrPos.x, terrPos.y);
+}
+
+float TerrainGeometryManager::getHeightAt(float x, float z)
+{
+	if (m_is_flat)
+		return 0.0f;
+	else
+		return getHeightAtWorldPosition(x, z);
+}
+
+Ogre::Vector3 TerrainGeometryManager::getNormalAt(float x, float y, float z, float precision)
+{
+	Ogre::Vector3 left(-precision, getHeightAt(x - precision, z) - y, 0.0f);
+	Ogre::Vector3 down(0.0f, getHeightAt(x, z + precision) - y, precision);
+	down = left.crossProduct(down);
+	down.normalise();
+	return down;
 }
 
 void TerrainGeometryManager::loadOgreTerrainConfig(String filename)
@@ -115,7 +245,7 @@ Ogre::String TerrainGeometryManager::getPageHeightmap(int x, int z)
 
 	char buf[4096];
 	ds->readLine(buf, 4096);
-	return String(buf);
+	return RoR::Utils::SanitizeUtf8String(String(buf));
 }
 
 void TerrainGeometryManager::initTerrain()
@@ -128,7 +258,6 @@ void TerrainGeometryManager::initTerrain()
 
 	worldSize = std::max(mapsizex, mapsizez);
 
-	String filenameSuffix = "mapbin";
 	pageMinX = 0;
 	pageMaxX = m_terrain_config.GetInt("PagesX", 0);
 	pageMinZ = 0;
@@ -136,12 +265,14 @@ void TerrainGeometryManager::initTerrain()
 
 	pageConfigFormat = m_terrain_config.GetString("PageFileFormat", baseName + "-page-{X}-{Z}.otc");
 
-	bool is_flat = m_terrain_config.GetBool("Flat", false);
+	m_is_flat = m_terrain_config.GetBool("Flat", false);
 
 	terrainPos = Vector3(mapsizex / 2.0f, 0.0f, mapsizez / 2.0f);
 
+	String Filename = baseName + "_OGRE_" + TOSTRING(OGRE_VERSION) + "_";
+
 	mTerrainGroup = OGRE_NEW TerrainGroup(gEnv->sceneManager, Terrain::ALIGN_X_Z, terrainSize, worldSize);
-	mTerrainGroup->setFilenameConvention(baseName, filenameSuffix);
+	mTerrainGroup->setFilenameConvention(Filename, "mapbin");
 	mTerrainGroup->setOrigin(terrainPos);
 	mTerrainGroup->setResourceGroup("cache");
 
@@ -152,7 +283,7 @@ void TerrainGeometryManager::initTerrain()
 		for (long z = pageMinZ; z <= pageMaxZ; ++z)
 		{
 			LoadingWindow::getSingleton().setProgress(23, _L("preparing terrain page ") + XZSTR(x,z));
-			defineTerrain(x, z, is_flat);
+			defineTerrain(x, z, m_is_flat);
 			LoadingWindow::getSingleton().setProgress(23, _L("loading terrain page ") + XZSTR(x,z));
 
 			/*
@@ -167,6 +298,14 @@ void TerrainGeometryManager::initTerrain()
 	LoadingWindow::getSingleton().setProgress(23, _L("loading terrain pages"));
 	mTerrainGroup->loadAllTerrains(true);
 
+	Terrain* terrain = mTerrainGroup->getTerrain(0, 0);
+	mHeightData = terrain->getHeightData();
+	mAlign = terrain->getAlignment();
+	mSize = terrain->getSize();
+	mWorldSize = terrain->getWorldSize();
+	mBase = -mWorldSize * 0.5f; 
+	mScale = mWorldSize / (Real)(mSize - 1);
+	mPos = terrain->getPosition();
 
 	// update the blend maps
 	if (mTerrainsImported)
@@ -185,14 +324,12 @@ void TerrainGeometryManager::initTerrain()
 			}
 		}
 		
-#ifdef _WIN32
 		// always save the results when it was imported
 		if (!disableCaching)
 		{
 			LoadingWindow::getSingleton().setProgress(23, _L("saving all terrain pages ..."));
 			mTerrainGroup->saveAllTerrains(false);
 		}
-#endif // _WIN32
 	} else
 	{
 		LOG(" *** Terrain loaded from cache ***");
@@ -312,11 +449,11 @@ void TerrainGeometryManager::loadLayers(int x, int z, Terrain *terrain)
 	if (ds.isNull())
 		return;
 
-	char line[4096];
-	ds->readLine(line, 4096);
-	String heightmapImage = String(line);
-	ds->readLine(line, 4096);
-	terrainLayers = PARSEINT(String(line));
+	char line_buf[4096];
+	ds->readLine(line_buf, 4096);
+	String heightmapImage = RoR::Utils::SanitizeUtf8String(String(line_buf));
+	ds->readLine(line_buf, 4096);
+	terrainLayers = PARSEINT(RoR::Utils::SanitizeUtf8String(String(line_buf)));
 
 	if (terrainLayers == 0)
 		return;
@@ -333,7 +470,8 @@ void TerrainGeometryManager::loadLayers(int x, int z, Terrain *terrain)
 
 	while (!ds->eof())
 	{
-		size_t ll = ds->readLine(line, 4096);
+		size_t ll = ds->readLine(line_buf, 4096);
+		std::string line = RoR::Utils::SanitizeUtf8String(std::string(line_buf));
 		if (ll==0 || line[0]=='/' || line[0]==';') continue;
 
 		StringVector args = StringUtil::split(String(line), ",");
@@ -530,17 +668,6 @@ Ogre::Vector3 TerrainGeometryManager::getMaxTerrainSize()
 Ogre::Vector3 TerrainGeometryManager::getTerrainPosition()
 {
 	return terrainPos;
-}
-
-size_t TerrainGeometryManager::getMemoryUsage()
-{
-	// TODO
-	return 0;
-}
-
-void TerrainGeometryManager::freeResources()
-{
-	// TODO
 }
 
 Ogre::String TerrainGeometryManager::getCompositeMaterialName()

@@ -80,10 +80,8 @@ public:
 
 	int getCurrentBehavior();
 
-	size_t getMemoryUsage();
-	void freeResources() {};
-
 	void OnReturnToMainMenu();
+	void NotifyContextChange();
 	void NotifyVehicleChanged(Beam* old_vehicle, Beam* new_vehicle);
 
 protected:

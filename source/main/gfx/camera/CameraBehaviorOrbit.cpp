@@ -23,9 +23,9 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Application.h"
 #include "Beam.h"
-#include "BeamFactory.h"
 #include "Collisions.h"
 #include "Console.h"
+#include "GUIManager.h"
 #include "IHeightFinder.h"
 #include "InputEngine.h"
 #include "Language.h"
@@ -39,12 +39,15 @@ CameraBehaviorOrbit::CameraBehaviorOrbit() :
 	, camDistMax(0.0f)
 	, camDistMin(0.0f)
 	, camLookAt(Vector3::ZERO)
+	, camLookAtLast(Vector3::ZERO)
+	, camLookAtSmooth(Vector3::ZERO)
+	, camLookAtSmoothLast(Vector3::ZERO)
 	, camRatio(11.0f)
 	, camRotX(0.0f)
 	, camRotXSwivel(0.0f)
 	, camRotY(0.3f)
 	, camRotYSwivel(0.0f)
-	, limitMinCamDist(true)
+	, limitCamMovement(true)
 	, targetDirection(0.0f)
 	, targetPitch(0.0f)
 {
@@ -99,23 +102,25 @@ void CameraBehaviorOrbit::update(const CameraManager::CameraContext &ctx)
 
 	if ( RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_RSHIFT) && RoR::Application::GetInputEngine()->isKeyDownValueBounce(OIS::KC_SPACE) )
 	{
-		limitMinCamDist = !limitMinCamDist;
+		limitCamMovement = !limitCamMovement;
 #ifdef USE_MYGUI
-		if ( limitMinCamDist )
+		if ( limitCamMovement )
 		{
-			RoR::Application::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, _L("limited camera zoom enabled"), "camera_go.png", 3000);
+			RoR::Application::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, _L("Limited camera movement enabled"), "camera_go.png", 3000);
+			RoR::Application::GetGuiManager()->PushNotification("Notice:", _L("Limited camera movement enabled"));
 		} else
 		{
-			RoR::Application::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, _L("limited camera zoom disabled"), "camera_go.png", 3000);
+			RoR::Application::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, _L("Limited camera movement disabled"), "camera_go.png", 3000);
+			RoR::Application::GetGuiManager()->PushNotification("Notice:", _L("Limited camera movement disabled"));
 		}
 #endif // USE_MYGUI
 	}
 
-	if ( limitMinCamDist && camDistMin > 0.0f )
+	if ( limitCamMovement && camDistMin > 0.0f )
 	{
 		camDist = std::max(camDistMin, camDist);
 	}
-	if ( limitMinCamDist && camDistMax > 0.0f )
+	if ( limitCamMovement && camDistMax > 0.0f )
 	{
 		camDist = std::min(camDist, camDistMax);
 	}
@@ -128,22 +133,29 @@ void CameraBehaviorOrbit::update(const CameraManager::CameraContext &ctx)
 			, cos(targetDirection.valueRadians() + (camRotX - camRotXSwivel).valueRadians()) * cos(targetPitch.valueRadians() + (camRotY - camRotYSwivel).valueRadians())
 			);
 
-	if ( gEnv->terrainManager && gEnv->terrainManager->getHeightFinder() )
+	if ( limitCamMovement && gEnv->terrainManager && gEnv->terrainManager->getHeightFinder() )
 	{
 		float h = gEnv->terrainManager->getHeightFinder()->getHeightAt(desiredPosition.x, desiredPosition.z) + 1.0f;
 
 		desiredPosition.y = std::max(h, desiredPosition.y);
 	}
 
-	Vector3 precedingPosition = gEnv->mainCamera->getPosition(); 
-	
-	if ( ctx.mCurrTruck )
+	if ( camLookAtLast == Vector3::ZERO )
 	{
-		if (BeamFactory::getSingleton().getThreadingMode() == THREAD_MULTI)
-			precedingPosition += ctx.mCurrTruck->nodes[0].Velocity * ctx.mCurrTruck->oldframe_global_dt;
-		else
-			precedingPosition += ctx.mCurrTruck->nodes[0].Velocity * ctx.mCurrTruck->global_dt;
+		camLookAtLast = camLookAt;
 	}
+	if ( camLookAtSmooth == Vector3::ZERO )
+	{
+		camLookAtSmooth = camLookAt;
+	}
+	if ( camLookAtSmoothLast == Vector3::ZERO )
+	{
+		camLookAtSmoothLast = camLookAtSmooth;
+	}
+
+	Vector3 camDisplacement = camLookAt - camLookAtLast;
+	Vector3 precedingLookAt = camLookAtSmoothLast + camDisplacement;
+	Vector3 precedingPosition = gEnv->mainCamera->getPosition() + camDisplacement;
 
 	Vector3 camPosition = (1.0f / (camRatio + 1.0f)) * desiredPosition + (camRatio / (camRatio + 1.0f)) * precedingPosition;
 
@@ -153,10 +165,17 @@ void CameraBehaviorOrbit::update(const CameraManager::CameraContext &ctx)
 		gEnv->collisions->forcecam = false;
 	} else
 	{
-		gEnv->mainCamera->setPosition(camPosition);
+		if ( ctx.mCurrTruck && ctx.mCurrTruck->replaymode && camDisplacement != Vector3::ZERO )
+			gEnv->mainCamera->setPosition(desiredPosition);
+		else
+			gEnv->mainCamera->setPosition(camPosition);
 	}
 
-	gEnv->mainCamera->lookAt(camLookAt);
+	camLookAtSmooth = (1.0f / (camRatio + 1.0f)) * camLookAt + (camRatio / (camRatio + 1.0f)) * precedingLookAt;
+
+	camLookAtLast = camLookAt;
+	camLookAtSmoothLast = camLookAtSmooth;
+	gEnv->mainCamera->lookAt(camLookAtSmooth);
 }
 
 bool CameraBehaviorOrbit::mouseMoved(const CameraManager::CameraContext &ctx, const OIS::MouseEvent& _arg)
@@ -165,9 +184,10 @@ bool CameraBehaviorOrbit::mouseMoved(const CameraManager::CameraContext &ctx, co
 
 	if ( ms.buttonDown(OIS::MB_Right) )
 	{
+		float scale = RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_LMENU) ? 0.002f : 0.02f;
 		camRotX += Degree( ms.X.rel * 0.13f);
 		camRotY += Degree(-ms.Y.rel * 0.13f);
-		camDist +=        -ms.Z.rel * 0.02f;
+		camDist +=        -ms.Z.rel * scale;
 		return true;
 	}
 
@@ -180,5 +200,13 @@ void CameraBehaviorOrbit::reset(const CameraManager::CameraContext &ctx)
 	camRotXSwivel = 0.0f;
 	camRotY = 0.3f;
 	camRotYSwivel = 0.0f;
+	camLookAtLast = Vector3::ZERO;
+	camLookAtSmooth = Vector3::ZERO;
+	camLookAtSmoothLast = Vector3::ZERO;
 	gEnv->mainCamera->setFOVy(ctx.fovExternal);
+}
+
+void CameraBehaviorOrbit::notifyContextChange(const CameraManager::CameraContext &ctx)
+{
+	camLookAtLast = Vector3::ZERO;
 }

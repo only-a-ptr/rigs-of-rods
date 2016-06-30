@@ -20,6 +20,8 @@ struct rig_t
 {
 	// TODO: sort these a bit more ...
 	node_t nodes[MAX_NODES];
+	Ogre::Vector3 initial_node_pos[MAX_NODES];
+	bool node_mouse_grab_disabled[MAX_NODES];
 	int free_node;
 
 	beam_t beams[MAX_BEAMS];
@@ -27,6 +29,8 @@ struct rig_t
 	Ogre::Real default_beam_deform[MAX_BEAMS];
 	Ogre::Real default_beam_plastic_coef[MAX_BEAMS];
 	int free_beam;
+
+	std::vector<beam_t*> interTruckBeams;
 
 	contacter_t contacters[MAX_CONTACTERS];
 	int free_contacter;
@@ -144,7 +148,7 @@ struct rig_t
 	float alb_ratio;        //!< Anti-lock brake attribute: Regulating force
 	float alb_minspeed;     //!< Anti-lock brake attribute;
 	int alb_mode;           //!< Anti-lock brake status; Enabled? {1/0}
-	unsigned int alb_pulse; //!< Anti-lock brake attribute;
+	float alb_pulse_time;   //!< Anti-lock brake attribute;
 	bool alb_pulse_state;   //!< Anti-lock brake status;
 	bool alb_present;       //!< Anti-lock brake attribute: Display the dashboard indicator?
 	bool alb_notoggle;      //!< Anti-lock brake attribute: Disable in-game toggle?
@@ -152,11 +156,12 @@ struct rig_t
 	float tc_wheelslip;
 	float tc_fade;
 	int tc_mode;           //!< Traction control status; Enabled? {1/0}
-	unsigned int tc_pulse; //!< Traction control attribute;
+	float tc_pulse_time;   //!< Traction control attribute;
 	bool tc_pulse_state;
 	bool tc_present;       //!< Traction control attribute; Display the dashboard indicator?
 	bool tc_notoggle;      //!< Traction control attribute; Disable in-game toggle?
-	float tcalb_timer;
+	float tc_timer;
+	float alb_timer;
 	int antilockbrake;
 	int tractioncontrol;
 	float animTimer;
@@ -279,6 +284,7 @@ struct rig_t
 	std::vector<Ogre::AxisAlignedBox> predictedCollisionBoundingBoxes;
 	bool freePositioned;
 	int lowestnode; //!< never updated after truck init!?!
+	int lowestcontactingnode;
 
 	float default_spring; //!< TODO: REMOVE! (parser context only)
 	float default_spring_scale; //!< TODO: REMOVE! (parser context only)
@@ -309,4 +315,6 @@ struct rig_t
 
 	std::vector<std::pair<Ogre::String, bool> > dashBoardLayouts;
 	Ogre::String beamHash; //!< Unused
+
+	VehicleAI *vehicle_ai;
 };

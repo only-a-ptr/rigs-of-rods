@@ -54,7 +54,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "ForwardDeclarations.h"
 #include "GlobalEnvironment.h"
 #include "ZeroedMemoryAllocator.h" // this is used quite a lot, so we include it here already
-#include "../common/BitFlags.h"
+#include "BitFlags.h"
 
 #include <MyGUI_Prerequest.h> // Forward declarations
 
@@ -83,17 +83,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #define HydraxLOG(msg) Ogre::LogManager::getSingleton().logMessage("[Hydrax] " + Ogre::String(msg));
 
 #define OGREFUNCTIONSTRING  Ogre::String(__FUNCTION__)+" @ "+Ogre::String(__FILE__)+":"+TOSTRING(__LINE__)
-
-// debug for pthread mutexes
-// #define FEAT_DEBUG_MUTEX
-
-#ifdef FEAT_DEBUG_MUTEX
-# define MUTEX_LOCK(x)       do { LOGSAFE("***MUTEX-LOCK  : mutex "+TOSTRING((uintptr_t)x)+" in function "+OGREFUNCTIONSTRING); pthread_mutex_lock(x);   } while(0)
-# define MUTEX_UNLOCK(x)     do { LOGSAFE("***MUTEX-UNLOCK: mutex "+TOSTRING((uintptr_t)x)+" in function "+OGREFUNCTIONSTRING); pthread_mutex_unlock(x); } while(0)
-#else //!FEAT_DEBUG_MUTEX
-# define MUTEX_LOCK(x)       pthread_mutex_lock(x);
-# define MUTEX_UNLOCK(x)     pthread_mutex_unlock(x);
-#endif //FEAT_DEBUG_MUTEX
 
 // debug asserts
 // #define FEAT_DEBUG_ASSERT

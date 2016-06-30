@@ -33,7 +33,7 @@ public:
 		, frameListener(0)
 		, mainCamera(0)
 		, mrTime(0)
-		, network(0)
+		, multiplayer(false)
 		, player(0)
 		, sceneManager(0)
 		, sky(0)
@@ -50,7 +50,6 @@ public:
 	Character *player;
 	Collisions *collisions;
 	SurveyMapManager *surveyMap;
-	Network *network;
 	RoRFrameListener *frameListener;
 	SkyManager *sky;
 	TerrainManager *terrainManager;
@@ -58,4 +57,5 @@ public:
 	Envmap *envMap;
 
 	float mrTime;
+	bool multiplayer;
 };

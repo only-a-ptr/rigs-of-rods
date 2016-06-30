@@ -26,11 +26,23 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RoRPrerequisites.h"
 
+#include <thread>
+
 #define SET_BIT(var, pos)   ((var) |= (1<<(pos)))
 #define CLEAR_BIT(var, pos) ((var) &= ~(1<<(pos)))
 #define SET_LSB(var)        ((var) |= 1)
 #define CLEAR_LSB(var)      ((var) &= ~1)
 #define CHECK_BIT(var,pos)  ((var) & (1<<(pos)))
+
+void save(Ogre::uchar *data, Ogre::uchar *databuf, int mWidth, int mHeight, Ogre::PixelFormat pf, Ogre::String filename)
+{
+	Ogre::Image img;
+	img.loadDynamicImage(data, mWidth, mHeight, 1, pf, false, 1, 0);
+	img.save(filename);
+
+	OGRE_FREE(data, Ogre::MEMCATEGORY_RENDERSYS);
+	OGRE_FREE(databuf, Ogre::MEMCATEGORY_RENDERSYS);
+}
 
 // this only works with lossless image compression (png)
 
@@ -110,13 +122,7 @@ public:
 		//float used_per = ((float)(dsize * 8 + 40) / (float)isize) * 100.0f;
 		//LOG("used " + TOSTRING(used_per) + " %");
 
-		//save it
-		Ogre::Image img;
-		img.loadDynamicImage(data, mWidth, mHeight, 1, pf, false, 1, 0);
-		img.save(filename);
-
-		OGRE_FREE(data, Ogre::MEMCATEGORY_RENDERSYS);
-		OGRE_FREE(databuf, Ogre::MEMCATEGORY_RENDERSYS);
+		std::thread (save, data, databuf, mWidth, mHeight, pf, filename).detach();
 	}
 
 protected:

@@ -20,19 +20,17 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "VideoCamera.h"
 
+#include "Application.h"
 #include "Beam.h"
 #include "BeamData.h"
+#include "GUIManager.h"
 #include "MaterialReplacer.h"
-#include "ResourceBuffer.h"
 #include "RigDef_File.h"
 #include "RigSpawner.h"
+#include "RoRFrameListener.h"
 #include "Settings.h"
 #include "SkyManager.h"
 #include "Utils.h"
-#include "RoRFrameListener.h"
-#include "Application.h"
-#include "GUIManager.h"
-
 
 using namespace Ogre;
 
@@ -77,8 +75,7 @@ void VideoCamera::init()
 			, mirrorSize.y
 			, 0 // no mip maps
 			, Ogre::PF_R8G8B8
-			, Ogre::TU_RENDERTARGET
-			, new ResourceBuffer());
+			, Ogre::TU_RENDERTARGET);
 		rttTex = rttTexPtr->getBuffer()->getRenderTarget();
 		//rttTex->setAutoUpdated(false);
 	} else
@@ -187,7 +184,7 @@ void VideoCamera::update(float dt)
 
 #ifdef USE_CAELUM
 	// caelum needs to know that we changed the cameras
-	if (gEnv->sky && gEnv->frameListener->loading_state == TERRAIN_LOADED)
+	if (gEnv->sky && gEnv->frameListener->m_loading_state == TERRAIN_LOADED)
 		gEnv->sky->notifyCameraChanged(mVidCam);
 		
 #endif // USE_CAELUM
@@ -198,19 +195,19 @@ void VideoCamera::update(float dt)
 	if (rwMirror) rwMirror->update();*/
 
 	// get the normal of the camera plane now
-	Vector3 normal=(-(truck->nodes[nref].smoothpos - truck->nodes[nz].smoothpos)).crossProduct(-(truck->nodes[nref].smoothpos - truck->nodes[ny].smoothpos));
+	Vector3 normal=(-(truck->nodes[nref].AbsPosition - truck->nodes[nz].AbsPosition)).crossProduct(-(truck->nodes[nref].AbsPosition - truck->nodes[ny].AbsPosition));
 	normal.normalise();
 
 	// add user set offset
-	Vector3 pos = truck->nodes[camNode].smoothpos +
+	Vector3 pos = truck->nodes[camNode].AbsPosition +
 		(offset.x * normal) +
-		(offset.y * (truck->nodes[nref].smoothpos - truck->nodes[ny].smoothpos)) +
-		(offset.z * (truck->nodes[nref].smoothpos - truck->nodes[nz].smoothpos));
+		(offset.y * (truck->nodes[nref].AbsPosition - truck->nodes[ny].AbsPosition)) +
+		(offset.z * (truck->nodes[nref].AbsPosition - truck->nodes[nz].AbsPosition));
 
 	//avoid the camera roll
 	// camup orientates to frustrum of world by default -> rotating the cam related to trucks yaw, lets bind cam rotation videocamera base (nref,ny,nz) as frustum
 	// could this be done faster&better with a plane setFrustumExtents ?
-	Vector3 frustumUP = truck->nodes[nref].smoothpos - truck->nodes[ny].smoothpos;
+	Vector3 frustumUP = truck->nodes[nref].AbsPosition - truck->nodes[ny].AbsPosition;
 	frustumUP.normalise();
 	mVidCam->setFixedYawAxis(true, frustumUP);
 
@@ -227,21 +224,21 @@ void VideoCamera::update(float dt)
 		if (camRole == -1)
 		{
 			// rotate the camera according to the nodes orientation and user rotation
-			Vector3 refx = truck->nodes[nz].smoothpos - truck->nodes[nref].smoothpos;
+			Vector3 refx = truck->nodes[nz].AbsPosition - truck->nodes[nref].AbsPosition;
 			refx.normalise();
-			Vector3 refy = truck->nodes[nref].smoothpos - truck->nodes[ny].smoothpos;
+			Vector3 refy = truck->nodes[nref].AbsPosition - truck->nodes[ny].AbsPosition;
 			refy.normalise();
 			Quaternion rot = Quaternion(-refx, -refy, -normal);
 			mVidCam->setOrientation(rot * rotation); // rotate the camera orientation towards the calculated cam direction plus user rotation
 		} else
 		{
 			// we assume this is a tracking videocamera
-			normal = truck->nodes[lookat].smoothpos - pos;
+			normal = truck->nodes[lookat].AbsPosition - pos;
 			normal.normalise();
-			Vector3 refx = truck->nodes[nz].smoothpos - truck->nodes[nref].smoothpos;
+			Vector3 refx = truck->nodes[nz].AbsPosition - truck->nodes[nref].AbsPosition;
 			refx.normalise();
 			// why does this flip ~2-3° around zero orientation and only with trackercam. back to slower crossproduct calc, a bit slower but better .. sigh
-			// Vector3 refy = truck->nodes[nref].smoothpos - truck->nodes[ny].smoothpos;
+			// Vector3 refy = truck->nodes[nref].AbsPosition - truck->nodes[ny].AbsPosition;
 			Vector3 refy = refx.crossProduct(normal);
 			refy.normalise();
 			Quaternion rot = Quaternion(-refx, -refy, -normal);

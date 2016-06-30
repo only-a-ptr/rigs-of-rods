@@ -139,21 +139,22 @@ bool SceneMouse::mouseMoved(const OIS::MouseEvent& _arg)
 		// walk all trucks
 		Beam **trucks = BeamFactory::getSingleton().getTrucks();
 		int trucksnum = BeamFactory::getSingleton().getTruckCount();
+		minnode = -1;
 		grab_truck = NULL;
 		for (int i = 0; i < trucksnum; i++)
 		{
-			if (!trucks[i]) continue;
-			if (trucks[i] && (trucks[i]->state == ACTIVATED || trucks[i]->state == DESACTIVATED))
+			if (trucks[i] && trucks[i]->state == SIMULATED)
 			{
-				minnode = -1;
-				// walk all nodes
+				// check if our ray intersects with the bounding box of the truck
+				std::pair<bool, Real> pair = mouseRay.intersects(trucks[i]->boundingBox);
+				if (!pair.first) continue;
+
 				for (int j = 0; j < trucks[i]->free_node; j++)
 				{
-					// check if the mouse grab mode is ok
-					if (trucks[i]->nodes[j].mouseGrabMode == 1) continue;
+					if (trucks[i]->node_mouse_grab_disabled[j]) continue;
 
 					// check if our ray intersects with the node
-					std::pair<bool, Real> pair = mouseRay.intersects(Sphere(trucks[i]->nodes[j].smoothpos, 0.1f));
+					std::pair<bool, Real> pair = mouseRay.intersects(Sphere(trucks[i]->nodes[j].AbsPosition, 0.1f));
 					if (pair.first)
 					{
 						// we hit it, check if its the nearest node
@@ -226,6 +227,55 @@ void SceneMouse::update(float dt)
 
 bool SceneMouse::mousePressed(const OIS::MouseEvent& _arg, OIS::MouseButtonID _id)
 {
+	if (Application::GetGuiManager()->GetPauseMenuVisible()) return true; //Stop everything when pause menu is visible
+
+	const OIS::MouseState ms = _arg.state;
+
+	if (ms.buttonDown(OIS::MB_Middle))
+	{
+		if (gEnv->cameraManager && gEnv->cameraManager->getCurrentBehavior() == CameraManager::CAMERA_BEHAVIOR_VEHICLE)
+		{
+			Beam *truck = BeamFactory::getSingleton().getCurrentTruck();
+
+			if (truck)
+			{
+				lastMouseY = ms.Y.abs;
+				lastMouseX = ms.X.abs;
+				Ray mouseRay = getMouseRay();
+
+				Real nearest_camera_distance = std::numeric_limits<float>::max();
+				Real nearest_ray_distance = std::numeric_limits<float>::max();
+				int nearest_node_index = -1;
+
+				for (int i = 0; i < truck->free_node; i++)
+				{
+					std::pair<bool, Real> pair = mouseRay.intersects(Sphere(truck->nodes[i].AbsPosition, 0.25f));
+					if (pair.first)
+					{
+						Real ray_distance = mouseRay.getDirection().crossProduct(truck->nodes[i].AbsPosition - mouseRay.getOrigin()).length();
+						if (ray_distance < nearest_ray_distance || (ray_distance == nearest_ray_distance && pair.second < nearest_camera_distance))
+						{
+							nearest_camera_distance = pair.second;
+							nearest_ray_distance    = ray_distance;
+							nearest_node_index      = i;
+						}
+					}
+				}
+				if (truck->m_custom_camera_node != nearest_node_index)
+				{
+					truck->m_custom_camera_node = nearest_node_index;
+					truck->calculateAveragePosition();
+					gEnv->cameraManager->NotifyContextChange();
+				}
+			}
+		}
+	}
+
+	if (gEnv->cameraManager)
+	{
+		gEnv->cameraManager->mousePressed(_arg, _id);
+	}
+
 	return true;
 }
 
@@ -236,6 +286,11 @@ bool SceneMouse::mouseReleased(const OIS::MouseEvent& _arg, OIS::MouseButtonID _
 	if (mouseGrabState == 1)
 	{
 		releaseMousePick();
+	}
+
+	if (gEnv->cameraManager)
+	{
+		gEnv->cameraManager->mouseReleased(_arg, _id);
 	}
 
 	return true;

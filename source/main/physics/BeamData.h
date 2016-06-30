@@ -126,9 +126,6 @@ static const float HOOK_SPEED_DEFAULT           = 0.00025f;
 static const float HOOK_LOCK_TIMER_DEFAULT      = 5.0;
 static const int   NODE_LOCKGROUP_DEFAULT		= -1; // all hooks scan all nodes
 
-#define THREAD_SINGLE false	//!< single threading mode
-#define THREAD_MULTI  true  //!< multi threading mode
-
 /* Enumerations */
 enum {
 	BEAM_NORMAL,
@@ -138,21 +135,12 @@ enum {
 	BEAM_INVISIBLE,
 	BEAM_INVISIBLE_HYDRO
 };
-enum {
-	NODE_NORMAL,
-	NODE_LOADED
-};
 
 enum {
-	ACTIVATED,      //!< leading truck
-	DESACTIVATED,   //!< not leading but active
-	MAYSLEEP,       //!< active but wanting to sleep
-	GOSLEEP,        //!< active but ordered to sleep ASAP (synchronously)
-	SLEEPING,       //!< not active, sleeping
-	NETWORKED,      //!< not calculated, gets remote data
-	NETWORKED_INVALID,	//!< not calculated, size differs from expected
-	RECYCLE,        //!< waiting for reusage
-	DELETED,        //!< special used when truck pointer is 0
+	SIMULATED,      //!< simulated (local) truck
+	NETWORKED,      //!< not simulated (remote) truck
+	SLEEPING,       //!< sleeping (local) truck
+	INVALID         //!< not simulated and not updated via the network (e.g. size differs from expected)
 };
 
 enum {
@@ -276,6 +264,13 @@ enum {
 	DEFAULT_DETACHER_GROUP  = 0, // default for detaching beam group
 };
 
+enum {
+	NOWHEEL,
+	WHEEL_DEFAULT,
+	WHEEL_2,
+	WHEEL_FLEXBODY
+};
+
 /* some info holding arrays */
 static const float flapangles[6] = {0.f, -0.07f, -0.17f, -0.33f, -0.67f, -1.f};
 
@@ -286,10 +281,8 @@ static const float flapangles[6] = {0.f, -0.07f, -0.17f, -0.33f, -0.67f, -1.f};
 
 struct collcab_rate_t
 {
-	int rate;
-	int distance;
-	bool update;
-	bool calcforward;
+	int rate;     // remaining amount of physics cycles to be skipped
+	int distance; // distance (in physics cycles) to the previous collision check
 };
 
 #include "datatypes/beam_t.h"
@@ -488,6 +481,7 @@ struct prop_t
 	Ogre::Real wheelrotdegree;
 	int cameramode; //!< Visibility control {-2 = always, -1 = 3rdPerson only, 0+ = cinecam index}
 	MeshObject *mo;
+	MeshObject *wheelmo;
 };
 
 struct exhaust_t

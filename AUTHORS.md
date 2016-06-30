@@ -6,7 +6,8 @@ Rigs of Rods is licensed under GPLv3 or later by the following authors (in no pa
 | GitHub nickname                | RoR forum nickname      | real name              | email                            |
 |--------------------------------|-------------------------|------------------------|----------------------------------|
 | ?                              | pricorde                | ?                      | ?                                |
-| tdev                           | tdev                    | Thomas Fischer         | tfischer{at}beamng{dot}com       | 
+| tdev                           | tdev                    | Thomas Fischer         | tfischer{at}beamng{dot}com       |
+| Aperion                        | Aperion                 | Chris Ritchey          | ?                                | 
 | ?                              | estama                  | ?                      | ?                                |
 | ?                              | Lifter                  | ?                      | ?                                |
 | ?                              | FlyPiper                | ?                      | ?                                |
@@ -14,7 +15,6 @@ Rigs of Rods is licensed under GPLv3 or later by the following authors (in no pa
 | ?                              | neorej16                | ?                      | ?                                |
 | ?                              | 88Toyota                | ?                      | ?                                |
 | ?                              | synthead                | ?                      | ?                                |
-| ?                              | ulteq                   | ?                      | ?                                |
 | ?                              | theshark                | ?                      | ?                                |
 
 
@@ -44,11 +44,12 @@ If you are one of the previous authors and happen to come across this list pleas
 ##### authors of the source code since reboot (move to git)
 | GitHub nickname                | RoR forum nickname      | real name              | email                            |
 |--------------------------------|-------------------------|------------------------|----------------------------------|
-| Hiradur                        | Hiradur                 | Niklas Kersten         | n\<surname\>.dev@gmail.com       |
+| Hiradur                        | Hiradur                 | Niklas Kersten         | n.\<surname\>@xyz.de              |
 | only-a-ptr                     | only_a_ptr              | Petr Ohlídal           | my-name@my-surname.cz            |
 | Aperion                        | Aperion                 | <uncompleted>          | <uncompleted>                    |
 | Max98                          | max98                   | Moncef Ben Slimane     | moncefbenslimane{at}yahoo{dot}fr |
 | skybon                         | skybon                  | Artem Vorotnikov       | my-name@my-surname.me            |
+| ulteq                          | ulteq                   | <uncompleted>          | my-name@web.de                   |
 
 If you are a first time commiter please add yourself to this list for legal reasons. You may want to disguise your email adress to prevent crawlers from detecting it. If you do so make sure it does not leave room for different interpretations.
 

@@ -1,31 +1,30 @@
 /*
-This source file is part of Rigs of Rods
-Copyright 2005-2012 Pierre-Michel Ricordel
-Copyright 2007-2012 Thomas Fischer
+    This source file is part of Rigs of Rods
+    Copyright 2005-2012 Pierre-Michel Ricordel
+    Copyright 2007-2012 Thomas Fischer
+    Copyright 2013-2016 Petr Ohlidal
 
-For more information, see http://www.rigsofrods.com/
+    For more information, see http://www.rigsofrods.com/
 
-Rigs of Rods is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License version 3, as
-published by the Free Software Foundation.
+    Rigs of Rods is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3, as
+    published by the Free Software Foundation.
 
-Rigs of Rods is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    Rigs of Rods is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with Rigs of Rods. If not, see <http://www.gnu.org/licenses/>.
 */
-#include "TerrainManager.h"
 
-#include <Terrain/OgreTerrainPaging.h>
+#include "TerrainManager.h"
 
 #include "BeamData.h"
 #include "BeamFactory.h"
 #include "Collisions.h"
 #include "Dashboard.h"
-#include "DustManager.h"
 #include "EnvironmentMap.h"
 #include "ErrorUtils.h"
 #include "GUIFriction.h"
@@ -33,6 +32,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "HDRListener.h"
 #include "HydraxWater.h"
 #include "Language.h"
+#include "RoRFrameListener.h"
 #include "Scripting.h"
 #include "Settings.h"
 #include "ShadowManager.h"
@@ -44,9 +44,11 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "Utils.h"
 #include "Water.h"
 
+#include <Terrain/OgreTerrainPaging.h>
+
 using namespace Ogre;
 
-TerrainManager::TerrainManager() : 
+TerrainManager::TerrainManager() :
 	  m_terrain_config()
 	, character(0)
 	, collisions(0)
@@ -129,6 +131,18 @@ TerrainManager::~TerrainManager()
 		delete(geometry_manager);
 		geometry_manager = nullptr;
 	}
+
+	if (shadow_manager != nullptr)
+	{
+		delete(shadow_manager);
+		shadow_manager = nullptr;
+	}
+
+	if (survey_map != nullptr)
+	{
+		delete survey_map;
+		survey_map = nullptr;
+	}
 }
 
 // some shortcut to remove ugly code
@@ -147,14 +161,14 @@ void TerrainManager::loadTerrainConfigBasics(Ogre::DataStreamPtr &ds)
 	m_terrain_config.load(ds, "\t:=", true);
 
 	// read in the settings
-	terrain_name = m_terrain_config.getSetting("Name", "General");
+	terrain_name = m_terrain_config.GetStringEx("Name", "General");
 	if (terrain_name.empty())
 	{
 		ErrorUtils::ShowError(_L("Terrain loading error"), _L("the terrain name cannot be empty"));
 		exit(125);
 	}
 
-	ogre_terrain_config_filename = m_terrain_config.getSetting("GeometryConfig", "General");
+	ogre_terrain_config_filename = m_terrain_config.GetStringEx("GeometryConfig", "General");
 	// otc = ogre terrain config
 	if (ogre_terrain_config_filename.find(".otc") == String::npos)
 	{
@@ -162,12 +176,12 @@ void TerrainManager::loadTerrainConfigBasics(Ogre::DataStreamPtr &ds)
 		exit(125);
 	}
 
-	ambient_color = StringConverter::parseColourValue(m_terrain_config.getSetting("AmbientColor", "General"), ColourValue::White);
-	category_id = StringConverter::parseInt(m_terrain_config.getSetting("CategoryID", "General"), 129);
-	guid = m_terrain_config.getSetting("GUID", "General");
-	start_position = StringConverter::parseVector3(m_terrain_config.getSetting("StartPosition", "General"), Vector3(512.0f, 0.0f, 512.0f));
-	version = StringConverter::parseInt(m_terrain_config.getSetting("Version", "General"), 1);
-	gravity = StringConverter::parseReal(m_terrain_config.getSetting("Gravity", "General"), -9.81);
+	ambient_color  = m_terrain_config.GetColourValue("AmbientColor", "General", ColourValue::White);
+	category_id    = m_terrain_config.GetInt("CategoryID", "General", 129);
+	guid           = m_terrain_config.GetStringEx("GUID", "General");
+	start_position = StringConverter::parseVector3(m_terrain_config.GetStringEx("StartPosition", "General"), Vector3(512.0f, 0.0f, 512.0f));
+	version        = m_terrain_config.GetInt("Version", "General", 1);
+	gravity        = m_terrain_config.GetFloat("Gravity", "General", -9.81);
 
 	// parse author info
 	ConfigFile::SettingsIterator it = m_terrain_config.getSettingsIterator("Authors");
@@ -176,8 +190,8 @@ void TerrainManager::loadTerrainConfigBasics(Ogre::DataStreamPtr &ds)
 
 	while (it.hasMoreElements())
 	{
-		String type = it.peekNextKey();   // e.g. terrain
-		String name = it.peekNextValue(); // e.g. john doe
+		String type = RoR::Utils::SanitizeUtf8String(it.peekNextKey());   // e.g. terrain
+		String name = RoR::Utils::SanitizeUtf8String(it.peekNextValue()); // e.g. john doe
 
 		if (!name.empty())
 		{
@@ -357,13 +371,13 @@ void TerrainManager::initSkySubSystem()
 		gEnv->sky = sky_manager;
 
 		// try to load caelum config
-		String caelumConfig = m_terrain_config.getSetting("CaelumConfigFile", "General");
+		String caelumConfig = m_terrain_config.GetStringEx("CaelumConfigFile", "General");
 
 		if (!caelumConfig.empty() && ResourceGroupManager::getSingleton().resourceExistsInAnyGroup(caelumConfig))
 		{
 			// config provided and existing, use it :)
-			int caelumFogStart = StringConverter::parseInt(m_terrain_config.getSetting("CaelumFogStart", "General"),-1);
-			int caelumFogEnd = StringConverter::parseInt(m_terrain_config.getSetting("CaelumFogEnd", "General"),-1);
+			int caelumFogStart = m_terrain_config.GetInt("CaelumFogStart", "General",-1);
+			int caelumFogEnd   = m_terrain_config.GetInt("CaelumFogEnd",   "General",-1);
 			sky_manager->loadScript(caelumConfig, caelumFogStart, caelumFogEnd);
 		} else
 		{
@@ -374,7 +388,7 @@ void TerrainManager::initSkySubSystem()
 	} else
 #endif //USE_CAELUM
 	{
-		String sandStormConfig = m_terrain_config.getSetting("SandStormCubeMap", "General");
+		String sandStormConfig = m_terrain_config.GetStringEx("SandStormCubeMap", "General");
 
 		/*if (!sandStormConfig.empty())
 		{
@@ -491,12 +505,16 @@ void TerrainManager::initWater()
 	// disabled in global config
 	if (waterSettingsString == "None") return;
 	// disabled in map config
-	if (!StringConverter::parseBool(m_terrain_config.getSetting("Water", "General"))) return;
+    bool has_water = m_terrain_config.GetBool("Water", "General", false);
+    if (!has_water)
+    {
+        return;
+    }
 
 	/*if (waterSettingsString == "Hydrax")
 	{
 		// try to load hydrax config
-		String hydraxConfig = m_terrain_config.getSetting("HydraxConfigFile", "General");
+		String hydraxConfig = m_terrain_config.GetStringEx("HydraxConfigFile", "General");
 
 		if (!hydraxConfig.empty() && ResourceGroupManager::getSingleton().resourceExistsInAnyGroup(hydraxConfig))
 		{
@@ -579,7 +597,7 @@ void TerrainManager::initCollisions()
 
 void TerrainManager::initTerrainCollisions()
 {
-	String tractionMapConfig = m_terrain_config.getSetting("TractionMap", "General");
+	String tractionMapConfig = m_terrain_config.GetStringEx("TractionMap", "General");
 	if (!tractionMapConfig.empty())
 	{
 		gEnv->collisions->setupLandUse(tractionMapConfig.c_str());
@@ -603,7 +621,7 @@ void TerrainManager::initScripting()
 	bool loaded = false;
 
 	// only load terrain scripts while not in multiplayer
-	if (!gEnv->network)
+	if (!gEnv->multiplayer)
 	{
 		try
 		{
@@ -674,15 +692,12 @@ IHeightFinder* TerrainManager::getHeightFinder()
 	return geometry_manager;
 }
 
-size_t TerrainManager::getMemoryUsage()
-{
-	// TODO: FIX
-	return 0;
-}
-
-void TerrainManager::freeResources()
-{
-	// TODO
+SkyManager* TerrainManager::getSkyManager()
+{ 
+	if (gEnv->frameListener->m_loading_state == TERRAIN_LOADED || gEnv->frameListener->m_loading_state == ALL_LOADED)
+		return sky_manager;
+	else
+		return nullptr;
 }
 
 void TerrainManager::loadPreloadedTrucks()

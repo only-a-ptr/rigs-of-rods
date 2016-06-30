@@ -1,52 +1,87 @@
-#!/bin/bash
+#!/bin/sh
 
-#Initialization
-source "$TRAVIS_BUILD_DIR"/tools/travis/linux/config
-mkdir -p "$ROR_SOURCE_DIR"
-mkdir -p "$ROR_INSTALL_DIR"
+set -eu
 
-#Precompiled dependencies
-#sudo apt-get update
-sudo apt-get install -qq build-essential git cmake pkg-config \
-libfreetype6-dev libfreeimage-dev libzzip-dev libois-dev \
-libgl1-mesa-dev libglu1-mesa-dev libopenal-dev  \
-libx11-dev libxt-dev libxaw7-dev libxrandr-dev \
-libssl-dev libcurl4-openssl-dev libgtk2.0-dev libwxgtk3.0-dev
+mkdir $DEPS_BUILD_DIR
+#mkdir $DEPS_INSTALL_DIR
 
-# OGRE
-cd "$ROR_SOURCE_DIR"
-hg clone https://bitbucket.org/sinbad/ogre -b v2-0
+#OGRE
+cd $DEPS_BUILD_DIR
+wget -O ogre.zip https://bitbucket.org/sinbad/ogre/get/v1-9.zip
+unzip -qq ogre.zip && rm ogre.zip && mv sinbad-ogre-* ogre
 cd ogre
-cmake \
--DCMAKE_INSTALL_PREFIX="$ROR_INSTALL_DIR" \
--DFREETYPE_INCLUDE_DIR=/usr/include/freetype2/ \
--DCMAKE_BUILD_TYPE:STRING=DEBUG \
+cmake -DCMAKE_INSTALL_PREFIX=$DEPS_INSTALL_DIR \
+-DCMAKE_BUILD_TYPE:STRING=Release \
+-DCMAKE_CXX_FLAGS="-w -O0 -pipe" \
+-DOGRE_BUILD_PLUGIN_BSP:BOOL=OFF \
+-DOGRE_BUILD_PLUGIN_CG:BOOL=OFF \
+-DOGRE_BUILD_PLUGIN_PCZ:BOOL=OFF \
+-DOGRE_BUILD_COMPONENT_VOLUME:BOOL=OFF \
+-DOGRE_BUILD_TESTS:BOOL=OFF \
+-DOGRE_BUILD_TOOLS=OFF \
 -DOGRE_BUILD_SAMPLES:BOOL=OFF .
-make $ROR_MAKEOPTS
+make -s -j2
 make install
 
-# MyGUI
-cd "$ROR_SOURCE_DIR"
-git clone https://github.com/MyGUI/mygui.git
+#MyGUI
+cd $DEPS_BUILD_DIR
+wget -O mygui.tar.gz https://github.com/MyGUI/mygui/archive/MyGUI3.2.2.tar.gz
+tar -xf mygui.tar.gz && rm mygui.tar.gz && mv mygui-* mygui
 cd mygui
-git checkout ogre2
-cmake \
--DCMAKE_INSTALL_PREFIX="$ROR_INSTALL_DIR" \
--DFREETYPE_INCLUDE_DIR=/usr/include/freetype2/ \
--DCMAKE_BUILD_TYPE:STRING=RELEASE \
+cmake -DCMAKE_INSTALL_PREFIX=$DEPS_INSTALL_DIR \
+-DCMAKE_PREFIX_PATH=$DEPS_INSTALL_DIR \
+-DCMAKE_BUILD_TYPE:STRING=Release \
+-DCMAKE_CXX_FLAGS="-w -O0 -pipe" \
 -DMYGUI_BUILD_DEMOS:BOOL=OFF \
 -DMYGUI_BUILD_DOCS:BOOL=OFF \
 -DMYGUI_BUILD_TEST_APP:BOOL=OFF \
 -DMYGUI_BUILD_TOOLS:BOOL=OFF \
 -DMYGUI_BUILD_PLUGINS:BOOL=OFF .
-make $ROR_MAKEOPTS
+make -s -j2
 make install
 
-# MySocketW
-cd "$ROR_SOURCE_DIR"
-git clone --depth=1 https://github.com/Hiradur/mysocketw.git
-cd mysocketw
-git pull
-sed -i '/^PREFIX *=/d' Makefile.conf
-make $ROR_MAKEOPTS shared
-PREFIX="$ROR_INSTALL_DIR" make install
+#PagedGeometry
+cd $DEPS_BUILD_DIR
+git clone -q --depth=1 https://github.com/RigsOfRods/ogre-pagedgeometry.git
+cd ogre-pagedgeometry
+cmake -DCMAKE_INSTALL_PREFIX=$DEPS_INSTALL_DIR \
+-DCMAKE_PREFIX_PATH=$DEPS_INSTALL_DIR \
+-DCMAKE_BUILD_TYPE:STRING=Release \
+-DCMAKE_CXX_FLAGS="-w -O0 -pipe" \
+-DPAGEDGEOMETRY_BUILD_SAMPLES:BOOL=OFF .
+make -s -j2
+make install
+
+#MySocketW
+cd $DEPS_BUILD_DIR
+git clone -q --depth=1 https://github.com/Hiradur/mysocketw.git
+mkdir -p mysocketw/build
+cd mysocketw/build
+cmake -DCMAKE_INSTALL_PREFIX=$DEPS_INSTALL_DIR \
+-DCMAKE_BUILD_TYPE:STRING=Release \
+-DCMAKE_CXX_FLAGS="-w -O0 -pipe" \
+..
+make -s -j2
+make install
+
+#Angelscript
+cd $DEPS_BUILD_DIR
+mkdir angelscript
+cd angelscript
+wget http://www.angelcode.com/angelscript/sdk/files/angelscript_2.22.1.zip
+unzip -qq angelscript_*.zip
+cd sdk/angelscript/projects/cmake
+cmake -DCMAKE_INSTALL_PREFIX=$DEPS_INSTALL_DIR \
+-DCMAKE_BUILD_TYPE:STRING=Release \
+-DCMAKE_CXX_FLAGS="-w -O0 -pipe" \
+.
+make -s -j2 
+cp -r ../../lib/libAngelscript.a $DEPS_INSTALL_DIR/lib/libangelscript.a
+cp -r ../../include $DEPS_INSTALL_DIR
+
+ls $DEPS_INSTALL_DIR/lib
+# sudo make install fails when making the symbolic link, this removes the existing versions
+#rm -f ../../lib/*
+#make -s install 
+#cleanup files made by root
+#rm -f ../../lib/*

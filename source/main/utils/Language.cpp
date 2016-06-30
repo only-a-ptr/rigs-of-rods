@@ -35,7 +35,8 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <OgreTextAreaOverlayElement.h>
 
-#include "FontTextureHelper.h"
+
+#include <Ogre.h>
 
 using namespace Ogre;
 
