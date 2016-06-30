@@ -1998,6 +1998,7 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 		{
 			steering_wheel_offset = def.special_prop_steering_wheel.offset;
 		}
+		prop.wheelrotdegree = def.special_prop_steering_wheel.rotation_angle;
 		prop.wheel = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 		prop.wheelpos = steering_wheel_offset;
 		MeshObject *mesh_object = new MeshObject(
@@ -2040,10 +2041,6 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 	{
 		m_rig->driversseatfound = true;
 		m_rig->driverSeat = & prop;
-	}
-	else if (def.special == RigDef::Prop::SPECIAL_STEERING_WHEEL_LEFT_HANDED || def.special == RigDef::Prop::SPECIAL_STEERING_WHEEL_RIGHT_HANDED)
-	{
-		prop.wheelrotdegree = def.special_prop_steering_wheel.rotation_angle;
 	}
 	else if (m_rig->flaresMode > 0)
 	{
@@ -2636,8 +2633,8 @@ void RigSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 {
 	SPAWNER_PROFILE_SCOPED();
 
-    Ogre::MaterialPtr test = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(def.name));
-	if (! test.isNull())
+	Ogre::MaterialPtr test = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(def.name));
+	if (!test.isNull())
 	{
 		std::stringstream msg;
 		msg << "Managed material '" << def.name << "' already exists (probably because the vehicle was already spawned before)";
@@ -2647,9 +2644,9 @@ void RigSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 	Ogre::MaterialPtr material;
 	if (def.type == RigDef::ManagedMaterial::TYPE_FLEXMESH_STANDARD || def.type == RigDef::ManagedMaterial::TYPE_FLEXMESH_TRANSPARENT)
 	{
-		Ogre::String mat_name_base 
-			= (def.type == RigDef::ManagedMaterial::TYPE_FLEXMESH_STANDARD) 
-			? "managed/flexmesh_standard" 
+		Ogre::String mat_name_base
+			= (def.type == RigDef::ManagedMaterial::TYPE_FLEXMESH_STANDARD)
+			? "managed/flexmesh_standard"
 			: "managed/flexmesh_transparent";
 
 		if (mat_name_base == "managed/flexmesh_standard")
@@ -2750,6 +2747,14 @@ void RigSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 					}
 					material->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName(def.diffuse_map);
 					material->getTechnique(0)->getPass(0)->getTextureUnitState(1)->setTextureName(def.damaged_diffuse_map);
+			}
+			if (def.options.double_sided)
+			{
+				material->getTechnique("BaseTechnique")->getPass("BaseRender")->setCullingMode(Ogre::CULL_NONE);
+				if (def.HasSpecularMap())
+				{
+					material->getTechnique("BaseTechnique")->getPass("SpecularMapping1")->setCullingMode(Ogre::CULL_NONE);
+				}
 				}
 				if (def.options.double_sided)
 				{
@@ -2783,6 +2788,14 @@ void RigSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 						return;
 					}
 					material->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName(def.diffuse_map);
+			}
+			if (def.options.double_sided)
+			{
+				material->getTechnique("BaseTechnique")->getPass("BaseRender")->setCullingMode(Ogre::CULL_NONE);
+				if (def.HasSpecularMap())
+				{
+					material->getTechnique("BaseTechnique")->getPass("SpecularMapping1")->setCullingMode(Ogre::CULL_NONE);
+				}
 				}
 
 				if (def.options.double_sided)
@@ -2799,9 +2812,9 @@ void RigSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 	}
 	else if (def.type == RigDef::ManagedMaterial::TYPE_MESH_STANDARD || def.type == RigDef::ManagedMaterial::TYPE_MESH_TRANSPARENT)
 	{
-		Ogre::String mat_name_base 
-			= (def.type == RigDef::ManagedMaterial::TYPE_MESH_STANDARD) 
-			? "managed/mesh_standard" 
+		Ogre::String mat_name_base
+			= (def.type == RigDef::ManagedMaterial::TYPE_MESH_STANDARD)
+			? "managed/mesh_standard"
 			: "managed/mesh_transparent";
 
 		if (mat_name_base == "managed/mesh_standard")
@@ -2869,6 +2882,8 @@ void RigSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 				if (def.HasSpecularMap())
 				{
 					material->getTechnique(0)->getPass(1)->setCullingMode(Ogre::CULL_NONE);
+				}
+			}
 				}
 			}
 		}
@@ -5968,6 +5983,30 @@ void RigSpawner::ProcessBrakes(RigDef::Brakes & def)
 	{
 		m_rig->hbrakeforce = 2.f * m_rig->brakeforce;
 	}
+};
+
+void RigSpawner::ProcessEngturbo(RigDef::Engturbo & def)
+{
+	/* Is this a land vehicle? */
+	if (m_rig->engine == nullptr)
+	{
+		AddMessage(Message::TYPE_WARNING, "Section 'engturbo' found but no engine defined. Skipping ...");
+		return;
+	}
+	
+		/* Find it */
+	boost::shared_ptr<RigDef::Engturbo> engturbo;
+	std::list<boost::shared_ptr<RigDef::File::Module>>::iterator module_itor = m_selected_modules.begin();
+	for (; module_itor != m_selected_modules.end(); module_itor++)
+	{
+		if (module_itor->get()->engturbo != nullptr)
+		{
+			engturbo = module_itor->get()->engturbo;
+		}
+	}
+	
+		/* Process it */
+	m_rig->engine->setTurboOptions(engturbo->version, engturbo->tinertiaFactor, engturbo->nturbos, engturbo->param1, engturbo->param2, engturbo->param3, engturbo->param4);
 };
 
 void RigSpawner::ProcessEngoption(RigDef::Engoption & def)

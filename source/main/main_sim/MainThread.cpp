@@ -1238,6 +1238,8 @@ void MainThread::ChangeMap()
 }
 void MainThread::UnloadTerrain()
 {
+	gEnv->frameListener->hideMap();
+
 	gEnv->frameListener->loading_state = NONE_LOADED;
 	LoadingWindow::getSingleton().setProgress(0, _L("Unloading Terrain"));
 	
@@ -1508,13 +1510,13 @@ void MainThread::initMatManager()
 	Ogre::String managed_materials_dir_path = SSETTING("Resources Path", "") + "managed_materials/";
 
 	//Dirty, needs to be improved
-	if (SSETTING("Shadows", "Parallel-split Shadow Maps") == "Parallel-split Shadow Maps")
+	if (SSETTING("Shadow technique", "Parallel-split Shadow Maps") == "Parallel-split Shadow Maps")
 		ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path + "shadows/on/", "FileSystem", "ShadowsMats");
 	else
 		ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path + "shadows/off/", "FileSystem", "ShadowsMats");
 	ResourceGroupManager::getSingleton().initialiseResourceGroup("ShadowsMats");
 
-	ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path + "texture_manager/", "FileSystem", "TextureManager");
+	ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path + "texture/", "FileSystem", "TextureManager");
 	ResourceGroupManager::getSingleton().initialiseResourceGroup("TextureManager");
 
 	Envmap* env = new Envmap();

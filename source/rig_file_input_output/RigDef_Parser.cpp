@@ -46,6 +46,18 @@ namespace RigDef
 
 #define STR_PARSE_BOOL(_STR_) Ogre::StringConverter::parseBool(_STR_)
 
+#define PARSE_UNSAFE_START(MIN_ARGS)                                 \
+	this->AddMessage(line, Message::TYPE_WARNING,                    \
+		"Syntax check failed, parsing by legacy unsafe method...");  \
+	const int min_args = MIN_ARGS;                                   \
+	Ogre::StringVector values;                                       \
+	if (this->_ParseArgs(line, values, min_args) < min_args)         \
+	{                                                                \
+		std::stringstream msg;                                       \
+		msg << "Too few arguments, required number is " << min_args; \
+		this->AddMessage(line, Message::TYPE_WARNING, msg.str());    \
+	}
+
 Parser::Parser():
 	m_ror_minimass(0)
 {
@@ -290,6 +302,11 @@ void Parser::ParseLine(Ogre::String const & line)
 
 			case (File::KEYWORD_ENGOPTION):
 				new_section = File::SECTION_ENGOPTION;
+				line_finished = true;
+				break;
+
+			case (File::KEYWORD_ENGTURBO) :
+				new_section = File::SECTION_ENGTURBO;
 				line_finished = true;
 				break;
 
@@ -903,6 +920,11 @@ void Parser::ParseLine(Ogre::String const & line)
 
 		case (File::SECTION_ENGOPTION):
 			ParseEngoption(line);
+			line_finished = true;
+			break;
+
+		case (File::SECTION_ENGTURBO) :
+			ParseEngturbo(line);
 			line_finished = true;
 			break;
 
@@ -1900,75 +1922,106 @@ void Parser::ParseDirectivePropCameraMode(Ogre::String const & line)
 	_ParseCameraSettings(m_current_module->props.back().camera_settings, results[1]);
 }
 
-void Parser::ParseMeshWheel(Ogre::String const & line)
+void Parser::VerifyAndProcessMeshWheel(Ogre::String const & line, MeshWheel& mesh_wheel, int braking, int propulsion, char side_char)
 {
-	boost::smatch results;
-	if (! boost::regex_search(line, results, Regexes::SECTION_MESHWHEELS_MESHWHEELS2))
-	{
-		AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
-		return;
-	}
-	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
-
-	MeshWheel mesh_wheel;
-	mesh_wheel.node_defaults = m_user_node_defaults;
-	mesh_wheel.beam_defaults = m_user_beam_defaults;
-	mesh_wheel.tyre_radius = STR_PARSE_REAL(results[1]);
-	mesh_wheel.rim_radius = STR_PARSE_REAL(results[2]);
-	mesh_wheel.width = STR_PARSE_REAL(results[3]);
-	mesh_wheel.num_rays = STR_PARSE_INT(results[4]);
-	mesh_wheel.nodes[0] = _ParseNodeRef(results[5]);
-	mesh_wheel.nodes[1] = _ParseNodeRef(results[6]);
-
-	/* Axle rigidity node (9999 = null) */
-	mesh_wheel.rigidity_node = _ParseNodeRef(results[7]);
+	// Axle rigidity node (9999 = null)
 	if (mesh_wheel.rigidity_node.IsValidAnyState() && mesh_wheel.rigidity_node.Num() == 9999)
 	{
 		mesh_wheel.rigidity_node.Invalidate();
 	}
 
-    if (m_sequential_importer.IsEnabled())
-    {
-        m_sequential_importer.GenerateNodesForWheel(File::KEYWORD_MESHWHEELS, mesh_wheel.num_rays, mesh_wheel.rigidity_node.IsValidAnyState());
-    }
-	
-	/* Braking */
-	int braking = STR_PARSE_INT(results[8]);
 	if (braking < 0 || braking > 4)
 	{
-		AddMessage(results[8], Message::TYPE_ERROR, "Invalid value of parameter ~7 (braking), using 0 (no braking)");
+		this->AddMessage(line, Message::TYPE_ERROR, "Invalid value of parameter ~7 (braking), using 0 (no braking)");
 		braking = 0;
 	}
 	mesh_wheel.braking = Wheels::Braking(braking);
 
-	/* Propulsion */
-	int propulsion = STR_PARSE_INT(results[9]);
 	if (propulsion < 0 || propulsion > 2)
 	{
-		AddMessage(results[9], Message::TYPE_ERROR, "Invalid value of parameter ~8 (propulsion), using 0 (no propulsion)");
+		this->AddMessage(line, Message::TYPE_ERROR, "Invalid value of parameter ~8 (propulsion), using 0 (no propulsion)");
 		braking = 0;
 	}
 	mesh_wheel.propulsion = Wheels::Propulsion(propulsion);
 
-	mesh_wheel.reference_arm_node = _ParseNodeRef(results[10]);
+	mesh_wheel.side = MeshWheel::SIDE_RIGHT;
+	if (side_char != 'r')
+	{
+		if (side_char != 'l')
+		{
+			this->AddMessage(line, Message::TYPE_WARNING, std::string("Invalid SIDE flag (acceptable are [r/l]), parsing as LEFT for backwards compatibility: ") + side_char);
+		}
+		mesh_wheel.side = MeshWheel::SIDE_LEFT;
+	}
+
+	if (m_sequential_importer.IsEnabled())
+	{
+		m_sequential_importer.GenerateNodesForWheel(File::KEYWORD_MESHWHEELS, mesh_wheel.num_rays, mesh_wheel.rigidity_node.IsValidAnyState());
+	}
+
+	m_current_module->mesh_wheels.push_back(mesh_wheel);
+}
+
+void Parser::ParseMeshWheelUnsafe(Ogre::String const & line)
+{
+	PARSE_UNSAFE_START(16);
+
+	MeshWheel mesh_wheel;
+	mesh_wheel.node_defaults      = m_user_node_defaults;
+	mesh_wheel.beam_defaults      = m_user_beam_defaults;
+	mesh_wheel.tyre_radius        = STR_PARSE_REAL(values[0]);
+	mesh_wheel.rim_radius         = STR_PARSE_REAL(values[1]);
+	mesh_wheel.width              = STR_PARSE_REAL(values[2]);
+	mesh_wheel.num_rays           = STR_PARSE_INT(values[3]);
+	mesh_wheel.nodes[0]           = this->_ParseNodeRef(values[4]);
+	mesh_wheel.nodes[1]           = this->_ParseNodeRef(values[5]);
+	mesh_wheel.rigidity_node      = this->_ParseNodeRef(values[6]);
+	mesh_wheel.reference_arm_node = this->_ParseNodeRef(values[9]);
+	mesh_wheel.mass               = STR_PARSE_REAL(values[10]);
+	mesh_wheel.spring             = STR_PARSE_REAL(values[11]);
+	mesh_wheel.damping            = STR_PARSE_REAL(values[12]);
+	mesh_wheel.mesh_name          = values[14];
+	mesh_wheel.material_name      = values[15];
+
+	int braking                   = STR_PARSE_INT(values[7]);
+	int propulsion                = STR_PARSE_INT(values[8]);
+	char side_char                = values[13].at(0);
+
+	this->VerifyAndProcessMeshWheel(line, mesh_wheel, braking, propulsion, side_char);
+}
+
+void Parser::ParseMeshWheel(Ogre::String const & line)
+{
+	boost::smatch results;
+	if (! boost::regex_search(line, results, Regexes::SECTION_MESHWHEELS_MESHWHEELS2))
+	{
+		this->ParseMeshWheelUnsafe(line);
+		return;
+	}
+	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
+
+	MeshWheel mesh_wheel;
+	mesh_wheel.node_defaults      = m_user_node_defaults;
+	mesh_wheel.beam_defaults      = m_user_beam_defaults;
+	mesh_wheel.tyre_radius        = STR_PARSE_REAL(results[1]);
+	mesh_wheel.rim_radius         = STR_PARSE_REAL(results[2]);
+	mesh_wheel.width              = STR_PARSE_REAL(results[3]);
+	mesh_wheel.num_rays           = STR_PARSE_INT(results[4]);
+	mesh_wheel.nodes[0]           = this->_ParseNodeRef(results[5]);
+	mesh_wheel.nodes[1]           = this->_ParseNodeRef(results[6]);
+	mesh_wheel.rigidity_node      = this->_ParseNodeRef(results[7]);
+	mesh_wheel.reference_arm_node = this->_ParseNodeRef(results[10]);
 	mesh_wheel.mass               = STR_PARSE_REAL(results[11]);
 	mesh_wheel.spring             = STR_PARSE_REAL(results[12]);
 	mesh_wheel.damping            = STR_PARSE_REAL(results[13]);
 	mesh_wheel.mesh_name          = results[16];
-	mesh_wheel.material_name      = results[17];
+	mesh_wheel.material_name      = results[18];
 
-    char side_char = results[14].str().at(0);
-    mesh_wheel.side = MeshWheel::SIDE_RIGHT;
-    if (side_char != 'r')
-    {
-        if (side_char != 'l')
-        {
-            this->AddMessage(line, Message::TYPE_WARNING, std::string("Invalid SIDE flag (acceptable are [r/l]), parsing as LEFT for backwards compatibility: ") + side_char);
-        }
-        mesh_wheel.side = MeshWheel::SIDE_LEFT;
-    }
+	int braking                   = STR_PARSE_INT(results[8]);
+	int propulsion                = STR_PARSE_INT(results[9]);
+	char side_char                = results[14].str().at(0);
 
-	m_current_module->mesh_wheels.push_back(mesh_wheel);
+	this->VerifyAndProcessMeshWheel(line, mesh_wheel, braking, propulsion, side_char);
 }
 
 void Parser::ParseHook(Ogre::String const & line)
@@ -2266,6 +2319,47 @@ void Parser::ParseDirectiveFlexbodyCameraMode(Ogre::String const & line)
 	_ParseCameraSettings(m_last_flexbody->camera_settings, results[1]);
 }
 
+unsigned int Parser::_ParseCabOptions(Ogre::String const & options_str)
+{
+	unsigned int cab_options = 0;
+	for (unsigned int i = 0; i < options_str.length(); i++)
+	{
+		switch (options_str.at(i))
+		{
+		case 'c':
+			cab_options |= Cab::OPTION_c_CONTACT;
+			break;
+		case 'b':
+			cab_options |= Cab::OPTION_b_BUOYANT;
+			break;
+		case 'D':
+			cab_options |= (Cab::OPTION_c_CONTACT | Cab::OPTION_b_BUOYANT);
+			break;
+		case 'p':
+			cab_options |= Cab::OPTION_p_10xTOUGHER;
+			break;
+		case 'u':
+			cab_options |= Cab::OPTION_u_INVULNERABLE;
+			break;
+		case 'F':
+			cab_options |= (Cab::OPTION_p_10xTOUGHER | Cab::OPTION_b_BUOYANT);
+			break;
+		case 'S':
+			cab_options |= (Cab::OPTION_u_INVULNERABLE | Cab::OPTION_b_BUOYANT);
+			break;
+		case 'n':
+			break; /* Placeholder, does nothing */
+
+		default:
+			std::stringstream msg;
+			msg << "Subsection 'submesh/cab': Invalid option '" << options_str.at(i) << "', ignoring...";
+			this->AddMessage(options_str, Message::TYPE_WARNING, msg.str());
+			break;
+		}
+	}
+	return cab_options;
+}
+
 bool Parser::_TryParseCab(Ogre::String const & line)
 {
     boost::smatch results;
@@ -2280,48 +2374,43 @@ bool Parser::_TryParseCab(Ogre::String const & line)
 	cab.nodes[1] = _ParseNodeRef(results[3]);
 	cab.nodes[2] = _ParseNodeRef(results[5]);
 
-	if (results[5].matched)
+	if (results[6].matched)
 	{
-		std::string options_str = results[8].str();
-		for (unsigned int i = 0; i < options_str.length(); i++)
-		{
-			switch(options_str.at(i))
-			{
-				case 'c':
-					cab.options |= Cab::OPTION_c_CONTACT;
-					break;
-				case 'b':
-					cab.options |= Cab::OPTION_b_BUOYANT;
-					break;
-				case 'D':
-					cab.options |= (Cab::OPTION_c_CONTACT | Cab::OPTION_b_BUOYANT);
-					break;
-				case 'p':
-					cab.options |= Cab::OPTION_p_10xTOUGHER;
-					break;
-				case 'u':
-					cab.options |= Cab::OPTION_u_INVULNERABLE;
-					break;
-				case 'F':
-					cab.options |= (Cab::OPTION_p_10xTOUGHER | Cab::OPTION_b_BUOYANT);
-					break;
-				case 'S':
-					cab.options |= (Cab::OPTION_u_INVULNERABLE | Cab::OPTION_b_BUOYANT);
-					break;
-				case 'n':
-					break ; /* Placeholder, does nothing */
-
-				default:
-					std::stringstream msg;
-					msg << "Subsection 'submesh/cab': Invalid option '" << options_str.at(i) << "', ignoring...";
-					AddMessage(line, Message::TYPE_WARNING, msg.str());
-					break;
-			}
-		}
+		cab.options = this->_ParseCabOptions(results[8].str());
 	}
 
 	m_current_submesh->cab_triangles.push_back(cab);
-    return true;
+	return true;
+}
+
+void Parser::ParseSubmeshUnsafe(Ogre::String const & line)
+{
+	if (m_current_subsection == File::SUBSECTION__SUBMESH__CAB)
+	{
+		PARSE_UNSAFE_START(3);
+
+		Cab cab;
+		cab.nodes[0] = this->_ParseNodeRef(values[0]);
+		cab.nodes[1] = this->_ParseNodeRef(values[1]);
+		cab.nodes[2] = this->_ParseNodeRef(values[2]);
+		if (values.size() > 3)
+		{
+			cab.options = this->_ParseCabOptions(values[3]);
+		}
+
+		m_current_submesh->cab_triangles.push_back(cab);
+	}
+	else if (m_current_subsection == File::SUBSECTION__SUBMESH__TEXCOORDS)
+	{
+		PARSE_UNSAFE_START(3);
+
+		Texcoord texcoord;
+		texcoord.node = this->_ParseNodeRef(values[0]);
+		texcoord.u    = STR_PARSE_REAL(values[1]);
+		texcoord.v    = STR_PARSE_REAL(values[2]);
+
+		m_current_submesh->texcoords.push_back(texcoord);
+	}
 }
 
 void Parser::ParseSubmesh(Ogre::String const & line)
@@ -2329,16 +2418,16 @@ void Parser::ParseSubmesh(Ogre::String const & line)
 	if (m_current_subsection == File::SUBSECTION__SUBMESH__CAB)
 	{
 		if (!this->_TryParseCab(line))
-        {
-            this->AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
-        }
+		{
+			this->ParseSubmeshUnsafe(line);
+		}
 	}
 	else if (m_current_subsection == File::SUBSECTION__SUBMESH__TEXCOORDS)
 	{
 		boost::smatch results;
 		if (! boost::regex_search(line, results, Regexes::SUBMESH_SUBSECTION_TEXCOORDS))
 		{
-			AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
+			this->ParseSubmeshUnsafe(line);
 			return;
 		}
 		/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
@@ -2422,18 +2511,18 @@ void Parser::ParseFlexbody(Ogre::String const & line)
 
 		Flexbody flexbody;
 		flexbody.reference_node = _ParseNodeRef(results[1]);
-		flexbody.x_axis_node = _ParseNodeRef(results[2]);
-		flexbody.y_axis_node = _ParseNodeRef(results[3]);
+		flexbody.x_axis_node    = _ParseNodeRef(results[3]);
+		flexbody.y_axis_node    = _ParseNodeRef(results[5]);
 
-		flexbody.offset.x = STR_PARSE_REAL(results[4]);
-		flexbody.offset.y = STR_PARSE_REAL(results[5]);
-		flexbody.offset.z = STR_PARSE_REAL(results[6]);
+		flexbody.offset.x = STR_PARSE_REAL(results[7]);
+		flexbody.offset.y = STR_PARSE_REAL(results[9]);
+		flexbody.offset.z = STR_PARSE_REAL(results[11]);
 
-		flexbody.rotation.x = STR_PARSE_REAL(results[7]);
-		flexbody.rotation.y = STR_PARSE_REAL(results[8]);
-		flexbody.rotation.z = STR_PARSE_REAL(results[9]);
+		flexbody.rotation.x = STR_PARSE_REAL(results[13]);
+		flexbody.rotation.y = STR_PARSE_REAL(results[15]);
+		flexbody.rotation.z = STR_PARSE_REAL(results[17]);
 
-		flexbody.mesh_name = results[10];
+		flexbody.mesh_name = results[19];
 
 		m_last_flexbody = boost::shared_ptr<Flexbody>( new Flexbody(flexbody) );
 		m_current_module->flexbodies.push_back(m_last_flexbody);
@@ -3160,6 +3249,35 @@ void Parser::ParseEngoption(Ogre::String const & line)
 	m_current_module->engoption = boost::shared_ptr<Engoption>( new Engoption(engoption) );
 }
 
+void Parser::ParseEngturbo(Ogre::String const & line)
+{
+	boost::smatch results;
+	if (!boost::regex_search(line, results, Regexes::SECTION_ENGTURBO))
+	{
+		AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
+		return;
+	}
+
+	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
+	Engturbo engturbo;
+	engturbo.version = STR_PARSE_REAL(results[1]);
+	engturbo.tinertiaFactor = STR_PARSE_REAL(results[2]);
+	engturbo.nturbos = STR_PARSE_REAL(results[3]);
+
+	if (STR_PARSE_REAL(results[3]) > 4)
+	{
+		AddMessage(line, Message::TYPE_WARNING, "You cannot have more than 4 turbos. Fallback: using 4 instead.");
+		engturbo.nturbos = 4;
+	}
+
+	engturbo.param1 = STR_PARSE_REAL(results[4]);
+	engturbo.param2 = STR_PARSE_REAL(results[6]);
+	engturbo.param3 = STR_PARSE_REAL(results[8]);
+	engturbo.param4 = STR_PARSE_REAL(results[10]);
+
+	m_current_module->engturbo = boost::shared_ptr<Engturbo>(new Engturbo(engturbo));
+}
+
 void Parser::ParseEngine(Ogre::String const & line)
 {
 	boost::smatch results;
@@ -3180,7 +3298,7 @@ void Parser::ParseEngine(Ogre::String const & line)
 
 	/* Forward gears */
 	bool terminator_found = false;
-	for (unsigned int gear_index = 0; gear_index < 15; ++gear_index)
+	for (unsigned int gear_index = 0; gear_index < 21; ++gear_index)
 	{
 		unsigned int result_index = 13 + (gear_index * 3);
 
@@ -3206,7 +3324,7 @@ void Parser::ParseEngine(Ogre::String const & line)
 		return;
 	}
 
-	if (! terminator_found && ! results[36].matched) /* Terminator, required, absence tolerated for compatibility */
+	if (! terminator_found && ! results[42].matched) /* Terminator, required, absence tolerated for compatibility */
 	{
 		AddMessage(line, Message::TYPE_WARNING, "Forward gears list is not terminated using '-1.0'. Please fix.");
 	}
@@ -3663,20 +3781,32 @@ void Parser::ParseVideoCamera(Ogre::String const & line)
 	m_current_module->videocameras.push_back(videocamera);
 }
 
+void Parser::ParseCamerasUnsafe(Ogre::String const & line)
+{
+	PARSE_UNSAFE_START(3);
+
+	Camera camera;
+	camera.center_node = this->_ParseNodeRef(values[0]);
+	camera.back_node   = this->_ParseNodeRef(values[1]);
+	camera.left_node   = this->_ParseNodeRef(values[2]);
+
+	m_current_module->cameras.push_back(camera);
+}
+
 void Parser::ParseCameras(Ogre::String const & line)
 {
 	boost::smatch results;
 	if (! boost::regex_search(line, results, Regexes::SECTION_CAMERAS))
 	{
-		AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
+		this->ParseCamerasUnsafe(line);
 		return;
 	}
 	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
 
 	Camera camera;
 	camera.center_node = _ParseNodeRef(results[1]);
-	camera.back_node = _ParseNodeRef(results[2]);
-	camera.left_node = _ParseNodeRef(results[3]);
+	camera.back_node   = _ParseNodeRef(results[2]);
+	camera.left_node   = _ParseNodeRef(results[3]);
 
 	m_current_module->cameras.push_back(camera);
 }
@@ -5062,7 +5192,7 @@ void Parser::ParseMeshWheels2(Ogre::String const & line)
 	mesh_wheel_2.tyre_damping       = STR_PARSE_REAL(results[13]);
 	mesh_wheel_2.side               = MeshWheel::Side(results[14].str().at(0)); // The regex validates the data
 	mesh_wheel_2.mesh_name          = results[16];
-	mesh_wheel_2.material_name      = results[17];
+	mesh_wheel_2.material_name      = results[18];
 
 	m_current_module->mesh_wheels_2.push_back(mesh_wheel_2);
 }
@@ -5254,6 +5384,9 @@ bool Parser::_ParseOptionalInertia(OptionalInertia & inertia, boost::smatch & re
 
 void Parser::ParseBeams(Ogre::String const & _line)
 {
+	const int FLAGS_INDEX     = 7;
+	const int EXT_LIMIT_INDEX = 11;
+
 	std::string line;
     Parser::_TrimTrailingComments(_line, line);
 
@@ -5273,9 +5406,9 @@ void Parser::ParseBeams(Ogre::String const & _line)
 	beam.nodes[1] = _ParseNodeRef(results[3]);
 
 	/* Flags */
-	if (results[6].matched)
+	if (results[FLAGS_INDEX].matched)
 	{
-		std::string const & flags_str = results[6];
+		std::string const & flags_str = results[FLAGS_INDEX];
 		for (unsigned int i = 0; i < flags_str.length(); i++)
 		{
 			if (flags_str[i] == 'v') 
@@ -5293,10 +5426,10 @@ void Parser::ParseBeams(Ogre::String const & _line)
 			else if (flags_str[i] == 's')
 			{
 				beam.options |= Beam::OPTION_s_SUPPORT;
-				if (results[9].matched)
+				if (results[EXT_LIMIT_INDEX].matched)
 				{
 					beam._has_extension_break_limit = true;
-					beam.extension_break_limit = STR_PARSE_REAL(results[9]);
+					beam.extension_break_limit = STR_PARSE_REAL(results[EXT_LIMIT_INDEX]);
 				}
 			}
 			else

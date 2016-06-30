@@ -301,7 +301,8 @@ SoundScriptTemplate* SoundScriptManager::createTemplate(String name, String grou
 	// first, search if there is a template name collision
 	if (templates.find(name) != templates.end())
 	{
-		OGRE_EXCEPT(Exception::ERR_DUPLICATE_ITEM, "SoundScript with the name " + name + " already exists.", "SoundScriptManager::createTemplate");
+		LOG("SoundScriptManager::createTemplate(): SoundScript with name [" + name + "] already exists, skipping...");
+		return nullptr;
 	}
 
 	SoundScriptTemplate *ssi = new SoundScriptTemplate(name, groupname, filename, loading_base);
@@ -528,6 +529,7 @@ bool SoundScriptTemplate::setParameter(Ogre::StringVector vec)
 		if (vec[1] == String("brake")) {trigger_source=SS_TRIG_BRAKE; return true;};
 		if (vec[1] == String("pump")) {trigger_source=SS_TRIG_PUMP; return true;};
 		if (vec[1] == String("starter")) {trigger_source=SS_TRIG_STARTER; return true;};
+		if (vec[1] == String("turbo_BOV")) { trigger_source = SS_TRIG_TURBOBOV; return true; };
 		if (vec[1] == String("always_on")) {trigger_source=SS_TRIG_ALWAYSON; return true;};
 		if (vec[1] == String("repair")) {trigger_source=SS_TRIG_REPAIR; return true;};
 		if (vec[1] == String("air")) {trigger_source=SS_TRIG_AIR; return true;};

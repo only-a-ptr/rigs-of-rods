@@ -90,6 +90,15 @@ Engoption::Engoption():
 	min_idle_mixture(0.f) /* This is a default */
 {}
 
+Engturbo::Engturbo() :
+tinertiaFactor(1),
+nturbos(1),
+param1(9999), //used for default values
+param2(9999),
+param3(9999),
+param4(9999)
+{}
+
 Fusedrag::Fusedrag():
 	autocalc(false),
 	approximate_width(0),
@@ -255,6 +264,8 @@ const char * File::SectionToString(File::Section section)
 			return "engine";
 		case (File::SECTION_ENGOPTION):
 			return "engoption";
+		case (File::SECTION_ENGTURBO) :
+			return "engturbo";
 		case (File::SECTION_EXHAUSTS):
 			return "exhausts";
 		case (File::SECTION_FIXES):
@@ -420,6 +431,8 @@ const char * File::KeywordToString(File::Keyword keyword)
 			return "engine";
 		case (File::KEYWORD_ENGOPTION):
 			return "engoption";
+		case (File::KEYWORD_ENGTURBO) :
+			return "engturbo";
 		case (File::KEYWORD_EXHAUSTS):
 			return "exhausts";
         case (File::KEYWORD_FILEINFO):

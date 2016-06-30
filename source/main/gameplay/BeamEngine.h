@@ -52,7 +52,7 @@ public:
 	* @param rpm Current engine RPM
 	* @param force Current acceleration force
 	* @param clutch 
-	* @param gear Current gear {-1 = reverse, 0 = neutral, 1...15 = forward}
+	* @param gear Current gear {-1 = reverse, 0 = neutral, 1...21 = forward}
 	* @param running
 	* @param contact
 	* @param automode
@@ -77,6 +77,14 @@ public:
 	* @param minimix Min. idle mixture
 	*/
 	void setOptions(float einertia, char etype, float eclutch, float ctime, float stime, float pstime, float irpm, float srpm, float maximix, float minimix);
+
+	/**
+	* Sets turbo options.
+	* @param tinertiatinertiaFactor Turbo inertia factor
+	* @param nturbos Number of turbos
+	* @param additionalTorque Torque that will be added to the engine at max turbo rpm
+	**/
+	void setTurboOptions(int type, float tinertiaFactor, int nturbos, float param1, float param2, float param3, float param4);
 
 	/**
 	* Set current engine RPM.
@@ -170,7 +178,7 @@ protected:
 	// gear stuff
 	float refWheelRevolutions; //!< Gears; estimated wheel revolutions based on current vehicle speed along the long axis
 	float curWheelRevolutions; //!< Gears; measured wheel revolutions
-	int curGear; //!< Gears; Current gear {-1 = reverse, 0 = neutral, 1...15 = forward} 
+	int curGear; //!< Gears; Current gear {-1 = reverse, 0 = neutral, 1...21 = forward} 
 	int curGearRange; //!< Gears
 	int numGears; //!< Gears
 	std::vector<float> gearsRatio; //!< Gears
@@ -231,7 +239,23 @@ protected:
 	std::deque<float> brakes;
 
 	// turbo
-	float curTurboRPM;
+	//Yeah i know, a bit dirty
+	int turboVer;
+	#define MAXTURBO 4
+	float curTurboRPM[MAXTURBO];
+	float turboInertiaFactor;
+	int numTurbos;
+	int maxTurboRPM;
+	float turbotorque;
+	float turboInertia;
+	float EngineAddiTorque[MAXTURBO];
+	float turboEngineRpmOperation;
+	float turboMaxPSI;
+	float turboPSI;
+	bool b_BOV;
+	float curBOVTurboRPM[MAXTURBO];
+	float turboBOVtorque;
+	int minBOVPsi;
 
 	// air pressure
 	TorqueCurve *torqueCurve;

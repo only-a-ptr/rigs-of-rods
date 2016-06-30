@@ -214,6 +214,7 @@ namespace Regexes
     E_KEYWORD_BLOCK("end_section")                                \
     E_KEYWORD_BLOCK("engine")                                     \
     E_KEYWORD_BLOCK("engoption")                                  \
+	E_KEYWORD_BLOCK("engturbo")									  \
     E_KEYWORD_BLOCK("envmap")                                     \
     E_KEYWORD_BLOCK("exhausts")                                   \
     E_KEYWORD_INLINE("extcamera")                                 \
@@ -836,17 +837,23 @@ DEFINE_REGEX( SECTION_AXLES_PROPERTY,
 
 DEFINE_REGEX( SECTION_BEAMS,
 	E_LEADING_WHITESPACE
-	E_CAPTURE( E_NODE_ID ) /* #1 Node 1 */
-	E_CAPTURE( E_DELIMITER )
-	E_CAPTURE( E_NODE_ID ) /* #3 Node 2 */
+	E_CAPTURE( E_NODE_ID )                     // #1 Node 1
+	E_CAPTURE( E_DELIMITER )                   
+	E_CAPTURE( E_NODE_ID )                     // #3 Node 2
 
-	E_CAPTURE_OPTIONAL( 
-		E_CAPTURE( E_DELIMITER )
-		E_CAPTURE( E_STRING_ALNUM_HYPHENS_USCORES_ONLY ) /* #6 Options */
+	E_CAPTURE_OPTIONAL(       
+		E_CAPTURE( E_DELIMITER )               // #5 Delimiter (possibly dangling)
 
 		E_CAPTURE_OPTIONAL( 
-			E_CAPTURE( E_DELIMITER )
-			E_CAPTURE( E_REAL_NUMBER ) /* #9 User-defined extension break limit */
+			E_CAPTURE( E_STRING_ALNUM_HYPHENS_USCORES_ONLY ) // #7 Options
+
+			E_CAPTURE_OPTIONAL( 
+				E_CAPTURE( E_DELIMITER )       // #9 Delimiter (possibly dangling)
+
+				E_CAPTURE_OPTIONAL( 
+					E_CAPTURE( E_REAL_NUMBER ) // #11 User-defined extension break limit
+				)
+			)
 		)
 	)
 	E_TRAILING_WHITESPACE
@@ -1093,7 +1100,37 @@ DEFINE_REGEX( SECTION_ENGINE,
 														E_CAPTURE_OPTIONAL( 
 															E_CAPTURE( E_DELIMITER )
 															E_CAPTURE( E_REAL_NUMBER ) /* #55 15th gear, max */
-														)
+														
+															E_CAPTURE_OPTIONAL(
+																E_CAPTURE(E_DELIMITER)
+																E_CAPTURE(E_REAL_NUMBER) /* #55 16th gear, max */
+														
+																E_CAPTURE_OPTIONAL(
+																	E_CAPTURE(E_DELIMITER)
+																	E_CAPTURE(E_REAL_NUMBER) /* #55 17th gear, max */
+														
+																	E_CAPTURE_OPTIONAL(
+																		E_CAPTURE(E_DELIMITER)
+																		E_CAPTURE(E_REAL_NUMBER) /* #55 18th gear, max */
+														
+																		E_CAPTURE_OPTIONAL(
+																			E_CAPTURE(E_DELIMITER)
+																			E_CAPTURE(E_REAL_NUMBER) /* #55 19th gear, max */
+														
+																			E_CAPTURE_OPTIONAL(
+																				E_CAPTURE(E_DELIMITER)
+																				E_CAPTURE(E_REAL_NUMBER) /* #55 20th gear, max */
+																			
+																				E_CAPTURE_OPTIONAL(
+																					E_CAPTURE(E_DELIMITER)
+																					E_CAPTURE(E_REAL_NUMBER) /* #55 21st gear, max */
+																				)
+																			)
+																		)
+																	)
+																)
+															)
+														)					
 													)
 												)
 											)
@@ -1163,6 +1200,30 @@ DEFINE_REGEX( SECTION_ENGOPTION,
 		)
 	)
 	E_CAPTURE_OPTIONAL( E_ILLEGAL_TRAILING_STRING ) /* #29 Illegal text */ 
+	E_TRAILING_WHITESPACE
+	);
+
+DEFINE_REGEX(SECTION_ENGTURBO,
+	E_LEADING_WHITESPACE
+	E_CAPTURE(E_REAL_NUMBER) /* #1 Version */
+	E_DELIMITER_COMMA
+	E_CAPTURE(E_REAL_NUMBER) /* #1 Inertia */
+	E_DELIMITER_COMMA
+	E_CAPTURE(E_REAL_NUMBER) /* #1 Number of turbos */
+	E_DELIMITER_COMMA
+	E_CAPTURE(E_REAL_NUMBER) /* #1 PARAM1 */
+	E_CAPTURE_OPTIONAL(
+		E_DELIMITER_COMMA
+		E_CAPTURE(E_REAL_NUMBER) /* #1 PARAM2 */
+		E_CAPTURE_OPTIONAL(
+			E_DELIMITER_COMMA
+			E_CAPTURE(E_REAL_NUMBER) /* #1 PARAM3 */
+			E_CAPTURE_OPTIONAL(
+				E_DELIMITER_COMMA
+				E_CAPTURE(E_REAL_NUMBER)
+			)/* #1 PARAM4 */
+		)
+	)
 	E_TRAILING_WHITESPACE
 	);
 
@@ -1366,30 +1427,30 @@ DEFINE_REGEX( SECTION_FLARES2,
 
 DEFINE_REGEX( FLEXBODIES_SUBSECTION_PROPLIKE_LINE,
 	E_LEADING_WHITESPACE
-	E_CAPTURE( E_NODE_ID ) /* Node */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* X */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* Y */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* X offset */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* Y offset */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* Z offset */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* X rotation */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* Y rotation */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_REAL_NUMBER ) /* Z rotation */
-	E_DELIMITER_COMMA
-	E_CAPTURE( E_STRING_NO_SPACES ) /* Mesh name */
+	E_CAPTURE( E_NODE_ID )          // #1 Reference node
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_NODE_ID )          // #3 X node
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_NODE_ID )          // #5 Y node
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_REAL_NUMBER )      // #7 X offset 
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_REAL_NUMBER )      // #9 Y offset 
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_REAL_NUMBER )      // #11 Z offset 
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_REAL_NUMBER )      // #13 X rotation 
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_REAL_NUMBER )      // #15 Y rotation 
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_REAL_NUMBER )      // #17 Z rotation 
+	E_CAPTURE( E_DELIMITER )
+	E_CAPTURE( E_STRING_NO_SPACES ) // #19 Mesh name 
 	E_TRAILING_WHITESPACE
 	);
 
 DEFINE_REGEX( FLEXBODIES_SUBSECTION_FORSET_LINE,
-	"^forset"
+	"^forset[:]?" // Tolerate invalid ":" after keyword, observed i.e. in http://www.rigsofrods.com/repository/view/2497
 	E_CAPTURE( E_DELIMITER )
 	E_CAPTURE( ".*$" ) /* #2 Entire line */
 	);
@@ -1764,8 +1825,8 @@ DEFINE_REGEX( SECTION_MESHWHEELS_MESHWHEELS2,
 	E_DELIMITER_COMMA
 	E_CAPTURE( E_STRING_NO_SPACES ) /* #14 Rim orientation */
 	E_CAPTURE( E_DELIMITER )
-	E_CAPTURE( E_STRING_NO_SPACES ) /* #16 Rim mesh name */
-	E_DELIMITER_SPACE
+	E_CAPTURE( E_STRING_ANYTHING_BUT_DELIMITER ) /* #16 Rim mesh name */
+	E_CAPTURE( E_DELIMITER )
 	E_CAPTURE( E_STRING_NO_SPACES ) /* #17 Tyre material name */
 	E_TRAILING_WHITESPACE
 	);
@@ -1897,7 +1958,7 @@ DEFINE_REGEX( SECTION_PROPS,
 	E_CAPTURE( E_DELIMITER )
 	E_CAPTURE( E_REAL_NUMBER )         /* #17 rot. Z */
 	E_CAPTURE( E_DELIMITER )
-	E_CAPTURE( E_STRING_NO_SPACES )    /* #19 Mesh name */
+	E_CAPTURE(E_STRING_ANYTHING_BUT_DELIMITER)    /* #19 Mesh name */
 	E_CAPTURE_OPTIONAL( E_DELIMITER )
 	E_CAPTURE( ".*$" )                 /* #21 Special mesh options part */
 	);
@@ -1929,38 +1990,25 @@ DEFINE_REGEX( SPECIAL_PROPS,
 
 DEFINE_REGEX( SPECIAL_PROP_DASHBOARD,
 	E_LEADING_WHITESPACE
-	E_CAPTURE_OPTIONAL( E_STRING_ANYTHING_BUT_WHITESPACE ) /* #1 Mesh name */
+	E_CAPTURE(E_STRING_ANYTHING_BUT_DELIMITER) // #1 Mesh name
 	E_CAPTURE_OPTIONAL(
-		E_CAPTURE(
-			E_DELIMITER_COMMA
-			E_OR
-			E_DELIMITER_SPACE
+		E_CAPTURE( E_DELIMITER )
+		E_CAPTURE( E_REAL_NUMBER ) // #4 X offset
+
+		E_CAPTURE_OPTIONAL(
+			E_CAPTURE( E_DELIMITER )
+			E_CAPTURE( E_REAL_NUMBER ) // #7 Y offset
+
+			E_CAPTURE_OPTIONAL(
+				E_CAPTURE( E_DELIMITER )
+				E_CAPTURE( E_REAL_NUMBER ) // #10 Z offset
+
+				E_CAPTURE_OPTIONAL(
+					E_CAPTURE( E_DELIMITER )
+					E_CAPTURE( E_REAL_NUMBER ) // #13 Rotation, degrees
+				)
+			)
 		)
-		E_CAPTURE( E_REAL_NUMBER ) /* #4 X offset */
-	)
-	E_CAPTURE_OPTIONAL(
-		E_CAPTURE(
-			E_DELIMITER_COMMA
-			E_OR
-			E_DELIMITER_SPACE
-		)
-		E_CAPTURE( E_REAL_NUMBER ) /* #7 Y offset */
-	)
-	E_CAPTURE_OPTIONAL(
-		E_CAPTURE(
-			E_DELIMITER_COMMA
-			E_OR
-			E_DELIMITER_SPACE
-		)
-		E_CAPTURE( E_REAL_NUMBER ) /* #10 Z offset */
-	)
-	E_CAPTURE_OPTIONAL(
-		E_CAPTURE(
-			E_DELIMITER_COMMA
-			E_OR
-			E_DELIMITER_SPACE
-		)
-		E_CAPTURE( E_REAL_NUMBER ) /* #13 Rotation, degrees */
 	)
 	E_TRAILING_WHITESPACE
 	);

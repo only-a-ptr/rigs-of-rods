@@ -99,7 +99,7 @@ mRefractCam(0)
 	fade = gEnv->sceneManager->getFogColour();
 	waterSceneMgr = gEnv->sceneManager;
 
-	wHeight = PARSEREAL(mTerrainConfig.getSetting("WaterLine", "General"));;
+	wHeight = PARSEREAL(mTerrainConfig.getSetting("WaterLine", "General"));
 	wbHeight = PARSEREAL(mTerrainConfig.getSetting("WaterBottomLine", "General"));
 
 	if (mapSize.x < 1500 && mapSize.z < 1500)
@@ -341,7 +341,7 @@ void Water::update()
 		if (intersection.first && intersection.second > 0.0f)
 			sightPos = lineOfSight.getPoint(intersection.second);
 
-		Real offset = std::min(cameraPos.distance(sightPos), std::min(mapSize.x, mapSize.z) / 2.0f);
+		Real offset = std::min(cameraPos.distance(sightPos), std::min(mapSize.x, mapSize.z) * 0.5f);
 
 		Vector3 waterPos = cameraPos + (sightPos - cameraPos).normalisedCopy() * offset;
 		Vector3 bottomPos = Vector3(waterPos.x, wbHeight, waterPos.z);
@@ -505,8 +505,8 @@ float Water::getWaveHeight(Vector3 pos)
 	// calculate how high the waves should be at this point
 	//  (mapsize.x * mScale) / 2 = terrain width / 2
 	//  (mapsize.z * mScale) / 2 = terrain height / 2
-	// calculates the distance to the center of the terrain and dives it through 3.000.000
-	float waveheight = (pos - Vector3((mapSize.x * mScale) / 2, wHeight, (mapSize.z * mScale) / 2)).squaredLength() / 3000000.0;
+	// calculate distance to the center of the terrain and divide by 3.000.000
+	float waveheight = (pos - Vector3((mapSize.x * mScale) * 0.5, wHeight, (mapSize.z * mScale) * 0.5)).squaredLength() / 3000000.0;
 
 	return waveheight;
 }

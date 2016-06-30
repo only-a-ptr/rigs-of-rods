@@ -81,6 +81,8 @@ void ShadowManager::processPSSM()
 	gEnv->sceneManager->setShadowDirectionalLightExtrusionDistance(100.0f);
 	gEnv->sceneManager->setShadowFarDistance(60.0f);
 	gEnv->sceneManager->setShadowTextureCasterMaterial("RoR_ShadowsCaster");
+	gEnv->sceneManager->setShadowTextureCount(PSSM_Shadows.ShadowsTextureNum);
+
 	gEnv->sceneManager->setShadowCasterRenderBackFaces(true);
 
 }
