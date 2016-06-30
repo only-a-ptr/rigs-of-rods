@@ -96,29 +96,6 @@ set( SOURCE_FILES
   gfx/camera/PerVehicleCameraContext.h
   gfx/dof/DepthOfFieldEffect.{h,cpp}
   gfx/dof/Lens.{h,cpp}
-  gfx/hydrax/CfgFileManager.{h,cpp}
-  gfx/hydrax/DecalsManager.{h,cpp}
-  gfx/hydrax/Enums.{h,cpp}
-  gfx/hydrax/FFT.{h,cpp}
-  gfx/hydrax/GodRaysManager.{h,cpp}
-  gfx/hydrax/GPUNormalMapManager.{h,cpp}
-  gfx/hydrax/Help.{h,cpp}
-  gfx/hydrax/Hydrax.{h,cpp}
-  gfx/hydrax/Image.{h,cpp}
-  gfx/hydrax/MaterialManager.{h,cpp}
-  gfx/hydrax/Mesh.{h,cpp}
-  gfx/hydrax/Module.{h,cpp}
-  gfx/hydrax/Noise.{h,cpp}
-  gfx/hydrax/Perlin.{h,cpp}
-  gfx/hydrax/Prerequisites.{h,cpp}
-  gfx/hydrax/PressurePoint.{h,cpp}
-  gfx/hydrax/ProjectedGrid.{h,cpp}
-  gfx/hydrax/RadialGrid.{h,cpp}
-  gfx/hydrax/Real.{h,cpp}
-  gfx/hydrax/RttManager.{h,cpp}
-  gfx/hydrax/SimpleGrid.{h,cpp}
-  gfx/hydrax/TextureManager.{h,cpp}
-  gfx/hydrax/Wave.{h,cpp}
   gfx/particle/ExtinguishableFireAffector.{h,cpp}
   gfx/particle/ExtinguishableFireAffectorFactory.h
   gfx/particle/FireExtinguisherAffector.{h,cpp}
