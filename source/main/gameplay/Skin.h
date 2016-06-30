@@ -58,9 +58,9 @@ public:
 	Ogre::String stripMaterialNameUniqueNess(Ogre::String matName);
 
 	// common
-	void uniquifyMeshMaterials(Ogre::Entity *e);
+	void uniquifyMeshMaterials(Ogre::v1::Entity *e);
 
-	void replaceMeshMaterials(Ogre::Entity *e);
+	void replaceMeshMaterials(Ogre::v1::Entity *e);
 	void replaceMaterialTextures(Ogre::String materialName);
 
 	bool operator==(const Skin& other) const;

@@ -28,14 +28,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 //#define _SECURE_SCL 0
 //#endif // _WIN32
 
-// OGRE version
-#include <OgrePrerequisites.h>
-#if OGRE_VERSION < 0x010701
-#	error You need at least Ogre version 1.7.1, older versions are not supported
-#elif OGRE_VERSION >= 0x010900
-#	define ROR_USE_OGRE_1_9
-#endif
-
 // add some ogre headers
 #include <OgreAxisAlignedBox.h>
 #include <OgreColourValue.h>

@@ -23,6 +23,10 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "IHeightFinder.h"
 #include "TerrainManager.h"
 
+#include <OgrePrerequisites.h>
+#include <OgreMesh.h>
+#include <OgreSubMesh.h>
+
 using namespace Ogre;
 
 Road2::Road2(int id) :
@@ -43,7 +47,7 @@ Road2::~Road2()
 	}
 	if (!msh.isNull())
 	{
-		MeshManager::getSingleton().remove(msh->getName());
+		v1::MeshManager::getSingleton().remove(msh->getName());
 		msh.setNull();
 	}
 	if (registeredCollTris.size() > 0)
@@ -76,7 +80,7 @@ void Road2::finish()
 	createMesh();
 	String entity_name = String("RoadSystem_Instance-").append(StringConverter::toString(mid));
 	String mesh_name = String("RoadSystem-").append(StringConverter::toString(mid));
-	Entity *ec = gEnv->sceneManager->createEntity(mesh_name);
+	Ogre::v1::Entity *ec = gEnv->sceneManager->createEntity(mesh_name);
 	ec->setName(entity_name);
 
 	snode = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
@@ -549,7 +553,7 @@ void Road2::createMesh()
 	};
 	/// Create the mesh via the MeshManager
 	Ogre::String mesh_name = Ogre::String("RoadSystem-").append(Ogre::StringConverter::toString(mid));
-	msh = MeshManager::getSingleton().createManual(mesh_name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+	msh = Ogre::v1::MeshManager::getSingleton().createManual(mesh_name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 	mainsub = msh->createSubMesh();
 	mainsub->setMaterialName("road2");
@@ -589,49 +593,53 @@ void Road2::createMesh()
 		covertices[i].normal.normalise();
 	}
 
+    // TODO: OGRE 2.1 v1::Mesh::sharedVertexData is an array[2]?
+    //       The documentation shows something else: 
+    //           http://www.ogre3d.org/docs/api/2.1/class_ogre_1_1v1_1_1_mesh.html#af595b09b6177ee8236d8520e5955e434 
+
 	/// Create vertex data structure for vertices shared between sub meshes
-	msh->sharedVertexData = new VertexData();
-	msh->sharedVertexData->vertexCount = vertexcount;
+	msh->sharedVertexData[0] = new Ogre::v1::VertexData();
+	msh->sharedVertexData[0]->vertexCount = vertexcount;
 
 	/// Create declaration (memory format) of vertex data
-	VertexDeclaration* decl = msh->sharedVertexData->vertexDeclaration;
+	Ogre::v1::VertexDeclaration* decl = msh->sharedVertexData[0]->vertexDeclaration;
 	size_t offset = 0;
 	decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
+	offset += Ogre::v1::VertexElement::getTypeSize(VET_FLOAT3);
 	decl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
+	offset += Ogre::v1::VertexElement::getTypeSize(VET_FLOAT3);
 	decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
-	offset += VertexElement::getTypeSize(VET_FLOAT2);
+	offset += Ogre::v1::VertexElement::getTypeSize(VET_FLOAT2);
 
 	/// Allocate vertex buffer of the requested number of vertices (vertexCount)
 	/// and bytes per vertex (offset)
-	HardwareVertexBufferSharedPtr vbuf =
-		HardwareBufferManager::getSingleton().createVertexBuffer(
-		offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+	Ogre::v1::HardwareVertexBufferSharedPtr vbuf =
+		Ogre::v1::HardwareBufferManager::getSingleton().createVertexBuffer(
+		offset, msh->sharedVertexData[0]->vertexCount, Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 	/// Upload the vertex data to the card
 	vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
 	/// Set vertex buffer binding so buffer 0 is bound to our vertex buffer
-	VertexBufferBinding* bind = msh->sharedVertexData->vertexBufferBinding;
+	Ogre::v1::VertexBufferBinding* bind = msh->sharedVertexData[0]->vertexBufferBinding;
 	bind->setBinding(0, vbuf);
 
 	//for the face
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-	HardwareIndexBufferSharedPtr ibuf = HardwareBufferManager::getSingleton().
+	Ogre::v1::HardwareIndexBufferSharedPtr ibuf = Ogre::v1::HardwareBufferManager::getSingleton().
 		createIndexBuffer(
-		HardwareIndexBuffer::IT_16BIT,
+		Ogre::v1::HardwareIndexBuffer::IT_16BIT,
 		ibufCount,
-		HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+		Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 	/// Upload the index data to the card
 	ibuf->writeData(0, ibuf->getSizeInBytes(), tris, true);
 
 	/// Set parameters of the submesh
 	mainsub->useSharedVertices = true;
-	mainsub->indexData->indexBuffer = ibuf;
-	mainsub->indexData->indexCount = ibufCount;
-	mainsub->indexData->indexStart = 0;
+	mainsub->indexData[0]->indexBuffer = ibuf;
+	mainsub->indexData[0]->indexCount = ibufCount;
+	mainsub->indexData[0]->indexStart = 0;
 
 	/// Set bounding information (for culling)
 //		msh->_setBounds(AxisAlignedBox(0,0,0,3000,500,3000));

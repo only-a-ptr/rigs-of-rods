@@ -103,7 +103,7 @@ void MaterialFunctionMapper::toggleFunction(int flareid, bool isvisible)
 	}
 }
 
-void MaterialFunctionMapper::replaceMeshMaterials(Ogre::Entity *e)
+void MaterialFunctionMapper::replaceMeshMaterials(Ogre::v1::Entity *e)
 {
 	if (!e)
 	{
@@ -142,7 +142,7 @@ void MaterialFunctionMapper::replaceMeshMaterials(Ogre::Entity *e)
 	}
 }
 
-void MaterialFunctionMapper::replaceSimpleMeshMaterials(Ogre::Entity *e, Ogre::ColourValue c)
+void MaterialFunctionMapper::replaceSimpleMeshMaterials(Ogre::v1::Entity *e, Ogre::ColourValue c)
 {
 	if (!e)
 	{

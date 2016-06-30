@@ -158,7 +158,7 @@ private:
 	static BeamEngineStats *myInstance;
 	std::vector<stats_entry_t> statClients;
 	std::vector<stats_entry_t> statClientsGFX;
-	Ogre::OverlayElement *stats;
+	Ogre::v1::OverlayElement *stats;
 	float updateTimeGUI;
 };
 

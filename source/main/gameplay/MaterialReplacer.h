@@ -30,7 +30,7 @@ public:
 	MaterialReplacer() {};
 	~MaterialReplacer() {};
 
-	void replaceMeshMaterials(Ogre::Entity *e);
+	void replaceMeshMaterials(Ogre::v1::Entity *e);
 	
 	int addMaterialReplace(Ogre::String from, Ogre::String to);
 	

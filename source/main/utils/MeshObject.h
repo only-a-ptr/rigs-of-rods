@@ -41,14 +41,14 @@ public:
 	void setMeshEnabled(bool e);
 	void setVisible(bool b);
 	Ogre::MeshPtr getMesh() { return mesh; };
-	Ogre::Entity *getEntity() { return ent; };
+	Ogre::v1::Entity *getEntity() { return ent; };
 
 protected:
 	MaterialReplacer *mr;
 	Ogre::String meshName;
 	Ogre::String entityName;
 	Ogre::SceneNode *sceneNode;
-	Ogre::Entity *ent;
+	Ogre::v1::Entity *ent;
 	Ogre::MeshPtr mesh;
 	Ogre::BackgroundProcessTicket ticket;
 	bool backgroundLoading;

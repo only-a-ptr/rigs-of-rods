@@ -85,7 +85,7 @@ protected:
 	int m_stream_id;
 	int m_source_id;
 
-	Ogre::AnimationStateSet *mAnimState;
+	Ogre::v1::AnimationStateSet *mAnimState;
 	Ogre::Camera *mCamera;
 	Ogre::MovableText *mMoveableText;
 	Ogre::SceneNode *mCharacterNode;

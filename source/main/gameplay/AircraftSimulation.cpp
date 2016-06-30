@@ -102,11 +102,11 @@ void AircraftSimulation::UpdateVehicle(Beam* vehicle, float seconds_since_last_f
 		{
 			if (vehicle->parkingbrake)
 			{
-				Ogre::OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-on");
+				Ogre::v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-on");
 			}
 			else
 			{
-				Ogre::OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-off");
+				Ogre::v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-off");
 			}
 		}
 	}

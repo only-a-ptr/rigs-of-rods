@@ -166,7 +166,7 @@ public:
 	*/
 	bool checkResourceLoaded(Ogre::String &filename, Ogre::String &group);
 	CacheEntry getResourceInfo(Ogre::String &filename);
-	Ogre::String addMeshMaterials(CacheEntry &entry, Ogre::Entity *e);
+	Ogre::String addMeshMaterials(CacheEntry &entry, Ogre::v1::Entity *e);
 	std::map<int, Category_Entry> *getCategories();
 	std::vector<CacheEntry> *getEntries();
 

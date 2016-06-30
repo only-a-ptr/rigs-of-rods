@@ -65,5 +65,5 @@ struct beam_t
 
 	shock_t *shock;
 	Ogre::SceneNode *mSceneNode; //!< visual
-	Ogre::Entity *mEntity; //!< visual
+	Ogre::v1::Entity *mEntity; //!< visual
 };

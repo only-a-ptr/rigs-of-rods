@@ -65,11 +65,11 @@ public:
 
 private:
 
-	Ogre::Overlay *blendOverlay;
-	Ogre::Overlay *dashOverlay;
-	Ogre::Overlay *fpsOverlay;
-	Ogre::Overlay *needlesOverlay;
-	Ogre::Overlay *truckHUDOverlay;
+	Ogre::v1::Overlay *blendOverlay;
+	Ogre::v1::Overlay *dashOverlay;
+	Ogre::v1::Overlay *fpsOverlay;
+	Ogre::v1::Overlay *needlesOverlay;
+	Ogre::v1::Overlay *truckHUDOverlay;
 	bool consolevisible;
 	bool fpsDisplayed;
 	bool truckHUD;

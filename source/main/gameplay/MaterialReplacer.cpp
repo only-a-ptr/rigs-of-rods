@@ -18,20 +18,19 @@
 #include "MaterialReplacer.h"
 
 #include <Ogre.h>
+#include <OgrePrerequisites.h>
 
-using namespace Ogre;
-
-void MaterialReplacer::replaceMeshMaterials(Ogre::Entity *e)
+void MaterialReplacer::replaceMeshMaterials(Ogre::v1::Entity *e)
 {
-	MeshPtr m = e->getMesh();
+	Ogre::v1::MeshPtr m = e->getMesh();
 	if (!m.isNull())
 	{
 		for (int n=0; n<(int)m->getNumSubMeshes();n++)
 		{
-			SubMesh *sm = m->getSubMesh(n);
+			Ogre::v1::SubMesh *sm = m->getSubMesh(n);
 			if (this->hasReplacementForMaterial(sm->getMaterialName()))
 			{
-				String newMat = this->getReplacementForMaterial(sm->getMaterialName());
+				Ogre::String newMat = this->getReplacementForMaterial(sm->getMaterialName());
 				sm->setMaterialName(newMat);
 			}
 		}
@@ -39,11 +38,11 @@ void MaterialReplacer::replaceMeshMaterials(Ogre::Entity *e)
 
 	for (int n=0; n<(int)e->getNumSubEntities();n++)
 	{
-		SubEntity *subent = e->getSubEntity(n);
-		if (this->hasReplacementForMaterial(subent->getMaterialName()))
+		Ogre::v1::SubEntity *subent = e->getSubEntity(n);
+		if (this->hasReplacementForMaterial(subent->getMaterial()->getName()))
 		{
-			String newMat = this->getReplacementForMaterial(subent->getMaterialName());
-			subent->setMaterialName(newMat);
+			Ogre::String newMat = this->getReplacementForMaterial(subent->getMaterial()->getName());
+			subent->setMaterialName(newMat, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 		}
 	}
 }
@@ -52,15 +51,19 @@ int MaterialReplacer::hasReplacementForMaterial(Ogre::String material)
 {
 	int res = (int)replaceMaterials.count(material);
 	if (!res)
+    {
 		return (int)replaceMaterials.count(material);
+    }
 	return res;
 }
 
 Ogre::String MaterialReplacer::getReplacementForMaterial(Ogre::String material)
 {
-	String res = replaceMaterials[material];
+	Ogre::String res = replaceMaterials[material];
 	if (res.empty())
+    {
 		return replaceMaterials[material];
+    }
 	return res;
 }
 

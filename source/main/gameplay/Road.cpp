@@ -22,9 +22,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <Ogre.h>
 
-using namespace Ogre;
-
-Road::Road(Vector3 start) :
+Road::Road(Ogre::Vector3 start) :
 	  cur_rtype(0)
 	, free_rtype(0)
 	, lastpturn(0)
@@ -47,30 +45,30 @@ void Road::preparePending()
 {
 	//setup rotation points
 	lastpturn = pturn;
-	protl = ppos+Quaternion(Degree(pturn), Vector3::UNIT_Y)*Vector3(0, 0, 4.5);
-	protr = ppos+Quaternion(Degree(pturn), Vector3::UNIT_Y)*Vector3(0, 0, -4.5);
+	protl = ppos+Ogre::Quaternion(Ogre::Degree(pturn), Ogre::Vector3::UNIT_Y)*Ogre::Vector3(0, 0, 4.5);
+	protr = ppos+Ogre::Quaternion(Ogre::Degree(pturn), Ogre::Vector3::UNIT_Y)*Ogre::Vector3(0, 0, -4.5);
 	tenode->setPosition(ppos);
-	tenode->setOrientation(Quaternion(Degree(pturn), Vector3::UNIT_Y)*Quaternion(Degree(ppitch), Vector3::UNIT_Z));
-	tenode->pitch(Degree(-90));
+	tenode->setOrientation(Ogre::Quaternion(Ogre::Degree(pturn), Ogre::Vector3::UNIT_Y)*Ogre::Quaternion(Ogre::Degree(ppitch), Ogre::Vector3::UNIT_Z));
+	tenode->pitch(Ogre::Degree(-90));
 }
 
 void Road::updatePending()
 {
 	if (pturn-lastpturn > 0)
 	{
-		tenode->setPosition(Quaternion(Degree(pturn-lastpturn), Vector3::UNIT_Y)*(ppos-protl)+protl);
+		tenode->setPosition(Ogre::Quaternion(Ogre::Degree(pturn-lastpturn), Ogre::Vector3::UNIT_Y)*(ppos-protl)+protl);
 	} else
 	{
 		if (pturn-lastpturn < 0)
-			tenode->setPosition(Quaternion(Degree(pturn-lastpturn), Vector3::UNIT_Y)*(ppos-protr)+protr);
+			tenode->setPosition(Ogre::Quaternion(Ogre::Degree(pturn-lastpturn), Ogre::Vector3::UNIT_Y)*(ppos-protr)+protr);
 		else
 			tenode->setPosition(ppos);
 	}
-	tenode->setOrientation(Quaternion(Degree(pturn), Vector3::UNIT_Y)*Quaternion(Degree(ppitch), Vector3::UNIT_Z));
-	tenode->pitch(Degree(-90));
+	tenode->setOrientation(Ogre::Quaternion(Ogre::Degree(pturn), Ogre::Vector3::UNIT_Y)*Ogre::Quaternion(Ogre::Degree(ppitch), Ogre::Vector3::UNIT_Z));
+	tenode->pitch(Ogre::Degree(-90));
 }
 
-void Road::reset(Vector3 start)
+void Road::reset(Ogre::Vector3 start)
 {
 	cur_rtype = 0;
 	lastpturn = 0;
@@ -86,9 +84,9 @@ void Road::reset(Vector3 start)
 void Road::addRoadType(const char* name)
 {
 	// create visuals
-	String entity_name = String("RoadPreview-").append(name);
-	String mesh_name = String(name).append(".mesh");
-	Entity *te = gEnv->sceneManager->createEntity(mesh_name);
+	Ogre::String entity_name = Ogre::String("RoadPreview-").append(name);
+	Ogre::String mesh_name = Ogre::String(name).append(".mesh");
+	Ogre::v1::Entity *te = gEnv->sceneManager->createEntity(mesh_name);
 	te->setName(entity_name);
 
 	te->setCastShadows(false);
@@ -105,8 +103,8 @@ void Road::addRoadType(const char* name)
 
 void Road::toggleType()
 {
-	Quaternion rot = tenode->getOrientation();
-	Vector3 pos = tenode->getPosition();
+	Ogre::Quaternion rot = tenode->getOrientation();
+	Ogre::Vector3 pos = tenode->getPosition();
 	cur_rtype++;
 	if (cur_rtype >=  free_rtype || cur_rtype >=  MAX_RTYPES)
 	{
@@ -138,18 +136,18 @@ void Road::append()
 	// first, calculate the real position
 	if (pturn-lastpturn > 0)
 	{
-		rpos = Quaternion(Degree(pturn-lastpturn), Vector3::UNIT_Y)*(ppos-protl)+protl;
+		rpos = Ogre::Quaternion(Ogre::Degree(pturn-lastpturn), Ogre::Vector3::UNIT_Y)*(ppos-protl)+protl;
 	} else
 	{
 		if (pturn-lastpturn < 0)
-			rpos = Quaternion(Degree(pturn-lastpturn), Vector3::UNIT_Y)*(ppos-protr)+protr;
+			rpos = Ogre::Quaternion(Ogre::Degree(pturn-lastpturn), Ogre::Vector3::UNIT_Y)*(ppos-protr)+protr;
 		else
 			rpos = ppos;
 	}
 	// set real rot
-	rrot = Vector3(0, pturn, ppitch);
+	rrot = Ogre::Vector3(0, pturn, ppitch);
 	// set new pending coordinates (we keep angles)
-	ppos = rpos+(Quaternion(Degree(pturn), Vector3::UNIT_Y)*Quaternion(Degree(ppitch), Vector3::UNIT_Z))*Vector3(10,0,0);
+	ppos = rpos+(Ogre::Quaternion(Ogre::Degree(pturn), Ogre::Vector3::UNIT_Y)*Ogre::Quaternion(Ogre::Degree(ppitch), Ogre::Vector3::UNIT_Z))*Ogre::Vector3(10,0,0);
 	// prepare pending
 	preparePending();
 }

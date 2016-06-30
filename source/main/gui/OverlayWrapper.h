@@ -44,7 +44,7 @@ public:
 	{
 		float orgScaleX;
 		float orgScaleY;
-		Ogre::Overlay *o;
+		Ogre::v1::Overlay *o;
 	};
 
 	void showDashboardOverlays(bool show, Beam *truck);
@@ -110,13 +110,13 @@ protected:
 
 	int init();
 	void update(float dt);
-	void resizePanel(Ogre::OverlayElement *oe);
-	void reposPanel(Ogre::OverlayElement *oe);
+	void resizePanel(Ogre::v1::OverlayElement *oe);
+	void reposPanel(Ogre::v1::OverlayElement *oe);
 	void placeNeedle(Ogre::SceneNode *node, float x, float y, float len);
 	void updateStats(bool detailed=false);
 
-	Ogre::Overlay *loadOverlay(Ogre::String name, bool autoResizeRation=true);
-	Ogre::OverlayElement *loadOverlayElement(Ogre::String name);
+	Ogre::v1::Overlay *loadOverlay(Ogre::String name, bool autoResizeRation=true);
+	Ogre::v1::OverlayElement *loadOverlayElement(Ogre::String name);
 
 	Ogre::RenderWindow* win;
 	TruckHUD *truckhud;
@@ -127,81 +127,81 @@ protected:
 
 	unsigned int  m_visible_overlays;
 
-	Ogre::Overlay *m_truck_dashboard_overlay;
-	Ogre::Overlay *m_truck_dashboard_needles_overlay;
-	Ogre::Overlay *m_truck_dashboard_needles_mask_overlay;
-	Ogre::Overlay *m_truck_pressure_overlay;
-	Ogre::Overlay *m_truck_pressure_needle_overlay;
+	Ogre::v1::Overlay *m_truck_dashboard_overlay;
+	Ogre::v1::Overlay *m_truck_dashboard_needles_overlay;
+	Ogre::v1::Overlay *m_truck_dashboard_needles_mask_overlay;
+	Ogre::v1::Overlay *m_truck_pressure_overlay;
+	Ogre::v1::Overlay *m_truck_pressure_needle_overlay;
 
-	Ogre::Overlay *m_aerial_dashboard_overlay;
-	Ogre::Overlay *m_aerial_dashboard_needles_overlay;
+	Ogre::v1::Overlay *m_aerial_dashboard_overlay;
+	Ogre::v1::Overlay *m_aerial_dashboard_needles_overlay;
 
-	Ogre::Overlay *m_marine_dashboard_overlay;
-	Ogre::Overlay *m_marine_dashboard_needles_overlay;
+	Ogre::v1::Overlay *m_marine_dashboard_overlay;
+	Ogre::v1::Overlay *m_marine_dashboard_needles_overlay;
 
-	Ogre::Overlay *m_machine_dashboard_overlay;
+	Ogre::v1::Overlay *m_machine_dashboard_overlay;
 
 	// Misc
-	Ogre::Overlay *m_direction_arrow_overlay;
-	Ogre::Overlay *m_debug_fps_memory_overlay;
-	Ogre::Overlay *m_debug_beam_timing_overlay;	
-	Ogre::Overlay *m_racing_overlay;
+	Ogre::v1::Overlay *m_direction_arrow_overlay;
+	Ogre::v1::Overlay *m_debug_fps_memory_overlay;
+	Ogre::v1::Overlay *m_debug_beam_timing_overlay;	
+	Ogre::v1::Overlay *m_racing_overlay;
 
 	// -------------------------------------------------------------
 	// Overlay elements
 	// -------------------------------------------------------------
 
 	// Truck
-	Ogre::OverlayElement* guiGear;      //!< truck
-	Ogre::OverlayElement* guiGear3D;    //!< truck
-	Ogre::OverlayElement* guiRoll;      //!< truck
-	Ogre::OverlayElement* guipedclutch; //!< truck
-	Ogre::OverlayElement* guipedbrake;  //!< truck
-	Ogre::OverlayElement* guipedacc;    //!< truck
-	Ogre::OverlayElement *pbrakeo;      //!< truck
-	Ogre::OverlayElement *tcontrolo;    //!< truck
-	Ogre::OverlayElement *antilocko;    //!< truck
-	Ogre::OverlayElement *lockedo;      //!< truck
-	Ogre::OverlayElement *securedo;     //!< truck
-	Ogre::OverlayElement *lopresso;     //!< truck
-	Ogre::OverlayElement *clutcho;      //!< truck
-	Ogre::OverlayElement *lightso;      //!< truck
-	Ogre::OverlayElement *batto;        //!< truck
-	Ogre::OverlayElement *igno;         //!< truck
+	Ogre::v1::OverlayElement* guiGear;      //!< truck
+	Ogre::v1::OverlayElement* guiGear3D;    //!< truck
+	Ogre::v1::OverlayElement* guiRoll;      //!< truck
+	Ogre::v1::OverlayElement* guipedclutch; //!< truck
+	Ogre::v1::OverlayElement* guipedbrake;  //!< truck
+	Ogre::v1::OverlayElement* guipedacc;    //!< truck
+	Ogre::v1::OverlayElement *pbrakeo;      //!< truck
+	Ogre::v1::OverlayElement *tcontrolo;    //!< truck
+	Ogre::v1::OverlayElement *antilocko;    //!< truck
+	Ogre::v1::OverlayElement *lockedo;      //!< truck
+	Ogre::v1::OverlayElement *securedo;     //!< truck
+	Ogre::v1::OverlayElement *lopresso;     //!< truck
+	Ogre::v1::OverlayElement *clutcho;      //!< truck
+	Ogre::v1::OverlayElement *lightso;      //!< truck
+	Ogre::v1::OverlayElement *batto;        //!< truck
+	Ogre::v1::OverlayElement *igno;         //!< truck
 
 	// Aerial overlay elements
-	Ogre::OverlayElement *thro1;
-	Ogre::OverlayElement *thro2;
-	Ogre::OverlayElement *thro3;
-	Ogre::OverlayElement *thro4;
-	Ogre::OverlayElement *engfireo1;
-	Ogre::OverlayElement *engfireo2;
-	Ogre::OverlayElement *engfireo3;
-	Ogre::OverlayElement *engfireo4;
-	Ogre::OverlayElement *engstarto1;
-	Ogre::OverlayElement *engstarto2;
-	Ogre::OverlayElement *engstarto3;
-	Ogre::OverlayElement *engstarto4;
+	Ogre::v1::OverlayElement *thro1;
+	Ogre::v1::OverlayElement *thro2;
+	Ogre::v1::OverlayElement *thro3;
+	Ogre::v1::OverlayElement *thro4;
+	Ogre::v1::OverlayElement *engfireo1;
+	Ogre::v1::OverlayElement *engfireo2;
+	Ogre::v1::OverlayElement *engfireo3;
+	Ogre::v1::OverlayElement *engfireo4;
+	Ogre::v1::OverlayElement *engstarto1;
+	Ogre::v1::OverlayElement *engstarto2;
+	Ogre::v1::OverlayElement *engstarto3;
+	Ogre::v1::OverlayElement *engstarto4;
 
 	// Marine overlay elements
-	Ogre::OverlayElement *bthro1;
-	Ogre::OverlayElement *bthro2;
+	Ogre::v1::OverlayElement *bthro1;
+	Ogre::v1::OverlayElement *bthro2;
 
 	// Truck
-	Ogre::TextAreaOverlayElement* guiAuto[5];
-	Ogre::TextAreaOverlayElement* guiAuto3D[5];
+	Ogre::v1::TextAreaOverlayElement* guiAuto[5];
+	Ogre::v1::TextAreaOverlayElement* guiAuto3D[5];
 
 	// Truck (m_racing_overlay)
-	Ogre::TextAreaOverlayElement* laptimemin;
-	Ogre::TextAreaOverlayElement* laptimes;
-	Ogre::TextAreaOverlayElement* laptimems;
-	Ogre::TextAreaOverlayElement* lasttime;
-	Ogre::TextAreaOverlayElement* directionArrowText;
-	Ogre::TextAreaOverlayElement* directionArrowDistance;
+	Ogre::v1::TextAreaOverlayElement* laptimemin;
+	Ogre::v1::TextAreaOverlayElement* laptimes;
+	Ogre::v1::TextAreaOverlayElement* laptimems;
+	Ogre::v1::TextAreaOverlayElement* lasttime;
+	Ogre::v1::TextAreaOverlayElement* directionArrowText;
+	Ogre::v1::TextAreaOverlayElement* directionArrowDistance;
 
-	Ogre::TextAreaOverlayElement* alt_value_taoe; //!!< Aerial
+	Ogre::v1::TextAreaOverlayElement* alt_value_taoe; //!!< Aerial
 
-	Ogre::TextAreaOverlayElement* boat_depth_value_taoe; //!< Marine
+	Ogre::v1::TextAreaOverlayElement* boat_depth_value_taoe; //!< Marine
 
 	// Aerial
 	Ogre::TextureUnitState *adibugstexture;

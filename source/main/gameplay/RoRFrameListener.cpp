@@ -1161,7 +1161,8 @@ bool RoRFrameListener::updateEvents(float dt)
 		
 #endif // USE_CAELUM
 
-		if (RoR::Application::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_TOGGLE_RENDER_MODE, 0.5f))
+        //TODO: Fix for Ogre 2.1
+		/*if (RoR::Application::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_TOGGLE_RENDER_MODE, 0.5f))
 		{
 			static int mSceneDetailIndex;
 			mSceneDetailIndex = (mSceneDetailIndex + 1) % 3;
@@ -1177,7 +1178,7 @@ bool RoRFrameListener::updateEvents(float dt)
 				gEnv->mainCamera->setPolygonMode(PM_POINTS);
 				break;
 			}
-		}
+		}*/
 		
 		if (RoR::Application::GetInputEngine()->getEventBoolValue(EV_COMMON_ENTER_OR_EXIT_TRUCK) && m_time_until_next_toggle <= 0)
 		{

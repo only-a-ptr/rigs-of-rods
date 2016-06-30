@@ -662,7 +662,7 @@ void RigSpawner::FinalizeRig()
 		
 		//parser_warning(c, "creating cabnode", PARSER_INFO);
 		m_rig->cabNode = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-		Ogre::Entity *ec = nullptr;
+		Ogre::v1::Entity *ec = nullptr;
 		try
 		{
 			//parser_warning(c, "loading cab", PARSER_INFO);
@@ -1107,7 +1107,7 @@ void RigSpawner::ProcessWing(RigDef::Wing & def)
 		m_rig->state != NETWORKED
 	);
 					
-	Ogre::Entity *entity = nullptr;
+	Ogre::v1::Entity *entity = nullptr;
 	try
 	{
 		//entity = gEnv->sceneManager->createEntity("");
@@ -4696,7 +4696,7 @@ void RigSpawner::BuildMeshWheelVisuals(
 	try
 	{
 		m_rig->vwheels[wheel_index].cnode = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-		Ogre::Entity *ec = gEnv->sceneManager->createEntity(wheel_name.str());
+		Ogre::v1::Entity *ec = gEnv->sceneManager->createEntity(wheel_name.str());
 		ec->setName(entity_name.str());
 		if (ec)
 		{
@@ -5496,7 +5496,7 @@ void RigSpawner::CreateWheelVisuals(
 
 	try
 	{
-		Ogre::Entity *ec = gEnv->sceneManager->createEntity(wheel_mesh_name.str());
+		Ogre::v1::Entity *ec = gEnv->sceneManager->createEntity(wheel_mesh_name.str());
 		ec->setName(wheel_name_i.str());
 		MaterialFunctionMapper::replaceSimpleMeshMaterials(ec, Ogre::ColourValue(0, 0.5, 0.5));
 		if (m_rig->materialFunctionMapper != nullptr)

@@ -44,7 +44,7 @@ public:
 
 protected:
 
-	Ogre::Overlay *truckHUD;
+	Ogre::v1::Overlay *truckHUD;
 	float updatetime;
 	int width, border;
 
@@ -58,7 +58,7 @@ protected:
 	std::map<int, float> maxVelos;
 	std::map<int, float> minVelos;
 
-	void checkOverflow(Ogre::OverlayElement* e);
+	void checkOverflow(Ogre::v1::OverlayElement* e);
 
 	static std::unique_ptr<TruckHUD> myInstance;
 	static const unsigned int COMMANDS_VISIBLE = 25;

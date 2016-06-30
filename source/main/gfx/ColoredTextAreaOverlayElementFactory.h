@@ -34,7 +34,7 @@ class ColoredTextAreaOverlayElementFactory : public Ogre::OverlayElementFactory
 {
 public:
 	/** See OverlayElementFactory */
-	Ogre::OverlayElement* createOverlayElement(const Ogre::String& instanceName)
+	Ogre::v1::OverlayElement* createOverlayElement(const Ogre::String& instanceName)
 	{
 		return new ColoredTextAreaOverlayElement(instanceName);
 	}

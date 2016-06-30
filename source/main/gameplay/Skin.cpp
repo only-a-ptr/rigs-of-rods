@@ -136,7 +136,7 @@ void Skin::replaceMaterialTextures(Ogre::String materialName)
 	}
 }
 
-void Skin::replaceMeshMaterials(Ogre::Entity *e)
+void Skin::replaceMeshMaterials(Ogre::v1::Entity *e)
 {
 	if (!e) return;
 
@@ -146,37 +146,37 @@ void Skin::replaceMeshMaterials(Ogre::Entity *e)
 	// then walk the entity and look for replacements
 	for (int n=0; n<(int)e->getNumSubEntities();n++)
 	{
-		SubEntity *subent = e->getSubEntity(n);
-		String materialName = subent->getMaterialName();
+		v1::SubEntity *subent = e->getSubEntity(n);
+		String materialName = subent->getMaterial()->getName();
 		std::map<Ogre::String, Ogre::String>::iterator it = replaceMaterials.find(stripMaterialNameUniqueNess(materialName));
 		if (it != replaceMaterials.end())
 		{
 			materialName = it->second;
-			subent->setMaterialName(materialName);
+			subent->setMaterialName(materialName, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 		} else
 		{
 			// look for texture replacements
-			replaceMaterialTextures(subent->getMaterialName());
+			replaceMaterialTextures(subent->getMaterial()->getName());
 		}
 	}
 }
 
-void Skin::uniquifyMeshMaterials(Ogre::Entity *e)
+void Skin::uniquifyMeshMaterials(Ogre::v1::Entity *e)
 {
 	if (!e) return;
 
 	for (int n=0; n<(int)e->getNumSubEntities();n++)
 	{
-		SubEntity *subent = e->getSubEntity(n);
-		String oldMaterialName = subent->getMaterialName();
+		v1::SubEntity *subent = e->getSubEntity(n);
+		String oldMaterialName = subent->getMaterial()->getName();
 		// MAGGIICCCC
 		String newMaterialName = oldMaterialName + "_#UNIQUESKINMATERIAL#_" + TOSTRING(counter++);
 
 		MaterialPtr mat = MaterialManager::getSingleton().getByName(oldMaterialName);
 		if (!mat.isNull())
 		{
-			mat->clone(newMaterialName);
-			subent->setMaterialName(newMaterialName);
+			Ogre::MaterialPtr mat2 = mat->clone(newMaterialName);
+			subent->setMaterial(mat2);
 		}
 	}
 }

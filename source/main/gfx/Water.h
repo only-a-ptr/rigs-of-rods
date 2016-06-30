@@ -19,8 +19,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef __Water_H_
-#define __Water_H_
 
 #include <Ogre.h>
 
@@ -93,7 +91,7 @@ private:
 	Ogre::Camera *mRenderCamera;
 	Ogre::Camera *mReflectCam;
 	Ogre::Camera *mRefractCam;
-	Ogre::HardwareVertexBufferSharedPtr wbuf;
+	Ogre::v1::HardwareVertexBufferSharedPtr wbuf;
 	Ogre::RenderTexture* rttTex1;
 	Ogre::RenderTexture* rttTex2;
 	Ogre::SceneNode *pBottomNode;
@@ -103,6 +101,3 @@ private:
 	wavetrain_t wavetrains[MAX_WAVETRAINS];
 
 };
-
-
-#endif // __Water_H_

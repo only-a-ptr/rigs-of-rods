@@ -55,7 +55,7 @@ protected:
 	VerticalAlignment	mVerticalAlignment;
 
 	ColourValue		mColor;
-	RenderOperation	mRenderOp;
+	v1::RenderOperation	mRenderOp;
 	AxisAlignedBox	mAABB;
 	LightList		mLList;
 
@@ -130,7 +130,7 @@ protected:
 	void    _updateRenderQueue(RenderQueue* queue, Camera *camera, const Camera *lodCamera);
 
 	// from renderable
-	void    getRenderOperation(RenderOperation &op);
+	void    getRenderOperation(v1::RenderOperation &op, bool casterPass);
 	const   MaterialPtr       &getMaterial(void) const {assert(!mpMaterial.isNull());return mpMaterial;};
 	const   LightList         &getLights(void) const {return mLList;};
 };

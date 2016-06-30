@@ -406,7 +406,7 @@ struct flare_t
 	float offsety;
 	float offsetz;
 	Ogre::SceneNode *snode;
-	Ogre::BillboardSet *bbs;
+	Ogre::v1::BillboardSet *bbs;
 	Ogre::Light *light;
 	char type;
 	int controlnumber;
@@ -443,7 +443,7 @@ struct prop_t
 	char beacontype;        //<! Special prop: beacon {0 = none, 'b' = user-specified, 'r' = red, 'p' = police lightbar, 'L'/'R'/'w' - aircraft wings}
 
 	// formerly named "bbs"
-	Ogre::BillboardSet *beacon_flares_billboard_system[4];
+	Ogre::v1::BillboardSet *beacon_flares_billboard_system[4];
 
 	// formerly named bbsnode
 	Ogre::SceneNode *beacon_flare_billboard_scene_node[4];

@@ -19,19 +19,8 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef __TerrainObjectManager_H_
-#define __TerrainObjectManager_H_
 
 #include "RoRPrerequisites.h"
-
-#ifdef USE_PAGED
-#include "BatchPage.h"
-#include "GrassLoader.h"
-#include "ImpostorPage.h"
-#include "PagedGeometry.h"
-#include "TreeLoader2D.h"
-#include "TreeLoader3D.h"
-#endif //USE_PAGED
 
 class TerrainObjectManager : public ZeroedMemoryAllocator
 {
@@ -80,13 +69,13 @@ protected:
 
 	typedef struct
 	{
-		Ogre::Entity *ent;
+		Ogre::v1::Entity *ent;
 		Ogre::SceneNode *node;
-		Ogre::AnimationState *anim;
+		Ogre::v1::AnimationState *anim;
 		float speedfactor;
 	} animated_object_t;
 
-	Ogre::StaticGeometry *bakesg;
+	Ogre::v1::StaticGeometry *bakesg;
 	ProceduralManager *proceduralManager;
 
 	Road *road;
@@ -107,17 +96,6 @@ protected:
 
 	bool background_loading;
 	bool use_rt_shader_system;
-
-#ifdef USE_PAGED
-	typedef struct
-	{
-		Forests::PagedGeometry *geom;
-		void *loader;
-	} paged_geometry_t;
-
-	std::vector<paged_geometry_t> pagedGeometry;
-	Forests::TreeLoader2D *treeLoader;
-#endif //USE_PAGED
 
 	localizer_t localizers[64];
 
@@ -142,5 +120,3 @@ protected:
 
 	void proceduralTests();
 };
-
-#endif // __TerrainObjectManager_H_

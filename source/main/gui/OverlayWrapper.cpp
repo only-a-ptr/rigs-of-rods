@@ -823,7 +823,7 @@ void OverlayWrapper::SetupDirectionArrow()
 	if (RoR::Application::GetOverlayWrapper() != nullptr)
 	{
 		// setup direction arrow
-		Ogre::Entity *arrow_entity = gEnv->sceneManager->createEntity("arrow2.mesh");
+		Ogre::v1::Entity *arrow_entity = gEnv->sceneManager->createEntity("arrow2.mesh");
 		arrow_entity->setName("dirArrowEntity");
 	#if OGRE_VERSION<0x010602
 		arrow_entity->setNormaliseNormals(true);

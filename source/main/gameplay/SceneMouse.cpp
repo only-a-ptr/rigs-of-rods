@@ -63,12 +63,11 @@ SceneMouse::SceneMouse()
 
 	MaterialPtr pickLineMaterial = MaterialManager::getSingleton().create("PickLineMaterial",ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	pickLineMaterial->setReceiveShadows(false);
-	pickLineMaterial->getTechnique(0)->setLightingEnabled(true);
 	pickLineMaterial->getTechnique(0)->getPass(0)->setDiffuse(0,0,1,0);
 	pickLineMaterial->getTechnique(0)->getPass(0)->setAmbient(0,0,1);
 	pickLineMaterial->getTechnique(0)->getPass(0)->setSelfIllumination(0,0,1);
 
-	pickLine->begin("PickLineMaterial", RenderOperation::OT_LINE_LIST);
+	pickLine->begin("PickLineMaterial", v1::RenderOperation::OT_LINE_LIST);
 	pickLine->position(0, 0, 0);
 	pickLine->position(0, 0, 0);
 	pickLine->end();

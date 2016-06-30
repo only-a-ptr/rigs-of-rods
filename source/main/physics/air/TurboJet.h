@@ -65,8 +65,8 @@ private:
 	Ogre::SceneNode *absnode;
 	Ogre::SceneNode *nzsnode;
 	Ogre::Vector3 axis;
-	Ogre::Entity *nozzleMesh;
-	Ogre::Entity *flameMesh;
+	Ogre::v1::Entity *nozzleMesh;
+	Ogre::v1::Entity *flameMesh;
 	bool afterburner;
 	bool failed;
 	bool heathaze;

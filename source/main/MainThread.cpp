@@ -166,8 +166,8 @@ void MainThread::Go()
 	gEnv->sceneManager->setAmbientLight(Ogre::ColourValue::White);
 
 	// Create rendering overlay
-	Ogre::OverlayManager& overlay_manager = Ogre::OverlayManager::getSingleton();
-    Ogre::Overlay* startup_screen_overlay = static_cast<Ogre::Overlay*>( overlay_manager.getByName("RoR/StartupScreen") );
+	Ogre::v1::OverlayManager& overlay_manager = Ogre::v1::OverlayManager::getSingleton();
+    Ogre::v1::Overlay* startup_screen_overlay = static_cast<Ogre::v1::Overlay*>( overlay_manager.getByName("RoR/StartupScreen") );
 	if (!startup_screen_overlay)
 	{
 		OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Cannot find loading overlay for startup screen", "MainThread::Go");

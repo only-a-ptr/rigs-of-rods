@@ -1471,7 +1471,7 @@ int CacheSystem::addUniqueString(std::set<Ogre::String> &list, Ogre::String str)
 	return 0;
 }
 
-Ogre::String CacheSystem::addMeshMaterials(CacheEntry &entry, Ogre::Entity *e)
+Ogre::String CacheSystem::addMeshMaterials(CacheEntry &entry, Ogre::v1::Entity *e)
 {
 	String materials = "";
 	MeshPtr m = e->getMesh();

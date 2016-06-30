@@ -40,9 +40,9 @@ public:
 	void addMaterial(int flareid, materialmapping_t t);
 	void toggleFunction(int flareid, bool enabled);
 	// this function searches and replaces materials in meshes
-	void replaceMeshMaterials(Ogre::Entity *e);
+	void replaceMeshMaterials(Ogre::v1::Entity *e);
 
-	static void replaceSimpleMeshMaterials(Ogre::Entity *e, Ogre::ColourValue c = Ogre::ColourValue::White);
+	static void replaceSimpleMeshMaterials(Ogre::v1::Entity *e, Ogre::ColourValue c = Ogre::ColourValue::White);
 
 private:
 

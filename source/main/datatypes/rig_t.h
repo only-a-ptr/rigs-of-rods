@@ -212,7 +212,7 @@ struct rig_t
 	int flaresMode;
 	Ogre::Light *cablight;
 	Ogre::SceneNode *cablightNode;
-	std::vector<Ogre::Entity*> deletion_Entities; //!< For unloading vehicle; filled at spawn.
+	std::vector<Ogre::v1::Entity*> deletion_Entities; //!< For unloading vehicle; filled at spawn.
 	std::vector<Ogre::MovableObject *> deletion_Objects; //!< For unloading vehicle; filled at spawn.
 	std::vector<Ogre::SceneNode*> deletion_sceneNodes; //!< For unloading vehicle; filled at spawn.
 	unsigned int netCustomLightArray[4];

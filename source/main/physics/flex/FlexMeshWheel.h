@@ -54,7 +54,7 @@ public:
 
 	~FlexMeshWheel();
 
-	Ogre::Entity *getRimEntity() { return rimEnt; };
+	Ogre::v1::Entity *getRimEntity() { return rimEnt; };
 
 	Ogre::Vector3 updateVertices();
 	Ogre::Vector3 updateShadowVertices();
@@ -131,5 +131,5 @@ private:
 	Ogre::SceneNode *rnode;
 	float normy;
 	bool revrim;
-	Ogre::Entity *rimEnt;
+	Ogre::v1::Entity *rimEnt;
 };

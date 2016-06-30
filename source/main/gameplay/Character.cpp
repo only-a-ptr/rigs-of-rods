@@ -35,8 +35,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MovableText.h"
 
-using namespace Ogre;
-
 unsigned int Character::characterCounter = 0;
 
 Character::Character(int source, unsigned int streamid, int colourNumber, bool remote) :
@@ -50,7 +48,7 @@ Character::Character(int source, unsigned int streamid, int colourNumber, bool r
 	, mCamera(gEnv->mainCamera)
 	, mCharacterNode(0)
 	, mHideOwnNetLabel(BSETTING("HideOwnNetLabel", false))
-	, mLastPosition(Vector3::ZERO)
+	, mLastPosition(Ogre::Vector3::ZERO)
 	, mMoveableText(0)
 	, networkAuthLevel(0)
 	, networkUsername("")
@@ -63,14 +61,11 @@ Character::Character(int source, unsigned int streamid, int colourNumber, bool r
 	myNumber = characterCounter++;
 	myName   = "Character" + TOSTRING(myNumber);
 
-	Entity *entity = gEnv->sceneManager->createEntity("character.mesh");
+	Ogre::v1::Entity *entity = gEnv->sceneManager->createEntity("character.mesh");
 	entity->setName(myName+"_mesh");
-#if OGRE_VERSION<0x010602
-	entity->setNormaliseNormals(true);
-#endif //OGRE_VERSION
 
 	// fix disappearing mesh
-	AxisAlignedBox aabb;
+	Ogre::AxisAlignedBox aabb;
 	aabb.setInfinite();
 	entity->getMesh()->_setBounds(aabb);
 
@@ -89,21 +84,27 @@ Character::Character(int source, unsigned int streamid, int colourNumber, bool r
 		setVisible(true);
 	}
 	// setup colour
-	MaterialPtr mat1 = MaterialManager::getSingleton().getByName("tracks/character");
-	MaterialPtr mat2 = mat1->clone("tracks/"+myName);
+	Ogre::MaterialPtr mat1 = Ogre::MaterialManager::getSingleton().getByName("tracks/character");
+	Ogre::MaterialPtr mat2 = mat1->clone("tracks/"+myName);
 	entity->setMaterialName("tracks/"+myName);
 
 #ifdef USE_SOCKETW
 	if (gEnv->multiplayer && (remote || !mHideOwnNetLabel))
 	{
-		mMoveableText = new MovableText("netlabel-"+myName, "");
+		Ogre::NameValuePairList params;
+		params["name"] = "netlabel-" + myName;
+		params["caption"] = networkUsername;
+
+		mMoveableText = static_cast<Ogre::MovableText*>(gEnv->sceneManager->createMovableObject(Ogre::MovableTextFactory::FACTORY_TYPE_NAME,
+			&gEnv->sceneManager->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC), &params));
+
 		mCharacterNode->attachObject(mMoveableText);
 		mMoveableText->setFontName("CyberbitEnglish");
-		mMoveableText->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+		mMoveableText->setTextAlignment(Ogre::MovableText::H_CENTER, Ogre::MovableText::V_ABOVE);
 		mMoveableText->setAdditionalHeight(2);
 		mMoveableText->showOnTop(false);
 		mMoveableText->setCharacterHeight(8);
-		mMoveableText->setColor(ColourValue::Black);
+		mMoveableText->setColor(Ogre::ColourValue::Black);
 
 		updateLabels();
 	}
@@ -130,7 +131,7 @@ Character::~Character()
 	// try to unload some materials
 	try
 	{
-		MaterialManager::getSingleton().unload("tracks/"+myName);
+		Ogre::MaterialManager::getSingleton().unload("tracks/"+myName);
 	} catch(...) {}
 }
 
@@ -141,7 +142,7 @@ void Character::updateCharacterRotation()
 
 void Character::updateCharacterColour()
 {
-	String matName = "tracks/" + myName;
+	Ogre::String matName = "tracks/" + myName;
 	PlayerColours::getSingleton().updateMaterial(colourNumber, matName, 2);
 }
 
@@ -156,7 +157,8 @@ void Character::updateLabels()
 	{
 		if (!RoR::Networking::GetUserInfo(m_source_id, info))
 			return;
-	} else
+	}
+    else
 	{
 		info = RoR::Networking::GetLocalUserData();
 	}
@@ -171,36 +173,23 @@ void Character::updateLabels()
 
 		mCharacterNode->attachObject(mMoveableText);
 		mMoveableText->setFontName("CyberbitEnglish");
-		mMoveableText->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+		mMoveableText->setTextAlignment(Ogre::MovableText::H_CENTER, Ogre::MovableText::V_ABOVE);
 		mMoveableText->setAdditionalHeight(2);
 		mMoveableText->showOnTop(false);
 		mMoveableText->setCharacterHeight(8);
-		mMoveableText->setColor(ColourValue::Black);
-	}
+		mMoveableText->setColor(Ogre::ColourValue::Black);
 
-	//LOG(" *label caption: " + String(networkUsername));
-	try
+    try
 	{
 		mMoveableText->setCaption(networkUsername);
-	} catch (...) {}
-	/*
-	if (networkAuthLevel & AUTH_ADMIN)
-	{
-		mMoveableText->setFontName("highcontrast_red");
-	} else if (networkAuthLevel & AUTH_RANKED)
-	{
-		mMoveableText->setFontName("highcontrast_green");
-	} else
-	{
-		mMoveableText->setFontName("highcontrast_black");
 	}
-	*/
+    catch (...) {}
 
 	updateNetLabelSize();
 #endif //SOCKETW
 }
 
-void Character::setPosition(Vector3 position)
+void Character::setPosition(Ogre::Vector3 position)
 {
 	mCharacterNode->setPosition(position);
 #ifdef USE_MYGUI
@@ -223,7 +212,7 @@ void Character::setVisible(bool visible)
 #endif // USE_MYGUI
 }
 
-Vector3 Character::getPosition()
+Ogre::Vector3 Character::getPosition()
 {
 	return mCharacterNode->getPosition();
 }
@@ -233,23 +222,23 @@ bool Character::getVisible()
 	return mCharacterNode->getAttachedObject(0)->getVisible();
 }
 
-void Character::setRotation(Radian rotation)
+void Character::setRotation(Ogre::Radian rotation)
 {
 	characterRotation = rotation;
 	mCharacterNode->resetOrientation();
 	mCharacterNode->yaw(-characterRotation);
 }
 
-void Character::setAnimationMode(String mode, float time)
+void Character::setAnimationMode(Ogre::String mode, float time)
 {
 	if (!mAnimState)
 		return;
 	if (mLastAnimMode != mode)
 	{
-		AnimationStateIterator it = mAnimState->getAnimationStateIterator();
+		Ogre::v1::AnimationStateIterator it = mAnimState->getAnimationStateIterator();
 		while(it.hasMoreElements())
 		{
-			AnimationState *as = it.getNext();
+			Ogre::v1::AnimationState *as = it.getNext();
 			if (as->getAnimationName() == mode)
 			{
 				as->setEnabled(true);
@@ -269,9 +258,9 @@ void Character::setAnimationMode(String mode, float time)
 	}
 }
 
-float calculate_collision_depth(Vector3 pos)
+float calculate_collision_depth(Ogre::Vector3 pos)
 {
-	Vector3 query = pos + Vector3::UNIT_Y;
+	Ogre::Vector3 query = pos + Ogre::Vector3::UNIT_Y;
 	while (query.y > pos.y)
 	{
 		if (gEnv->collisions->collisionCorrect(&query, false))
@@ -289,7 +278,7 @@ void Character::update(float dt)
 		// TODO: check for menu being opened
 		if (gEnv->cameraManager && gEnv->cameraManager->gameControlsLocked()) return;
 
-		Vector3 position = mCharacterNode->getPosition();
+		Ogre::Vector3 position = mCharacterNode->getPosition();
 
 		// gravity force is always on
 		position.y += characterVSpeed * dt;
@@ -313,7 +302,7 @@ void Character::update(float dt)
 
 		// Trigger script events and handle mesh (ground) collision
 		{
-			Vector3 query = position;
+			Ogre::Vector3 query = position;
 			gEnv->collisions->collisionCorrect(&query);
 			if (std::abs(position.y - query.y) > 0.1f && gEnv->cameraManager)
 			{
@@ -323,14 +312,14 @@ void Character::update(float dt)
 		}
 
 		// Obstacle detection
-		Vector3 diff = mCharacterNode->getPosition() - mLastPosition;
+		Ogre::Vector3 diff = mCharacterNode->getPosition() - mLastPosition;
 		if (diff.squaredLength() < 25.0f)
 		{
 			const int numstep = 100;
-			Vector3 base = mLastPosition + Vector3::UNIT_Y * 0.5f;
+			Ogre::Vector3 base = mLastPosition + Ogre::Vector3::UNIT_Y * 0.5f;
 			for (int i=1; i<numstep; i++)
 			{
-				Vector3 query = base + diff * ((float)i / numstep);
+				Ogre::Vector3 query = base + diff * ((float)i / numstep);
 				if (gEnv->collisions->collisionCorrect(&query, false))
 				{
 					position = mLastPosition + diff * ((float)(i-1) / numstep);;
@@ -387,7 +376,7 @@ void Character::update(float dt)
 		if (tmpJoy > 0.0f)
 		{
 			float scale = RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_LMENU) ? 0.1f : 1.0f;
-			setRotation(characterRotation + dt * 2.0f * scale * Radian(tmpJoy));
+			setRotation(characterRotation + dt * 2.0f * scale * Ogre::Radian(tmpJoy));
 			if (!isswimming)
 			{
 				setAnimationMode("Turn", -dt);
@@ -399,7 +388,7 @@ void Character::update(float dt)
 		if (tmpJoy > 0.0f)
 		{
 			float scale = RoR::Application::GetInputEngine()->isKeyDown(OIS::KC_LMENU) ? 0.1f : 1.0f;
-			setRotation(characterRotation - dt * scale * 2.0f * Radian(tmpJoy));
+			setRotation(characterRotation - dt * scale * 2.0f * Ogre::Radian(tmpJoy));
 			if (!isswimming)
 			{
 				setAnimationMode("Turn", dt);
@@ -415,7 +404,7 @@ void Character::update(float dt)
 		{
 			if (tmpRun > 0.0f) accel = 3.0f * tmpRun;
 			// animation missing for that
-			position += dt * characterSpeed *1.5f * accel * Vector3(cos(characterRotation.valueRadians() - Math::HALF_PI), 0.0f, sin(characterRotation.valueRadians() - Math::HALF_PI));
+			position += dt * characterSpeed *1.5f * accel * Ogre::Vector3(cos(characterRotation.valueRadians() - Ogre::Math::HALF_PI), 0.0f, sin(characterRotation.valueRadians() - Ogre::Math::HALF_PI));
 		}
 
 		tmpJoy = accel = RoR::Application::GetInputEngine()->getEventValue(EV_CHARACTER_SIDESTEP_RIGHT);
@@ -423,7 +412,7 @@ void Character::update(float dt)
 		{
 			if (tmpRun > 0.0f) accel = 3.0f * tmpRun;
 			// animation missing for that
-			position += dt * characterSpeed * 1.5f * accel * Vector3(cos(characterRotation.valueRadians() + Math::HALF_PI), 0.0f, sin(characterRotation.valueRadians() + Math::HALF_PI));
+			position += dt * characterSpeed * 1.5f * accel * Ogre::Vector3(cos(characterRotation.valueRadians() + Ogre::Math::HALF_PI), 0.0f, sin(characterRotation.valueRadians() + Ogre::Math::HALF_PI));
 		}
 
 		tmpJoy = accel = RoR::Application::GetInputEngine()->getEventValue(EV_CHARACTER_FORWARD) + RoR::Application::GetInputEngine()->getEventValue(EV_CHARACTER_ROT_UP);
@@ -455,7 +444,7 @@ void Character::update(float dt)
 				}
 			}
 			// 0.005f fixes character getting stuck on meshes
-			position += dt * characterSpeed * 1.5f * accel * Vector3(cos(characterRotation.valueRadians()), 0.01f, sin(characterRotation.valueRadians()));
+			position += dt * characterSpeed * 1.5f * accel * Ogre::Vector3(cos(characterRotation.valueRadians()), 0.01f, sin(characterRotation.valueRadians()));
 		} else if (tmpBack > 0.0f)
 		{
 			float time = -dt * characterSpeed;
@@ -469,7 +458,7 @@ void Character::update(float dt)
 				idleanim = false;
 			}
 			// 0.005f fixes character getting stuck on meshes
-			position -= dt * characterSpeed * tmpBack * Vector3(cos(characterRotation.valueRadians()), 0.01f, sin(characterRotation.valueRadians()));
+			position -= dt * characterSpeed * tmpBack * Ogre::Vector3(cos(characterRotation.valueRadians()), 0.01f, sin(characterRotation.valueRadians()));
 		}
 
 		if (idleanim)
@@ -488,16 +477,16 @@ void Character::update(float dt)
 	} 
 	else if (beamCoupling && beamCoupling->hasDriverSeat()) // beamCoupling = The vehicle or machine which the character occupies
 	{
-		Vector3 pos;
-		Quaternion rot;
+		Ogre::Vector3 pos;
+		Ogre::Quaternion rot;
 		beamCoupling->calculateDriverPos(pos, rot);
 		float angle = beamCoupling->hydrodirwheeldisplay * -1.0f; // not getSteeringAngle(), but this, as its smoothed
 		mCharacterNode->setOrientation(rot);
-		setPosition(pos + (rot * Vector3(0.f,-0.6f,0.f))); // hack to position the character right perfect on the default seat
+		setPosition(pos + (rot * Ogre::Vector3(0.f,-0.6f,0.f))); // hack to position the character right perfect on the default seat
 
 		// Animation
 		this->setAnimationMode("driving");
-		Real anim_length = mAnimState->getAnimationState("driving")->getLength();
+		Ogre::Real anim_length = mAnimState->getAnimationState("driving")->getLength();
 		float anim_time_pos = ((angle + 1.0f) * 0.5f) * anim_length;
 		// prevent animation flickering on the borders:
 		if (anim_time_pos < 0.01f)
@@ -536,7 +525,7 @@ void Character::updateMapIcon()
 #endif // USE_MYGUI
 }
 
-void Character::move(Vector3 offset)
+void Character::move(Ogre::Vector3 offset)
 {
 	mCharacterNode->translate(offset);
 }
@@ -591,9 +580,9 @@ void Character::receiveStreamData(unsigned int &type, int &source, unsigned int 
 		if (header->command == CHARCMD_POSITION)
 		{
 			pos_netdata_t *data = (pos_netdata_t *)buffer;
-			Vector3 pos(data->posx, data->posy, data->posz);
+			Ogre::Vector3 pos(data->posx, data->posy, data->posz);
 			setPosition(pos);
-			Quaternion rot(data->rotw, data->rotx, data->roty, data->rotz);
+			Ogre::Quaternion rot(data->rotw, data->rotx, data->roty, data->rotz);
 			mCharacterNode->setOrientation(rot);
 			setAnimationMode(getASCIIFromCharString(data->animationMode, 255), data->animationTime);
 		} else if (header->command == CHARCMD_ATTACH)
