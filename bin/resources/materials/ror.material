@@ -1,3 +1,5 @@
+import * from "managed_mats.material"
+
 material tracks/3Duptex
 {
 	technique
@@ -65,18 +67,9 @@ material tracks/bigsign/town
 }
 
 
-material chp
+material chp: RoR/Managed_Mats/Base
 {
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture chp.dds
-			}
-		}
-	}
+	set_texture_alias diffuse_tex chp.dds
 }
 
 
@@ -2326,105 +2319,40 @@ material tracks/PlayerColours/30
 	}
 }
 
-material asphalt
+material asphalt: RoR/Managed_Mats/Base
 {
-	receive_shadows on
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture asphalt.dds
-			}
-		}
-	}
-}
-material roadcross
-{
-	receive_shadows on
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture roadcross.dds
-			}
-		}
-	}
-}
-material roadtee
-{
-	receive_shadows on
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture roadtee.dds
-			}
-		}
-	}
-}
-material road
-{
-	receive_shadows on
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture road.dds
-			}
-		}
-	}
-}
-material roadturn
-{
-	receive_shadows on
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture roadturn.dds
-			}
-		}
-	}
-}
-material roadbf
-{
-	technique
-	{
-		pass
-		{
-			cull_hardware none
-			texture_unit
-			{
-				texture road.dds
-			}
-		}
-	}
+	set_texture_alias diffuse_tex asphalt.dds
 }
 
-material runway
+material roadcross: RoR/Managed_Mats/Base
 {
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture runway.dds
-			}
-		}
-	}
+	set_texture_alias diffuse_tex roadcross.dds
 }
 
+material roadtee: RoR/Managed_Mats/Base
+{
+	set_texture_alias diffuse_tex roadtee.dds
+}
+
+material road: RoR/Managed_Mats/Base
+{
+	set_texture_alias diffuse_tex road.dds
+}
+
+material roadturn: RoR/Managed_Mats/Base
+{
+	set_texture_alias diffuse_tex roadturn.dds
+}
+
+material roadbf: RoR/Managed_Mats/Base
+{
+	set_texture_alias diffuse_tex road.dds
+}
+
+material runway: RoR/Managed_Mats/Base
+{
+	set_texture_alias diffuse_tex runway.dds
+}
 
 material sign-nhelens
 {
@@ -2439,22 +2367,10 @@ material sign-nhelens
 		}
 	}
 }
-
-
-material tracks/master
+material tracks/master: RoR/Managed_Mats/Base
 {
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture master.dds
-			}
-		}
-	}
+	set_texture_alias diffuse_tex master.dds
 }
-
 
 material tracks/nozzle
 {
@@ -2600,18 +2516,9 @@ material renderdash
 	}
 }
 
-material road2
+material road2: RoR/Managed_Mats/Base
 {
-	technique
-	{
-		pass
-		{
-			texture_unit
-			{
-				texture road2.dds
-			}
-		}
-	}
+	set_texture_alias diffuse_tex road2.dds
 }
 
 

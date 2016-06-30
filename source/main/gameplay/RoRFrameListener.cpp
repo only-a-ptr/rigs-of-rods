@@ -467,7 +467,7 @@ bool RoRFrameListener::updateEvents(float dt)
 			// save the settings
 			if (gEnv->cameraManager &&
 				gEnv->cameraManager->hasActiveBehavior() &&
-				gEnv->cameraManager->getCurrentBehavior() == CameraManager::CAMERA_BEHAVIOR_VEHICLE_CINECAM)
+				gEnv->cameraManager->getCurrentBehavior() == RoR::PerVehicleCameraContext::CAMERA_BEHAVIOR_VEHICLE_CINECAM)
 			{
 				SETTINGS.setSetting("FOV Internal", TOSTRING(fov));
 			} else
@@ -774,7 +774,7 @@ bool RoRFrameListener::updateEvents(float dt)
 					{
 #ifdef USE_MYGUI
 						RoR::Application::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, _L("No rescue truck found!"), "warning.png");
-						RoR::Application::GetGuiManager()->PushNotification("Notice:", _L("No rescue truck found!") + TOSTRING(""));
+						RoR::Application::GetGuiManager()->PushNotification("Notice:", _L("No rescue truck found!"));
 #endif // USE_MYGUI
 					}
 				}
@@ -1373,11 +1373,10 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
 	}
 
 	//update visual - antishaking
-	if (loading_state == ALL_LOADED)
+	if (loading_state == ALL_LOADED && !this->isSimPaused)
 	{
 		BeamFactory::getSingleton().updateVisual(dt); // Updates flexbodies. When using ThreadPool, it pushes tasks and also waits for them to complete (in this single call)
 	}
-
 
 	if (!updateEvents(dt))
 	{
@@ -1530,7 +1529,7 @@ void RoRFrameListener::showLoad(int type, const Ogre::String &instance, const Og
 				{
 #ifdef USE_MYGUI
 					RoR::Application::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, _L("Please clear the place first"), "error.png");
-					RoR::Application::GetGuiManager()->PushNotification("Notice:", _L("Please clear the place first") + TOSTRING(""));
+					RoR::Application::GetGuiManager()->PushNotification("Notice:", _L("Please clear the place first"));
 #endif // USE_MYGUI
 					gEnv->collisions->clearEventCache();
 					return;
@@ -1657,7 +1656,7 @@ void RoRFrameListener::hideGUI(bool visible)
 		if (curr_truck
 			&& gEnv->cameraManager
 			&& gEnv->cameraManager->hasActiveBehavior()
-			&& gEnv->cameraManager->getCurrentBehavior() != CameraManager::CAMERA_BEHAVIOR_VEHICLE_CINECAM)
+			&& gEnv->cameraManager->getCurrentBehavior() != RoR::PerVehicleCameraContext::CAMERA_BEHAVIOR_VEHICLE_CINECAM)
 		{
 			if (RoR::Application::GetOverlayWrapper()) RoR::Application::GetOverlayWrapper()->showDashboardOverlays(true, curr_truck);
 		}

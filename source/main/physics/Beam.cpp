@@ -1423,7 +1423,7 @@ void Beam::SyncReset()
 void Beam::threadentry()
 {
 	Beam **trucks = ttrucks;
-	dtperstep = tdt / (Real)tsteps;
+	dtperstep = global_dt / (Real)tsteps;
 
 	for (curtstep=0; curtstep<tsteps; curtstep++)
 	{
@@ -1621,8 +1621,8 @@ bool Beam::frameStep(Real dt)
 			BeamFactory::getSingleton()._WorkerWaitForSync();
 		}
 		
-		ttdt = tdt;
-		tdt = dt;
+		oldframe_global_dt = global_dt;
+		global_dt = dt;
 
 		ffforce = affforce / steps;
 		ffhydro = affhydro / steps;
@@ -5828,7 +5828,7 @@ void Beam::updateDashBoards(float &dt)
 
 Vector3 Beam::getGForces()
 {
-	if (cameranodepos[0] >= 0 && cameranodepos[0] < MAX_NODES && cameranodedir[0] >= 0 && cameranodedir[0] < MAX_NODES && cameranoderoll[0] >= 0 && cameranoderoll[0] < MAX_NODES)
+	if (cameranodecount > 0 && cameranodepos[0] >= 0 && cameranodepos[0] < MAX_NODES && cameranodedir[0] >= 0 && cameranodedir[0] < MAX_NODES && cameranoderoll[0] >= 0 && cameranoderoll[0] < MAX_NODES)
 	{
 		Vector3 acc      = cameranodeacc / cameranodecount;
 		cameranodeacc    = Vector3::ZERO;
@@ -6103,13 +6103,13 @@ Beam::Beam(
 	, stabcommand(0)
 	, stabratio(0.0)
 	, stabsleep(0.0)
-	, tdt(0.1)
+	, global_dt(0.1)
 	, thread_index(0)
 	, thread_number(0)
 	, thread_task(THREAD_BEAMFORCESEULER)
 	, totalmass(0)
 	, tsteps(100)
-	, ttdt(0.1)
+	, oldframe_global_dt(0.1)
 	, watercontact(false)
 	, watercontactold(false)
 {

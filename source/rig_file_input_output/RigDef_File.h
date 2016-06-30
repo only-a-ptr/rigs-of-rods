@@ -626,6 +626,13 @@ struct Engturbo
 	float param2;
 	float param3;
 	float param4;
+	float param5;
+	float param6;
+	float param7;
+	float param8;
+	float param9;
+	float param10;
+	float param11;
 };
 
 /* -------------------------------------------------------------------------- */

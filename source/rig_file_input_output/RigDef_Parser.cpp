@@ -40,22 +40,27 @@
 namespace RigDef
 {
 
-#define STR_PARSE_INT(_STR_) Ogre::StringConverter::parseInt(_STR_)
+#define STR_PARSE_INT(_STR_)  Ogre::StringConverter::parseInt(_STR_)
 
 #define STR_PARSE_REAL(_STR_) Ogre::StringConverter::parseReal(_STR_)
 
 #define STR_PARSE_BOOL(_STR_) Ogre::StringConverter::parseBool(_STR_)
 
-#define PARSE_UNSAFE_START(MIN_ARGS)                                 \
-	this->AddMessage(line, Message::TYPE_WARNING,                    \
-		"Syntax check failed, parsing by legacy unsafe method...");  \
-	const int min_args = MIN_ARGS;                                   \
-	Ogre::StringVector values;                                       \
-	if (this->_ParseArgs(line, values, min_args) < min_args)         \
-	{                                                                \
-		std::stringstream msg;                                       \
-		msg << "Too few arguments, required number is " << min_args; \
-		this->AddMessage(line, Message::TYPE_WARNING, msg.str());    \
+/// Parses line into "values[]" array and checks number of arguments
+#define PARSE_UNSAFE(VAR_LINE, MIN_ARGS, _BLOCK_)                      \
+	this->AddMessage(line, Message::TYPE_WARNING,                      \
+		"Syntax check failed, parsing by legacy unsafe method...");    \
+	const int min_args = MIN_ARGS;                                     \
+	Ogre::StringVector values;                                         \
+	if (this->_ParseArgs(VAR_LINE, values, min_args) < min_args)       \
+	{                                                                  \
+		std::stringstream msg;                                         \
+		msg << "Too few arguments, required number is " << min_args;   \
+		this->AddMessage(VAR_LINE, Message::TYPE_WARNING, msg.str());  \
+	}                                                                  \
+	else                                                               \
+	{                                                                  \
+		_BLOCK_                                                        \
 	}
 
 Parser::Parser():
@@ -954,7 +959,7 @@ void Parser::ParseLine(Ogre::String const & line)
 			break;
 
 		case (File::SECTION_FLEX_BODY_WHEELS):
-			ParseFlexBodyWheels(line);
+			ParseFlexBodyWheel(line);
 			line_finished = true;
 			break;
 
@@ -1009,7 +1014,7 @@ void Parser::ParseLine(Ogre::String const & line)
 			break;
 
 		case (File::SECTION_MESH_WHEELS_2):
-			ParseMeshWheels2(line);
+			ParseMeshWheel2(line);
 			line_finished = true;
 			break;
 
@@ -1079,12 +1084,12 @@ void Parser::ParseLine(Ogre::String const & line)
 			break;
 
 		case (File::SECTION_SHOCKS):
-			ParseShocks(line);
+			ParseShock(line);
 			line_finished = true;
 			break;
 
 		case (File::SECTION_SHOCKS_2):
-			ParseShocks2(line);
+			ParseShock2(line);
 			line_finished = true;
 			break;
 
@@ -1561,98 +1566,99 @@ void Parser::ParseSetSkeletonSettings(Ogre::String const & line)
 	}
 }
 
+void Parser::VerifyAndProcessDirectiveSetNodeDefaults(
+	Ogre::String const & line,
+	float load_weight,
+	float friction,
+	float volume, 
+	float surface, 
+	unsigned int options)
+{
+	m_user_node_defaults = boost::shared_ptr<NodeDefaults>( new NodeDefaults(*m_user_node_defaults) );
+
+	m_user_node_defaults->load_weight = (load_weight < 0) ? m_ror_node_defaults->load_weight : load_weight;
+	m_user_node_defaults->friction    = (friction    < 0) ? m_ror_node_defaults->friction    : friction;
+	m_user_node_defaults->volume      = (volume      < 0) ? m_ror_node_defaults->volume      : volume;
+	m_user_node_defaults->surface     = (surface     < 0) ? m_ror_node_defaults->surface     : surface;
+
+	m_user_node_defaults->options     = options;
+}
+
+void Parser::LogParsedDirectiveSetNodeDefaultsData(Ogre::String const & line, float load_weight, float friction, float volume, float surface, unsigned int options)
+{
+	std::stringstream msg;
+	msg << "Parsed data for verification:"
+		<< "\n\tLoadWeight: " << load_weight
+		<< "\n\t  Friction: " << friction
+		<< "\n\t    Volume: " << volume
+		<< "\n\t   Surface: " << surface
+		<< "\n\t   Options: ";
+		
+	if (BITMASK_IS_1(options, Node::OPTION_l_LOAD_WEIGHT)       )  { msg << " l_LOAD_WEIGHT"; }
+	if (BITMASK_IS_1(options, Node::OPTION_n_MOUSE_GRAB)        )  { msg << " n_MOUSE_GRAB"; }
+	if (BITMASK_IS_1(options, Node::OPTION_m_NO_MOUSE_GRAB)     )  { msg << " m_NO_MOUSE_GRAB"; }
+	if (BITMASK_IS_1(options, Node::OPTION_f_NO_SPARKS)         )  { msg << " f_NO_SPARKS"; }
+	if (BITMASK_IS_1(options, Node::OPTION_x_EXHAUST_POINT)     )  { msg << " x_EXHAUST_POINT"; }
+	if (BITMASK_IS_1(options, Node::OPTION_y_EXHAUST_DIRECTION) )  { msg << " y_EXHAUST_DIRECTION"; }
+	if (BITMASK_IS_1(options, Node::OPTION_c_NO_GROUND_CONTACT) )  { msg << " c_NO_GROUND_CONTACT"; }
+	if (BITMASK_IS_1(options, Node::OPTION_h_HOOK_POINT)        )  { msg << " h_HOOK_POINT"; }
+	if (BITMASK_IS_1(options, Node::OPTION_e_TERRAIN_EDIT_POINT))  { msg << " e_TERRAIN_EDIT_POINT"; }
+	if (BITMASK_IS_1(options, Node::OPTION_b_EXTRA_BUOYANCY)    )  { msg << " b_EXTRA_BUOYANCY"; }
+	if (BITMASK_IS_1(options, Node::OPTION_p_NO_PARTICLES)      )  { msg << " p_NO_PARTICLES"; }
+	if (BITMASK_IS_1(options, Node::OPTION_L_LOG)               )  { msg << " L_LOG"; }
+
+	this->AddMessage(line, Message::TYPE_WARNING, msg.str());
+}
+
+void Parser::ParseDirectiveSetNodeDefaultsUnsafe(Ogre::String const & line)
+{
+	PARSE_UNSAFE(line, 2,
+	{
+		int num_args = values.size();
+
+		// NOTE: Arguments start at index [1], [0] is the keyword
+		float load_weight =                  STR_PARSE_REAL(values[1]);
+		float friction    = (num_args > 2) ? STR_PARSE_REAL(values[2]) : -1;
+		float volume      = (num_args > 3) ? STR_PARSE_REAL(values[3]) : -1;
+		float surface     = (num_args > 4) ? STR_PARSE_REAL(values[4]) : -1;
+		unsigned int options = 0;
+		if (num_args > 5) { this->_ParseNodeOptions(options, values[5]); }
+
+		this->LogParsedDirectiveSetNodeDefaultsData(line, load_weight, friction, volume, surface, options);
+		this->VerifyAndProcessDirectiveSetNodeDefaults(line, load_weight, friction, volume, surface, options);
+	});
+}
+
 void Parser::ParseDirectiveSetNodeDefaults(Ogre::String const & line)
 {
 	boost::smatch results;
 	if (! boost::regex_search(line, results, Regexes::DIRECTIVE_SET_NODE_DEFAULTS))
 	{
-		AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
+		this->ParseDirectiveSetNodeDefaultsUnsafe(line);
 		return;
 	}
 	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
 
-	m_user_node_defaults = boost::shared_ptr<NodeDefaults>( new NodeDefaults(*m_user_node_defaults) );
-
-	/* Load  */
-	float default_load_weight = STR_PARSE_REAL(results[1]);
-	if (default_load_weight < 0)
+	// NOTE: -1 resets to default value
+	float load_weight = STR_PARSE_REAL(results[1]);
+	float friction    = (results[2].matched) ? STR_PARSE_REAL(results[4])  : -1;
+	float volume      = (results[4].matched) ? STR_PARSE_REAL(results[7])  : -1;
+	float surface     = (results[6].matched) ? STR_PARSE_REAL(results[10]) : -1;
+	
+	unsigned int options = 0;
+	if (results[11].matched)
 	{
-		m_user_node_defaults->load_weight = m_ror_node_defaults->load_weight;
-	}
-	else
-	{
-		m_user_node_defaults->load_weight = default_load_weight;
-	}
-
-	/* Friction */
-	if (results[2].matched)
-	{
-		float default_friction = STR_PARSE_REAL(results[3]);
-		if (default_friction < 0)
-		{
-			m_user_node_defaults->friction = m_ror_node_defaults->friction;
-		}
-		else
-		{
-			m_user_node_defaults->friction = default_friction;
-		}
-	}
-	else
-	{
-		return;
+		this->_ParseNodeOptions(options, results[13]);
 	}
 
-	/* Volume */
-	if (results[4].matched)
-	{
-		float default_volume = STR_PARSE_REAL(results[5]);
-		if (default_volume < 0)
-		{
-			m_user_node_defaults->volume = m_ror_node_defaults->volume;
-		}
-		else
-		{
-			m_user_node_defaults->volume = default_volume;
-		}
-	}
-	else
-	{
-		return;
-	}
-
-	/* Surface */
-	if (results[6].matched)
-	{
-		float default_surface = STR_PARSE_REAL(results[7]);
-		if (default_surface < 0)
-		{
-			m_user_node_defaults->surface = m_ror_node_defaults->surface;
-		}
-		else
-		{
-			m_user_node_defaults->surface = default_surface;
-		}
-	}
-	else
-	{
-		return;
-	}
-
-	/* Options */
-	if (results[8].matched)
-	{
-		unsigned int options = 0;
-		_ParseNodeOptions(options, results[9]);	
-		m_user_node_defaults->options = options;
-	}
-	return;
+	this->VerifyAndProcessDirectiveSetNodeDefaults(line, load_weight, friction, volume, surface, options);
 }
 
 void Parser::_ParseNodeOptions(unsigned int & options, const std::string & options_str)
 {
 	for (unsigned int i = 0; i < options_str.length(); i++)
 	{
-        const char c = options_str.at(i);
+		const char c = options_str.at(i);
 		switch(c)
 		{
 			case 'l':
@@ -1695,7 +1701,7 @@ void Parser::_ParseNodeOptions(unsigned int & options, const std::string & optio
 				break;
 
 			default:
-                this->AddMessage(options_str, Message::TYPE_WARNING, std::string("Ignoring invalid option: ") + c);
+				this->AddMessage(options_str, Message::TYPE_WARNING, std::string("Ignoring invalid option: ") + c);
 				break;
 		}
 	}
@@ -1964,30 +1970,31 @@ void Parser::VerifyAndProcessMeshWheel(Ogre::String const & line, MeshWheel& mes
 
 void Parser::ParseMeshWheelUnsafe(Ogre::String const & line)
 {
-	PARSE_UNSAFE_START(16);
+	PARSE_UNSAFE(line, 16,
+	{
+		MeshWheel mesh_wheel;
+		mesh_wheel.node_defaults      = m_user_node_defaults;
+		mesh_wheel.beam_defaults      = m_user_beam_defaults;
 
-	MeshWheel mesh_wheel;
-	mesh_wheel.node_defaults      = m_user_node_defaults;
-	mesh_wheel.beam_defaults      = m_user_beam_defaults;
-	mesh_wheel.tyre_radius        = STR_PARSE_REAL(values[0]);
-	mesh_wheel.rim_radius         = STR_PARSE_REAL(values[1]);
-	mesh_wheel.width              = STR_PARSE_REAL(values[2]);
-	mesh_wheel.num_rays           = STR_PARSE_INT(values[3]);
-	mesh_wheel.nodes[0]           = this->_ParseNodeRef(values[4]);
-	mesh_wheel.nodes[1]           = this->_ParseNodeRef(values[5]);
-	mesh_wheel.rigidity_node      = this->_ParseNodeRef(values[6]);
-	mesh_wheel.reference_arm_node = this->_ParseNodeRef(values[9]);
-	mesh_wheel.mass               = STR_PARSE_REAL(values[10]);
-	mesh_wheel.spring             = STR_PARSE_REAL(values[11]);
-	mesh_wheel.damping            = STR_PARSE_REAL(values[12]);
-	mesh_wheel.mesh_name          = values[14];
-	mesh_wheel.material_name      = values[15];
+		mesh_wheel.tyre_radius        = STR_PARSE_REAL(values[ 0]);
+		mesh_wheel.rim_radius         = STR_PARSE_REAL(values[ 1]);
+		mesh_wheel.width              = STR_PARSE_REAL(values[ 2]);
+		mesh_wheel.num_rays           = STR_PARSE_INT (values[ 3]);
+		mesh_wheel.nodes[0]           = _ParseNodeRef (values[ 4]);
+		mesh_wheel.nodes[1]           = _ParseNodeRef (values[ 5]);
+		mesh_wheel.rigidity_node      = _ParseNodeRef (values[ 6]);
+		int braking                   = STR_PARSE_INT (values[ 7]);
+		int propulsion                = STR_PARSE_INT (values[ 8]);
+		mesh_wheel.reference_arm_node = _ParseNodeRef (values[ 9]);
+		mesh_wheel.mass               = STR_PARSE_REAL(values[10]);
+		mesh_wheel.spring             = STR_PARSE_REAL(values[11]);
+		mesh_wheel.damping            = STR_PARSE_REAL(values[12]);
+		char side_char                =                values[13].at(0);
+		mesh_wheel.mesh_name          =                values[14];
+		mesh_wheel.material_name      =                values[15];
 
-	int braking                   = STR_PARSE_INT(values[7]);
-	int propulsion                = STR_PARSE_INT(values[8]);
-	char side_char                = values[13].at(0);
-
-	this->VerifyAndProcessMeshWheel(line, mesh_wheel, braking, propulsion, side_char);
+		this->VerifyAndProcessMeshWheel(line, mesh_wheel, braking, propulsion, side_char);
+	});
 }
 
 void Parser::ParseMeshWheel(Ogre::String const & line)
@@ -2003,25 +2010,128 @@ void Parser::ParseMeshWheel(Ogre::String const & line)
 	MeshWheel mesh_wheel;
 	mesh_wheel.node_defaults      = m_user_node_defaults;
 	mesh_wheel.beam_defaults      = m_user_beam_defaults;
-	mesh_wheel.tyre_radius        = STR_PARSE_REAL(results[1]);
-	mesh_wheel.rim_radius         = STR_PARSE_REAL(results[2]);
-	mesh_wheel.width              = STR_PARSE_REAL(results[3]);
-	mesh_wheel.num_rays           = STR_PARSE_INT(results[4]);
-	mesh_wheel.nodes[0]           = this->_ParseNodeRef(results[5]);
-	mesh_wheel.nodes[1]           = this->_ParseNodeRef(results[6]);
-	mesh_wheel.rigidity_node      = this->_ParseNodeRef(results[7]);
-	mesh_wheel.reference_arm_node = this->_ParseNodeRef(results[10]);
-	mesh_wheel.mass               = STR_PARSE_REAL(results[11]);
-	mesh_wheel.spring             = STR_PARSE_REAL(results[12]);
-	mesh_wheel.damping            = STR_PARSE_REAL(results[13]);
-	mesh_wheel.mesh_name          = results[16];
-	mesh_wheel.material_name      = results[18];
 
-	int braking                   = STR_PARSE_INT(results[8]);
-	int propulsion                = STR_PARSE_INT(results[9]);
-	char side_char                = results[14].str().at(0);
+	mesh_wheel.tyre_radius        = STR_PARSE_REAL(results[ 1]);
+	mesh_wheel.rim_radius         = STR_PARSE_REAL(results[ 3]);
+	mesh_wheel.width              = STR_PARSE_REAL(results[ 5]);
+	mesh_wheel.num_rays           = STR_PARSE_INT (results[ 7]);
+	mesh_wheel.nodes[0]           = _ParseNodeRef (results[ 9]);
+	mesh_wheel.nodes[1]           = _ParseNodeRef (results[11]);
+	mesh_wheel.rigidity_node      = _ParseNodeRef (results[13]);
+	int braking                   = STR_PARSE_INT (results[15]);
+	int propulsion                = STR_PARSE_INT (results[17]);
+	mesh_wheel.reference_arm_node = _ParseNodeRef (results[19]);
+	mesh_wheel.mass               = STR_PARSE_REAL(results[21]);
+	mesh_wheel.spring             = STR_PARSE_REAL(results[23]);
+	mesh_wheel.damping            = STR_PARSE_REAL(results[25]);
+	char side_char                =                results[27].str().at(0);
+	mesh_wheel.mesh_name          =                results[29];
+	mesh_wheel.material_name      =                results[31];
 
 	this->VerifyAndProcessMeshWheel(line, mesh_wheel, braking, propulsion, side_char);
+}
+
+void Parser::ParseMeshWheel2Unsafe(Ogre::String const & line)
+{
+	PARSE_UNSAFE(line, 16,
+	{
+		MeshWheel2 mesh_wheel_2;
+		mesh_wheel_2.node_defaults = m_user_node_defaults;
+		mesh_wheel_2.beam_defaults = m_user_beam_defaults;
+
+		mesh_wheel_2.tyre_radius        = STR_PARSE_REAL(values[ 0]);
+		mesh_wheel_2.rim_radius         = STR_PARSE_REAL(values[ 1]);
+		mesh_wheel_2.width              = STR_PARSE_REAL(values[ 2]);
+		mesh_wheel_2.num_rays           = STR_PARSE_INT (values[ 3]);
+		mesh_wheel_2.nodes[0]           = _ParseNodeRef (values[ 4]);
+		mesh_wheel_2.nodes[1]           = _ParseNodeRef (values[ 5]);
+		mesh_wheel_2.rigidity_node      = _ParseNodeRef (values[ 6]);
+		int braking                     = STR_PARSE_INT (values[ 7]);
+		int propulsion                  = STR_PARSE_INT (values[ 8]);
+		mesh_wheel_2.reference_arm_node = _ParseNodeRef (values[ 9]);
+		mesh_wheel_2.mass               = STR_PARSE_REAL(values[10]);
+		mesh_wheel_2.tyre_springiness   = STR_PARSE_REAL(values[11]);
+		mesh_wheel_2.tyre_damping       = STR_PARSE_REAL(values[12]);
+		char side_char                  =                values[13].at(0);
+		mesh_wheel_2.mesh_name          =                values[14];
+		mesh_wheel_2.material_name      =                values[15];
+
+		this->VerifyAndProcessMeshWheel2(line, mesh_wheel_2, braking, propulsion, side_char);
+	});
+}
+
+void Parser::ParseMeshWheel2(Ogre::String const & line)
+{
+	boost::smatch results;
+	if (!boost::regex_search(line, results, Regexes::SECTION_MESHWHEELS_MESHWHEELS2))
+	{
+		this->ParseMeshWheel2Unsafe(line);
+		return;
+	}
+	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
+
+	MeshWheel2 mesh_wheel_2;
+	mesh_wheel_2.node_defaults = m_user_node_defaults;
+	mesh_wheel_2.beam_defaults = m_user_beam_defaults;
+
+	mesh_wheel_2.tyre_radius        = STR_PARSE_REAL(results[ 1]);
+	mesh_wheel_2.rim_radius         = STR_PARSE_REAL(results[ 3]);
+	mesh_wheel_2.width              = STR_PARSE_REAL(results[ 5]);
+	mesh_wheel_2.num_rays           = STR_PARSE_INT (results[ 7]);
+	mesh_wheel_2.nodes[0]           = _ParseNodeRef (results[ 9]);
+	mesh_wheel_2.nodes[1]           = _ParseNodeRef (results[11]);
+	mesh_wheel_2.rigidity_node      = _ParseNodeRef (results[13]);
+	int braking                     = STR_PARSE_INT (results[15]);
+	int propulsion                  = STR_PARSE_INT (results[17]);
+	mesh_wheel_2.reference_arm_node = _ParseNodeRef (results[19]);
+	mesh_wheel_2.mass               = STR_PARSE_REAL(results[21]);
+	mesh_wheel_2.tyre_springiness   = STR_PARSE_REAL(results[23]);
+	mesh_wheel_2.tyre_damping       = STR_PARSE_REAL(results[25]);
+	char side_char                  =                results[27].str().at(0);
+	mesh_wheel_2.mesh_name          =                results[29];
+	mesh_wheel_2.material_name      =                results[31];
+
+	this->VerifyAndProcessMeshWheel2(line, mesh_wheel_2, braking, propulsion, side_char);
+}
+
+void Parser::VerifyAndProcessMeshWheel2(Ogre::String const & line, MeshWheel2& mesh_wheel_2, int braking, int propulsion, char side_char)
+{
+	// Axle rigidity node (9999 = null)
+	if (mesh_wheel_2.rigidity_node.IsValidAnyState() && mesh_wheel_2.rigidity_node.Num() == 9999)
+	{
+		mesh_wheel_2.rigidity_node.Invalidate();
+	}
+
+	if (braking < 0 || braking > 4)
+	{
+		this->AddMessage(line, Message::TYPE_ERROR, "Invalid value of parameter ~7 (braking), using 0 (no braking)");
+		braking = 0;
+	}
+	mesh_wheel_2.braking = Wheels::Braking(braking);
+
+	if (propulsion < 0 || propulsion > 2)
+	{
+		this->AddMessage(line, Message::TYPE_ERROR, "Invalid value of parameter ~8 (propulsion), using 0 (no propulsion)");
+		braking = 0;
+	}
+	mesh_wheel_2.propulsion = Wheels::Propulsion(propulsion);
+
+	mesh_wheel_2.side = MeshWheel::SIDE_RIGHT;
+	if (side_char != 'r')
+	{
+		if (side_char != 'l')
+		{
+			this->AddMessage(line, Message::TYPE_WARNING, std::string("Invalid SIDE flag (acceptable are [r/l]), parsing as LEFT for backwards compatibility: ") + side_char);
+		}
+		mesh_wheel_2.side = MeshWheel::SIDE_LEFT;
+	}
+
+	if (m_sequential_importer.IsEnabled())
+	{
+		m_sequential_importer.GenerateNodesForWheel(File::KEYWORD_MESHWHEELS2, mesh_wheel_2.num_rays, mesh_wheel_2.rigidity_node.IsValidAnyState());
+	}
+
+	m_current_module->mesh_wheels_2.push_back(mesh_wheel_2);
 }
 
 void Parser::ParseHook(Ogre::String const & line)
@@ -2387,29 +2497,31 @@ void Parser::ParseSubmeshUnsafe(Ogre::String const & line)
 {
 	if (m_current_subsection == File::SUBSECTION__SUBMESH__CAB)
 	{
-		PARSE_UNSAFE_START(3);
-
-		Cab cab;
-		cab.nodes[0] = this->_ParseNodeRef(values[0]);
-		cab.nodes[1] = this->_ParseNodeRef(values[1]);
-		cab.nodes[2] = this->_ParseNodeRef(values[2]);
-		if (values.size() > 3)
+		PARSE_UNSAFE(line, 3,
 		{
-			cab.options = this->_ParseCabOptions(values[3]);
-		}
+			Cab cab;
+			cab.nodes[0] = this->_ParseNodeRef(values[0]);
+			cab.nodes[1] = this->_ParseNodeRef(values[1]);
+			cab.nodes[2] = this->_ParseNodeRef(values[2]);
+			if (values.size() > 3)
+			{
+				cab.options = this->_ParseCabOptions(values[3]);
+			}
 
-		m_current_submesh->cab_triangles.push_back(cab);
+			m_current_submesh->cab_triangles.push_back(cab);
+		});
 	}
 	else if (m_current_subsection == File::SUBSECTION__SUBMESH__TEXCOORDS)
 	{
-		PARSE_UNSAFE_START(3);
+		PARSE_UNSAFE(line, 3,
+		{
+			Texcoord texcoord;
+			texcoord.node = this->_ParseNodeRef(values[0]);
+			texcoord.u    =      STR_PARSE_REAL(values[1]);
+			texcoord.v    =      STR_PARSE_REAL(values[2]);
 
-		Texcoord texcoord;
-		texcoord.node = this->_ParseNodeRef(values[0]);
-		texcoord.u    = STR_PARSE_REAL(values[1]);
-		texcoord.v    = STR_PARSE_REAL(values[2]);
-
-		m_current_submesh->texcoords.push_back(texcoord);
+			m_current_submesh->texcoords.push_back(texcoord);
+		});
 	}
 }
 
@@ -3274,6 +3386,13 @@ void Parser::ParseEngturbo(Ogre::String const & line)
 	engturbo.param2 = STR_PARSE_REAL(results[6]);
 	engturbo.param3 = STR_PARSE_REAL(results[8]);
 	engturbo.param4 = STR_PARSE_REAL(results[10]);
+	engturbo.param5 = STR_PARSE_REAL(results[12]);
+	engturbo.param6 = STR_PARSE_REAL(results[14]);
+	engturbo.param7 = STR_PARSE_REAL(results[16]);
+	engturbo.param8 = STR_PARSE_REAL(results[18]);
+	engturbo.param9 = STR_PARSE_REAL(results[20]);
+	engturbo.param10 = STR_PARSE_REAL(results[22]);
+	engturbo.param11 = STR_PARSE_REAL(results[24]);
 
 	m_current_module->engturbo = boost::shared_ptr<Engturbo>(new Engturbo(engturbo));
 }
@@ -3783,14 +3902,15 @@ void Parser::ParseVideoCamera(Ogre::String const & line)
 
 void Parser::ParseCamerasUnsafe(Ogre::String const & line)
 {
-	PARSE_UNSAFE_START(3);
+	PARSE_UNSAFE(line, 3,
+	{
+		Camera camera;
+		camera.center_node = this->_ParseNodeRef(values[0]);
+		camera.back_node   = this->_ParseNodeRef(values[1]);
+		camera.left_node   = this->_ParseNodeRef(values[2]);
 
-	Camera camera;
-	camera.center_node = this->_ParseNodeRef(values[0]);
-	camera.back_node   = this->_ParseNodeRef(values[1]);
-	camera.left_node   = this->_ParseNodeRef(values[2]);
-
-	m_current_module->cameras.push_back(camera);
+		m_current_module->cameras.push_back(camera);
+	});
 }
 
 void Parser::ParseCameras(Ogre::String const & line)
@@ -4191,67 +4311,194 @@ void Parser::ParseSlidenodes(Ogre::String const & line)
 	m_current_module->slidenodes.push_back(slidenode);
 }
 
-void Parser::ParseShocks2(Ogre::String const & line)
+void Parser::ParseShock2(Ogre::String const & line)
 {
-	boost::smatch results;
-	if (! boost::regex_search(line, results, Regexes::SECTION_SHOCKS2))
-	{
-		AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
-		return;
-	}
-	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
+    boost::smatch results;
+    if (!boost::regex_search(line, results, Regexes::SECTION_SHOCKS2))
+    {
+        this->ParseShock2Unsafe(line);
+        return;
+    }
+    /* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
 
-	Shock2 shock_2;
-	shock_2.beam_defaults              = m_user_beam_defaults;
-	shock_2.detacher_group               = m_current_detacher_group;
-	shock_2.nodes[0]                   = _ParseNodeRef(results[1]);
-	shock_2.nodes[1]                   = _ParseNodeRef(results[2]);
-	shock_2.spring_in                  = STR_PARSE_REAL(results[3]);
-	shock_2.damp_in                    = STR_PARSE_REAL(results[4]);
-	shock_2.progress_factor_spring_in  = STR_PARSE_REAL(results[5]);
-	shock_2.progress_factor_damp_in    = STR_PARSE_REAL(results[6]);
-	shock_2.spring_out                 = STR_PARSE_REAL(results[7]);
-	shock_2.damp_out                   = STR_PARSE_REAL(results[8]);
-	shock_2.progress_factor_spring_out = STR_PARSE_REAL(results[9]);
-	shock_2.progress_factor_damp_out   = STR_PARSE_REAL(results[10]);
-	shock_2.short_bound                = STR_PARSE_REAL(results[11]);
-	shock_2.long_bound                 = STR_PARSE_REAL(results[12]);
-	shock_2.precompression             = STR_PARSE_REAL(results[13]);
+    Shock2 shock_2;
+    shock_2.beam_defaults  = m_user_beam_defaults;
+    shock_2.detacher_group = m_current_detacher_group;
 
-	if (results[15].matched) /* Has options? */
-	{
-		std::string options_str = results[15].str();
-		for (unsigned int i = 0; i < options_str.length(); i++)
-		{
-			switch(options_str.at(i))
-			{
-				case 'i':
-					BITMASK_SET_1(shock_2.options, Shock2::OPTION_i_INVISIBLE);
-					break;
-				case 'm':
-					BITMASK_SET_1(shock_2.options, Shock2::OPTION_m_METRIC);
-					break;
-				case 'M':
-					BITMASK_SET_1(shock_2.options, Shock2::OPTION_M_ABSOLUTE_METRIC);
-					break;
-				case 's':
-					BITMASK_SET_1(shock_2.options, Shock2::OPTION_s_SOFT_BUMP_BOUNDS);
-					break;
-				case 'n':
-					break; // Placeholder, does nothing.
-				default:
-					std::stringstream msg;
-					msg << "Invalid option: '" << options_str.at(i) << "', ignoring...";
-					AddMessage(line, Message::TYPE_WARNING, msg.str());
-					break;
-			}
-		}
-	}
+    shock_2.nodes[0]                   = _ParseNodeRef (results[ 1]);
+    shock_2.nodes[1]                   = _ParseNodeRef (results[ 3]);
+    shock_2.spring_in                  = STR_PARSE_REAL(results[ 5]);
+    shock_2.damp_in                    = STR_PARSE_REAL(results[ 7]);
+    shock_2.progress_factor_spring_in  = STR_PARSE_REAL(results[ 9]);
+    shock_2.progress_factor_damp_in    = STR_PARSE_REAL(results[11]);
+    shock_2.spring_out                 = STR_PARSE_REAL(results[13]);
+    shock_2.damp_out                   = STR_PARSE_REAL(results[15]);
+    shock_2.progress_factor_spring_out = STR_PARSE_REAL(results[17]);
+    shock_2.progress_factor_damp_out   = STR_PARSE_REAL(results[19]);
+    shock_2.short_bound                = STR_PARSE_REAL(results[21]);
+    shock_2.long_bound                 = STR_PARSE_REAL(results[23]);
+    shock_2.precompression             = STR_PARSE_REAL(results[25]);
 
-	m_current_module->shocks_2.push_back(shock_2);
+    if (results[29].matched) /* Has options? */
+    {
+        shock_2.options = this->ParseShock2Options(line, results[29].str());
+    }
+
+    m_current_module->shocks_2.push_back(shock_2);
 }
 
-void Parser::ParseShocks(Ogre::String const & line)
+void Parser::ParseShock2Unsafe(Ogre::String const & line)
+{
+	PARSE_UNSAFE(line, 13,
+	{
+		Shock2 shock_2;
+		shock_2.beam_defaults  = m_user_beam_defaults;
+		shock_2.detacher_group = m_current_detacher_group;
+
+		shock_2.nodes[0]                   = _ParseNodeRef (values[0]);
+		shock_2.nodes[1]                   = _ParseNodeRef (values[1]);
+		shock_2.spring_in                  = STR_PARSE_REAL(values[2]);
+		shock_2.damp_in                    = STR_PARSE_REAL(values[3]);
+		shock_2.progress_factor_spring_in  = STR_PARSE_REAL(values[4]);
+		shock_2.progress_factor_damp_in    = STR_PARSE_REAL(values[5]);
+		shock_2.spring_out                 = STR_PARSE_REAL(values[6]);
+		shock_2.damp_out                   = STR_PARSE_REAL(values[7]);
+		shock_2.progress_factor_spring_out = STR_PARSE_REAL(values[8]);
+		shock_2.progress_factor_damp_out   = STR_PARSE_REAL(values[9]);
+		shock_2.short_bound                = STR_PARSE_REAL(values[10]);
+		shock_2.long_bound                 = STR_PARSE_REAL(values[11]);
+		shock_2.precompression             = STR_PARSE_REAL(values[12]);
+		shock_2.options                    = (values.size() > 11) ? this->ParseShock2Options(line, values[13]) : 0u;
+
+		this->LogParsedShock2DataForChecking(line, shock_2);
+		m_current_module->shocks_2.push_back(shock_2);
+	});
+}
+
+unsigned int Parser::ParseShock2Options(Ogre::String const & line, std::string const & options_str)
+{
+	unsigned int options = 0u;
+	for (unsigned int i = 0; i < options_str.length(); i++)
+	{
+		switch (options_str.at(i))
+		{
+		case 'i':
+			BITMASK_SET_1(options, Shock2::OPTION_i_INVISIBLE);
+			break;
+
+		case 'm':
+			BITMASK_SET_1(options, Shock2::OPTION_m_METRIC);
+			break;
+
+		case 'M':
+			BITMASK_SET_1(options, Shock2::OPTION_M_ABSOLUTE_METRIC);
+			break;
+
+		case 's':
+			BITMASK_SET_1(options, Shock2::OPTION_s_SOFT_BUMP_BOUNDS);
+			break;
+
+		case 'n':
+			break; // Placeholder, does nothing.
+
+		default:
+			std::stringstream msg;
+			msg << "Invalid option: '" << options_str.at(i) << "', ignoring...";
+			AddMessage(line, Message::TYPE_WARNING, msg.str());
+			break;
+		}
+	}
+	return options;
+}
+
+void Parser::LogParsedShock2DataForChecking(Ogre::String const & line, Shock2& shock)
+{
+	char msg[1024];
+	sprintf(msg, "Parsed data for checking:"
+		"\n\t              Nodes: %s %s"
+		"\n\t          Spring-In: %f"
+		"\n\t         Damping-In: %f"
+		"\n\t Spring-In-Progress: %f"
+		"\n\t   Damp-In-Progress: %f"
+		"\n\t         Spring-Out: %f"
+		"\n\t        Damping-Out: %f"
+		"\n\tSpring-Out-Progress: %f"
+		"\n\t  Damp-Out-Progress: %f"
+		"\n\t         ShortBound: %f"
+		"\n\t          LongBound: %f"
+		"\n\t     Precompression: %f"
+		"\n\t            Options: ",
+		shock.nodes[0].ToString().c_str(), shock.nodes[1].ToString().c_str(),
+		shock.spring_in,
+		shock.damp_in,
+		shock.progress_factor_spring_in,
+		shock.progress_factor_damp_in,
+		shock.spring_out,
+		shock.damp_out,
+		shock.progress_factor_spring_out,
+		shock.progress_factor_damp_out,
+		shock.short_bound,
+		shock.long_bound,
+		shock.precompression);
+
+	if (BITMASK_IS_1(shock.options, Shock2::OPTION_i_INVISIBLE))
+	{
+		strcat(msg, " i_INVISIBLE");
+	}
+	if (BITMASK_IS_1(shock.options, Shock2::OPTION_s_SOFT_BUMP_BOUNDS))
+	{
+		strcat(msg, " s_SOFT_BUMP_BOUNDS");
+	}
+	if (BITMASK_IS_1(shock.options, Shock2::OPTION_M_ABSOLUTE_METRIC))
+	{
+		strcat(msg, " M_ABSOLUTE_METRIC");
+	}
+	if (BITMASK_IS_1(shock.options, Shock2::OPTION_m_METRIC))
+	{
+		strcat(msg, " m_METRIC");
+	}
+	AddMessage(line, Message::TYPE_WARNING, msg);
+}
+
+unsigned int Parser::ParseShockOptions(Ogre::String const & line, std::string const & options_str)
+{
+	unsigned int options = 0u;
+	for (unsigned int i = 0; i < options_str.length(); i++)
+	{
+		switch (options_str.at(i))
+		{
+		case 'i':
+			BITMASK_SET_1(options, Shock::OPTION_i_INVISIBLE);
+			break;
+
+		case 'r':
+		case 'R':
+			BITMASK_SET_1(options, Shock::OPTION_R_ACTIVE_RIGHT);
+			break;
+
+		case 'l':
+		case 'L':
+			BITMASK_SET_1(options, Shock::OPTION_L_ACTIVE_LEFT);
+			break;
+
+		case 'm':
+			BITMASK_SET_1(options, Shock::OPTION_m_METRIC);
+			break;
+
+		case 'n':
+			break; // Placeholder, does nothing.
+
+		default:
+			std::stringstream msg;
+			msg << "Invalid option: '" << options_str.at(i) << "', ignoring...";
+			AddMessage(line, Message::TYPE_WARNING, msg.str());
+			break;
+		}
+	}
+	return options;
+}
+
+void Parser::ParseShock(Ogre::String const & line)
 {
 	boost::smatch results;
 	if (! boost::regex_search(line, results, Regexes::SECTION_SHOCKS))
@@ -4264,72 +4511,83 @@ void Parser::ParseShocks(Ogre::String const & line)
 	Shock shock;
 	shock.beam_defaults  = m_user_beam_defaults;
 	shock.detacher_group = m_current_detacher_group;
-	shock.nodes[0]       = _ParseNodeRef(results[1]);
-	shock.nodes[1]       = _ParseNodeRef(results[2]);
-	shock.spring_rate    = STR_PARSE_REAL(results[3]);
-	shock.damping        = STR_PARSE_REAL(results[4]);
-	shock.short_bound    = STR_PARSE_REAL(results[5]);
-	shock.long_bound     = STR_PARSE_REAL(results[6]);
-	shock.precompression = STR_PARSE_REAL(results[9]);
 
-	if (results[12].matched) /* Has options? */
+	shock.nodes[0]       =  _ParseNodeRef(results[1]);
+	shock.nodes[1]       =  _ParseNodeRef(results[3]);
+	shock.spring_rate    = STR_PARSE_REAL(results[5]);
+	shock.damping        = STR_PARSE_REAL(results[7]);
+	shock.short_bound    = STR_PARSE_REAL(results[9]);
+	shock.long_bound     = STR_PARSE_REAL(results[11]);
+	shock.precompression = STR_PARSE_REAL(results[13]);
+	if (results[17].matched) // Has options?
 	{
-		std::string options_str = results[12].str();
-		for (unsigned int i = 0; i < options_str.length(); i++)
-		{
-			switch (options_str.at(i))
-			{
-				case 'i':
-					BITMASK_SET_1(shock.options, Shock::OPTION_i_INVISIBLE);
-					break;
-				case 'r':
-				case 'R':
-					BITMASK_SET_1(shock.options, Shock::OPTION_R_ACTIVE_RIGHT);
-					break;
-				case 'l':
-				case 'L':
-					BITMASK_SET_1(shock.options, Shock::OPTION_L_ACTIVE_LEFT);
-					break;
-
-				case 'm':
-					BITMASK_SET_1(shock.options, Shock::OPTION_m_METRIC);
-					break;
-
-				default:
-					std::stringstream msg;
-					msg << "Invalid option: '" << options_str.at(i) << "', ignoring...";
-					AddMessage(line, Message::TYPE_WARNING, msg.str());
-					break;
-			}
-		}
+		shock.options = this->ParseShockOptions(line, results[17].str());
 	}
-
-	// ========== Syntax error reports ==========
-
-	// Invalid trailing text
-	if (results[13].matched)
+	else
 	{
-		std::stringstream msg;
-		msg << "Please remove: Invalid text after parameters: \"" << results[15] << "\"";
-		AddMessage(line, Message::TYPE_WARNING, msg.str());
-	}
-
-	// Invalid characters. Always match (due to * quantifier)
-	if (results[7].length() != 0)
-	{
-		std::stringstream msg;
-		msg << "Please remove: Invalid text after property \"longbound\": \"" << results[7] << "\"";
-		AddMessage(line, Message::TYPE_WARNING, msg.str());
-	}
-
-	if (results[10].length() != 0)
-	{
-		std::stringstream msg;
-		msg << "Please remove: Invalid text after property \"precompression\": \"" << results[10] << "\"";
-		AddMessage(line, Message::TYPE_WARNING, msg.str());
+		shock.options = 0u;
 	}
 
 	m_current_module->shocks.push_back(shock);
+}
+
+void Parser::LogParsedShockDataForChecking(Ogre::String const & line, Shock& shock)
+{
+	char msg[1024];
+	sprintf(msg, "Parsed data for checking:"
+		"\n\t         Nodes: %s %s"
+		"\n\t        Spring: %f"
+		"\n\t       Damping: %f"
+		"\n\t    ShortBound: %f"
+		"\n\t     LongBound: %f",
+		"\n\tPrecompression: %f"
+		"\n\t       Options: ", 
+		shock.nodes[0].ToString().c_str(), shock.nodes[1].ToString().c_str(), 
+		shock.spring_rate, 
+		shock.damping, 
+		shock.short_bound, 
+		shock.long_bound, 
+		shock.precompression);
+
+	if (BITMASK_IS_1(shock.options, Shock::OPTION_i_INVISIBLE))
+	{
+		strcat(msg, " i_INVISIBLE");
+	}
+	if (BITMASK_IS_1(shock.options, Shock::OPTION_R_ACTIVE_RIGHT))
+	{
+		strcat(msg, " R_ACTIVE_RIGHT");
+	}
+	if (BITMASK_IS_1(shock.options, Shock::OPTION_L_ACTIVE_LEFT))
+	{
+		strcat(msg, " L_ACTIVE_LEFT");
+	}
+	if (BITMASK_IS_1(shock.options, Shock::OPTION_m_METRIC))
+	{
+		strcat(msg, " m_METRIC");
+	}
+	AddMessage(line, Message::TYPE_WARNING, msg);
+}
+
+void Parser::ParseShockUnsafe(Ogre::String const & line)
+{
+	PARSE_UNSAFE(line, 7,
+	{
+		Shock shock;
+		shock.beam_defaults = m_user_beam_defaults;
+		shock.detacher_group = m_current_detacher_group;
+
+		shock.nodes[0]       =  _ParseNodeRef(values[0]);
+		shock.nodes[1]       =  _ParseNodeRef(values[1]);
+		shock.spring_rate    = STR_PARSE_REAL(values[2]);
+		shock.damping        = STR_PARSE_REAL(values[3]);
+		shock.short_bound    = STR_PARSE_REAL(values[4]);
+		shock.long_bound     = STR_PARSE_REAL(values[5]);
+		shock.precompression = STR_PARSE_REAL(values[6]);
+		shock.options        = (values.size() > 7) ? this->ParseShockOptions(line, values[7]) : 0u;
+
+		this->LogParsedShockDataForChecking(line, shock);
+		m_current_module->shocks.push_back(shock);
+	});
 }
 
 void Parser::_CheckInvalidTrailingText(Ogre::String const & line, boost::smatch const & results, unsigned int index)
@@ -5068,12 +5326,12 @@ void Parser::ParseMinimass(Ogre::String const & line)
 	m_definition->_minimum_mass_set = true;
 }
 
-void Parser::ParseFlexBodyWheels(Ogre::String const & line)
+void Parser::ParseFlexBodyWheel(Ogre::String const & line)
 {
 	boost::smatch results;
 	if (! boost::regex_search(line, results, Regexes::SECTION_FLEXBODYWHEELS))
 	{
-		AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
+		this->ParseFlexBodyWheelUnsafe(line);
 		return;
 	}
 	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
@@ -5081,120 +5339,103 @@ void Parser::ParseFlexBodyWheels(Ogre::String const & line)
 	flex_body_wheel.beam_defaults = m_user_beam_defaults;
 	flex_body_wheel.node_defaults = m_user_node_defaults;
 
-	flex_body_wheel.tyre_radius = STR_PARSE_REAL(results[1]);
-	flex_body_wheel.rim_radius = STR_PARSE_REAL(results[2]);
-	flex_body_wheel.width = STR_PARSE_REAL(results[3]);
-	flex_body_wheel.num_rays = STR_PARSE_INT(results[4]);
-	flex_body_wheel.nodes[0] = _ParseNodeRef(results[5]);
-	flex_body_wheel.nodes[1] = _ParseNodeRef(results[6]);
-	
-	Node::Ref rigidity_node = _ParseNodeRef(results[7]);
-	if(rigidity_node.Num() != 9999) /* Special placeholder value */
-	{
-		flex_body_wheel.rigidity_node = rigidity_node;
-	}
+	flex_body_wheel.tyre_radius        = STR_PARSE_REAL(results[ 1]);
+	flex_body_wheel.rim_radius         = STR_PARSE_REAL(results[ 3]);
+	flex_body_wheel.width              = STR_PARSE_REAL(results[ 5]);
+	flex_body_wheel.num_rays           = STR_PARSE_INT (results[ 7]);
+	flex_body_wheel.nodes[0]           = _ParseNodeRef (results[ 9]);
+	flex_body_wheel.nodes[1]           = _ParseNodeRef (results[11]);
+	flex_body_wheel.rigidity_node      = _ParseNodeRef (results[13]);
+	int braking                        = STR_PARSE_INT (results[15]);
+	int propulsion                     = STR_PARSE_INT (results[17]);
+	flex_body_wheel.reference_arm_node = _ParseNodeRef (results[19]);
+	flex_body_wheel.mass               = STR_PARSE_REAL(results[21]);
+	flex_body_wheel.tyre_springiness   = STR_PARSE_REAL(results[23]);
+	flex_body_wheel.tyre_damping       = STR_PARSE_REAL(results[25]);
+	flex_body_wheel.rim_springiness    = STR_PARSE_REAL(results[27]);
+	flex_body_wheel.rim_damping        = STR_PARSE_REAL(results[29]);
+	char side                          =                results[31].str().at(0);
+	flex_body_wheel.rim_mesh_name      =                results[33];
+	flex_body_wheel.tyre_mesh_name     =                results[35];
 
-    if (m_sequential_importer.IsEnabled())
-    {
-        m_sequential_importer.GenerateNodesForWheel(
-            File::KEYWORD_FLEXBODYWHEELS,flex_body_wheel.num_rays, flex_body_wheel.rigidity_node.IsValidAnyState());
-    }
-
-	unsigned int braking = STR_PARSE_INT(results[8]);
-	if (braking >= 0 && braking <= 4)
-	{
-		flex_body_wheel.braking = Wheels::Braking(braking);
-	}
-	else
-	{
-		AddMessage(line, Message::TYPE_WARNING, "Invalid 'braking' value, setting BRAKING_NO (0).");
-	}
-
-	unsigned int propulsion = STR_PARSE_INT(results[9]);
-	if (propulsion >= 0 && propulsion <= 2)
-	{
-		flex_body_wheel.propulsion = Wheels::Propulsion(propulsion);
-	}
-	else
-	{
-		AddMessage(line, Message::TYPE_WARNING, "Invalid 'propulsion' value, setting PROPULSION_NONE (0).");
-	}
-
-	flex_body_wheel.reference_arm_node = _ParseNodeRef(results[10]);
-	flex_body_wheel.mass               = STR_PARSE_REAL(results[11]);
-	flex_body_wheel.tyre_springiness   = STR_PARSE_REAL(results[12]);
-	flex_body_wheel.tyre_damping       = STR_PARSE_REAL(results[13]);
-	flex_body_wheel.rim_springiness    = STR_PARSE_REAL(results[14]);
-	flex_body_wheel.rim_damping        = STR_PARSE_REAL(results[15]);
-	
-	flex_body_wheel.side               = MeshWheel::Side(results[16].str().at(0)); /* Regex validates the value */
-	flex_body_wheel.rim_mesh_name      = results[17];
-	flex_body_wheel.tyre_mesh_name     = results[18];
-
-	m_current_module->flex_body_wheels.push_back(flex_body_wheel);
+	this->VerifyAndProcessFlexBodyWheel(line, flex_body_wheel, braking, propulsion, side);
 }
 
-void Parser::ParseMeshWheels2(Ogre::String const & line)
+void Parser::ParseFlexBodyWheelUnsafe(Ogre::String const & line)
 {
-	boost::smatch results;
-	if (! boost::regex_search(line, results, Regexes::SECTION_MESHWHEELS_MESHWHEELS2))
+	PARSE_UNSAFE(line, 16,
 	{
-		AddMessage(line, Message::TYPE_ERROR, "Invalid line, ignoring...");
-		return;
-	}
-	/* NOTE: Positions in 'results' array match E_CAPTURE*() positions (starting with 1) in the respective regex. */
+		FlexBodyWheel flexbody_wheel;
+		flexbody_wheel.node_defaults = m_user_node_defaults;
+		flexbody_wheel.beam_defaults = m_user_beam_defaults;
 
-	MeshWheel2 mesh_wheel_2;
-	mesh_wheel_2.node_defaults = m_user_node_defaults;
-	mesh_wheel_2.beam_defaults = m_user_beam_defaults; /* Rim is set-up this way, params in section are for tire. */
+		flexbody_wheel.tyre_radius         = STR_PARSE_REAL(values[ 0]);
+		flexbody_wheel.rim_radius          = STR_PARSE_REAL(values[ 1]);
+		flexbody_wheel.width               = STR_PARSE_REAL(values[ 2]);
+		flexbody_wheel.num_rays            = STR_PARSE_INT (values[ 3]);
+		flexbody_wheel.nodes[0]            = _ParseNodeRef (values[ 4]);
+		flexbody_wheel.nodes[1]            = _ParseNodeRef (values[ 5]);
+		flexbody_wheel.rigidity_node       = _ParseNodeRef (values[ 6]);
+		int braking                        = STR_PARSE_INT (values[ 7]);
+		int propulsion                     = STR_PARSE_INT (values[ 8]);
+		flexbody_wheel.reference_arm_node  = _ParseNodeRef (values[ 9]);
+		flexbody_wheel.mass                = STR_PARSE_REAL(values[10]);
+		flexbody_wheel.tyre_springiness    = STR_PARSE_REAL(values[11]);
+		flexbody_wheel.tyre_damping        = STR_PARSE_REAL(values[12]);
+		flexbody_wheel.rim_springiness     = STR_PARSE_REAL(values[13]);
+		flexbody_wheel.rim_damping         = STR_PARSE_REAL(values[14]);
+		char side_char                     =                values[15].at(0);
+		if (values.size() >= 17) 
+		{ 
+			flexbody_wheel.rim_mesh_name   =                values[16];
+		}
+		if (values.size() >= 18)
+		{
+			flexbody_wheel.tyre_mesh_name =                 values[17];
+		}
 
-	mesh_wheel_2.tyre_radius = STR_PARSE_REAL(results[1]);
-	mesh_wheel_2.rim_radius = STR_PARSE_REAL(results[2]);
-	mesh_wheel_2.width = STR_PARSE_REAL(results[3]);
-	mesh_wheel_2.num_rays = STR_PARSE_INT(results[4]);
-	mesh_wheel_2.nodes[0] = _ParseNodeRef(results[5]);
-	mesh_wheel_2.nodes[1] = _ParseNodeRef(results[6]);
+		this->VerifyAndProcessFlexBodyWheel(line, flexbody_wheel, braking, propulsion, side_char);
+	});
+}
 
-	/* Axle rigidity node (9999 = null) */
-	mesh_wheel_2.rigidity_node = _ParseNodeRef(results[7]);
-	if (mesh_wheel_2.rigidity_node.IsValidAnyState() && mesh_wheel_2.rigidity_node.Num() == 9999)
+void Parser::VerifyAndProcessFlexBodyWheel(Ogre::String const & line, FlexBodyWheel& flexbody_wheel, int braking, int propulsion, char side_char)
+{
+	// Axle rigidity node (9999 = null)
+	if (flexbody_wheel.rigidity_node.IsValidAnyState() && flexbody_wheel.rigidity_node.Num() == 9999)
 	{
-		mesh_wheel_2.rigidity_node.Invalidate();
+		flexbody_wheel.rigidity_node.Invalidate();
 	}
 
-    if (m_sequential_importer.IsEnabled())
-    {
-        m_sequential_importer.GenerateNodesForWheel(
-            File::KEYWORD_MESHWHEELS2, mesh_wheel_2.num_rays, mesh_wheel_2.rigidity_node.IsValidAnyState());
-    }
-	
-	/* Braking */
-	int braking = STR_PARSE_INT(results[8]);
 	if (braking < 0 || braking > 4)
 	{
-		AddMessage(results[8], Message::TYPE_ERROR, "Invalid value of parameter ~7 (braking), using 0 (no braking)");
+		this->AddMessage(line, Message::TYPE_ERROR, "Invalid value of parameter ~7 (braking), using 0 (no braking)");
 		braking = 0;
 	}
-	mesh_wheel_2.braking = Wheels::Braking(braking);
+	flexbody_wheel.braking = Wheels::Braking(braking);
 
-	/* Propulsion */
-	int propulsion = STR_PARSE_INT(results[9]);
 	if (propulsion < 0 || propulsion > 2)
 	{
-		AddMessage(results[9], Message::TYPE_ERROR, "Invalid value of parameter ~8 (propulsion), using 0 (no propulsion)");
+		this->AddMessage(line, Message::TYPE_ERROR, "Invalid value of parameter ~8 (propulsion), using 0 (no propulsion)");
 		braking = 0;
 	}
-	mesh_wheel_2.propulsion = Wheels::Propulsion(propulsion);
+	flexbody_wheel.propulsion = Wheels::Propulsion(propulsion);
 
-	mesh_wheel_2.reference_arm_node = _ParseNodeRef(results[10]);
-	mesh_wheel_2.mass               = STR_PARSE_REAL(results[11]);
-	mesh_wheel_2.tyre_springiness   = STR_PARSE_REAL(results[12]);
-	mesh_wheel_2.tyre_damping       = STR_PARSE_REAL(results[13]);
-	mesh_wheel_2.side               = MeshWheel::Side(results[14].str().at(0)); // The regex validates the data
-	mesh_wheel_2.mesh_name          = results[16];
-	mesh_wheel_2.material_name      = results[18];
+	flexbody_wheel.side = MeshWheel::SIDE_RIGHT;
+	if (side_char != 'r')
+	{
+		if (side_char != 'l')
+		{
+			this->AddMessage(line, Message::TYPE_WARNING, std::string("Invalid SIDE flag (acceptable are [r/l]), parsing as LEFT for backwards compatibility: ") + side_char);
+		}
+		flexbody_wheel.side = MeshWheel::SIDE_LEFT;
+	}
 
-	m_current_module->mesh_wheels_2.push_back(mesh_wheel_2);
+	if (m_sequential_importer.IsEnabled())
+	{
+		m_sequential_importer.GenerateNodesForWheel(File::KEYWORD_FLEXBODYWHEELS, flexbody_wheel.num_rays, flexbody_wheel.rigidity_node.IsValidAnyState());
+	}
+
+	m_current_module->flex_body_wheels.push_back(flexbody_wheel);
 }
 
 void Parser::ParseMaterialFlareBindings(Ogre::String const & line)

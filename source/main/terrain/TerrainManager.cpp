@@ -255,6 +255,8 @@ void TerrainManager::loadTerrain(String filename)
 void TerrainManager::initSubSystems()
 {
 	// geometry - ogre terrain things
+	initShadows();
+
 	PROGRESS_WINDOW(15, _L("Initializing Geometry Subsystem"));
 	initGeometry();
 
@@ -269,7 +271,7 @@ void TerrainManager::initSubSystems()
 	initScripting();
 
 	PROGRESS_WINDOW(21, _L("Initializing Shadow Subsystem"));
-	initShadows();
+	
 
 	PROGRESS_WINDOW(25, _L("Initializing Camera Subsystem"));
 	initCamera();
@@ -415,6 +417,9 @@ void TerrainManager::initLight()
 
 		main_light->setDiffuseColour(ambient_color);
 		main_light->setSpecularColour(ambient_color);
+		main_light->setCastShadows(true);
+		main_light->setShadowFarDistance(1000.0f);
+		main_light->setShadowNearClipDistance(-1);
 	}
 }
 

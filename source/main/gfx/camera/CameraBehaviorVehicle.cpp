@@ -49,9 +49,9 @@ void CameraBehaviorVehicle::update(const CameraManager::CameraContext &ctx)
 	}
 
 	if (BeamFactory::getSingleton().getThreadingMode() == THREAD_MULTI)
-		camRatio = 1.0f / (ctx.mCurrTruck->ttdt * 4.0f);
+		camRatio = 1.0f / (ctx.mCurrTruck->oldframe_global_dt * 4.0f);
 	else
-		camRatio = 1.0f / (ctx.mCurrTruck->tdt * 4.0f);
+		camRatio = 1.0f / (ctx.mCurrTruck->global_dt * 4.0f);
 
 	camDistMin = std::min(ctx.mCurrTruck->getMinimalCameraRadius() * 2.0f, 33.0f);
 
@@ -66,10 +66,12 @@ void CameraBehaviorVehicle::activate(const CameraManager::CameraContext &ctx, bo
 	{
 		gEnv->cameraManager->switchToNextBehavior();
 		return;
-	} else if ( reset )
+	} 
+	else if ( reset )
 	{
 		this->reset(ctx);
 	}
+	ctx.mCurrTruck->GetCameraContext()->behavior = RoR::PerVehicleCameraContext::CAMERA_BEHAVIOR_VEHICLE_3rdPERSON;
 }
 
 void CameraBehaviorVehicle::reset(const CameraManager::CameraContext &ctx)

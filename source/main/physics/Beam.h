@@ -22,6 +22,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RoRPrerequisites.h"
 #include "OgrePrerequisites.h"
+#include "PerVehicleCameraContext.h"
 #include "RigDef_Prerequisites.h"
 
 #include "BeamData.h"
@@ -470,8 +471,8 @@ public:
 	int getLowestNode();
 	void preMapLabelRenderUpdate(bool mode, float cheight=0);
 	
-	float tdt;
-	float ttdt;
+	float global_dt;
+	float oldframe_global_dt;
 	bool simulated;
 	int airbrakeval;
 	Ogre::Vector3 cameranodeacc;
@@ -508,7 +509,9 @@ public:
 	bool isTied();
 	bool isLocked();
 
-	Ogre::SceneNode *getSceneNode() { return beamsRoot; }
+	// Inline getters
+	inline Ogre::SceneNode*                 getSceneNode()            { return beamsRoot; }
+	inline RoR::PerVehicleCameraContext*    GetCameraContext()        { return &m_camera_context; }
 
 #ifdef USE_MYGUI
 	DashBoardManager *dash;
@@ -645,6 +648,8 @@ protected:
 	float stabsleep;
 	Replay *replay;
 	PositionStorage *posStorage;
+
+	RoR::PerVehicleCameraContext m_camera_context;
 
 	bool cparticle_mode;
 	Beam** ttrucks;

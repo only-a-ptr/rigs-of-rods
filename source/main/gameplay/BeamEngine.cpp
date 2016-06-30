@@ -46,7 +46,7 @@ BeamEngine::BeamEngine(float minRPM, float maxRPM, float torque, std::vector<flo
 	, engineTorque(torque - brakingTorque)
 	, gearsRatio(gears)
 	, hasair(true)
-	, hasturbo(true)
+	, hasturbo(false)
 	, hydropump(0.0f)
 	, idleRPM(std::min(minRPM, 800.0f))
 	, inertia(10.0f)
@@ -78,6 +78,16 @@ BeamEngine::BeamEngine(float minRPM, float maxRPM, float torque, std::vector<flo
 	, turboEngineRpmOperation(0.0f)
 	, turboVer(1)
 	, minBOVPsi(11)
+	, minWGPsi(20)
+	, b_WasteGate(false)
+	, b_BOV(false)
+	, b_flutter(false)
+	, wastegate_threshold_p(0)
+	, wastegate_threshold_n(0)
+	, b_anti_lag(false)
+	, rnd_antilag_chance(0.9975)
+	, minRPM_antilag(3000)
+	, antilag_power_factor(170)
 {
 	fullRPMRange = (maxRPM - minRPM);
 	oneThirdRPMRange = fullRPMRange / 3.0f;
@@ -103,7 +113,7 @@ BeamEngine::~BeamEngine()
 	torqueCurve = NULL;
 }
 
-void BeamEngine::setTurboOptions(int type, float tinertiaFactor, int nturbos, float param1, float param2, float param3, float param4)
+void BeamEngine::setTurboOptions(int type, float tinertiaFactor, int nturbos, float param1, float param2, float param3, float param4, float param5, float param6, float param7, float param8, float param9, float param10, float param11)
 {
 	if (!hasturbo)
 		hasturbo = true; //Should have a turbo
@@ -130,7 +140,7 @@ void BeamEngine::setTurboOptions(int type, float tinertiaFactor, int nturbos, fl
 	else
 	{
 		turboMaxPSI = param1; //maxPSI
-		maxTurboRPM = turboMaxPSI * 10000; //Big turbos, less rpm, smaal turbos, more rpm
+		maxTurboRPM = turboMaxPSI * 10000;
 
 		//Duh
 		if (param3 == 1)
@@ -140,6 +150,34 @@ void BeamEngine::setTurboOptions(int type, float tinertiaFactor, int nturbos, fl
 
 		if (param3 != 9999)
 			minBOVPsi = param4;
+
+		if (param5 == 1)
+			b_WasteGate = true;
+		else
+			b_WasteGate = false;
+
+		if (param6 != 9999)
+			minWGPsi = param6 * 10000;
+
+		if (param7 != 9999)
+		{
+			wastegate_threshold_n = 1 - param7;
+			wastegate_threshold_p = 1 + param7;
+		}
+
+		if (param8 == 1)
+			b_anti_lag = true;
+		else
+			b_anti_lag = false;
+
+		if (param9 != 9999)
+			rnd_antilag_chance = param9;
+
+		if (param10 != 9999)
+			minRPM_antilag = param10;
+
+		if (param11 != 9999)
+			antilag_power_factor = param11;
 	}
 }
 
@@ -160,7 +198,6 @@ void BeamEngine::setOptions(float einertia, char etype, float eclutch, float cti
 	if (etype == 'c')
 	{
 		// it's a car!
-		hasturbo = false;
 		hasair = false;
 		is_Electric = false;
 		// set default clutch force
@@ -172,7 +209,6 @@ void BeamEngine::setOptions(float einertia, char etype, float eclutch, float cti
 	else if (etype == 'e') //electric
 	{
 		is_Electric = true;
-		hasturbo = false;
 		hasair = false;
 		if (clutchForce < 0.0f)
 		{
@@ -241,15 +277,73 @@ void BeamEngine::update(float dt, int doUpdate)
 			{
 				if (curTurboRPM[i] <= maxTurboRPM && running && acc > 0.06f)
 				{
-					turbotorque += 1.5f * acc * (((curEngineRPM - turboEngineRpmOperation) / (maxRPM - turboEngineRpmOperation)));
+					if (b_WasteGate)
+					{
+						if (curTurboRPM[i] < minWGPsi * wastegate_threshold_p && !b_flutter)
+						{
+							turbotorque += 1.5f * acc * (((curEngineRPM - turboEngineRpmOperation) / (maxRPM - turboEngineRpmOperation)));
+						}
+						else
+						{
+							b_flutter = true;
+							turbotorque -= (curTurboRPM[i] / maxTurboRPM) *1.5;
+						}	
+
+						if (b_flutter)
+						{
+							SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_TURBOWASTEGATE);
+							if (curTurboRPM[i] < minWGPsi * wastegate_threshold_n)
+							{
+								b_flutter = false;
+								SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_TURBOWASTEGATE);
+							}
+								
+						}
+					}
+					else
+						turbotorque += 1.5f * acc * (((curEngineRPM - turboEngineRpmOperation) / (maxRPM - turboEngineRpmOperation)));
 				}
 				else
 				{
 					turbotorque += 0.1f * (((curEngineRPM - turboEngineRpmOperation) / (maxRPM - turboEngineRpmOperation)));
 				}
+
+				//Update waste gate, it's like a BOV on the exhaust part of the turbo, acts as a limiter
+				if (b_WasteGate)
+				{
+					if (curTurboRPM[i] > minWGPsi * 0.95)
+						turboInertia = turboInertia *0.7; //Kill inertia so it flutters
+					else
+						turboInertia = turboInertia *1.3; //back to normal inertia
+				}
+			}
+			
+			//simulate compressor surge
+			if (!b_BOV)
+			{
+				if (curTurboRPM[i] > 13 * 10000 && curAcc < 0.06f)
+				{
+					turbotorque += (turbotorque * 2.5);
+				}
 			}
 
-			// integration
+			// anti lag
+			if (b_anti_lag && curAcc < 0.5)
+			{
+				float f = frand();
+				if (curEngineRPM > minRPM_antilag && f > rnd_antilag_chance)
+				{
+					if (curTurboRPM[i] > maxTurboRPM*0.35 && curTurboRPM[i] < maxTurboRPM)
+					{
+						turbotorque -= (turbotorque * (f * antilag_power_factor));
+						SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_TURBOBACKFIRE);
+					}
+				}
+				else
+					SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_TURBOBACKFIRE);
+			}
+
+			// update main turbo rpm
 			curTurboRPM[i] += dt * turbotorque / turboInertia;
 
 			//Update BOV

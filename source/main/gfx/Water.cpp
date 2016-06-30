@@ -216,6 +216,7 @@ void Water::processWater(int mType)
 		pPlaneEnt->setName("plane");
 		pPlaneEnt->setMaterialName("tracks/basicwater");
 		pPlaneEnt->setCastShadows(false);
+	pPlaneEnt->setCastShadows(false);
 	//position
 	pWaterNode = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 	pWaterNode->setName("WaterPlane");

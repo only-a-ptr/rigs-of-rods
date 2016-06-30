@@ -96,7 +96,14 @@ nturbos(1),
 param1(9999), //used for default values
 param2(9999),
 param3(9999),
-param4(9999)
+param4(9999),
+param5(9999),
+param6(9999), 
+param7(9999),
+param8(9999),
+param9(9999),
+param10(9999),
+param11(9999)
 {}
 
 Fusedrag::Fusedrag():
@@ -409,6 +416,8 @@ const char * File::KeywordToString(File::Keyword keyword)
 			return "beams";
 		case (File::KEYWORD_BRAKES):
 			return "brakes";
+		case (File::KEYWORD_CAB):
+			return "submesh >> cab";
 		case (File::KEYWORD_CAMERAS):
 			return "cameras";
 		case (File::KEYWORD_CAMERARAIL):
@@ -505,6 +514,10 @@ const char * File::KeywordToString(File::Keyword keyword)
 			return "soundsources";
 		case (File::KEYWORD_SOUNDSOURCES2):
 			return "soundsources2";
+		case (File::KEYWORD_SUBMESH) :
+			return "submesh";
+		case (File::KEYWORD_TEXCOORDS):
+			return "submesh >> texcoords";
 		case (File::KEYWORD_TIES):
 			return "ties";
 		case (File::KEYWORD_TORQUECURVE):
