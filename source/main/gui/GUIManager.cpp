@@ -26,6 +26,8 @@
 
 #include "GUIManager.h"
 
+#include <MyGUI_OgrePlatform.h>
+
 #include "Application.h"
 #include "BeamFactory.h"
 #include "Console.h"
@@ -36,8 +38,6 @@
 #include "RTTLayer.h"
 #include "Settings.h"
 #include "TerrainManager.h"
-
-#include <MyGUI_OgrePlatform.h>
 
 using namespace Ogre;
 using namespace RoR;

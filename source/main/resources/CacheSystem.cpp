@@ -27,6 +27,8 @@
 
 #include "CacheSystem.h"
 
+#include <OgreFileSystem.h>
+
 #include "BeamData.h"
 #include "BeamEngine.h"
 #include "ErrorUtils.h"
@@ -39,7 +41,7 @@
 #include "SoundScriptManager.h"
 #include "TerrainManager.h"
 #include "Utils.h"
-	
+
 #ifdef USE_MYGUI
 #include "LoadingWindow.h"
 #endif // USE_MYGUI

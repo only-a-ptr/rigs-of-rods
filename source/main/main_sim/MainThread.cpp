@@ -149,8 +149,8 @@ void MainThread::Go()
 	Ogre::Camera* camera = scene_manager->createCamera("PlayerCam");
 	camera->setPosition(Ogre::Vector3(128,25,128)); // Position it at 500 in Z direction
 	camera->lookAt(Ogre::Vector3(0,0,-300)); // Look back along -Z
-	camera->setNearClipDistance( 0.1 ); //0.5
-	camera->setFarClipDistance( 5000 );
+	camera->setNearClipDistance( 0.5 );
+	camera->setFarClipDistance( 1000.0*1.733 );
 	camera->setFOVy(Ogre::Degree(60));
 	camera->setAutoAspectRatio(true);
 	gEnv->mainCamera = camera;
@@ -677,7 +677,9 @@ void MainThread::Go()
 #endif
 
 	scene_manager->destroyCamera(camera);
-    RoR::Application::GetOgreSubsystem()->GetOgreRoot()->destroySceneManager(scene_manager);
+	RoR::Application::GetOgreSubsystem()->GetOgreRoot()->destroySceneManager(scene_manager);
+
+	delete overlay_system;
 
 	Application::DestroyContentManager();
 

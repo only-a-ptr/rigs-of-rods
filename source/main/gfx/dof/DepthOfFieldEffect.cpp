@@ -25,6 +25,8 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "DepthOfFieldEffect.h"
 
 #include <Ogre.h>
+#include <Overlay/OgreOverlay.h>
+#include <Overlay/OgreOverlayManager.h>
 
 using namespace Ogre;
 

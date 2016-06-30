@@ -46,7 +46,7 @@ public:
 	Ogre::Camera *mainCamera;
 	Ogre::SceneManager *sceneManager;
 	Ogre::OverlaySystem *overlaySystem;
-	
+
 	CameraManager *cameraManager;
 	Character *player;
 	Collisions *collisions;
