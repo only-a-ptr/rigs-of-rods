@@ -22,7 +22,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <OgrePrerequisites.h>
 #include <OgreTimer.h>
-#include <Overlay/OgreOverlayElement.h>
 #include <vector>
 
 #include "RoRPrerequisites.h"
@@ -118,11 +117,6 @@ public:
 	void reset(bool keepPosition = false); 
 
 	/**
-	* this is called by the beamfactory worker thread
-	*/
-	void threadentry();
-
-	/**
 	* Spawns vehicle.
 	*/
 	bool LoadTruck(
@@ -140,7 +134,7 @@ public:
 	* TIGHT-LOOP; Called once by frame and is responsible for animation of all the trucks!
 	* the instance called is the one of the current ACTIVATED truck
 	*/
-	bool frameStep(Ogre::Real dt);
+	bool frameStep(int steps);
 
 	void setupDefaultSoundSources();
 
@@ -269,12 +263,12 @@ public:
 	/** 
 	* Display; displays "skeleton" (visual rig) mesh.
 	*/
-	void showSkeleton(bool meshes=true, bool newMode=false, bool linked=true);
+	void showSkeleton(bool meshes=true, bool linked=true);
 
 	/** 
 	* Display; hides "skeleton" (visual rig) mesh.
 	*/
-	void hideSkeleton(bool newMode=false, bool linked=true);
+	void hideSkeleton(bool linked=true);
 
 	/** 
 	* Display; updates the "skeleton" (visual rig) mesh.
@@ -349,7 +343,7 @@ public:
 	Ogre::Vector3 getGForces();
 
 	int stabcommand; //!< Stabilization; values: { -1, 0, 1 }
-	int skeleton; //!< Visibility of "skeleton" (visual rig) { 0 = not visible, 1 = visible, 2 = visible in "newMode" }
+	bool m_skeletonview_is_active; //!< Visibility of "skeleton" (visual rig) { false = not visible, true = visible }
 	float stabratio;
 	//direction
 	float hydrodircommand;
@@ -386,7 +380,7 @@ public:
 	float refpressure;
 
 	bool hasDriverSeat();
-	int calculateDriverPos(Ogre::Vector3 &pos, Ogre::Quaternion &rot);
+	void calculateDriverPos(Ogre::Vector3 &pos, Ogre::Quaternion &rot);
 	float getSteeringAngle();
 	void triggerGUIFeaturesChanged();
 
@@ -517,30 +511,6 @@ public:
 	DashBoardManager *dash;
 #endif // USE_MYGUI
 
-	Beam* calledby;
-
-	/**
-	* Overrides IThreadTask::run()
-	*/
-	void run();
-	void onComplete();
-
-	// flexable pthread stuff
-	int flexable_task_count;
-	pthread_cond_t flexable_task_count_cv;
-	pthread_mutex_t flexable_task_count_mutex;
-
-protected:
-
-	enum ThreadTask {
-		THREAD_BEAMFORCESEULER,
-		THREAD_BEAMS,
-		THREAD_INTER_TRUCK_COLLISIONS,
-		THREAD_INTRA_TRUCK_COLLISIONS,
-		THREAD_NODES,
-		THREAD_MAX
-	};
-
 	//! @{ physic related functions
 	bool calcForcesEulerPrepare(int doUpdate, Ogre::Real dt, int step = 0, int maxsteps = 1);
 
@@ -553,24 +523,43 @@ protected:
 	* TIGHT LOOP; Physics; 
 	*/
 	void calcForcesEulerFinal(int doUpdate, Ogre::Real dt, int step = 0, int maxsteps = 1);
-	void intraTruckCollisionsPrepare(Ogre::Real dt);
-	void intraTruckCollisionsCompute(Ogre::Real dt, int chunk_index = 0, int chunk_number = 1);
-	void intraTruckCollisionsFinal(Ogre::Real dt);
-	void interTruckCollisionsPrepare(Ogre::Real dt);
-	void interTruckCollisionsCompute(Ogre::Real dt, int chunk_index = 0, int chunk_number = 1);
-	void interTruckCollisionsFinal(Ogre::Real dt);
+	void intraTruckCollisions(Ogre::Real dt);
+	void interTruckCollisions(Ogre::Real dt);
+
+	/**
+	* Overrides IThreadTask::run()
+	*/
+	void run();
+	void onComplete();
+
+	enum ThreadTask {
+		THREAD_BEAMFORCESEULER,
+		THREAD_INTER_TRUCK_COLLISIONS
+	};
+
+	ThreadTask thread_task;
+
+	int curtstep;
+	int tsteps;
+
+	// flexable pthread stuff
+	int flexable_task_count;
+	pthread_cond_t flexable_task_count_cv;
+	pthread_mutex_t flexable_task_count_mutex;
+
+protected:
 
 	/**
 	* TIGHT LOOP; Physics & sound; 
 	* @param doUpdate Only passed to Beam::calcShocks2()
 	*/
-	void calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps, int chunk_index, int chunk_number);
+	void calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps);
 
 	/**
 	* TIGHT LOOP; Physics; 
 	* @param doUpdate Unused (overwritten in function)
 	*/
-	void calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps, int chunk_index, int chunk_number);
+	void calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps);
 
 	/**
 	* TIGHT LOOP; Physics; 
@@ -586,29 +575,13 @@ protected:
 
 	void SyncReset(); //this one should be called only synchronously (without physics running in background)
 
-	float dtperstep;
-	int curtstep;
-	int tsteps;
-	int num_simulated_trucks;
+	void SetPropsCastShadows(bool do_cast_shadows);
+
 	float avichatter_timer;
 
-	// pthread stuff
-	int task_count[THREAD_MAX];
-	pthread_cond_t task_count_cv[THREAD_MAX];
-	pthread_mutex_t task_count_mutex[THREAD_MAX];
-	pthread_mutex_t task_index_mutex[THREAD_MAX];
-
-	ThreadTask thread_task;
-	int thread_index;
-	int thread_number;
-
-	void runThreadTask(Beam* truck, ThreadTask task, bool shared = false);
-	
 	// inter-/intra truck collision stuff
-	pthread_mutex_t itc_node_access_mutex;
-
-	std::vector<PointColDetector*> interPointCD;
-	std::vector<PointColDetector*> intraPointCD;
+	PointColDetector* interPointCD;
+	PointColDetector* intraPointCD;
 
 	// flexable stuff
 	std::bitset<MAX_WHEELS> flexmesh_prepare;
@@ -652,18 +625,17 @@ protected:
 	RoR::PerVehicleCameraContext m_camera_context;
 
 	bool cparticle_mode;
-	Beam** ttrucks;
-	int tnumtrucks;
 	int detailLevel;
 	bool increased_accuracy;
 	bool isInside;
-	bool beacon;
+	bool m_beacon_light_is_active;
 	float totalmass;
 
 	int mousenode;
 	Ogre::Vector3 mousepos;
 	float mousemoveforce;
 	int reset_requested;
+	float m_spawn_rotation;
 
 	std::vector<Ogre::String> m_truck_config;
 

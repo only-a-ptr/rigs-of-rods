@@ -61,7 +61,6 @@
 #include "RigEditor_Main.h"
 #include "RoRFrameListener.h"
 #ifdef USE_ANGELSCRIPT
-#include "ScriptEngine.h"
 #endif
 #include "Scripting.h"
 #include "Settings.h"
@@ -80,6 +79,10 @@
 
 #include <MyGUI_OgrePlatform.h>
 
+#ifdef USE_ANGELSCRIPT
+#    include "ScriptEngine.h"
+#endif
+
 // Global instance of GlobalEnvironment used throughout the game.
 GlobalEnvironment *gEnv; 
 
@@ -92,6 +95,7 @@ MainThread::MainThread():
 	m_restart_requested(false),
 	m_start_time(0),
 	m_exit_loop_requested(false),
+	m_base_resource_loaded(false),
 	m_application_state(Application::STATE_NONE),
 	m_next_application_state(Application::STATE_NONE),
 	m_rig_editor(nullptr)
@@ -116,7 +120,9 @@ void MainThread::Go()
 	}
 
 	Application::StartOgreSubsystem();
+#ifdef ROR_USE_OGRE_1_9
 	Ogre::OverlaySystem* overlay_system = new OverlaySystem(); //Overlay init
+#endif
 
 	Application::CreateContentManager();
 
@@ -402,7 +408,7 @@ void MainThread::Go()
 		if (!connres)
 		{
 			LOG("connection failed. server down?");
-			ErrorUtils::ShowError(_L("Unable to connect to server"), _L("Unable to connect to the server. It is certainly down or you have network problems."));
+			ErrorUtils::ShowError(_L("Unable to connect to server"), _L("Unable to connect to the server. It may be offline or you have network problems."));
 			//fatal
 			exit(1);
 		}
@@ -506,6 +512,12 @@ void MainThread::Go()
 				}
 				/* Restore wallpaper */
 				menu_wallpaper_widget->setVisible(true);
+
+				/* Set Mumble to non-positional audio */
+				#ifdef USE_MUMBLE
+					  MumbleIntegration::getSingleton().update(Vector3::ZERO, Ogre::Vector3(0.0f, 0.0f, 1.0f), Ogre::Vector3(0.0f, 1.0f, 0.0f),
+							  	  	  	  	  	  	  	  	  	  Vector3::ZERO, Ogre::Vector3(0.0f, 0.0f, 1.0f), Ogre::Vector3(0.0f, 1.0f, 0.0f));
+				#endif // USE_MUMBLE
 			}
 
 			if (BSETTING("MainMenuMusic", true))
@@ -678,8 +690,9 @@ void MainThread::Go()
 
 	scene_manager->destroyCamera(camera);
 	RoR::Application::GetOgreSubsystem()->GetOgreRoot()->destroySceneManager(scene_manager);
-
+#ifdef ROR_USE_OGRE_1_9
 	delete overlay_system;
+#endif
 
 	Application::DestroyContentManager();
 
@@ -734,18 +747,11 @@ bool MainThread::SetupGameplayLoop(bool enable_network, Ogre::String preselected
 	Application::CreateOverlayWrapper();
 	Application::GetOverlayWrapper()->SetupDirectionArrow();
 
+	gEnv->sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.3f, 0.3f));
+
 	if (!m_base_resource_loaded)
 	{
 		new DustManager(); // setup particle manager singleton. TODO: Move under Application
-	}
-
-	if (!enable_network)
-	{
-		gEnv->player = (Character *)CharacterFactory::getSingleton().createLocal(-1);
-		if (gEnv->player != nullptr)
-		{
-			gEnv->player->setVisible(false);
-		}
 	}
 
 	if (enable_network)
@@ -1112,14 +1118,6 @@ void MainThread::MainMenuLoopUpdate(float seconds_since_last_frame)
 			GUI_Multiplayer::getSingleton().update();
 		}
 #endif // USE_SOCKETW
-
-		// now update mumble 3d audio things
-#ifdef USE_MUMBLE
-		if (gEnv->player)
-		{
-			MumbleIntegration::getSingleton().update(gEnv->mainCamera->getPosition(), gEnv->player->getPosition() + Vector3(0, 1.8f, 0));
-		}
-#endif // USE_MUMBLE
 	}
 
 	MainMenuLoopUpdateEvents(seconds_since_last_frame);
@@ -1149,8 +1147,6 @@ void MainThread::MainMenuLoopUpdateEvents(float seconds_since_last_frame)
 	{
 		return;
 	}
-
-	bool dirty = false;
 
 	if (RoR::Application::GetOverlayWrapper() != nullptr)
 	{

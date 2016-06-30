@@ -152,8 +152,8 @@ public:
 protected:
 
 /* -------------------------------------------------------------------------- */
-/* Processing functions.
-/* NOTE: Please maintain alphabetical order.
+/* Processing functions.                                                      */
+/* NOTE: Please maintain alphabetical order.                                  */
 /* -------------------------------------------------------------------------- */
 
 	/**
@@ -378,8 +378,6 @@ protected:
 	*/
 	void ProcessShock2(RigDef::Shock2 & def);
 
-	void ProcessSkeletonSettings(RigDef::SkeletonSettings & def);
-
 	/**
 	* Section 'slidenodes'. Depends on 'railgroups'
 	*/
@@ -463,7 +461,7 @@ protected:
 	void ProcessWing(RigDef::Wing & def);
 
 /* -------------------------------------------------------------------------- */
-/* Partial processing functions.
+/* Partial processing functions.                                              */
 /* -------------------------------------------------------------------------- */
 
 	void BuildAerialEngine(
@@ -520,7 +518,7 @@ protected:
 	static void AddSoundSourceInstance(Beam *vehicle, Ogre::String const & sound_script_name, int node_index, int type = -2);
 
 /* -------------------------------------------------------------------------- */
-/* Limits.
+/* Limits.                                                                    */
 /* -------------------------------------------------------------------------- */
 
 	/**
@@ -657,7 +655,7 @@ protected:
 	bool CheckScrewpropLimit(unsigned int count);
 
 /* -------------------------------------------------------------------------- */
-/* Utility functions.
+/* Utility functions.                                                         */
 /* -------------------------------------------------------------------------- */
 
 	/**
@@ -967,8 +965,8 @@ protected:
 	);
 
 	void _ProcessCommandKeyInertia(
-		RigDef::OptionalInertia & inertia, 
-		RigDef::DefaultInertia & inertia_defaults, 
+		RigDef::Inertia & inertia, 
+		RigDef::Inertia & inertia_defaults, 
 		int contract_key, 
 		int extend_key
 	);

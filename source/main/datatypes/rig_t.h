@@ -23,6 +23,9 @@ struct rig_t
 	int free_node;
 
 	beam_t beams[MAX_BEAMS];
+	Ogre::Real initial_beam_strength[MAX_BEAMS];
+	Ogre::Real default_beam_deform[MAX_BEAMS];
+	Ogre::Real default_beam_plastic_coef[MAX_BEAMS];
 	int free_beam;
 
 	contacter_t contacters[MAX_CONTACTERS];
@@ -174,7 +177,6 @@ struct rig_t
 	int truckversion;
 	int externalcameramode, externalcameranode;
 	std::vector<authorinfo_t> authors;
-	float fadeDist;
 	float collrange;
 	int masscount; //!< Number of nodes loaded with l option
 	bool disable_smoke;
@@ -208,10 +210,9 @@ struct rig_t
 	std::vector<Ogre::Entity*> deletion_Entities; //!< For unloading vehicle; filled at spawn.
 	std::vector<Ogre::MovableObject *> deletion_Objects; //!< For unloading vehicle; filled at spawn.
 	std::vector<Ogre::SceneNode*> deletion_sceneNodes; //!< For unloading vehicle; filled at spawn.
-	int netCustomLightArray[4];
+	unsigned int netCustomLightArray[4];
 	unsigned char netCustomLightArray_counter;
 	MaterialFunctionMapper *materialFunctionMapper;
-	bool driversseatfound;
 	bool ispolice;
 	int state;
 	bool collisionRelevant;
@@ -290,7 +291,6 @@ struct rig_t
 
 	float default_beam_diameter;
 	float default_plastic_coef;
-	float skeleton_beam_diameter;
 
 	char default_beam_material[256];
 	float default_node_friction; //!< TODO: REMOVE! (parser context only)

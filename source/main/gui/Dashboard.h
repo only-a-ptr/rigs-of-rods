@@ -23,8 +23,12 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #define __Dashboard_H__
 
 #include "RoRPrerequisites.h"
-#include "Ogre.h"
-#include "OgreOverlay.h"
+
+// Forward
+namespace Ogre
+{
+	class Overlay;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // TODO: Rename these classes! Danger of confusion with 'class DashBoard'. //

@@ -368,14 +368,12 @@ void ScriptEngine::init()
 	result = engine->RegisterObjectProperty("BeamClass", "int done_count", offsetof(Beam, done_count)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "int free_prop", offsetof(Beam, free_prop)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "float default_beam_diameter", offsetof(Beam, default_beam_diameter)); MYASSERT(result>=0);
-	result = engine->RegisterObjectProperty("BeamClass", "float skeleton_beam_diameter", offsetof(Beam, skeleton_beam_diameter)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "int free_aeroengine", offsetof(Beam, free_aeroengine)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "float elevator", offsetof(Beam, elevator)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "float rudder", offsetof(Beam, rudder)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "float aileron", offsetof(Beam, aileron)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "int flap", offsetof(Beam, flap)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "int free_wing", offsetof(Beam, free_wing)); MYASSERT(result>=0);
-	result = engine->RegisterObjectProperty("BeamClass", "float fadeDist", offsetof(Beam, fadeDist)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "bool disableDrag", offsetof(Beam, disableDrag)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "int currentcamera", offsetof(Beam, currentcamera)); MYASSERT(result>=0);
 	result = engine->RegisterObjectProperty("BeamClass", "int freecinecamera", offsetof(Beam, freecinecamera)); MYASSERT(result>=0);
@@ -560,68 +558,6 @@ void ScriptEngine::msgCallback(const AngelScript::asSMessageInfo *msg)
 
 int ScriptEngine::framestep(Real dt)
 {
-
-#if 0
-	Beam **trucks = BeamFactory::getSingleton().getTrucks();
-	int free_truck = BeamFactory::getSingleton().getTruckCount();
-	// check for all truck wheels
-	if (coll && wheelEventFunctionPtr > 0)
-	{
-		for (int t = 0; t < free_truck; t++)
-		{
-			Beam *b = trucks[t];
-			if (!b || b->state >= SLEEPING) continue;
-
-			bool allwheels=true;
-			int handlerid=-1;
-			for (int w = 0; w < b->free_wheel; w++)
-			{
-				if (handlerid == -1 && b->wheels[w].lastEventHandler != -1)
-				{
-					handlerid = b->wheels[w].lastEventHandler;
-					continue;
-				}else if (b->wheels[w].lastEventHandler != handlerid)
-				{
-					allwheels=false;
-					break;
-				}
-			}
-
-			// if the truck is in there, call the functions
-			if (allwheels && handlerid >= 0 && handlerid < MAX_EVENTSOURCE)
-			{
-				eventsource_t *source = coll->getEvent(handlerid);
-				if (!engine) return 0;
-				if (!context) context = engine->CreateContext();
-				context->Prepare(wheelEventFunctionPtr);
-
-				// Set the function arguments
-				context->SetArgFloat (0, t);
-				context->SetArgObject(1, &std::string("wheels"));
-				context->SetArgObject(2, &std::string(source->instancename));
-				context->SetArgObject(3, &std::string(source->boxname));
-
-				//SLOG("Executing framestep()");
-				int r = context->Execute();
-				if ( r == AngelScript::asEXECUTION_FINISHED )
-				{
-				  // The return value is only valid if the execution finished successfully
-					AngelScript::asDWORD ret = context->GetReturnDWord();
-				}
-			}
-		}
-	}
-
-	// check if current truck is in an event box
-	Beam *truck = BeamFactory::getSingleton().getCurrentTruck();
-	if (truck)
-	{
-		eventsource_t *source = coll->isTruckInEventBox(truck);
-		if (source) envokeCallback(source->scripthandler, source, 0, 1);
-	}
-
-#endif // 0
-
 	// Check if we need to execute any strings
 	std::vector<String> tmpQueue;
 	stringExecutionQueue.pull(tmpQueue);

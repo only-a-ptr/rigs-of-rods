@@ -32,6 +32,7 @@
 #include "RoRPrerequisites.h"
 #include "RigEditor_ForwardDeclarations.h"
 
+#include <map>
 #include <pthread.h>
 
 #include <Compositor/OgreCompositorManager2.h>
@@ -105,8 +106,6 @@ protected:
 	void LoadTerrain(Ogre::String const & terrain_file);
 
 	void ShowSurveyMap(bool hide);
-
-	void initMatManager();
 
 	bool               m_no_rendering;
 	bool               m_exit_loop_requested;

@@ -240,7 +240,6 @@ void RigSpawner::InitializeRig()
 	m_rig->slideNodesConnectInstantly=false;
 
 	m_rig->default_beam_diameter=DEFAULT_BEAM_DIAMETER;
-	m_rig->skeleton_beam_diameter=BEAM_SKELETON_DIAMETER;
 	strcpy(m_rig->default_beam_material, "tracks/beam");
 	m_rig->default_plastic_coef=0;
 	m_rig->default_node_friction=NODE_FRICTION_COEF_DEFAULT;
@@ -256,7 +255,6 @@ void RigSpawner::InitializeRig()
 	memset(m_rig->texname, 0, 1023);
 	memset(m_rig->helpmat, 0, 255);
 	
-	m_rig->fadeDist=150.0;
 	m_rig->collrange=DEFAULT_COLLISION_RANGE;
 	m_rig->masscount=0;
 	m_rig->disable_smoke = !SETTINGS.getBooleanSetting("Particles", true);
@@ -291,14 +289,13 @@ void RigSpawner::InitializeRig()
 	m_rig->cablightNode = nullptr;
 	m_rig->deletion_sceneNodes.clear();
 	m_rig->deletion_Objects.clear();
-	m_rig->netCustomLightArray[0] = -1;
-	m_rig->netCustomLightArray[1] = -1;
-	m_rig->netCustomLightArray[2] = -1;
-	m_rig->netCustomLightArray[3] = -1;
+	m_rig->netCustomLightArray[0] = UINT_MAX;
+	m_rig->netCustomLightArray[1] = UINT_MAX;
+	m_rig->netCustomLightArray[2] = UINT_MAX;
+	m_rig->netCustomLightArray[3] = UINT_MAX;
 	m_rig->netCustomLightArray_counter = 0;
 	m_rig->materialFunctionMapper = nullptr;
 
-	m_rig->driversseatfound=false;
 	m_rig->ispolice=false;
 	m_rig->state=SLEEPING;
 	m_rig->heathaze=false;
@@ -414,34 +411,18 @@ void RigSpawner::InitializeRig()
 	m_rig->disableTruckTruckCollisions = BSETTING("DisableCollisions", false);
 	if (! m_rig->disableTruckTruckCollisions)
 	{
-		m_rig->interPointCD.emplace_back(new PointColDetector());
-
-		if (gEnv->threadPool != nullptr)
-		{
-			for (int i=1; i<gEnv->threadPool->getSize(); i++)
-			{
-				m_rig->interPointCD.emplace_back(new PointColDetector());
-			}
-		}
+		m_rig->interPointCD = new PointColDetector();
 	}
 	m_rig->disableTruckTruckSelfCollisions = BSETTING("DisableSelfCollisions", false);
 	if (! m_rig->disableTruckTruckSelfCollisions)
 	{
-		m_rig->intraPointCD.emplace_back(new PointColDetector());
-
-		if (gEnv->threadPool != nullptr)
-		{
-			for (int i=1; i<gEnv->threadPool->getSize(); i++)
-			{
-				m_rig->intraPointCD.emplace_back(new PointColDetector());
-			}
-		}
+		m_rig->intraPointCD = new PointColDetector();
 	}
 
 	m_rig->submesh_ground_model = gEnv->collisions->defaultgm;
 	m_rig->cparticle_enabled = BSETTING("Particles", true);
 	m_rig->dustp   = DustManager::getSingleton().getDustPool("dust");
-	m_rig->dripp   = DustManager::getSingleton().getDustPool("dripp");
+	m_rig->dripp   = DustManager::getSingleton().getDustPool("drip");
 	m_rig->sparksp = DustManager::getSingleton().getDustPool("sparks");
 	m_rig->clumpp  = DustManager::getSingleton().getDustPool("clump");
 	m_rig->splashp = DustManager::getSingleton().getDustPool("splash");
@@ -864,14 +845,6 @@ void RigSpawner::ProcessTurbojet(RigDef::Turbojet & def)
 	m_rig->free_aeroengine++;
 }
 
-void RigSpawner::ProcessSkeletonSettings(RigDef::SkeletonSettings & def)
-{
-	SPAWNER_PROFILE_SCOPED();
-
-    m_rig->fadeDist = def.visibility_range_meters;
-	m_rig->skeleton_beam_diameter = def.beam_thickness_meters;
-}
-
 void RigSpawner::ProcessScrewprop(RigDef::Screwprop & def)
 {
 	SPAWNER_PROFILE_SCOPED();
@@ -915,7 +888,7 @@ void RigSpawner::ProcessFusedrag(RigDef::Fusedrag & def)
 
 		// calculate fusedrag by truck size
 		factor = def.area_coefficient;
-		width  =  (m_fuse_z_max - m_fuse_z_min) * (m_fuse_y_max - m_fuse_y_min) * factor;			
+		width  =  (m_fuse_z_max - m_fuse_z_min) * (m_fuse_y_max - m_fuse_y_min) * factor;
 		
 		m_rig->fuseAirfoil = new Airfoil(fusefoil);
 		
@@ -923,7 +896,8 @@ void RigSpawner::ProcessFusedrag(RigDef::Fusedrag & def)
 		m_rig->fuseBack    = & GetNode(front_node_idx); // This equals v0.38 / v0.4.0.7, but it's probably a bug
 		m_rig->fuseWidth   = width;
 		AddMessage(Message::TYPE_INFO, "Fusedrag autocalculation size: "+TOSTRING(width)+" m^2");
-	} else
+	} 
+    else
 	{
 		// original fusedrag calculation
 
@@ -994,13 +968,13 @@ void RigSpawner::BuildAerialEngine(
 		{
 			if (prop.pale == 1)
 			{
-				prop.snode->scale(scale, scale, scale);
-				turbo_prop->addPale(prop.snode);
+				prop.scene_node->scale(scale, scale, scale);
+				turbo_prop->addPale(prop.scene_node);
 			}
 			if (prop.spinner == 1)
 			{
-				prop.snode->scale(scale, scale, scale);
-				turbo_prop->addSpinner(prop.snode);
+				prop.scene_node->scale(scale, scale, scale);
+				turbo_prop->addSpinner(prop.scene_node);
 			}
 		}
 	}
@@ -1227,26 +1201,25 @@ void RigSpawner::ProcessWing(RigDef::Wing & def)
 				left_green_prop.mirror=0;
 				left_green_prop.pale=0;
 				left_green_prop.spinner=0;
-				left_green_prop.snode=nullptr; //no visible prop
-				left_green_prop.bpos[0]=0.0;
-				left_green_prop.brate[0]=1.0;
+				left_green_prop.scene_node=nullptr; //no visible prop
+				left_green_prop.beacon_light_rotation_angle[0]=0.0;
+				left_green_prop.beacon_light_rotation_rate[0]=1.0;
 				left_green_prop.beacontype='L';
-				left_green_prop.light[0]=nullptr; //no light
+				left_green_prop.beacon_light[0]=nullptr; //no light
 				//the flare billboard
 				char propname[256];
 				sprintf(propname, "prop-%s-%i", m_rig->truckname, m_rig->free_prop);
-				left_green_prop.bbsnode[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-				left_green_prop.bbs[0]=gEnv->sceneManager->createBillboardSet(1);
-				left_green_prop.bbs[0]->setName(propname);
-				left_green_prop.bbs[0]->createBillboard(0,0,0);
-				if (left_green_prop.bbs[0])
+				left_green_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+				left_green_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(propname,1);
+				left_green_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
+				if (left_green_prop.beacon_flares_billboard_system[0])
 				{
-					left_green_prop.bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-					left_green_prop.bbs[0]->setMaterialName("tracks/greenflare");
-					left_green_prop.bbsnode[0]->attachObject(left_green_prop.bbs[0]);
+					left_green_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+					left_green_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/greenflare");
+					left_green_prop.beacon_flare_billboard_scene_node[0]->attachObject(left_green_prop.beacon_flares_billboard_system[0]);
 				}
-				left_green_prop.bbsnode[0]->setVisible(false);
-				left_green_prop.bbs[0]->setDefaultDimensions(0.5, 0.5);
+				left_green_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
+				left_green_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(0.5, 0.5);
 				left_green_prop.animFlags[0]=0;
 				left_green_prop.animMode[0]=0;
 				
@@ -1266,33 +1239,31 @@ void RigSpawner::ProcessWing(RigDef::Wing & def)
 				left_flash_prop.mirror=0;
 				left_flash_prop.pale=0;
 				left_flash_prop.spinner=0;
-				left_flash_prop.snode=nullptr; //no visible prop
-				left_flash_prop.bpos[0]=0.5; //alt
-				left_flash_prop.brate[0]=1.0;
+				left_flash_prop.scene_node=nullptr; //no visible prop
+				left_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
+				left_flash_prop.beacon_light_rotation_rate[0]=1.0;
 				left_flash_prop.beacontype='w';
 				//light
 				sprintf(propname, "prop-%s-%i", m_rig->truckname, m_rig->free_prop);
-				left_flash_prop.light[0]=gEnv->sceneManager->createLight();
-				left_flash_prop.light[0]->setName(propname);
-				left_flash_prop.light[0]->setType(Ogre::Light::LT_POINT);
-				left_flash_prop.light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-				left_flash_prop.light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-				left_flash_prop.light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-				left_flash_prop.light[0]->setCastShadows(false);
-				left_flash_prop.light[0]->setVisible(false);
+				left_flash_prop.beacon_light[0]=gEnv->sceneManager->createLight(propname);
+				left_flash_prop.beacon_light[0]->setType(Ogre::Light::LT_POINT);
+				left_flash_prop.beacon_light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+				left_flash_prop.beacon_light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+				left_flash_prop.beacon_light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
+				left_flash_prop.beacon_light[0]->setCastShadows(false);
+				left_flash_prop.beacon_light[0]->setVisible(false);
 				//the flare billboard
-				left_flash_prop.bbsnode[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-				left_flash_prop.bbs[0]=gEnv->sceneManager->createBillboardSet(1);
-				left_flash_prop.bbs[0]->setName(propname);
-				left_flash_prop.bbs[0]->createBillboard(0,0,0);
-				if (left_flash_prop.bbs[0])
+				left_flash_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+				left_flash_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(propname,1);
+				left_flash_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
+				if (left_flash_prop.beacon_flares_billboard_system[0])
 				{
-					left_flash_prop.bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-					left_flash_prop.bbs[0]->setMaterialName("tracks/flare");
-					left_flash_prop.bbsnode[0]->attachObject(left_flash_prop.bbs[0]);
+					left_flash_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+					left_flash_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/flare");
+					left_flash_prop.beacon_flare_billboard_scene_node[0]->attachObject(left_flash_prop.beacon_flares_billboard_system[0]);
 				}
-				left_flash_prop.bbsnode[0]->setVisible(false);
-				left_flash_prop.bbs[0]->setDefaultDimensions(1.0, 1.0);
+				left_flash_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
+				left_flash_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(1.0, 1.0);
 				
 				//Right red
 				m_airplane_right_light=previous_wing.fa->nfrd;
@@ -1312,26 +1283,25 @@ void RigSpawner::ProcessWing(RigDef::Wing & def)
 				right_red_prop.mirror=0;
 				right_red_prop.pale=0;
 				right_red_prop.spinner=0;
-				right_red_prop.snode=nullptr; //no visible prop
-				right_red_prop.bpos[0]=0.0;
-				right_red_prop.brate[0]=1.0;
+				right_red_prop.scene_node=nullptr; //no visible prop
+				right_red_prop.beacon_light_rotation_angle[0]=0.0;
+				right_red_prop.beacon_light_rotation_rate[0]=1.0;
 				right_red_prop.beacontype='R';
-				right_red_prop.light[0]=nullptr; /* No light */
+				right_red_prop.beacon_light[0]=nullptr; /* No light */
 /*
 				//the flare billboard
 				sprintf(propname, "prop-%s-%i", m_rig->truckname, m_rig->free_prop);
-				right_red_prop.bbsnode[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-				right_red_prop.bbs[0]=gEnv->sceneManager->createBillboardSet(1);
-				right_red_prop.bbs[0]->setName(propname);
-				right_red_prop.bbs[0]->createBillboard(0,0,0);
-				if (right_red_prop.bbs[0])
+				right_red_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+				right_red_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(propname,1);
+				right_red_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
+				if (right_red_prop.beacon_flares_billboard_system[0])
 				{
-					right_red_prop.bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-					right_red_prop.bbs[0]->setMaterialName("tracks/redflare");
-					right_red_prop.bbsnode[0]->attachObject(right_red_prop.bbs[0]);
+					right_red_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+					right_red_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/redflare");
+					right_red_prop.beacon_flare_billboard_scene_node[0]->attachObject(right_red_prop.beacon_flares_billboard_system[0]);
 				}
-				right_red_prop.bbsnode[0]->setVisible(false);
-				right_red_prop.bbs[0]->setDefaultDimensions(0.5, 0.5);
+				right_red_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
+				right_red_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(0.5, 0.5);
 				right_red_prop.animFlags[0]=0;
 				right_red_prop.animMode[0]=0;
 				
@@ -1351,33 +1321,31 @@ void RigSpawner::ProcessWing(RigDef::Wing & def)
 				right_flash_prop.mirror=0;
 				right_flash_prop.pale=0;
 				right_flash_prop.spinner=0;
-				right_flash_prop.snode=nullptr; //no visible prop
-				right_flash_prop.bpos[0]=0.5; //alt
-				right_flash_prop.brate[0]=1.0;
+				right_flash_prop.scene_node=nullptr; //no visible prop
+				right_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
+				right_flash_prop.beacon_light_rotation_rate[0]=1.0;
 				right_flash_prop.beacontype='w';
 				//light
 				sprintf(propname, "prop-%s-%i", m_rig->truckname, m_rig->free_prop);
-				right_flash_prop.light[0]=gEnv->sceneManager->createLight();
-				right_flash_prop.light[0]->setName(propname);
-				right_flash_prop.light[0]->setType(Ogre::Light::LT_POINT);
-				right_flash_prop.light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-				right_flash_prop.light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-				right_flash_prop.light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-				right_flash_prop.light[0]->setCastShadows(false);
-				right_flash_prop.light[0]->setVisible(false);
+				right_flash_prop.beacon_light[0]=gEnv->sceneManager->createLight(propname);
+				right_flash_prop.beacon_light[0]->setType(Ogre::Light::LT_POINT);
+				right_flash_prop.beacon_light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+				right_flash_prop.beacon_light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+				right_flash_prop.beacon_light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
+				right_flash_prop.beacon_light[0]->setCastShadows(false);
+				right_flash_prop.beacon_light[0]->setVisible(false);
 				//the flare billboard
-				right_flash_prop.bbsnode[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-				right_flash_prop.bbs[0]=gEnv->sceneManager->createBillboardSet(1);
-				right_flash_prop.bbs[0]->setName(propname);
-				right_flash_prop.bbs[0]->createBillboard(0,0,0);
-				if (right_flash_prop.bbs[0] != nullptr)
+				right_flash_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+				right_flash_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(propname,1);
+				right_flash_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
+				if (right_flash_prop.beacon_flares_billboard_system[0] != nullptr)
 				{
-					right_flash_prop.bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-					right_flash_prop.bbs[0]->setMaterialName("tracks/flare");
-					right_flash_prop.bbsnode[0]->attachObject(right_flash_prop.bbs[0]);
+					right_flash_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+					right_flash_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/flare");
+					right_flash_prop.beacon_flare_billboard_scene_node[0]->attachObject(right_flash_prop.beacon_flares_billboard_system[0]);
 				}
-				right_flash_prop.bbsnode[0]->setVisible(false);
-				right_flash_prop.bbs[0]->setDefaultDimensions(1.0, 1.0);
+				right_flash_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
+				right_flash_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(1.0, 1.0);
 				right_flash_prop.animFlags[0]=0;
 				right_flash_prop.animMode[0]=0;
 				
@@ -1402,7 +1370,7 @@ void RigSpawner::ProcessWing(RigDef::Wing & def)
 				GetNode(wing.fa->nbrd).AbsPosition
 			);
 		}
-	}				
+	}
 }
 
 float RigSpawner::ComputeWingArea(Ogre::Vector3 const & ref, Ogre::Vector3 const & x, Ogre::Vector3 const & y, Ogre::Vector3 const & aref)
@@ -1610,8 +1578,6 @@ void RigSpawner::ProcessExhaust(RigDef::Exhaust & def)
 	
 	ref_node.isHot=true;
 	dir_node.isHot=true;
-	ref_node.iIsSkin=true;
-	dir_node.iIsSkin=true;
 	m_rig->exhausts.push_back(exhaust);
 }
 
@@ -2014,8 +1980,8 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 
 	/* CREATE THE PROP */
 
-	prop.snode = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-	prop.mo = new MeshObject(def.mesh_name, "", prop.snode, m_rig->usedSkin, m_enable_background_loading);
+	prop.scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+	prop.mo = new MeshObject(def.mesh_name, "", prop.scene_node, m_rig->usedSkin, m_enable_background_loading);
 	prop.mo->setSimpleMaterialColour(Ogre::ColourValue(1, 1, 0));
 	prop.mo->setMaterialFunctionMapper(m_rig->materialFunctionMapper, m_rig->materialReplacer);
 	prop.mo->setCastShadows(true); // Orig code {{ prop.mo->setCastShadows(shadowmode != 0); }}, shadowmode has default value 1 and changes with undocumented directive 'set_shadows'
@@ -2025,7 +1991,7 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 	{
 		prop.spinner = 1;
 		prop.mo->setCastShadows(false);
-		prop.snode->setVisible(false);
+		prop.scene_node->setVisible(false);
 	}
 	else if(def.special == RigDef::Prop::SPECIAL_PALE)
 	{
@@ -2033,122 +1999,140 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 	}
 	else if(def.special == RigDef::Prop::SPECIAL_DRIVER_SEAT)
 	{
-		m_rig->driversseatfound = true;
-		m_rig->driverSeat = & prop;
-		prop.mo->setMaterialName("driversseat");
+		//driver seat, used to position the driver and make the seat translucent at times
+		if (m_rig->driverSeat == nullptr)
+		{
+			m_rig->driverSeat = & prop;
+			prop.mo->setMaterialName("driversseat");
+		}
+		else
+		{
+			this->AddMessage(Message::TYPE_INFO, "Found more than one 'seat[2]' special props. Only the first one will be the driver's seat.");
+		}
 	}
-	else if(def.special == RigDef::Prop::SPECIAL_SPINPROP)
+	else if(def.special == RigDef::Prop::SPECIAL_DRIVER_SEAT_2)
 	{
-		m_rig->driversseatfound = true;
-		m_rig->driverSeat = & prop;
+		// Same as DRIVER_SEAT, except it doesn't force the "driversseat" material
+		if (m_rig->driverSeat == nullptr)
+		{
+			m_rig->driverSeat = & prop;
+		}
+		else
+		{
+			this->AddMessage(Message::TYPE_INFO, "Found more than one 'seat[2]' special props. Only the first one will be the driver's seat.");
+		}
 	}
 	else if (m_rig->flaresMode > 0)
 	{
 		if(def.special == RigDef::Prop::SPECIAL_BEACON)
 		{
 			prop.beacontype = 'b';
-			prop.bpos[0] = 2.0 * 3.14 * (std::rand() / RAND_MAX);
-			prop.brate[0] = 4.0 * 3.14 + (std::rand() / RAND_MAX) - 0.5;
+			prop.beacon_light_rotation_angle[0] = 2.0 * 3.14 * (std::rand() / RAND_MAX);
+			prop.beacon_light_rotation_rate[0] = 4.0 * 3.14 + (std::rand() / RAND_MAX) - 0.5;
 			/* the light */
-			prop.light[0] = gEnv->sceneManager->createLight();
-			prop.light[0]->setType(Ogre::Light::LT_SPOTLIGHT);
-			prop.light[0]->setDiffuseColour(def.special_prop_beacon.color);
-			prop.light[0]->setSpecularColour(def.special_prop_beacon.color);
-			prop.light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-			prop.light[0]->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
-			prop.light[0]->setCastShadows(false);
-			prop.light[0]->setVisible(false);
+			auto beacon_light = gEnv->sceneManager->createLight();
+			beacon_light->setType(Ogre::Light::LT_SPOTLIGHT);
+			beacon_light->setDiffuseColour(def.special_prop_beacon.color);
+			beacon_light->setSpecularColour(def.special_prop_beacon.color);
+			beacon_light->setAttenuation(50.0, 1.0, 0.3, 0.0);
+			beacon_light->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
+			beacon_light->setCastShadows(false);
+			beacon_light->setVisible(false);
 			/* the flare billboard */
-			prop.bbsnode[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-			prop.bbs[0] = gEnv->sceneManager->createBillboardSet(1); //(propname,1);
-			prop.bbs[0]->createBillboard(0,0,0);
-			if (prop.bbs[0])
+
+			auto flare_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+			auto flare_billboard_sys = gEnv->sceneManager->createBillboardSet(1); //(propname,1);
+			flare_scene_node->attachObject(flare_billboard_sys);
+			flare_billboard_sys->createBillboard(0,0,0);
+			if (flare_billboard_sys)
 			{
-				prop.bbs[0]->setMaterialName(def.special_prop_beacon.flare_material_name);
-				prop.bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+				flare_billboard_sys->setMaterialName(def.special_prop_beacon.flare_material_name);
+				flare_billboard_sys->setVisibilityFlags(DEPTHMAP_DISABLED);
 			}
-			prop.bbs[0]->setVisible(false);
-			prop.bbsnode[0]->setVisible(false);
+			flare_scene_node->setVisible(false);
+			flare_billboard_sys->setVisible(false);
+
+			// Complete
+			prop.beacon_flare_billboard_scene_node[0] = flare_scene_node;
+			prop.beacon_flares_billboard_system[0] = flare_billboard_sys;
+			prop.beacon_light[0] = beacon_light;
 		}
 		else if(def.special == RigDef::Prop::SPECIAL_REDBEACON)
 		{
-			prop.brate[0] = 1.0;
+			prop.beacon_light_rotation_angle[0] = 0.f;
+			prop.beacon_light_rotation_rate[0] = 1.0;
 			prop.beacontype = 'r';
 			//the light
-			prop.light[0]=gEnv->sceneManager->createLight();//propname);
-			prop.light[0]->setType(Ogre::Light::LT_POINT);
-			prop.light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
-			prop.light[0]->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
-			prop.light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-			prop.light[0]->setCastShadows(false);
-			prop.light[0]->setVisible(false);
+			auto beacon_light=gEnv->sceneManager->createLight();//propname);
+			beacon_light->setType(Ogre::Light::LT_POINT);
+			beacon_light->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+			beacon_light->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+			beacon_light->setAttenuation(50.0, 1.0, 0.3, 0.0);
+			beacon_light->setCastShadows(false);
+			beacon_light->setVisible(false);
 			//the flare billboard
-			prop.bbsnode[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-			prop.bbs[0]=gEnv->sceneManager->createBillboardSet(1); //propname,1);
-			prop.bbs[0]->createBillboard(0,0,0);
-			if (prop.bbs[0])
-			{
-				prop.bbs[0]->setMaterialName("tracks/redbeaconflare");
-				prop.bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-			}
-			if (prop.bbs[0])
-			{
-				prop.bbsnode[0]->attachObject(prop.bbs[0]);
-			}
-			prop.bbsnode[0]->setVisible(false);
-			prop.bbs[0]->setDefaultDimensions(1.0, 1.0);
+			auto flare_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+			auto flare_billboard_sys =gEnv->sceneManager->createBillboardSet(1); //propname,1);
+			flare_billboard_sys->createBillboard(0,0,0);
+			flare_billboard_sys->setMaterialName("tracks/redbeaconflare");
+			flare_billboard_sys->setVisibilityFlags(DEPTHMAP_DISABLED);
+			flare_scene_node->attachObject(flare_billboard_sys);
+			flare_scene_node->setVisible(false);
+			flare_billboard_sys->setDefaultDimensions(1.0, 1.0);
+
+			// Finalize
+			prop.beacon_light[0] = beacon_light;
+			prop.beacon_flare_billboard_scene_node[0] = flare_scene_node;
+			prop.beacon_flares_billboard_system[0] = flare_billboard_sys;
+			
 		}
 		else if(def.special == RigDef::Prop::SPECIAL_LIGHTBAR)
 		{
-			int k;
 			m_rig->ispolice = true;
 			prop.beacontype='p';
-			for (k=0; k<4; k++)
+			for (int k=0; k<4; k++)
 			{
-				prop.bpos[k]=2.0*3.14*(std::rand()/RAND_MAX);
-				prop.brate[k]=4.0*3.14+(std::rand()/RAND_MAX)-0.5;
-				prop.bbs[k]=0;
+				// Randomize rotation speed and timing, 
+				// IMPORTANT: Do not remove the (Ogre::Real) casts, they affect result!
+				prop.beacon_light_rotation_angle[k]=2.0*3.14*((Ogre::Real)std::rand()/(Ogre::Real)RAND_MAX);
+				prop.beacon_light_rotation_rate[k]=4.0*3.14+((Ogre::Real)std::rand()/(Ogre::Real)RAND_MAX)-0.5;
+				prop.beacon_flares_billboard_system[k]=nullptr;
 				//the light
-				//char rpname[256];
-				//sprintf(rpname,"%s-%i", propname, k);
-				prop.light[k]=gEnv->sceneManager->createLight(); //rpname);
-				prop.light[k]->setType(Ogre::Light::LT_SPOTLIGHT);
+				prop.beacon_light[k]=gEnv->sceneManager->createLight();
+				prop.beacon_light[k]->setType(Ogre::Light::LT_SPOTLIGHT);
 				if (k>1)
 				{
-					prop.light[k]->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
-					prop.light[k]->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+					prop.beacon_light[k]->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+					prop.beacon_light[k]->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
 				}
 				else
 				{
-					prop.light[k]->setDiffuseColour( Ogre::ColourValue(0.0, 0.5, 1.0));
-					prop.light[k]->setSpecularColour( Ogre::ColourValue(0.0, 0.5, 1.0));
+					prop.beacon_light[k]->setDiffuseColour( Ogre::ColourValue(0.0, 0.5, 1.0));
+					prop.beacon_light[k]->setSpecularColour( Ogre::ColourValue(0.0, 0.5, 1.0));
 				}
-				prop.light[k]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-				prop.light[k]->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
-				prop.light[k]->setCastShadows(false);
-				prop.light[k]->setVisible(false);
+				prop.beacon_light[k]->setAttenuation(50.0, 1.0, 0.3, 0.0);
+				prop.beacon_light[k]->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
+				prop.beacon_light[k]->setCastShadows(false);
+				prop.beacon_light[k]->setVisible(false);
 				//the flare billboard
-				prop.bbsnode[k] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-				prop.bbs[k]=gEnv->sceneManager->createBillboardSet(1); //rpname,1);
-				prop.bbs[k]->createBillboard(0,0,0);
-				if (prop.bbs[k])
+				prop.beacon_flare_billboard_scene_node[k] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+				prop.beacon_flares_billboard_system[k]=gEnv->sceneManager->createBillboardSet(1);
+				prop.beacon_flares_billboard_system[k]->createBillboard(0,0,0);
+				if (prop.beacon_flares_billboard_system[k])
 				{
 					if (k>1)
 					{
-						prop.bbs[k]->setMaterialName("tracks/brightredflare");
+						prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightredflare");
 					}
 					else
 					{
-						prop.bbs[k]->setMaterialName("tracks/brightblueflare");
+						prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightblueflare");
 					}
 
-					if (prop.bbs[k])
-					{
-						prop.bbs[k]->setVisibilityFlags(DEPTHMAP_DISABLED);
-						prop.bbsnode[k]->attachObject(prop.bbs[k]);
-					}
+					prop.beacon_flares_billboard_system[k]->setVisibilityFlags(DEPTHMAP_DISABLED);
+					prop.beacon_flare_billboard_scene_node[k]->attachObject(prop.beacon_flares_billboard_system[k]);
 				}
-				prop.bbsnode[k]->setVisible(false);
+				prop.beacon_flare_billboard_scene_node[k]->setVisible(false);
 			}
 		}
 	}	
@@ -2246,11 +2230,11 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 			BITMASK_SET_1(prop.animFlags[anim_index], ANIM_FLAG_SHIFTER);
 			prop.animOpt3[anim_index] = 2.0f;
 		}
-		if (BITMASK_IS_1(anim_itor->source, RigDef::Animation::SOURCE_SHIFTERLIN)) {
+		if (BITMASK_IS_1(anim_itor->source, RigDef::Animation::SOURCE_SEQUENTIAL_SHIFT)) {
 			BITMASK_SET_1(prop.animFlags[anim_index], ANIM_FLAG_SHIFTER);
 			prop.animOpt3[anim_index] = 3.0f;
 		}
-		if (BITMASK_IS_1(anim_itor->source, RigDef::Animation::SOURCE_SEQUENTIAL_SHIFT)) {
+		if (BITMASK_IS_1(anim_itor->source, RigDef::Animation::SOURCE_SHIFTERLIN)) {
 			BITMASK_SET_1(prop.animFlags[anim_index], ANIM_FLAG_SHIFTER);
 			prop.animOpt3[anim_index] = 4.0f;
 		}
@@ -3103,8 +3087,6 @@ void RigSpawner::ProcessRopable(RigDef::Ropable & def)
 	ropable.used = 0; // Hardcoded in BTS_ROPABLES
 	ropable.multilock = def.multilock;
 	m_rig->ropables.push_back(ropable);
-
-	ropable.node->iIsSkin = true;
 }
 
 void RigSpawner::ProcessTie(RigDef::Tie & def)
@@ -3176,9 +3158,6 @@ void RigSpawner::ProcessRope(RigDef::Rope & def)
 	rope.lockedto = & m_rig->nodes[0]; // Orig: hardcoded in BTS_ROPES
 	rope.group = 0; // Orig: hardcoded in BTS_ROPES. TODO: To be used.
 	m_rig->ropes.push_back(rope);
-
-	root_node.iIsSkin = true;
-	end_node.iIsSkin = true;
 }
 
 void RigSpawner::ProcessRailGroup(RigDef::RailGroup & def)
@@ -3669,7 +3648,6 @@ void RigSpawner::ProcessContacter(RigDef::Node::Ref & node_ref)
 
     unsigned int node_index = GetNodeIndexOrThrow(node_ref);
 	m_rig->contacters[m_rig->free_contacter].nodeid = node_index;
-	GetNode(node_index).iIsSkin = true;
 	m_rig->free_contacter++;
 };
 
@@ -3759,8 +3737,8 @@ void RigSpawner::ProcessRotator2(RigDef::Rotator2 & def)
 }
 
 void RigSpawner::_ProcessCommandKeyInertia(
-	RigDef::OptionalInertia & inertia, 
-	RigDef::DefaultInertia & inertia_defaults, 
+	RigDef::Inertia & inertia,
+	RigDef::Inertia & inertia_defaults,
 	int contract_key, 
 	int extend_key
 )
@@ -3798,7 +3776,7 @@ void RigSpawner::_ProcessCommandKeyInertia(
 				stop_function
 			);
 		}
-		else if (inertia._start_delay_factor_set || inertia._stop_delay_factor_set)
+		else if (inertia_defaults._start_delay_factor_set || inertia_defaults._stop_delay_factor_set)
 		{
 			m_rig->cmdInertia->setCmdKeyDelay(
 				contract_key,
@@ -4088,14 +4066,12 @@ beam_t & RigSpawner::AddBeam(
 	/* Breaking threshold (strength) */
 	float strength = beam_defaults->breaking_threshold_constant;
 	beam.strength = strength;
-	beam.iStrength = strength;
 
 	/* Deformation */
 	SetBeamDeformationThreshold(beam, beam_defaults);
 
 	float plastic_coef = beam_defaults->plastic_deformation_coefficient;
 	beam.plastic_coef = plastic_coef;
-	beam.default_plastic_coef = plastic_coef;
 
 	return beam;
 }
@@ -4105,7 +4081,6 @@ void RigSpawner::SetBeamStrength(beam_t & beam, float strength)
 	SPAWNER_PROFILE_SCOPED();
 
     beam.strength = strength;
-	beam.iStrength = strength;
 }
 
 void RigSpawner::ProcessHydro(RigDef::Hydro & def)
@@ -4224,7 +4199,6 @@ void RigSpawner::ProcessHydro(RigDef::Hydro & def)
 	beam.hydroFlags           = hydro_flags;
 	beam.hydroRatio           = def.lenghtening_factor;
 	beam.plastic_coef         = def.beam_defaults->plastic_deformation_coefficient;
-	beam.default_plastic_coef = def.beam_defaults->plastic_deformation_coefficient;
 	beam.diameter             = DEFAULT_BEAM_DIAMETER;
 
 	CreateBeamVisuals(beam, beam_index, def.beam_defaults, (hydro_type == BEAM_INVISIBLE_HYDRO));
@@ -4301,7 +4275,6 @@ void RigSpawner::ProcessShock2(RigDef::Shock2 & def)
 	beam.shortbound           = short_bound;
 	beam.longbound            = long_bound;
 	beam.plastic_coef         = def.beam_defaults->plastic_deformation_coefficient;
-	beam.default_plastic_coef = def.beam_defaults->plastic_deformation_coefficient;
 	beam.diameter             = DEFAULT_BEAM_DIAMETER;
 
 	/* Length + pre-compression */
@@ -4411,8 +4384,11 @@ void RigSpawner::FetchAxisNodes(
     axis_node_1 = GetNodePointer(axis_node_1_id);
 	axis_node_2 = GetNodePointer(axis_node_2_id);
 
+	Ogre::Vector3 pos_1 = m_spawn_rotation.Inverse() * (axis_node_1->AbsPosition - m_spawn_position);
+	Ogre::Vector3 pos_2 = m_spawn_rotation.Inverse() * (axis_node_2->AbsPosition - m_spawn_position);
+
 	/* Enforce the "second node must have a larger Z coordinate than the first" constraint */
-	if (axis_node_1->RelPosition.z > axis_node_2->RelPosition.z)
+	if (pos_1.z > pos_2.z)
 	{
 		node_t *swap = axis_node_1;
 		axis_node_1 = axis_node_2;
@@ -4516,8 +4492,6 @@ void RigSpawner::ProcessFlexBodyWheel(RigDef::FlexBodyWheel & def)
 
 		contacter_t & outer_contacter = m_rig->contacters[m_rig->free_contacter];
 		outer_contacter.nodeid        = outer_node.pos; /* Node index */
-		outer_contacter.contacted     = 0;
-		outer_contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Inner ring */
@@ -4537,8 +4511,6 @@ void RigSpawner::ProcessFlexBodyWheel(RigDef::FlexBodyWheel & def)
 
 		contacter_t & inner_contacter = m_rig->contacters[m_rig->free_contacter];
 		inner_contacter.nodeid        = inner_node.pos; /* Node index */
-		inner_contacter.contacted     = 0;
-		inner_contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Wheel object */
@@ -4738,8 +4710,11 @@ void RigSpawner::ProcessMeshWheel(RigDef::MeshWheel & meshwheel_def)
 	node_t *axis_node_1 = GetNodePointer(meshwheel_def.nodes[0]);
 	node_t *axis_node_2 = GetNodePointer(meshwheel_def.nodes[1]);
 
+	Ogre::Vector3 pos_1 = m_spawn_rotation.Inverse() * (axis_node_1->AbsPosition - m_spawn_position);
+	Ogre::Vector3 pos_2 = m_spawn_rotation.Inverse() * (axis_node_2->AbsPosition - m_spawn_position);
+
 	/* Enforce the "second node must have a larger Z coordinate than the first" constraint */
-	if (axis_node_1->RelPosition.z > axis_node_2->RelPosition.z)
+	if (pos_1.z > pos_2.z)
 	{
 		node_t *swap = axis_node_1;
 		axis_node_1 = axis_node_2;
@@ -4800,8 +4775,11 @@ void RigSpawner::ProcessMeshWheel2(RigDef::MeshWheel2 & def)
         return;
     }
 
+	Ogre::Vector3 pos_1 = m_spawn_rotation.Inverse() * (axis_node_1->AbsPosition - m_spawn_position);
+	Ogre::Vector3 pos_2 = m_spawn_rotation.Inverse() * (axis_node_2->AbsPosition - m_spawn_position);
+
 	/* Enforce the "second node must have a larger Z coordinate than the first" constraint */
-	if (axis_node_1->RelPosition.z > axis_node_2->RelPosition.z)
+	if (pos_1.z > pos_2.z)
 	{
 		node_t *swap = axis_node_1;
 		axis_node_1 = axis_node_2;
@@ -5010,8 +4988,6 @@ unsigned int RigSpawner::BuildWheelObjectAndNodes(
 
 		contacter_t & outer_contacter = m_rig->contacters[m_rig->free_contacter];
 		outer_contacter.nodeid        = outer_node.pos; /* Node index */
-		outer_contacter.contacted     = 0;
-		outer_contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Inner ring */
@@ -5028,8 +5004,6 @@ unsigned int RigSpawner::BuildWheelObjectAndNodes(
 
 		contacter_t & contacter = m_rig->contacters[m_rig->free_contacter];
 		contacter.nodeid        = inner_node.pos; /* Node index */
-		contacter.contacted     = 0;
-		contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Wheel object */
@@ -5207,8 +5181,11 @@ unsigned int RigSpawner::AddWheel(RigDef::Wheel & wheel_def)
 		return -1;
 	}
 
+	Ogre::Vector3 pos_1 = m_spawn_rotation.Inverse() * (axis_node_1->AbsPosition - m_spawn_position);
+	Ogre::Vector3 pos_2 = m_spawn_rotation.Inverse() * (axis_node_2->AbsPosition - m_spawn_position);
+
 	/* Enforce the "second node must have a larger Z coordinate than the first" constraint */
-	if (axis_node_1->RelPosition.z > axis_node_2->RelPosition.z)
+	if (pos_1.z > pos_2.z)
 	{
 		node_t *swap = axis_node_1;
 		axis_node_1 = axis_node_2;
@@ -5295,8 +5272,6 @@ unsigned int RigSpawner::AddWheel(RigDef::Wheel & wheel_def)
 
 		contacter_t & contacter = m_rig->contacters[m_rig->free_contacter];
 		contacter.nodeid        = outer_node.pos; /* Node index */
-		contacter.contacted     = 0;
-		contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Inner ring */
@@ -5312,8 +5287,6 @@ unsigned int RigSpawner::AddWheel(RigDef::Wheel & wheel_def)
 
 		contacter_t & contacter = m_rig->contacters[m_rig->free_contacter];
 		contacter.nodeid        = inner_node.pos; /* Node index */
-		contacter.contacted     = 0;
-		contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Wheel object */
@@ -5406,8 +5379,11 @@ unsigned int RigSpawner::AddWheel2(RigDef::Wheel2 & wheel_2_def)
 		return -1;
 	}
 
+	Ogre::Vector3 pos_1 = m_spawn_rotation.Inverse() * (axis_node_1->AbsPosition - m_spawn_position);
+	Ogre::Vector3 pos_2 = m_spawn_rotation.Inverse() * (axis_node_2->AbsPosition - m_spawn_position);
+
 	/* Enforce the "second node must have a larger Z coordinate than the first" constraint */
-	if (axis_node_1->RelPosition.z > axis_node_2->RelPosition.z)
+	if (pos_1.z > pos_2.z)
 	{
 		node_t *swap = axis_node_1;
 		axis_node_1 = axis_node_2;
@@ -5487,8 +5463,6 @@ unsigned int RigSpawner::AddWheel2(RigDef::Wheel2 & wheel_2_def)
 
 		contacter_t & contacter = m_rig->contacters[m_rig->free_contacter];
 		contacter.nodeid        = outer_node.pos; /* Node index */
-		contacter.contacted     = 0;
-		contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Inner ring */
@@ -5506,8 +5480,6 @@ unsigned int RigSpawner::AddWheel2(RigDef::Wheel2 & wheel_2_def)
 
 		contacter_t & inner_contacter = m_rig->contacters[m_rig->free_contacter];
 		inner_contacter.nodeid        = inner_node.pos; /* Node index */
-		inner_contacter.contacted     = 0;
-		inner_contacter.opticontact   = 0;
 		m_rig->free_contacter++;
 
 		/* Wheel object */
@@ -5779,6 +5751,7 @@ unsigned int RigSpawner::_SectionWheels2AddBeam(RigDef::Wheel2 & wheel_2_def, no
 	InitBeam(beam, node_1, node_2);
 	beam.type = BEAM_INVISIBLE;
 	SetBeamStrength(beam, wheel_2_def.beam_defaults->breaking_threshold_constant);
+	SetBeamDeformationThreshold(beam, wheel_2_def.beam_defaults);
 	return index;
 }
 
@@ -6269,14 +6242,12 @@ void RigSpawner::ProcessBeam(RigDef::Beam & def)
 	beam.k = def.defaults->GetScaledSpringiness();
 	beam.d = def.defaults->GetScaledDamping();
 	beam.diameter = def.defaults->visual_beam_diameter;
-	beam.minendmass = 1.f; // Orig = hardcoded in add_beam()
 	beam.bounded = NOSHOCK; // Orig: if (shortbound) ... hardcoded in BTS_BEAMS
 
 	/* Deformation */
 	SetBeamDeformationThreshold(beam, def.defaults);
 			
 	beam.plastic_coef         = def.defaults->plastic_deformation_coefficient;
-	beam.default_plastic_coef = def.defaults->plastic_deformation_coefficient;
 
 	/* Calculate length */
 	// orig = precompression hardcoded to 1
@@ -6288,7 +6259,6 @@ void RigSpawner::ProcessBeam(RigDef::Beam & def)
 	/* Strength */
 	float beam_strength = def.defaults->GetScaledBreakingThreshold();
 	beam.strength  = beam_strength;
-	beam.iStrength = beam_strength;
 
 	/* Options */
 	if (BITMASK_IS_1(def.options, RigDef::Beam::OPTION_i_INVISIBLE))
@@ -6469,7 +6439,6 @@ void RigSpawner::SetBeamDeformationThreshold(beam_t & beam, boost::shared_ptr<Ri
 
 	float deformation_threshold = default_deform * beam_defaults->scale.deformation_threshold_constant;
 
-	beam.default_deform     = deformation_threshold;
 	beam.minmaxposnegstress = deformation_threshold;
 	beam.maxposstress       = deformation_threshold;
 	beam.maxnegstress       = -(deformation_threshold);
@@ -6528,9 +6497,6 @@ void RigSpawner::InitBeam(beam_t & beam, node_t *node_1, node_t *node_2)
 
 	/* Length */
 	CalculateBeamLength(beam);
-
-	/* Misc */
-	beam.minendmass = 1.f; // Orig = hardcoded in add_beam()
 }
 
 void RigSpawner::AddMessage(RigSpawner::Message::Type type,	Ogre::String const & text)
@@ -6712,10 +6678,6 @@ void RigSpawner::ProcessNode(RigDef::Node & def)
 	node.RelPosition = node_position - m_rig->origin;
 	node.smoothpos   = node_position;
 	node.iPosition   = node_position;
-	if (node.pos != 0)
-	{
-		node.iDistance = (m_rig->nodes[0].AbsPosition - node_position).squaredLength();
-	}
 		
 	node.wetstate = DRY; // orig = hardcoded (init_node)
 	node.wheelid = -1; // Hardcoded in orig (bts_nodes, call to init_node())
@@ -6723,7 +6685,6 @@ void RigSpawner::ProcessNode(RigDef::Node & def)
 	node.volume_coef = def.node_defaults->volume;
 	node.surface_coef = def.node_defaults->surface;
 	node.collisionBoundingBoxID = -1; // orig = hardcoded (init_node)
-	node.iIsSkin = true; // orig = hardcoded (bts_nodes)
 
 	/* Mass */
 	if (def.node_defaults->load_weight >= 0.f) // The >= operator is in orig.
@@ -6831,6 +6792,12 @@ void RigSpawner::ProcessNode(RigDef::Node & def)
 	m_rig->smokeRef        = BITMASK_IS_1(options, RigDef::Node::OPTION_y_EXHAUST_DIRECTION) ? node.pos : 0;
 	m_rig->smokeId         = BITMASK_IS_1(options, RigDef::Node::OPTION_x_EXHAUST_POINT) ? node.pos : 0;
 
+    // Update "fusedrag" autocalc y & z span
+    if (def.position.z < m_fuse_z_min) { m_fuse_z_min = def.position.z; }
+    if (def.position.z > m_fuse_z_max) { m_fuse_z_max = def.position.z; }
+    if (def.position.y < m_fuse_y_min) { m_fuse_y_min = def.position.y; }
+    if (def.position.y > m_fuse_y_max) { m_fuse_y_max = def.position.y; }
+
 #ifdef DEBUG_TRUCKPARSER2013
 	// DEBUG
 	std::stringstream msg;
@@ -6899,9 +6866,7 @@ void RigSpawner::AddExhaust(
 	exhaust.smokeNode->setPosition(m_rig->nodes[exhaust.emitterNode].AbsPosition);
 
 	m_rig->nodes[emitter_node_idx].isHot = true;
-	m_rig->nodes[direction_node_idx].iIsSkin = true;
 	m_rig->nodes[emitter_node_idx].isHot = true;
-	m_rig->nodes[direction_node_idx].iIsSkin = true;
 
 	m_rig->exhausts.push_back(exhaust);
 }
@@ -6989,10 +6954,6 @@ void RigSpawner::InitNode(node_t & node, Ogre::Vector3 const & position)
 	node.RelPosition = position - m_rig->origin;
 	node.smoothpos = position;
 	node.iPosition = position;
-	if (node.pos != 0)
-	{
-		node.iDistance = (m_rig->nodes[0].AbsPosition - position).squaredLength();
-	}
 
 	/* Misc. */
 	node.collisionBoundingBoxID = -1; // orig = hardcoded (init_node)

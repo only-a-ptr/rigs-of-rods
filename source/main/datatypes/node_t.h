@@ -18,16 +18,13 @@ struct node_t
 	Ogre::Vector3 AbsPosition; //!< absolute position in the world (shaky)
 	Ogre::Vector3 Velocity;
 	Ogre::Vector3 Forces;
-	Ogre::Real inverted_mass;
 	Ogre::Real mass;
-	Ogre::Vector3 lastNormal;
 	int locked;
 	int iswheel; //!< 0=no, 1, 2=wheel1  3,4=wheel2, etc...
 	int wheelid; //!< Wheel index
 	int masstype; //!< Loaded (by vehicle cargo)? {0/1}
 	int wetstate; //!< {DRY | DRIPPING | WET}
 	int contactless; //!< Bool{0/1}
-	int lockednode;
 	int lockgroup;
 	Ogre::Vector3 lockedPosition; //!< absolute
 	Ogre::Vector3 lockedForces;
@@ -50,10 +47,7 @@ struct node_t
 	float collRadius;
 	float collTestTimer;
 	Ogre::Vector3 iPosition; //!< initial position, absolute
-	Ogre::Real    iDistance; //!< initial distance from node0 during loading - used to check for loose parts
 	Ogre::Vector3 smoothpos; //!< absolute, per-frame smooth, must be used for visual effects only
-	bool iIsSkin;
-	bool isSkin;
 	bool contacter;
 	int mouseGrabMode;           //!< { 0=Mouse grab, 1=No mouse grab, 2=Mouse grab with force display}
 	int pos;                     //!< This node's index in rig_t::nodes array.

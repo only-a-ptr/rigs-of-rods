@@ -55,7 +55,7 @@ namespace RigDef
 {
 
 /* -------------------------------------------------------------------------- */
-/* Utility
+/* Utility                                                                    */
 /* -------------------------------------------------------------------------- */
 
 struct CameraSettings
@@ -79,7 +79,7 @@ struct CameraSettings
 };
 
 /* -------------------------------------------------------------------------- */
-/* Directive SET_NODE_DEFAULTS
+/* Directive SET_NODE_DEFAULTS                                                */
 /* -------------------------------------------------------------------------- */
 
 struct NodeDefaults
@@ -94,7 +94,7 @@ struct NodeDefaults
 };
 
 /* -------------------------------------------------------------------------- */
-/* Directive SET_BEAM_DEFAULTS_SCALE
+/* Directive SET_BEAM_DEFAULTS_SCALE                                          */
 /* -------------------------------------------------------------------------- */
 
 struct BeamDefaultsScale
@@ -113,7 +113,7 @@ struct BeamDefaultsScale
 };
 
 /* -------------------------------------------------------------------------- */
-/* Directive SET_BEAM_DEFAULTS
+/* Directive SET_BEAM_DEFAULTS                                                */
 /* -------------------------------------------------------------------------- */
 
 struct BeamDefaults
@@ -173,13 +173,13 @@ struct BeamDefaults
 };
 
 /* -------------------------------------------------------------------------- */
-/* Sections NODES, NODES_2
+/* Sections NODES, NODES_2                                                    */
 /* -------------------------------------------------------------------------- */
 
 
 
 /* -------------------------------------------------------------------------- */
-/* Directive SET_DEFAULT_INERTIA
+/* Directive SET_DEFAULT_INERTIA                                              */
 /* -------------------------------------------------------------------------- */
 
 /** Common base for DefaultInertia and Command2Inertia */
@@ -187,33 +187,21 @@ struct Inertia
 {
 	Inertia():
 		start_delay_factor(0),
-		stop_delay_factor(0)
+		stop_delay_factor(0),
+		_start_delay_factor_set(false),
+		_stop_delay_factor_set(false)
 	{}
 
 	float start_delay_factor;
 	float stop_delay_factor;
 	Ogre::String start_function;
 	Ogre::String stop_function;
-};
-
-struct DefaultInertia: Inertia
-{
-};
-
-struct OptionalInertia: public Inertia
-{
-	OptionalInertia():
-		Inertia(),
-		_start_delay_factor_set(false),
-		_stop_delay_factor_set(false)
-	{}
-
 	bool _start_delay_factor_set;
 	bool _stop_delay_factor_set;
 };
 
 /* -------------------------------------------------------------------------- */
-/* Directive SET_MANAGEDMATERIALS_OPTIONS
+/* Directive SET_MANAGEDMATERIALS_OPTIONS                                     */
 /* -------------------------------------------------------------------------- */
 
 struct ManagedMaterialsOptions
@@ -226,7 +214,7 @@ struct ManagedMaterialsOptions
 };
 
 /* -------------------------------------------------------------------------- */
-/* Directive SET_SHADOWS
+/* Directive SET_SHADOWS                                                      */
 /* -------------------------------------------------------------------------- */
 
 struct ShadowOptions
@@ -239,7 +227,7 @@ struct ShadowOptions
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section GLOBALS
+/* Section GLOBALS                                                            */
 /* -------------------------------------------------------------------------- */
 
 struct Globals
@@ -255,7 +243,7 @@ struct Globals
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section GUISETTINGS
+/* Section GUISETTINGS                                                        */
 /* -------------------------------------------------------------------------- */
 
 struct GuiSettings
@@ -288,7 +276,7 @@ struct GuiSettings
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section AIRBRAKES
+/* Section AIRBRAKES                                                          */
 /* -------------------------------------------------------------------------- */
 
 struct Airbrake
@@ -311,7 +299,7 @@ struct Airbrake
 };
 
 /* -------------------------------------------------------------------------- */
-/* Directive ADD_ANIMATION
+/* Directive ADD_ANIMATION                                                    */
 /* -------------------------------------------------------------------------- */
 
 struct Animation
@@ -398,7 +386,7 @@ struct Animation
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section AXLES
+/* Section AXLES                                                              */
 /* -------------------------------------------------------------------------- */
 
 struct Axle
@@ -416,7 +404,7 @@ struct Axle
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section BEAMS
+/* Section BEAMS                                                              */
 /* -------------------------------------------------------------------------- */
 
 struct Beam
@@ -441,7 +429,7 @@ struct Beam
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section CAMERAS
+/* Section CAMERAS                                                            */
 /* -------------------------------------------------------------------------- */
 
 struct Camera
@@ -452,7 +440,7 @@ struct Camera
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section CAMERARAIL
+/* Section CAMERARAIL                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct CameraRail
@@ -466,7 +454,7 @@ struct CameraRail
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section CINECAM
+/* Section CINECAM                                                            */
 /* -------------------------------------------------------------------------- */
 
 struct Cinecam
@@ -486,7 +474,7 @@ struct Cinecam
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section COLLISIONBOXES
+/* Section COLLISIONBOXES                                                     */
 /* -------------------------------------------------------------------------- */
 
 struct CollisionBox
@@ -500,7 +488,7 @@ struct CollisionBox
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section CRUISECONTROL
+/* Section CRUISECONTROL                                                      */
 /* -------------------------------------------------------------------------- */
 
 struct CruiseControl
@@ -515,7 +503,7 @@ struct CruiseControl
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section AUTHOR
+/* Section AUTHOR                                                             */
 /* -------------------------------------------------------------------------- */
 
 struct Author
@@ -533,7 +521,7 @@ struct Author
 };
 
 /* -------------------------------------------------------------------------- */
-/* Inline - section FILEINFO
+/* Inline - section FILEINFO                                                  */
 /* -------------------------------------------------------------------------- */
 
 struct Fileinfo
@@ -555,7 +543,7 @@ struct Fileinfo
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ENGINE
+/* Section ENGINE                                                             */
 /* -------------------------------------------------------------------------- */
 
 struct Engine
@@ -581,7 +569,7 @@ struct Engine
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ENGOPTION
+/* Section ENGOPTION                                                          */
 /* -------------------------------------------------------------------------- */
 
 struct Engoption
@@ -612,7 +600,7 @@ struct Engoption
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ENGTURBO
+/* Section ENGTURBO                                                           */
 /* -------------------------------------------------------------------------- */
  
 struct Engturbo
@@ -636,7 +624,7 @@ struct Engturbo
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section EXHAUSTS
+/* Section EXHAUSTS                                                           */
 /* -------------------------------------------------------------------------- */
 
 struct Exhaust
@@ -647,7 +635,7 @@ struct Exhaust
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section EXTCAMERA
+/* Section EXTCAMERA                                                          */
 /* -------------------------------------------------------------------------- */
 
 struct ExtCamera
@@ -670,7 +658,7 @@ struct ExtCamera
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section BRAKES
+/* Section BRAKES                                                             */
 /* -------------------------------------------------------------------------- */
 
 struct Brakes
@@ -687,7 +675,7 @@ struct Brakes
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ANTI_LOCK_BRAKES
+/* Section ANTI_LOCK_BRAKES                                                   */
 /* -------------------------------------------------------------------------- */
 
 struct AntiLockBrakes
@@ -707,7 +695,7 @@ struct AntiLockBrakes
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section TRACTION_CONTROL
+/* Section TRACTION_CONTROL                                                   */
 /* -------------------------------------------------------------------------- */
 
 struct TractionControl
@@ -727,7 +715,7 @@ struct TractionControl
 };
 
 /* -------------------------------------------------------------------------- */
-/* Inline-section SLOPE_BRAKE
+/* Inline-section SLOPE_BRAKE                                                 */
 /* -------------------------------------------------------------------------- */
 
 struct SlopeBrake
@@ -759,7 +747,7 @@ struct SlopeBrake
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section WHEELS
+/* Section WHEELS                                                             */
 /* -------------------------------------------------------------------------- */
 
 /** Syntax-sugar struct to hold enums */
@@ -829,7 +817,7 @@ struct Wheel: BaseWheel
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section WHEELS_2
+/* Section WHEELS_2                                                           */
 /* -------------------------------------------------------------------------- */
 
 /** Attributes common to WHEELS_2 and newer definitions */
@@ -866,7 +854,7 @@ struct Wheel2: BaseWheel2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section MESHWHEELS
+/* Section MESHWHEELS                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct MeshWheel: BaseWheel
@@ -895,7 +883,7 @@ struct MeshWheel: BaseWheel
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section MESHWHEELS_2
+/* Section MESHWHEELS_2                                                       */
 /* -------------------------------------------------------------------------- */
 
 struct MeshWheel2: BaseWheel2
@@ -911,7 +899,7 @@ struct MeshWheel2: BaseWheel2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section FLARES FLARES2
+/* Section FLARES FLARES2                                                     */
 /* -------------------------------------------------------------------------- */
 
 /** Used for both 'flares' and 'flares_2' sections
@@ -950,7 +938,7 @@ struct Flare2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section FLEXBODIES
+/* Section FLEXBODIES                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct Flexbody
@@ -974,7 +962,7 @@ struct Flexbody
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section FLEX_BODY_WHEELS
+/* Section FLEX_BODY_WHEELS                                                   */
 /* -------------------------------------------------------------------------- */
 
 struct FlexBodyWheel: BaseWheel2
@@ -994,7 +982,7 @@ struct FlexBodyWheel: BaseWheel2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section FUSEDRAG
+/* Section FUSEDRAG                                                           */
 /* -------------------------------------------------------------------------- */
 
 struct Fusedrag
@@ -1010,7 +998,7 @@ struct Fusedrag
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section HOOKS
+/* Section HOOKS                                                              */
 /* -------------------------------------------------------------------------- */
 
 struct Hook
@@ -1035,7 +1023,7 @@ struct Hook
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SHOCKS
+/* Section SHOCKS                                                             */
 /* -------------------------------------------------------------------------- */
 
 struct Shock
@@ -1061,7 +1049,7 @@ struct Shock
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SHOCKS_2
+/* Section SHOCKS_2                                                           */
 /* -------------------------------------------------------------------------- */
 
 struct Shock2
@@ -1094,7 +1082,7 @@ struct Shock2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Inline-section SET_SKELETON_DISPLAY
+/* Inline-section SET_SKELETON_DISPLAY                                        */
 /* -------------------------------------------------------------------------- */
 
 struct SkeletonSettings
@@ -1109,7 +1097,7 @@ struct SkeletonSettings
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section HYDROS
+/* Section HYDROS                                                             */
 /* -------------------------------------------------------------------------- */
 
 struct Hydro
@@ -1155,14 +1143,14 @@ struct Hydro
 	Node::Ref nodes[2];
 	float lenghtening_factor;
 	std::string options;
-	OptionalInertia inertia;
-	boost::shared_ptr<DefaultInertia> inertia_defaults;
+	Inertia inertia;
+	boost::shared_ptr<Inertia> inertia_defaults;
 	boost::shared_ptr<BeamDefaults> beam_defaults;
 	int detacher_group;
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ANIMATORS
+/* Section ANIMATORS                                                          */
 /* -------------------------------------------------------------------------- */
 
 struct AeroAnimator
@@ -1228,13 +1216,13 @@ struct Animator
 	float short_limit;
 	float long_limit;
 	AeroAnimator aero_animator;
-	boost::shared_ptr<DefaultInertia> inertia_defaults;
+	boost::shared_ptr<Inertia> inertia_defaults;
 	boost::shared_ptr<BeamDefaults> beam_defaults;
 	int detacher_group;
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section COMMANDS & COMMANDS_2 (unified)
+/* Section COMMANDS & COMMANDS_2 (unified)                                    */
 /* -------------------------------------------------------------------------- */
 
 struct Command2
@@ -1258,11 +1246,11 @@ struct Command2
 	unsigned int extend_key;
 	unsigned int options;
 	Ogre::String description;
-	OptionalInertia inertia;
+	Inertia inertia;
 	float affect_engine;
 	bool needs_engine;
 	boost::shared_ptr<BeamDefaults> beam_defaults;
-	boost::shared_ptr<DefaultInertia> inertia_defaults;
+	boost::shared_ptr<Inertia> inertia_defaults;
 	int detacher_group;
 
 	inline bool HasOption(unsigned int option) const
@@ -1272,7 +1260,7 @@ struct Command2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ROTATORS
+/* Section ROTATORS                                                           */
 /* -------------------------------------------------------------------------- */
 
 struct Rotator
@@ -1292,14 +1280,14 @@ struct Rotator
 	float rate;
 	unsigned int spin_left_key;
 	unsigned int spin_right_key;
-	OptionalInertia inertia;
-	boost::shared_ptr<DefaultInertia> inertia_defaults;
+	Inertia inertia;
+	boost::shared_ptr<Inertia> inertia_defaults;
 	float engine_coupling;
 	bool needs_engine;
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ROTATORS_2
+/* Section ROTATORS_2                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct Rotator2: public Rotator
@@ -1316,7 +1304,7 @@ struct Rotator2: public Rotator
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section TRIGGERS
+/* Section TRIGGERS                                                           */
 /* -------------------------------------------------------------------------- */
 
 struct Trigger
@@ -1427,7 +1415,7 @@ struct Trigger
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section LOCKGROUPS
+/* Section LOCKGROUPS                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct Lockgroup
@@ -1446,7 +1434,7 @@ struct Lockgroup
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section MANAGEDMATERIALS
+/* Section MANAGEDMATERIALS                                                   */
 /* -------------------------------------------------------------------------- */
 
 struct ManagedMaterial
@@ -1485,7 +1473,7 @@ struct ManagedMaterial
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section MATERIALFLAREBINDINGS
+/* Section MATERIALFLAREBINDINGS                                              */
 /* -------------------------------------------------------------------------- */
 
 struct MaterialFlareBinding
@@ -1499,7 +1487,7 @@ struct MaterialFlareBinding
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section NODECOLLISION
+/* Section NODECOLLISION                                                      */
 /* -------------------------------------------------------------------------- */
 
 struct NodeCollision
@@ -1513,7 +1501,7 @@ struct NodeCollision
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section PARTICLES
+/* Section PARTICLES                                                          */
 /* -------------------------------------------------------------------------- */
 
 struct Particle
@@ -1524,7 +1512,7 @@ struct Particle
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section PISTONPROPS
+/* Section PISTONPROPS                                                        */
 /* -------------------------------------------------------------------------- */
 
 struct Pistonprop
@@ -1546,7 +1534,7 @@ struct Pistonprop
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section PROPS
+/* Section PROPS                                                              */
 /* -------------------------------------------------------------------------- */
 
 struct Prop
@@ -1615,7 +1603,7 @@ struct Prop
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section RAILGROUPS
+/* Section RAILGROUPS                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct RailGroup
@@ -1629,7 +1617,7 @@ struct RailGroup
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section Ropables
+/* Section Ropables                                                           */
 /* -------------------------------------------------------------------------- */
 
 struct Ropable
@@ -1654,7 +1642,7 @@ struct Ropable
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section ROPES
+/* Section ROPES                                                              */
 /* -------------------------------------------------------------------------- */
 
 struct Rope
@@ -1674,7 +1662,7 @@ struct Rope
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SCREWPROPS
+/* Section SCREWPROPS                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct Screwprop
@@ -1690,7 +1678,7 @@ struct Screwprop
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SLIDENODES
+/* Section SLIDENODES                                                         */
 /* -------------------------------------------------------------------------- */
 
 struct SlideNode
@@ -1716,7 +1704,7 @@ struct SlideNode
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SOUNDSOURCES
+/* Section SOUNDSOURCES                                                       */
 /* -------------------------------------------------------------------------- */
 
 struct SoundSource
@@ -1726,7 +1714,7 @@ struct SoundSource
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SOUNDSOURCES2
+/* Section SOUNDSOURCES2                                                      */
 /* -------------------------------------------------------------------------- */
 
 struct SoundSource2: SoundSource
@@ -1750,7 +1738,7 @@ struct SoundSource2: SoundSource
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SPEEDLIMITER
+/* Section SPEEDLIMITER                                                       */
 /* -------------------------------------------------------------------------- */
 
 struct SpeedLimiter
@@ -1759,7 +1747,7 @@ struct SpeedLimiter
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section SUBMESH
+/* Section SUBMESH                                                            */
 /* -------------------------------------------------------------------------- */
 
 struct Cab
@@ -1818,7 +1806,7 @@ struct Submesh
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section TIES
+/* Section TIES                                                               */
 /* -------------------------------------------------------------------------- */
 
 struct Tie
@@ -1847,7 +1835,7 @@ struct Tie
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section TORQUECURVE
+/* Section TORQUECURVE                                                        */
 /* -------------------------------------------------------------------------- */
 
 struct TorqueCurve
@@ -1871,7 +1859,7 @@ struct TorqueCurve
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section TURBOJETS
+/* Section TURBOJETS                                                          */
 /* -------------------------------------------------------------------------- */
 
 struct Turbojet
@@ -1897,7 +1885,7 @@ struct Turbojet
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section TURBOPROPS, TURBOPROPS2
+/* Section TURBOPROPS, TURBOPROPS2                                            */
 /* -------------------------------------------------------------------------- */
 
 struct Turboprop2
@@ -1917,7 +1905,7 @@ struct Turboprop2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section VIDEOCAMERA
+/* Section VIDEOCAMERA                                                        */
 /* -------------------------------------------------------------------------- */
 
 struct VideoCamera
@@ -1943,7 +1931,7 @@ struct VideoCamera
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section WINGS
+/* Section WINGS                                                              */
 /* -------------------------------------------------------------------------- */
 
 struct Wing
@@ -1983,7 +1971,7 @@ struct Wing
 };
 
 /* -------------------------------------------------------------------------- */
-/* Root document
+/* Root document                                                              */
 /* -------------------------------------------------------------------------- */
 
 struct File

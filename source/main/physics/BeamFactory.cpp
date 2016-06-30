@@ -24,6 +24,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Application.h"
 #include "BeamEngine.h"
+#include "BeamStats.h"
 #include "CacheSystem.h"
 #include "Collisions.h"
 #include "ErrorUtils.h"
@@ -62,38 +63,75 @@ template<> BeamFactory *StreamableFactory < BeamFactory, Beam >::_instance = 0;
 int simulatedTruck;
 void* threadstart(void* vid);
 
-static unsigned hardware_concurrency()
+void cpuID(unsigned i, unsigned regs[4]) {
+#ifdef _WIN32
+	__cpuid((int *)regs, (int)i);
+#else
+	asm volatile
+		("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
+		 : "a" (i), "c" (0));
+#endif
+}
+
+unsigned int getNumberOfCPUCores()
 {
-	#if defined(PTW32_VERSION) || defined(__hpux)
-		return pthread_num_processors_np();
-	#elif defined(_GNU_SOURCE)
-		return get_nprocs();
-	#elif defined(__APPLE__) || defined(__FreeBSD__)
-		int count;
-		size_t size = sizeof(count);
-		return sysctlbyname("hw.ncpu", &count, &size, NULL, 0) ? 0 : count;
-	#elif defined(BOOST_HAS_UNISTD_H) && defined(_SC_NPROCESSORS_ONLN)
-		int const count = sysconf(_SC_NPROCESSORS_ONLN);
-		return (count > 0) ? count : 0;
-	#else
-		return 0;
-	#endif
-} 
+	unsigned regs[4];
+
+	// Get CPU vendor
+	char vendor[12];
+	cpuID(0, regs);
+	((unsigned *)vendor)[0] = regs[1]; // EBX
+	((unsigned *)vendor)[1] = regs[3]; // EDX
+	((unsigned *)vendor)[2] = regs[2]; // ECX
+	std::string cpuVendor = std::string(vendor, 12);
+
+	// Get CPU features
+	cpuID(1, regs);
+	unsigned cpuFeatures = regs[3]; // EDX
+
+	// Logical core count per CPU
+	cpuID(1, regs);
+	unsigned logical = (regs[1] >> 16) & 0xff; // EBX[23:16]
+	unsigned cores = logical;
+
+	if (cpuVendor == "GenuineIntel")
+	{
+		// Get DCP cache info
+		cpuID(4, regs);
+		cores = ((regs[0] >> 26) & 0x3f) + 1; // EAX[31:26] + 1
+	} else if (cpuVendor == "AuthenticAMD")
+	{
+		// Get NC: Number of CPU cores - 1
+		cpuID(0x80000008, regs);
+		cores = ((unsigned)(regs[2] & 0xff)) + 1; // ECX[7:0] + 1
+	}
+
+	// Detect hyper-threads  
+	bool hyperThreads = cpuFeatures & (1 << 28) && cores < logical;
+
+	LOG("BEAMFACTORY: " + TOSTRING(logical) + " Logical CPUs" + " found");
+	LOG("BEAMFACTORY: " + TOSTRING(cores) + " CPU Cores" + " found");
+	LOG("BEAMFACTORY: Hyper-Threading " + TOSTRING(hyperThreads));
+
+	return cores;
+}
 
 BeamFactory::BeamFactory() :
 	  current_truck(-1)
-	, forcedActive(false)
+	, forced_active(false)
 	, free_truck(0)
-	, num_cpu_cores(hardware_concurrency())
-	, physFrame(0)
+	, m_dt_remainder(0.0f)
+	, m_physics_frames(0)
+	, m_physics_steps(2000)
+	, num_cpu_cores(0)
 	, previous_truck(-1)
+	, task_count(0)
 	, tdr(0)
 	, thread_done(true)
 	, thread_mode(THREAD_SINGLE)
 	, work_done(false)
 {
 	bool disableThreadPool = BSETTING("DisableThreadPool", false);
-	int numThreadsInPool   = ISETTING("NumThreadsInThreadPool", 0);
 
 	for (int t=0; t < MAX_TRUCKS; t++)
 		trucks[t] = 0;
@@ -106,32 +144,35 @@ BeamFactory::BeamFactory() :
 
 	async_physics = BSETTING("AsynchronousPhysics", false);
 
-	LOG("BEAMFACTORY: " + TOSTRING(num_cpu_cores) + " CPU Core" + ((num_cpu_cores != 1) ? "s" : "") + " found");
-
 	// Create worker thread (used for physics calculations)
 	if (thread_mode == THREAD_MULTI)
 	{
-		if (!disableThreadPool)
+		int numThreadsInPool = ISETTING("NumThreadsInThreadPool", 0);
+
+		if (numThreadsInPool > 1)
 		{
-			if (numThreadsInPool > 1 && num_cpu_cores > 1)
-			{
-				// Use custom settings from RoR.cfg
-				gEnv->threadPool = new ThreadPool(numThreadsInPool);
-				beamThreadPool   = new ThreadPool(numThreadsInPool);
-				LOG("BEAMFACTORY: Creating: " + TOSTRING(numThreadsInPool) + " threads");
-			} else if (num_cpu_cores > 2)
-			{
-				// Use default settings
-				gEnv->threadPool = new ThreadPool(num_cpu_cores);
-				beamThreadPool   = new ThreadPool(num_cpu_cores);
-				LOG("BEAMFACTORY: Creating: " + TOSTRING(num_cpu_cores) + " threads");
-			}
+			num_cpu_cores = numThreadsInPool;
+		} else 
+		{
+			num_cpu_cores = getNumberOfCPUCores();
+		}
+
+		if (num_cpu_cores < 2)
+		{
+			disableThreadPool = true;
+			LOG("BEAMFACTORY: Not enough CPU cores to enable the thread pool");
+		} else if (!disableThreadPool)
+		{
+			gEnv->threadPool = new ThreadPool(num_cpu_cores);
+			LOG("BEAMFACTORY: Creating " + TOSTRING(num_cpu_cores) + " threads");
 		}
 
 		pthread_cond_init(&thread_done_cv, NULL);
 		pthread_cond_init(&work_done_cv, NULL);
 		pthread_mutex_init(&thread_done_mutex, NULL);
 		pthread_mutex_init(&work_done_mutex, NULL);
+		pthread_cond_init(&task_count_cv, NULL);
+		pthread_mutex_init(&task_count_mutex, NULL);
 
 		if (pthread_create(&worker_thread, NULL, threadstart, this))
 		{
@@ -148,6 +189,8 @@ BeamFactory::~BeamFactory()
 	pthread_cond_destroy(&work_done_cv);
 	pthread_mutex_destroy(&thread_done_mutex);
 	pthread_mutex_destroy(&work_done_mutex);
+	pthread_cond_destroy(&task_count_cv);
+	pthread_mutex_destroy(&task_count_mutex);
 }
 
 bool BeamFactory::removeBeam(Beam *b)
@@ -541,7 +584,7 @@ void BeamFactory::checkSleepingState()
 		}
 	}
 
-	if (!forcedActive)
+	if (!forced_active)
 	{
 		// put to sleep
 		for (int t=0; t < free_truck; t++)
@@ -612,7 +655,7 @@ void BeamFactory::activateAllTrucks()
 
 void BeamFactory::sendAllTrucksSleeping()
 {
-	forcedActive = false;
+	forced_active = false;
 	for (int t=0; t < free_truck; t++)
 	{
 		if (trucks[t] && trucks[t]->state < SLEEPING)
@@ -837,10 +880,16 @@ void BeamFactory::updateVisual(float dt)
 
 void BeamFactory::calcPhysics(float dt)
 {
-	physFrame++;
+	m_physics_frames++;
 
 	// do not allow dt > 1/20
 	dt = std::min(dt, 1.0f / 20.0f);
+
+	dt += m_dt_remainder;
+	m_physics_steps = dt / PHYSICS_DT;
+	m_dt_remainder = dt - (m_physics_steps * PHYSICS_DT);
+	dt = PHYSICS_DT * m_physics_steps;
+
 	gEnv->mrTime += dt;
 
 	simulatedTruck = current_truck;
@@ -861,7 +910,7 @@ void BeamFactory::calcPhysics(float dt)
 
 	if (simulatedTruck >= 0 && simulatedTruck < free_truck)
 	{
-		trucks[simulatedTruck]->frameStep(dt);
+		trucks[simulatedTruck]->frameStep(m_physics_steps);
 	}
 
 	// update 2D replay if activated
@@ -997,6 +1046,91 @@ Beam* BeamFactory::getTruck(int number)
 	return 0;
 }
 
+void BeamFactory::onTaskComplete()
+{
+	MUTEX_LOCK(&task_count_mutex);
+	task_count--;
+	MUTEX_UNLOCK(&task_count_mutex);
+	if (!task_count)
+	{
+		pthread_cond_signal(&task_count_cv);
+	}
+}
+
+void BeamFactory::runThreadTask(Beam::ThreadTask task)
+{
+	std::list<IThreadTask*> tasks;
+
+	// Push tasks into thread pool
+	for (int t=0; t<free_truck; t++)
+	{
+		if (trucks[t] && trucks[t]->simulated)
+		{
+			trucks[t]->thread_task = task;
+			tasks.emplace_back(trucks[t]);
+		}
+	}
+
+	task_count = tasks.size();
+
+	gEnv->threadPool->enqueue(tasks);
+
+	// Wait for all tasks to complete
+	MUTEX_LOCK(&task_count_mutex);
+	while (task_count > 0)
+	{
+		pthread_cond_wait(&task_count_cv, &task_count_mutex);
+	}
+	MUTEX_UNLOCK(&task_count_mutex);
+}
+
+void BeamFactory::threadentry()
+{
+	for (int i=0; i<m_physics_steps; i++)
+	{
+		int num_simulated_trucks = 0;
+
+		for (int t=0; t<free_truck; t++)
+		{
+			if (trucks[t] && (trucks[t]->simulated = trucks[t]->calcForcesEulerPrepare(i==0, PHYSICS_DT, i, m_physics_steps)))
+			{
+				num_simulated_trucks++;
+				trucks[t]->curtstep = i;
+				trucks[t]->tsteps   = m_physics_steps;
+			}
+		}
+		if (num_simulated_trucks < 2 || !gEnv->threadPool)
+		{
+			for (int t=0; t<free_truck; t++)
+			{
+				if (trucks[t] && trucks[t]->simulated)
+				{
+					trucks[t]->calcForcesEulerCompute(i==0, PHYSICS_DT, i, m_physics_steps);
+					if (!trucks[t]->disableTruckTruckSelfCollisions)
+					{
+						trucks[t]->intraTruckCollisions(PHYSICS_DT);
+					}
+				}
+			}
+		} else
+		{
+			runThreadTask(Beam::THREAD_BEAMFORCESEULER);
+		}
+		for (int t=0; t<free_truck; t++)
+		{
+			if (trucks[t] && trucks[t]->simulated)
+				trucks[t]->calcForcesEulerFinal(i==0, PHYSICS_DT, i, m_physics_steps);
+		}
+
+		if (num_simulated_trucks > 1)
+		{
+			BES_START(BES_CORE_Contacters);
+			runThreadTask(Beam::THREAD_INTER_TRUCK_COLLISIONS);
+			BES_STOP(BES_CORE_Contacters);
+		}
+	}
+}
+
 void* threadstart(void* vid)
 {
 #ifdef USE_CRASHRPT
@@ -1009,7 +1143,6 @@ void* threadstart(void* vid)
 #endif // USE_CRASHRPT
 
 	BeamFactory *bf = static_cast<BeamFactory*>(vid);
-	Beam *truck = 0;
 
 	while (1)
 	{
@@ -1027,11 +1160,9 @@ void* threadstart(void* vid)
 		bf->work_done = false;
 		MUTEX_UNLOCK(&bf->work_done_mutex);
 
-		truck = bf->getTruck(simulatedTruck);
-
-		if (truck)
+		if (bf->getTruck(simulatedTruck))
 		{
-			truck->threadentry();
+			bf->threadentry();
 		}
 	}
 

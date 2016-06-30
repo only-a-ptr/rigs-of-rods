@@ -194,12 +194,12 @@ void PreviewRenderer::render2dviews(Beam *truck, Camera *cam, float minCameraRad
 			String ext = "normal.";
 			if (i == 0)
 			{
-				truck->hideSkeleton(true);
+				truck->hideSkeleton();
 			} else if (i == 1)
 			{
 				ext = "skeleton.";
 				// now show the skeleton
-				truck->showSkeleton(true, true);
+				truck->showSkeleton(true);
 				truck->updateSimpleSkeleton();
 			}
 			ext = oext + ext;
@@ -277,13 +277,13 @@ void PreviewRenderer::render3dpreview(Beam *truck, Camera *renderCamera, float m
 	{
 		if (s == 0)
 		{
-			truck->hideSkeleton(true);
+			truck->hideSkeleton();
 			skelmode = "normal";
 		} else if (s == 1)
 		{
 			skelmode = "skeleton";
 			// now show the skeleton
-			truck->showSkeleton(true, true);
+			truck->showSkeleton(true);
 			truck->updateSimpleSkeleton();
 		}
 

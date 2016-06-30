@@ -724,10 +724,10 @@ bool RoRFrameListener::updateEvents(float dt)
 
 				if (RoR::Application::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_SHOW_SKELETON))
 				{
-					if (curr_truck->skeleton)
-						curr_truck->hideSkeleton(true);
+					if (curr_truck->m_skeletonview_is_active)
+						curr_truck->hideSkeleton();
 					else
-						curr_truck->showSkeleton(true, true);
+						curr_truck->showSkeleton(true);
 
 					curr_truck->updateVisual();
 				}
@@ -1289,7 +1289,11 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
 #ifdef USE_MUMBLE
 		if (gEnv->player)
 		{
-			MumbleIntegration::getSingleton().update(gEnv->mainCamera->getPosition(), gEnv->player->getPosition() + Vector3(0, 1.8f, 0));
+			// calculate orientation of avatar first
+			Ogre::Vector3 avatarDir = Ogre::Vector3(Math::Cos(gEnv->player->getRotation()), 0.0f, Math::Sin(gEnv->player->getRotation()));
+
+			MumbleIntegration::getSingleton().update(gEnv->mainCamera->getPosition(), gEnv->mainCamera->getDirection(), gEnv->mainCamera->getUp(),
+														gEnv->player->getPosition() + Vector3(0, 1.8f, 0), avatarDir, Ogre::Vector3(0.0f, 1.0f, 0.0f));
 		}
 #endif // USE_MUMBLE
 	}
@@ -1466,10 +1470,6 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
 			}
 		}
 	}
-
-
-	// TODO: check if all wheels are on a certain event id
-	// wheels[nodes[i].wheelid].lastEventHandler
 
 #ifdef USE_ANGELSCRIPT
 	ScriptEngine::getSingleton().framestep(dt);
@@ -1671,11 +1671,6 @@ void RoRFrameListener::hideGUI(bool visible)
 void RoRFrameListener::showspray(bool s)
 {
 	DustManager::getSingleton().setVisible(s);
-}
-
-void RoRFrameListener::setLoadingState(int value)
-{
-	loading_state = value;
 }
 
 void RoRFrameListener::setNetPointToUID(int uid)

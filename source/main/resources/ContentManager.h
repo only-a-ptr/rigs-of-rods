@@ -84,6 +84,8 @@ public:
 
 	inline RoR::SkinManager* GetSkinManager() const { return m_skin_manager; }
 
+	void InitManagedMaterials();
+
 protected:
 
 	ContentManager();

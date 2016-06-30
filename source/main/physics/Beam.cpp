@@ -21,8 +21,13 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "Beam.h"
 
 #include <Ogre.h>
-#include <Overlay/OgreOverlayElement.h>
-#include <Overlay/OgreOverlayManager.h>
+#ifdef ROR_USE_OGRE_1_9
+#	include <Overlay/OgreOverlayManager.h>
+#	include <Overlay/OgreOverlay.h>
+#else
+#	include <OgreOverlayManager.h>
+#	include <OgreOverlayElement.h>
+#endif
 
 #include "AirBrake.h"
 #include "Airfoil.h"
@@ -207,40 +212,30 @@ Beam::~Beam()
 	// delete props
 	for (int i=0; i<free_prop;i++)
 	{
-		if (props[i].bbsnode[0])
+		for (int k = 0; k < 4; ++k)
 		{
-			props[i].bbsnode[0]->removeAndDestroyAllChildren();
-			gEnv->sceneManager->destroySceneNode(props[i].bbsnode[0]);
+			if (props[i].beacon_flare_billboard_scene_node[k])
+			{
+				Ogre::SceneNode* scene_node = props[i].beacon_flare_billboard_scene_node[k];
+				scene_node->removeAndDestroyAllChildren();
+				gEnv->sceneManager->destroySceneNode(scene_node);
+			}
+			if (props[i].beacon_light[k])
+			{
+				gEnv->sceneManager->destroyLight(props[i].beacon_light[k]);
+			}
 		}
-		if (props[i].bbsnode[1])
+
+		if (props[i].scene_node)
 		{
-			props[i].bbsnode[1]->removeAndDestroyAllChildren();
-			gEnv->sceneManager->destroySceneNode(props[i].bbsnode[1]);
-		}
-		if (props[i].bbsnode[2])
-		{
-			props[i].bbsnode[2]->removeAndDestroyAllChildren();
-			gEnv->sceneManager->destroySceneNode(props[i].bbsnode[2]);
-		}
-		if (props[i].bbsnode[3])
-		{
-			props[i].bbsnode[3]->removeAndDestroyAllChildren();
-			gEnv->sceneManager->destroySceneNode(props[i].bbsnode[3]);
-		}
-		if (props[i].snode)
-		{
-			props[i].snode->removeAndDestroyAllChildren();
-			gEnv->sceneManager->destroySceneNode(props[i].snode);
+			props[i].scene_node->removeAndDestroyAllChildren();
+			gEnv->sceneManager->destroySceneNode(props[i].scene_node);
 		}
 		if (props[i].wheel)
 		{
 			props[i].wheel->removeAndDestroyAllChildren();
 			gEnv->sceneManager->destroySceneNode(props[i].wheel);
 		}
-		if (props[i].light[0]) gEnv->sceneManager->destroyLight(props[i].light[0]);
-		if (props[i].light[1]) gEnv->sceneManager->destroyLight(props[i].light[1]);
-		if (props[i].light[2]) gEnv->sceneManager->destroyLight(props[i].light[2]);
-		if (props[i].light[3]) gEnv->sceneManager->destroyLight(props[i].light[3]);
 	}
 
 	// delete flares
@@ -319,13 +314,6 @@ Beam::~Beam()
 
 	pthread_cond_destroy(&flexable_task_count_cv);
 	pthread_mutex_destroy(&flexable_task_count_mutex);
-	for (int task=0; task < THREAD_MAX; task++)
-	{
-		pthread_cond_destroy(&task_count_cv[task]);
-		pthread_mutex_destroy(&task_count_mutex[task]);
-		pthread_mutex_destroy(&task_index_mutex[task]);
-	}
-	pthread_mutex_destroy(&itc_node_access_mutex);
 }
 
 // This method scales trucks. Stresses should *NOT* be scaled, they describe
@@ -347,7 +335,6 @@ void Beam::scaleTruck(float value)
 		beams[i].hydroRatio *= value;
 
 		beams[i].diameter *= value;
-		beams[i].lastforce *= value;
 	}
 	// scale nodes
 	Vector3 refpos = nodes[0].AbsPosition;
@@ -372,13 +359,26 @@ void Beam::scaleTruck(float value)
 	// TOFIX: care about prop positions as well!
 	for (int i=0;i<free_prop;i++)
 	{
-		if (props[i].snode) props[i].snode->scale(value, value, value);
-		if (props[i].wheel) props[i].wheel->scale(value, value, value);
-		if (props[i].wheel) props[i].wheelpos = relpos + (props[i].wheelpos-relpos) * value;
-		if (props[i].bbsnode[0]) props[i].bbsnode[0]->scale(value, value, value);
-		if (props[i].bbsnode[1]) props[i].bbsnode[1]->scale(value, value, value);
-		if (props[i].bbsnode[2]) props[i].bbsnode[2]->scale(value, value, value);
-		if (props[i].bbsnode[3]) props[i].bbsnode[3]->scale(value, value, value);
+		if (props[i].scene_node)
+			props[i].scene_node->scale(value, value, value);
+
+		if (props[i].wheel)
+			props[i].wheel->scale(value, value, value);
+
+		if (props[i].wheel)
+			props[i].wheelpos = relpos + (props[i].wheelpos-relpos) * value;
+
+		if (props[i].beacon_flare_billboard_scene_node[0])
+			props[i].beacon_flare_billboard_scene_node[0]->scale(value, value, value);
+
+		if (props[i].beacon_flare_billboard_scene_node[1])
+			props[i].beacon_flare_billboard_scene_node[1]->scale(value, value, value);
+
+		if (props[i].beacon_flare_billboard_scene_node[2])
+			props[i].beacon_flare_billboard_scene_node[2]->scale(value, value, value);
+
+		if (props[i].beacon_flare_billboard_scene_node[3])
+			props[i].beacon_flare_billboard_scene_node[3]->scale(value, value, value);
 	}
 	// tell the cabmesh that resizing is ok, and they dont need to break ;)
 	if (cabMesh) cabMesh->scale(value);
@@ -408,15 +408,14 @@ void Beam::scaleTruck(float value)
 
 void Beam::initSimpleSkeleton()
 {
-	// create
-	simpleSkeletonManualObject =  gEnv->sceneManager->createManualObject();
+	simpleSkeletonManualObject = gEnv->sceneManager->createManualObject();
 
 	simpleSkeletonManualObject->estimateIndexCount(free_beam*2);
 	simpleSkeletonManualObject->setCastShadows(false);
 	simpleSkeletonManualObject->setDynamic(true);
 	simpleSkeletonManualObject->setRenderingDistance(300);
 	simpleSkeletonManualObject->begin("vehicle-skeletonview-material", RenderOperation::OT_LINE_LIST);
-	for (int i=0; i < free_beam; i++)
+	for (int i=0; i<free_beam; i++)
 	{
 		simpleSkeletonManualObject->position(beams[i].p1->smoothpos);
 		simpleSkeletonManualObject->colour(1.0f,1.0f,1.0f);
@@ -425,32 +424,28 @@ void Beam::initSimpleSkeleton()
 	}
 	simpleSkeletonManualObject->end();
 	simpleSkeletonNode->attachObject(simpleSkeletonManualObject);
-	simpleSkeletonNode->setVisible(false);
-	simpleSkeletonInitiated=true;
+	simpleSkeletonInitiated = true;
 }
 
 void Beam::updateSimpleSkeleton()
 {
 	BES_GFX_START(BES_GFX_UpdateSkeleton);
+
 	ColourValue color;
 
 	if (!simpleSkeletonInitiated)
 		initSimpleSkeleton();
+
 	simpleSkeletonManualObject->beginUpdate(0);
-	// just update
-	for (int i=0; i < free_beam; i++)
+	for (int i=0; i<free_beam; i++)
 	{
-		// calculating colour
-		float scale=beams[i].scale;
-		if (scale>1) scale=1;
-		if (scale<-1) scale=-1;
-		float scaleabs = fabs(scale);
-		if (scale<=0)
-			color = ColourValue(0.2f, 2.0f*(1.0f-scaleabs), 2.0f*scaleabs, 0.8f);
+		float normalized_scale = std::min(std::abs(beams[i].scale), 1.0f);
+
+		if (beams[i].scale <= 0)
+			color = ColourValue(0.2f, 2.0f*(1.0f-normalized_scale), 2.0f*normalized_scale, 0.8f);
 		else
-			color = ColourValue(2.0f*scaleabs, 2.0f*(1.0f-scaleabs), 0.2f, 0.8f);
+			color = ColourValue(2.0f*normalized_scale, 2.0f*(1.0f-normalized_scale), 0.2f, 0.8f);
 		
-		// updating position & color
 		simpleSkeletonManualObject->position(beams[i].p1->smoothpos);
 		simpleSkeletonManualObject->colour(color);
 
@@ -459,6 +454,7 @@ void Beam::updateSimpleSkeleton()
 			simpleSkeletonManualObject->position(beams[i].p1->smoothpos);
 		else
 			simpleSkeletonManualObject->position(beams[i].p2->smoothpos);
+
 		simpleSkeletonManualObject->colour(color);
 	}
 	simpleSkeletonManualObject->end();
@@ -728,7 +724,7 @@ void Beam::calcNetwork()
 	// set lights
 	if (((flagmask&NETMASK_LIGHTS)!=0) != lights)
 		lightsToggle();
-	if (((flagmask&NETMASK_BEACONS)!=0) != beacon)
+	if (((flagmask&NETMASK_BEACONS)!=0) != m_beacon_light_is_active)
 		beaconsToggle();
 
 	antilockbrake   = flagmask & NETMASK_ALB_ACTIVE;
@@ -863,19 +859,6 @@ void Beam::calc_masses2(Real total, bool reCalc)
 		nodes[i].gravimass = Vector3(0.0f, gEnv->terrainManager->getGravity() * nodes[i].mass, 0.0f);
 	}
 
-    // update inverted mass cache
-	for (int i=0; i<free_node; i++)
-	{
-		nodes[i].inverted_mass=1.0f/nodes[i].mass;
-    }
-
-	//update minendmass
-	for (int i=0; i<free_beam; i++)
-	{
-		beams[i].minendmass = beams[i].p1->mass;
-		if (beams[i].p2->mass < beams[i].minendmass)
-			beams[i].minendmass = beams[i].p2->mass;
-	}
 	totalmass = 0;
 	for (int i=0; i<free_node; i++)
 	{
@@ -1011,8 +994,6 @@ int Beam::loadPosition(int indexPosition)
 		nodes[i].lastdrag      = Vector3::ZERO;
 		nodes[i].buoyanceForce = Vector3::ZERO;
 		nodes[i].lastdrag      = Vector3::ZERO;
-		nodes[i].lockednode    = 0;
-		nodes[i].isSkin        = nodes[i].iIsSkin;
 
 		pos = pos + nbuff[i];
 	}
@@ -1076,7 +1057,7 @@ void Beam::resetAngle(float rot)
 
 	// Set up matrix for yaw rotation
 	Matrix3 matrix;
-	matrix.FromEulerAnglesXYZ(Radian(0), Radian(-rot - Math::HALF_PI), Radian(0));
+	matrix.FromEulerAnglesXYZ(Radian(0), Radian(-rot + m_spawn_rotation), Radian(0));
 
 	for (int i = 0; i < free_node; i++)
 	{
@@ -1095,30 +1076,30 @@ void Beam::resetAngle(float rot)
 void Beam::resetPosition(float px, float pz, bool setInitPosition)
 {
 	// horizontal displacement
-	Vector3 offset = Vector3(px, -iPosition.y, pz) - nodes[0].AbsPosition;
-	for (int i=0; i < free_node; i++)
+	Vector3 offset = Vector3(px, 0, pz) - nodes[0].AbsPosition;
+	for (int i=0; i<free_node; i++)
 	{
 		nodes[i].AbsPosition += offset;
 	}
 
 	// vertical displacement
-	float minoffset = nodes[0].AbsPosition.y - gEnv->terrainManager->getHeightFinder()->getHeightAt(nodes[0].AbsPosition.x, nodes[0].AbsPosition.z);
-
-	for (int i=1; i < free_node; i++)
-	{
-		Vector3 pos = Vector3(nodes[i].AbsPosition.x, gEnv->terrainManager->getHeightFinder()->getHeightAt(nodes[i].AbsPosition.x, nodes[i].AbsPosition.z), nodes[i].AbsPosition.z);
-		gEnv->collisions->collisionCorrect(&pos);
-		minoffset = std::min(nodes[i].AbsPosition.y - pos.y, minoffset);
-	}
-
+	float vertical_offset = -nodes[lowestnode].AbsPosition.y;
 	if (gEnv->terrainManager->getWater())
 	{
-		minoffset = std::min(-gEnv->terrainManager->getWater()->getHeight(), minoffset);
+		vertical_offset += gEnv->terrainManager->getWater()->getHeight();
+	}
+
+	for (int i=1; i<free_node; i++)
+	{
+		Vector3 pos = nodes[i].AbsPosition;
+		pos.y = gEnv->terrainManager->getHeightFinder()->getHeightAt(pos.x, pos.z);
+		gEnv->collisions->collisionCorrect(&pos);
+		vertical_offset += std::max(0.0f, pos.y - (nodes[i].AbsPosition.y + vertical_offset));
 	}
 
 	for (int i=0; i<free_node; i++)
 	{
-		nodes[i].AbsPosition.y -= minoffset;
+		nodes[i].AbsPosition.y += vertical_offset;
 	}
 
 	resetPosition(Vector3::ZERO, setInitPosition);
@@ -1127,28 +1108,22 @@ void Beam::resetPosition(float px, float pz, bool setInitPosition)
 void Beam::resetPosition(float px, float pz, bool setInitPosition, float miny)
 {
 	// horizontal displacement
-	Vector3 offset = Vector3(px, -iPosition.y, pz) - nodes[0].AbsPosition;
-	for (int i=0; i < free_node; i++)
+	Vector3 offset = Vector3(px, 0, pz) - nodes[0].AbsPosition;
+	for (int i=0; i<free_node; i++)
 	{
 		nodes[i].AbsPosition += offset;
 	}
 
 	// vertical displacement
-	float minoffset = nodes[0].AbsPosition.y - miny;
-
-	for (int i=1; i < free_node; i++)
-	{
-		minoffset = std::min(nodes[i].AbsPosition.y - miny, minoffset);
-	}
-
+	float vertical_offset = -nodes[lowestnode].AbsPosition.y + miny;
 	if (gEnv->terrainManager->getWater())
 	{
-		minoffset = std::min(-gEnv->terrainManager->getWater()->getHeight(), minoffset);
+		vertical_offset += std::max(0.0f, gEnv->terrainManager->getWater()->getHeight() - (nodes[lowestnode].AbsPosition.y + vertical_offset));
 	}
 
 	for (int i=0; i<free_node; i++)
 	{
-		nodes[i].AbsPosition.y -= minoffset;
+		nodes[i].AbsPosition.y += vertical_offset;
 	}
 
 	resetPosition(Vector3::ZERO, setInitPosition);
@@ -1212,28 +1187,37 @@ bool Beam::hasDriverSeat()
 	return driverSeat != 0;
 }
 
-int Beam::calculateDriverPos(Vector3 &pos, Quaternion &rot)
+void Beam::calculateDriverPos(Vector3 &out_pos, Quaternion &out_rot)
 {
+	assert(this->driverSeat != nullptr);
+
 	BES_GFX_START(BES_GFX_calculateDriverPos);
-	if (!hasDriverSeat()) return 1;
 
-	Vector3 diffY = nodes[driverSeat->nodey].smoothpos - nodes[driverSeat->noderef].smoothpos;
-	Vector3 diffX = nodes[driverSeat->nodex].smoothpos - nodes[driverSeat->noderef].smoothpos;
+	Vector3 x_pos = nodes[driverSeat->nodex].smoothpos;
+	Vector3 y_pos = nodes[driverSeat->nodey].smoothpos;
+	Vector3 center_pos = nodes[driverSeat->noderef].smoothpos;
 
-	Vector3 normal = (diffY.crossProduct(diffX)).normalisedCopy();
+	Vector3 x_vec = x_pos - center_pos;
+	Vector3 y_vec = y_pos - center_pos;
 
-	// position
-	Vector3 position = nodes[driverSeat->noderef].smoothpos + driverSeat->offsetx * diffX + driverSeat->offsety * diffY;
+	Vector3 normal = (y_vec.crossProduct(x_vec)).normalisedCopy();
 
-	pos = position + normal * driverSeat->offsetz;
+	// Output position
+	Vector3 pos = center_pos;
+	pos += (this->driverSeat->offsetx * x_vec);
+	pos += (this->driverSeat->offsety * y_vec);
+	pos += (this->driverSeat->offsetz * normal);
+	out_pos = pos;
 
-	// orientation
-	Vector3 refx = diffX.normalisedCopy();
-	Vector3 refy = refx.crossProduct(normal);
+	// Output orientation
+	Vector3 x_vec_norm = x_vec.normalisedCopy();
+	Vector3 y_vec_norm = x_vec_norm.crossProduct(normal);
+	Quaternion rot(x_vec_norm, normal, y_vec_norm);
+	rot = rot * driverSeat->rot;
+	rot = rot * Quaternion(Degree(180), Vector3::UNIT_Y); // rotate towards the driving direction
+	out_rot = rot;
 
-	rot = Quaternion(refx, normal, refy) * driverSeat->rot * Quaternion(Degree(180), Vector3::UNIT_Y); // rotate towards the driving direction
 	BES_GFX_STOP(BES_GFX_calculateDriverPos);
-	return 0;
 }
 
 void Beam::resetAutopilot()
@@ -1301,23 +1285,30 @@ void Beam::SyncReset()
 	cc_mode = false;
 	fusedrag=Vector3::ZERO;
 	origin=Vector3::ZERO;
-	for (unsigned int i=0; i<interPointCD.size(); i++)
-	{
-		interPointCD[i]->reset();
-	}
-	for (unsigned int i=0; i<intraPointCD.size(); i++)
-	{
-		intraPointCD[i]->reset();
-	}
 	float yPos = nodes[lowestnode].AbsPosition.y;
 
 	Vector3 cur_position = nodes[0].AbsPosition;
 	Vector3 cur_dir = nodes[0].AbsPosition;
-	if (cameranodepos[0] >= 0 && cameranodepos[0] < MAX_NODES)
+	if (cameranodepos[0] != cameranodedir[0] && cameranodepos[0] >= 0 && cameranodepos[0] < MAX_NODES && cameranodedir[0] >= 0 && cameranodedir[0] < MAX_NODES)
 	{
 		cur_dir = nodes[cameranodepos[0]].RelPosition - nodes[cameranodedir[0]].RelPosition;
+	} else if (free_node > 1)
+	{
+		float max_dist = 0.0f;
+		int furthest_node = 1;
+		for (int i=0; i<free_node; i++)
+		{
+			float dist = nodes[i].RelPosition.squaredDistance(nodes[0].RelPosition);
+			if (dist > max_dist)
+			{
+				max_dist = dist;
+				furthest_node = i;
+			}
+		}
+		cur_dir = nodes[0].RelPosition - nodes[furthest_node].RelPosition;
 	}
 	float cur_rot = atan2(cur_dir.dotProduct(Vector3::UNIT_X), cur_dir.dotProduct(-Vector3::UNIT_Z));
+	cur_rot = std::round(cur_rot * 100) / 100;
 	if (engine) engine->start();
 	for (int i=0; i<free_node; i++)
 	{
@@ -1329,21 +1320,17 @@ void Beam::SyncReset()
 		nodes[i].lastdrag=Vector3::ZERO;
 		nodes[i].buoyanceForce=Vector3::ZERO;
 		nodes[i].lastdrag=Vector3::ZERO;
-		//this is problematic, we should also find what is locked to this, and unlock it
-		nodes[i].lockednode=0;
-		nodes[i].isSkin=nodes[i].iIsSkin;
 	}
 
 	for (int i=0; i<free_beam; i++)
 	{
 		beams[i].broken=0;
-		beams[i].maxposstress=beams[i].default_deform;
-		beams[i].maxnegstress=-beams[i].default_deform;
-		beams[i].minmaxposnegstress=beams[i].default_deform;
-		beams[i].strength=beams[i].iStrength;
-		beams[i].plastic_coef=beams[i].default_plastic_coef;
+		beams[i].maxposstress=default_beam_deform[i];
+		beams[i].maxnegstress=-default_beam_deform[i];
+		beams[i].minmaxposnegstress=default_beam_deform[i];
+		beams[i].strength=initial_beam_strength[i];
+		beams[i].plastic_coef=default_beam_plastic_coef[i];
 		beams[i].L=beams[i].refL;
-		beams[i].lastforce=Vector3::ZERO;
 		beams[i].stress=0.0;
 		beams[i].disabled=false;
 		if (beams[i].mSceneNode && beams[i].type!=BEAM_VIRTUAL && beams[i].type!=BEAM_INVISIBLE && beams[i].type!=BEAM_INVISIBLE_HYDRO)
@@ -1360,12 +1347,12 @@ void Beam::SyncReset()
 		if (it->lockTruck)
 		{
 			it->lockTruck->determineLinkedBeams();
-			it->lockTruck->hideSkeleton(it->lockTruck->skeleton==2, false);
+			it->lockTruck->hideSkeleton(false);
 
-			for (std::list<Beam*>::iterator it_truck = it->lockTruck->linkedBeams.begin(); it_truck != it->lockTruck->linkedBeams.end(); ++it)
+			for (std::list<Beam*>::iterator it_truck = it->lockTruck->linkedBeams.begin(); it_truck != it->lockTruck->linkedBeams.end(); ++it_truck)
 			{
 				(*it_truck)->determineLinkedBeams();
-				(*it_truck)->hideSkeleton((*it_truck)->skeleton==2, false);
+				(*it_truck)->hideSkeleton(false);
 			}
 		}
 		it->beam->mSceneNode->detachAllObjects();
@@ -1375,11 +1362,10 @@ void Beam::SyncReset()
 		it->lockNode      = 0;
 		it->lockTruck     = 0;
 		it->beam->p2      = &nodes[0];
-		it->beam->p2truck = 0;
+		it->beam->p2truck = false;
 		it->beam->L       = (nodes[0].AbsPosition - it->hookNode->AbsPosition).length();
 	}
 
-	for (int i=0; i<free_contacter; i++) contacters[i].contacted = 0;
 	for (std::vector <rope_t>::iterator it = ropes.begin(); it != ropes.end(); it++) it->lockedto=0;
 	for (std::vector <tie_t>::iterator it = ties.begin(); it != ties.end(); it++)
 	{
@@ -1421,107 +1407,22 @@ void Beam::SyncReset()
 	reset_requested = 0;
 }
 
-// TODO: Move this to beamfactory
-// this is called by the beamfactory worker thread
-void Beam::threadentry()
-{
-	Beam **trucks = ttrucks;
-	dtperstep = global_dt / (Real)tsteps;
-
-	for (curtstep=0; curtstep<tsteps; curtstep++)
-	{
-		num_simulated_trucks = 0;
-
-		for (int t=0; t<tnumtrucks; t++)
-		{
-			if (trucks[t] && (trucks[t]->simulated = trucks[t]->calcForcesEulerPrepare(curtstep==0, dtperstep, curtstep, tsteps)))
-			{
-				num_simulated_trucks++;
-				trucks[t]->calledby    = this;
-				trucks[t]->curtstep    = this->curtstep;
-				trucks[t]->tsteps      = this->tsteps;
-				trucks[t]->dtperstep   = this->dtperstep;
-				trucks[t]->thread_task = THREAD_BEAMFORCESEULER;
-			}
-		}
-		for (int t=0; t<tnumtrucks; t++)
-		{
-			if (trucks[t])
-				trucks[t]->num_simulated_trucks = this->num_simulated_trucks;
-		}
-		if (num_simulated_trucks < 2 || !BeamFactory::getSingleton().beamThreadPool)
-		{
-			for (int t=0; t<tnumtrucks; t++)
-			{
-				if (trucks[t] && trucks[t]->simulated)
-				{
-					trucks[t]->calcForcesEulerCompute(curtstep==0, dtperstep, curtstep, tsteps);
-					if (!disableTruckTruckSelfCollisions)
-					{
-						trucks[t]->intraTruckCollisionsPrepare(dtperstep);
-						runThreadTask(trucks[t], THREAD_INTRA_TRUCK_COLLISIONS);
-						trucks[t]->intraTruckCollisionsFinal(dtperstep);
-					}
-					break;
-				}
-			}
-		} else
-		{
-			task_count[THREAD_BEAMFORCESEULER] = num_simulated_trucks;
-
-			std::list<IThreadTask*> tasks;
-
-			// Push tasks into thread pool
-			for (int t=0; t<tnumtrucks; t++)
-			{
-				if (trucks[t] && trucks[t]->simulated)
-				{
-					tasks.emplace_back(trucks[t]);
-				}
-			}
-
-			BeamFactory::getSingleton().beamThreadPool->enqueue(tasks);
-
-			// Wait for all tasks to complete
-			MUTEX_LOCK(&task_count_mutex[THREAD_BEAMFORCESEULER]);
-			while (task_count[THREAD_BEAMFORCESEULER] > 0)
-			{
-				pthread_cond_wait(&task_count_cv[THREAD_BEAMFORCESEULER], &task_count_mutex[THREAD_BEAMFORCESEULER]);
-			}
-			MUTEX_UNLOCK(&task_count_mutex[THREAD_BEAMFORCESEULER]);
-		}
-		for (int t=0; t<tnumtrucks; t++)
-		{
-			if (trucks[t] && trucks[t]->simulated)
-				trucks[t]->calcForcesEulerFinal(curtstep==0, dtperstep, curtstep, tsteps);
-		}
-
-		if (!disableTruckTruckCollisions && num_simulated_trucks > 1)
-		{
-			BES_START(BES_CORE_Contacters);
-			interTruckCollisionsPrepare(dtperstep);
-			runThreadTask(this, THREAD_INTER_TRUCK_COLLISIONS);
-			interTruckCollisionsFinal(dtperstep);
-			BES_STOP(BES_CORE_Contacters);
-		}
-	}
-}
-
 //integration loop
 //bool frameStarted(const FrameEvent& evt)
 //this will be called once by frame and is responsible for animation of all the trucks!
 //the instance called is the one of the current ACTIVATED truck
-bool Beam::frameStep(Real dt)
+bool Beam::frameStep(int steps)
 {
 	BES_GFX_START(BES_GFX_framestep);
 
-	if (dt==0) return true;
+	if (steps == 0) return true;
 	if (!loading_finished) return true;
 	if (state >= SLEEPING) return true;
+
+	Real dt = PHYSICS_DT * steps;
+
 	if (mTimeUntilNextToggle > -1)
 		mTimeUntilNextToggle -= dt;
-	
-	int steps = 2000.0 * dt;
 
 	// TODO: move this to the correct spot
 	// update all dashboards
@@ -1589,33 +1490,33 @@ bool Beam::frameStep(Real dt)
 		// simulation update
 		if (BeamFactory::getSingleton().getThreadingMode() == THREAD_SINGLE)
 		{
-			dtperstep = dt / (Real)steps;
-			
 			for (int i=0; i<steps; i++)
 			{
 				int num_simulated_trucks = 0;
 
 				for (int t=0; t<numtrucks; t++)
 				{
-					if (trucks[t] && (trucks[t]->simulated = trucks[t]->calcForcesEulerPrepare(i==0, dtperstep, i, steps)))
+					if (trucks[t] && (trucks[t]->simulated = trucks[t]->calcForcesEulerPrepare(i==0, PHYSICS_DT, i, steps)))
 					{
 						num_simulated_trucks++;
-						trucks[t]->calcForcesEulerCompute(i==0, dtperstep, i, steps);
-						trucks[t]->calcForcesEulerFinal(i==0, dtperstep, i, steps);
+						trucks[t]->calcForcesEulerCompute(i==0, PHYSICS_DT, i, steps);
+						trucks[t]->calcForcesEulerFinal(i==0, PHYSICS_DT, i, steps);
 						if (!disableTruckTruckSelfCollisions)
 						{
-							trucks[t]->intraTruckCollisionsPrepare(dtperstep);
-							trucks[t]->intraTruckCollisionsCompute(dtperstep);
-							trucks[t]->intraTruckCollisionsFinal(dtperstep);
+							trucks[t]->intraTruckCollisions(PHYSICS_DT);
 						}
 					}
 				}
 				if (!disableTruckTruckCollisions && num_simulated_trucks > 1)
 				{
 					BES_START(BES_CORE_Contacters);
-					interTruckCollisionsPrepare(dtperstep);
-					interTruckCollisionsCompute(dtperstep);
-					interTruckCollisionsFinal(dtperstep);
+					for (int t=0; t<numtrucks; t++)
+					{
+						if (trucks[t] && trucks[t]->simulated)
+						{
+							trucks[t]->interTruckCollisions(PHYSICS_DT);
+						}
+					}
 					BES_STOP(BES_CORE_Contacters);
 				}
 			}
@@ -1682,8 +1583,6 @@ bool Beam::frameStep(Real dt)
 		if (BeamFactory::getSingleton().getThreadingMode() == THREAD_MULTI)
 		{
 			tsteps = steps;
-			ttrucks = trucks;
-			tnumtrucks = numtrucks;
 			BeamFactory::getSingleton()._WorkerPrepareStart();
 			BeamFactory::getSingleton()._WorkerSignalStart();
 		}
@@ -1918,9 +1817,9 @@ void Beam::calcAnimators(int flagstate, float &cstate, int &div, Real timer, flo
 	}
 
 	//torque
-	if (flag_state & ANIM_FLAG_TORQUE)
+	if (engine && flag_state & ANIM_FLAG_TORQUE)
 	{
-		float torque=engine->getCrankFactor();
+		float torque = engine->getCrankFactor();
 		if (torque <= 0.0f) torque = 0.0f;
 		if (torque >= previousCrank)
 			cstate -= torque / 10.0f;
@@ -1933,12 +1832,12 @@ void Beam::calcAnimators(int flagstate, float &cstate, int &div, Real timer, flo
 	}
 
 	//shifterseq, to amimate sequentiell shifting
-	if ((flag_state & ANIM_FLAG_SHIFTER) && option3 == 3.0f)
+	if (engine && (flag_state & ANIM_FLAG_SHIFTER) && option3 == 3.0f)
 	{
 	// opt1 &opt2 = 0   this is a shifter
 		if (!option1 &&  !option2)
 		{
-			int shifter=engine->getGear();
+			int shifter = engine->getGear();
 			if (shifter > previousGear)
 			{
 				cstate = 1.0f;
@@ -1979,9 +1878,9 @@ void Beam::calcAnimators(int flagstate, float &cstate, int &div, Real timer, flo
 	}
 
 	//shifterman1, left/right
-	if ((flag_state & ANIM_FLAG_SHIFTER) && option3 == 1.0f)
+	if (engine && (flag_state & ANIM_FLAG_SHIFTER) && option3 == 1.0f)
 	{
-		int shifter=engine->getGear();
+		int shifter = engine->getGear();
 		if (!shifter)
 		{
 			cstate = -0.5f;
@@ -1997,9 +1896,9 @@ void Beam::calcAnimators(int flagstate, float &cstate, int &div, Real timer, flo
 	}
 
 	//shifterman2, up/down
-	if ((flag_state & ANIM_FLAG_SHIFTER) && option3 == 2.0f)
+	if (engine && (flag_state & ANIM_FLAG_SHIFTER) && option3 == 2.0f)
 	{
-		int shifter=engine->getGear();
+		int shifter = engine->getGear();
 		cstate = 0.5f;
 		if (shifter < 0)
 		{
@@ -2013,10 +1912,10 @@ void Beam::calcAnimators(int flagstate, float &cstate, int &div, Real timer, flo
 	}
 
 	//shifterlinear, to amimate cockpit gearselect gauge and autotransmission stick
-	if ((flag_state & ANIM_FLAG_SHIFTER) && option3 == 4.0f)
+	if (engine && (flag_state & ANIM_FLAG_SHIFTER) && option3 == 4.0f)
 	{
-		int shifter=engine->getGear();
-		int numgears=engine->getNumGears();
+		int shifter = engine->getGear();
+		int numgears = engine->getNumGears();
 		cstate -= (shifter + 2.0) / (numgears + 2.0);
 		div++;
 	}
@@ -2038,17 +1937,17 @@ void Beam::calcAnimators(int flagstate, float &cstate, int &div, Real timer, flo
 	}
 
 	//engine tacho ( scales with maxrpm, default is 3500 )
-	if (flag_state & ANIM_FLAG_TACHO)
+	if (engine && flag_state & ANIM_FLAG_TACHO)
 	{
-		float tacho=engine->getRPM()/engine->getMaxRPM();
+		float tacho = engine->getRPM()/engine->getMaxRPM();
 		cstate -= tacho;
 		div++;
 	}
 
 	//turbo
-	if (flag_state & ANIM_FLAG_TURBO)
+	if (engine && flag_state & ANIM_FLAG_TURBO)
 	{
-		float turbo=engine->getTurboPSI()*3.34;
+		float turbo = engine->getTurboPSI()*3.34;
 		cstate -= turbo / 67.0f ;
 		div++;
 	}
@@ -2062,18 +1961,18 @@ void Beam::calcAnimators(int flagstate, float &cstate, int &div, Real timer, flo
 	}
 
 	//accelerator
-	if (flag_state & ANIM_FLAG_ACCEL)
+	if (engine && flag_state & ANIM_FLAG_ACCEL)
 	{
-		float accel=engine->getAcc();
+		float accel = engine->getAcc();
 		cstate -= accel + 0.06f;
 		//( small correction, get acc is nver smaller then 0.06.
 		div++;
 	}
 
 		//clutch
-	if (flag_state & ANIM_FLAG_CLUTCH)
+	if (engine && flag_state & ANIM_FLAG_CLUTCH)
 	{
-		float clutch=engine->getClutch();
+		float clutch = engine->getClutch();
 		cstate -= abs(1.0f - clutch);
 		div++;
 	}
@@ -2625,19 +2524,7 @@ void Beam::calcShocks2(int beam_i, Real difftoBeamL, Real &k, Real &d, Real dt, 
 	beams[i].shock->lastpos = difftoBeamL;
 }
 
-// truck a - truck b collisions
-void Beam::interTruckCollisionsPrepare(Real dt)
-{
-	Beam** trucks = BeamFactory::getSingleton().getTrucks();
-	int numtrucks = BeamFactory::getSingleton().getTruckCount();
-
-	for (unsigned int i=0; i<interPointCD.size(); i++)
-	{
-		interPointCD[i]->update(trucks, numtrucks);
-	}
-}
-
-void Beam::interTruckCollisionsCompute(Real dt, int chunk_index /*= 0*/, int chunk_number /*= 1*/)
+void Beam::interTruckCollisions(Real dt)
 {
 	Beam** trucks = BeamFactory::getSingleton().getTrucks();
 	int numtrucks = BeamFactory::getSingleton().getTruckCount();
@@ -2662,210 +2549,174 @@ void Beam::interTruckCollisionsCompute(Real dt, int chunk_index /*= 0*/, int chu
 	node_t* nb;
 	node_t* no;
 
-	for (int t=0; t<numtrucks; t++)
+	interPointCD->update(this, trucks, numtrucks);
+	if (!collisionRelevant) return;
+	//If you change any of the below "ifs" concerning trucks then you should
+	//also consider changing the parallel "ifs" inside PointColDetector
+	//see "pointCD" above.
+	//Performance some times forces ugly architectural designs....
+
+	trwidth = collrange;
+
+	for (int i=0; i<free_collcab; i++)
 	{
-		//If you change any of the below "ifs" concerning trucks then you should
-		//also consider changing the parallel "ifs" inside PointColDetector
-		//see "pointCD" above.
-		//Performance some times forces ugly architectural designs....
-		if (!trucks[t] || !trucks[t]->collisionRelevant || trucks[t]->state >= SLEEPING) continue;
-
-		trwidth=trucks[t]->collrange;
-
-		int chunk_size = trucks[t]->free_collcab / chunk_number;
-		int end_index = (chunk_index+1)*chunk_size;
-
-		if (chunk_index+1 == chunk_number)
+		inter_collcabrate[i].update = true;
+		if (inter_collcabrate[i].rate > 0)
 		{
-			end_index = trucks[t]->free_collcab;
+			inter_collcabrate[i].rate--;
+			inter_collcabrate[i].update = false;
+			continue;
 		}
 
-		for (int i=chunk_index*chunk_size; i<end_index; i++)
+		tmpv = collcabs[i]*3;
+		no = &nodes[cabs[tmpv]];
+		na = &nodes[cabs[tmpv+1]];
+		nb = &nodes[cabs[tmpv+2]];
+
+		int distance = inter_collcabrate[i].distance + std::min(12.0f * no->Velocity.length() / 55.5f, 12.0f);
+		distance = std::max(1, distance);
+
+		interPointCD->query(no->AbsPosition
+			, na->AbsPosition
+			, nb->AbsPosition, trwidth*distance);
+
+		if (interPointCD->hit_count > 0)
 		{
-			trucks[t]->inter_collcabrate[i].update=true;
-			if (trucks[t]->inter_collcabrate[i].rate>0)
+			//calculate transform matrices
+			bx  =  na->RelPosition;
+			by  =  nb->RelPosition;
+			bx -= no->RelPosition;
+			by -= no->RelPosition;
+			bz  = bx.crossProduct(by);
+			bz.normalise();
+			//coordinates change matrix
+			forward.FromAxes(bx,by,bz);
+			forward = forward.Inverse();
+		}
+
+		inter_collcabrate[i].calcforward = true;
+		for (int h=0; h<interPointCD->hit_count; h++)
+		{
+			hitnodeid = interPointCD->hit_list[h]->nodeid;
+			hittruckid = interPointCD->hit_list[h]->truckid;
+			hitnode = &trucks[hittruckid]->nodes[hitnodeid];
+
+			//ignore self-contact here
+			if (hittruckid == trucknum) continue;
+
+			hittruck = trucks[hittruckid];
+
+			//change coordinates
+			point = forward * (hitnode->AbsPosition - no->AbsPosition);
+
+			//test
+			if (point.x >= 0 && point.y >= 0 && (point.x + point.y) <= 1.0 && point.z <= trwidth && point.z >= -trwidth)
 			{
-				trucks[t]->inter_collcabrate[i].rate--;
-				trucks[t]->inter_collcabrate[i].update=false;
-				continue;
-			}
+				inter_collcabrate[i].calcforward = false;
 
-			tmpv=trucks[t]->collcabs[i]*3;
-			no=&trucks[t]->nodes[trucks[t]->cabs[tmpv]];
-			na=&trucks[t]->nodes[trucks[t]->cabs[tmpv+1]];
-			nb=&trucks[t]->nodes[trucks[t]->cabs[tmpv+2]];
+				//collision
+				plnormal = bz;
 
-			int distance = trucks[t]->inter_collcabrate[i].distance + std::min(12.0f * no->Velocity.length() / 55.5f, 12.0f);
-			distance = std::max(1, distance);
+				//some more accuracy for the normal
+				plnormal.normalise();
 
-			interPointCD[chunk_index]->query(no->AbsPosition
-				, na->AbsPosition
-				, nb->AbsPosition, trwidth*distance);
+				float penetration = 0.0f;
 
-			trucks[t]->inter_collcabrate[i].calcforward=true;
-			for (int h=0; h<interPointCD[chunk_index]->hit_count; h++)
-			{
-				hitnodeid=interPointCD[chunk_index]->hit_list[h]->nodeid;
-				hittruckid=interPointCD[chunk_index]->hit_list[h]->truckid;
-				hitnode=&trucks[hittruckid]->nodes[hitnodeid];
-
-				//ignore self-contact here
-				if (hittruckid==t) continue;
-
-				hittruck=trucks[hittruckid];
-
-				//calculate transform matrices
-				if (trucks[t]->inter_collcabrate[i].calcforward)
+				//Find which side most of the connected nodes (through beams) are
+				if (hittruck->nodetonodeconnections[hitnodeid].size() > 3)
 				{
-					trucks[t]->inter_collcabrate[i].calcforward=false;
-					bx=na->RelPosition;
-					by=nb->RelPosition;
-					bx-=no->RelPosition;
-					by-=no->RelPosition;
-					bz=bx.crossProduct(by);
-					bz=fast_normalise(bz);
-					//coordinates change matrix
-					forward.SetColumn(0, bx);
-					forward.SetColumn(1, by);
-					forward.SetColumn(2, bz);
-					forward=forward.Inverse();
-				}
+					int posside = 0;
+					int negside = 0;
 
-				//change coordinates
-				point=forward*(hitnode->AbsPosition-no->AbsPosition);
-
-				//test
-				if (point.x>=0 && point.y>=0 && (point.x+point.y)<=1.0 && point.z<=trwidth && point.z>=-trwidth)
-				{
-					//collision
-					plnormal=bz;
-
-					//some more accuracy for the normal
-					plnormal.normalise();
-
-					float penetration=0.0f;
-
-					//Find which side most of the connected nodes (through beams) are
-					if (hittruck->nodetonodeconnections[hitnodeid].size()>3)
+					for (unsigned int ni=0; ni < hittruck->nodetonodeconnections[hitnodeid].size(); ni++)
 					{
-						//float sumofdistances=0.0f;
-						int posside=0;
-						int negside=0;
-						float tmppz=point.z;
-						float distance;
-
-						for (unsigned int ni=0;ni<hittruck->nodetonodeconnections[hitnodeid].size();ni++)
-						{
-							distance=plnormal.dotProduct(hittruck->nodes[hittruck->nodetonodeconnections[hitnodeid][ni]].AbsPosition-no->AbsPosition);
-							if (distance>=0) posside++; else negside++;
-						}
-
-						//Current hitpoint's position has triple the weight
-						if (point.z>=0) posside+=3;
-						else negside+=3;
-
-						if (negside>posside)
-						{
-							plnormal=-plnormal;
-							tmppz=-tmppz;
-						}
-
-						penetration=(trwidth-tmppz);
-					} else
-					{
-						//If we are on the other side of the triangle invert the triangle's normal
-						if (point.z<0) plnormal=-plnormal;
-						penetration=(trwidth-fabs(point.z));
+						if (plnormal.dotProduct(hittruck->nodes[hittruck->nodetonodeconnections[hitnodeid][ni]].AbsPosition-no->AbsPosition) >= 0)
+							posside++;
+						else
+							negside++;
 					}
 
-					//Find the point's velocity relative to the triangle
-					vecrelVel=(hitnode->Velocity-
-						(no->Velocity*(-point.x-point.y+1.0f)+na->Velocity*point.x
-						+nb->Velocity*point.y));
+					//Current hitpoint's position has triple the weight
+					if (point.z >= 0)
+						posside += 3;
+					else
+						negside += 3;
 
-					//Find the velocity perpendicular to the triangle
-					float velForce=vecrelVel.dotProduct(plnormal);
-					//if it points away from the triangle the ignore it (set it to 0)
-					if (velForce<0.0f) velForce=-velForce;
-					else velForce=0.0f;
-
-					//Velocity impulse
-					float vi=hitnode->mass*inverted_dt*(velForce+inverted_dt*penetration)*0.5f;
-
-					//MUTEX_LOCK(&itc_node_access_mutex);
-					//The force that the triangle puts on the point
-					float trfnormal=(no->Forces*(-point.x-point.y+1.0f)+na->Forces*point.x
-						+nb->Forces*point.y).dotProduct(plnormal);
-					//(applied only when it is towards the point)
-					if (trfnormal<0.0f) trfnormal=0.0f;
-
-					//The force that the point puts on the triangle
-					
-					float pfnormal=hitnode->Forces.dotProduct(plnormal);
-					//(applied only when it is towards the triangle)
-					if (pfnormal>0.0f) pfnormal=0.0f;
-
-					float fl=(vi+trfnormal-pfnormal)*0.5f;
-
-					forcevec=Vector3::ZERO;
-					float nso;
-
-					//Calculate the collision forces
-					gEnv->collisions->primitiveCollision(hitnode, forcevec, vecrelVel, plnormal, ((float) dt), trucks[t]->submesh_ground_model, &nso, penetration, fl);
-
-					hitnode->Forces+=forcevec;
-					// no network special case for now
-					//if (trucks[t]->state==NETWORKED)
-
-					no->Forces-=(-point.x-point.y+1.0f)*forcevec;
-					na->Forces-=(point.x)*forcevec;
-					nb->Forces-=(point.y)*forcevec;
-					//MUTEX_UNLOCK(&itc_node_access_mutex);
+					if (negside > posside)
+					{
+						plnormal = -plnormal;
+						penetration = (trwidth + point.z);
+					} else
+					{
+						penetration = (trwidth - point.z);
+					}
+				} else
+				{
+					//If we are on the other side of the triangle invert the triangle's normal
+					if (point.z < 0) plnormal = -plnormal;
+					penetration = (trwidth - fabs(point.z));
 				}
+
+				//Find the point's velocity relative to the triangle
+				vecrelVel = (hitnode->Velocity - (no->Velocity * (-point.x - point.y + 1.0f) + na->Velocity * point.x + nb->Velocity * point.y));
+
+				//Find the velocity perpendicular to the triangle
+				float velForce = vecrelVel.dotProduct(plnormal);
+				//if it points away from the triangle the ignore it (set it to 0)
+				if (velForce < 0.0f) velForce = -velForce;
+				else velForce = 0.0f;
+
+				//Velocity impulse
+				float vi = hitnode->mass * inverted_dt * (velForce + inverted_dt * penetration) * 0.5f;
+
+				//The force that the triangle puts on the point
+				float trfnormal = (no->Forces * (-point.x - point.y + 1.0f) + na->Forces * point.x + nb->Forces * point.y).dotProduct(plnormal);
+				//(applied only when it is towards the point)
+				trfnormal = std::max(0.0f, trfnormal);	
+
+				//The force that the point puts on the triangle
+				
+				float pfnormal = hitnode->Forces.dotProduct(plnormal);
+				//(applied only when it is towards the triangle)
+				pfnormal = std::min(pfnormal, 0.0f);	
+
+				float fl = (vi + trfnormal - pfnormal) * 0.5f;
+
+				forcevec = Vector3::ZERO;
+				float nso;
+
+				//Calculate the collision forces
+				gEnv->collisions->primitiveCollision(hitnode, forcevec, vecrelVel, plnormal, ((float) dt), submesh_ground_model, &nso, penetration, fl);
+
+				hitnode->Forces += forcevec;
+
+				no->Forces -= (-point.x - point.y + 1.0f) * forcevec;
+				na->Forces -= (point.x) * forcevec;
+				nb->Forces -= (point.y) * forcevec;
 			}
 		}
-	}
-}
-
-void Beam::interTruckCollisionsFinal(Real dt)
-{
-	Beam** trucks = BeamFactory::getSingleton().getTrucks();
-	int numtrucks = BeamFactory::getSingleton().getTruckCount();
-
-	for (int t=0; t<numtrucks; t++)
-	{
-		if (!trucks[t] || !trucks[t]->collisionRelevant || trucks[t]->state >= SLEEPING) continue;
-
-		for (int i=0; i<trucks[t]->free_collcab; i++)
+		if (inter_collcabrate[i].update)
 		{
-			if (!trucks[t]->inter_collcabrate[i].update) continue;
-			if (trucks[t]->inter_collcabrate[i].calcforward)
+			if (inter_collcabrate[i].calcforward)
 			{
-				trucks[t]->inter_collcabrate[i].rate = trucks[t]->inter_collcabrate[i].distance - 1;
-				if (trucks[t]->inter_collcabrate[i].distance < 13)
+				inter_collcabrate[i].rate = inter_collcabrate[i].distance - 1;
+				if (inter_collcabrate[i].distance < 13)
 				{
-					trucks[t]->inter_collcabrate[i].distance++;
+					inter_collcabrate[i].distance++;
 				}
 			} else
 			{
-				trucks[t]->inter_collcabrate[i].distance /= 2;
-				trucks[t]->inter_collcabrate[i].rate = 0;
+				inter_collcabrate[i].distance /= 2;
+				inter_collcabrate[i].rate = 0;
 			}
 		}
 	}
 }
 
-// truck a - truck a collisions
-void Beam::intraTruckCollisionsPrepare(Real dt)
+void Beam::intraTruckCollisions(Real dt)
 {
-	for (unsigned int i=0; i<intraPointCD.size(); i++)
-	{
-		intraPointCD[i]->update(this);
-	}
-}
+	intraPointCD->update(this);
 
-void Beam::intraTruckCollisionsCompute(Real dt, int chunk_index /*= 0*/, int chunk_number /*= 1*/)
-{
 	float inverted_dt = 1.0f / dt;
 
 	Matrix3 forward;
@@ -2886,144 +2737,125 @@ void Beam::intraTruckCollisionsCompute(Real dt, int chunk_index /*= 0*/, int chu
 
 	trwidth=collrange;
 
-	int chunk_size = free_collcab / chunk_number;
-	int end_index = (chunk_index+1)*chunk_size;
-
-	if (chunk_index+1 == chunk_number)
+	for (int i=0; i<free_collcab; i++)
 	{
-		end_index = free_collcab;
-	}
-
-	for (int i=chunk_index*chunk_size; i<end_index; i++)
-	{
-		intra_collcabrate[i].update=true;
-		if (intra_collcabrate[i].rate>0)
+		intra_collcabrate[i].update = true;
+		if (intra_collcabrate[i].rate > 0)
 		{
 			intra_collcabrate[i].rate--;
-			intra_collcabrate[i].update=false;
+			intra_collcabrate[i].update = false;
 			continue;
 		}
 
-		tmpv=collcabs[i]*3;
-		no=&nodes[cabs[tmpv]];
-		na=&nodes[cabs[tmpv+1]];
-		nb=&nodes[cabs[tmpv+2]];
+		tmpv = collcabs[i]*3;
+		no = &nodes[cabs[tmpv]];
+		na = &nodes[cabs[tmpv+1]];
+		nb = &nodes[cabs[tmpv+2]];
 
-		intraPointCD[chunk_index]->query(no->AbsPosition
+		intraPointCD->query(no->AbsPosition
 			, na->AbsPosition
 			, nb->AbsPosition, trwidth);
 
-		bool calcforward=true;
-		intra_collcabrate[i].calcforward=true;
-		for (int h=0; h<intraPointCD[chunk_index]->hit_count;h++)
+		if (intraPointCD->hit_count > 0)
 		{
-			hitnodeid=intraPointCD[chunk_index]->hit_list[h]->nodeid;
-			hitnode=&nodes[hitnodeid];
+			//calculate transform matrices
+			bx  = na->RelPosition;
+			by  = nb->RelPosition;
+			bx -= no->RelPosition;
+			by -= no->RelPosition;
+			bz  = bx.crossProduct(by);
+			bz.normalise();
+			//coordinates change matrix
+			forward.FromAxes(bx,by,bz);
+			forward = forward.Inverse();
+		}
+
+		intra_collcabrate[i].calcforward = true;
+		for (int h=0; h<intraPointCD->hit_count;h++)
+		{
+			hitnodeid = intraPointCD->hit_list[h]->nodeid;
+			hitnode = &nodes[hitnodeid];
 
 			//ignore wheel/chassis self contact
 			//if (hitnode->iswheel && !(trucks[t]->requires_wheel_contact)) continue;
 			if (hitnode->iswheel) continue;
-			if (no==hitnode || na==hitnode || nb==hitnode) continue;
-
-			//calculate transform matrices
-			if (calcforward)
-			{
-				calcforward=false;
-				bx=na->RelPosition;
-				by=nb->RelPosition;
-				bx-=no->RelPosition;
-				by-=no->RelPosition;
-				bz=bx.crossProduct(by);
-				bz=fast_normalise(bz);
-				//coordinates change matrix
-				forward.SetColumn(0, bx);
-				forward.SetColumn(1, by);
-				forward.SetColumn(2, bz);
-				forward=forward.Inverse();
-			}
+			if (no == hitnode || na == hitnode || nb == hitnode) continue;
 
 			//change coordinates
 			point = forward * (hitnode->AbsPosition - no->AbsPosition);
 
 			//test
-			if (point.x>=0 && point.y>=0 && (point.x+point.y)<=1.0 && point.z<=trwidth && point.z>=-trwidth)
+			if (point.x >= 0 && point.y >= 0 && (point.x + point.y) <= 1.0 && point.z <= trwidth && point.z >= -trwidth)
 			{
 				//collision
-				intra_collcabrate[i].calcforward=false;
-				plnormal=bz;
+				intra_collcabrate[i].calcforward = false;
+				plnormal = bz;
 
 				//some more accuracy for the normal
 				plnormal.normalise();
 
-				float penetration=0.0f;
+				float penetration = 0.0f;
 
-				if (point.z<0) plnormal=-plnormal;
-				penetration=(trwidth-fabs(point.z));
+				if (point.z < 0) plnormal =- plnormal;
+				penetration = (trwidth - fabs(point.z));
 
 				//Find the point's velocity relative to the triangle
-				vecrelVel=(hitnode->Velocity-
-					(no->Velocity*(-point.x-point.y+1.0f)+na->Velocity*point.x
-					+nb->Velocity*point.y));
+				vecrelVel = (hitnode->Velocity - (no->Velocity * (-point.x - point.y + 1.0f) + na->Velocity * point.x + nb->Velocity * point.y));
 
 				//Find the velocity perpendicular to the triangle
-				float velForce=vecrelVel.dotProduct(plnormal);
+				float velForce = vecrelVel.dotProduct(plnormal);
 				//if it points away from the triangle the ignore it (set it to 0)
-				if (velForce<0.0f) velForce=-velForce;
-				else velForce=0.0f;
+				if (velForce < 0.0f)
+				{
+					velForce = -velForce;
+				} else
+				{
+					velForce = 0.0f;
+				}
 
 				//Velocity impulse
-				float vi=hitnode->mass*inverted_dt*(velForce+inverted_dt*penetration)*0.5f;
+				float vi = hitnode->mass * inverted_dt * (velForce + inverted_dt * penetration) * 0.5f;
 
-				//MUTEX_LOCK(&itc_node_access_mutex);
 				//The force that the triangle puts on the point
-				float trfnormal=(no->Forces*(-point.x-point.y+1.0f)+na->Forces*point.x
-					+nb->Forces*point.y).dotProduct(plnormal);
+				float trfnormal = (no->Forces * (-point.x - point.y + 1.0f) + na->Forces * point.x
+					+ nb->Forces * point.y).dotProduct(plnormal);
 				//(applied only when it is towards the point)
-				if (trfnormal<0.0f) trfnormal=0.0f;
+				trfnormal = std::max(0.0f, trfnormal);
 
 				//The force that the point puts on the triangle
-				float pfnormal=hitnode->Forces.dotProduct(plnormal);
+				float pfnormal = hitnode->Forces.dotProduct(plnormal);
 				//(applied only when it is towards the triangle)
-				if (pfnormal>0.0f) pfnormal=0.0f;
+				pfnormal = std::min(pfnormal, 0.0f);
 
-				float fl=(vi+trfnormal-pfnormal)*0.5f;
+				float fl = (vi + trfnormal - pfnormal) * 0.5f;
 
-				forcevec=Vector3::ZERO;
+				forcevec = Vector3::ZERO;
 				float nso;
 
 				//Calculate the collision forces
 				gEnv->collisions->primitiveCollision(hitnode, forcevec, vecrelVel, plnormal, ((float) dt), submesh_ground_model, &nso, penetration, fl);
 
-				hitnode->Forces+=forcevec;
+				hitnode->Forces += forcevec;
 
-				// no network special case for now
-				//if (trucks[t]->state==NETWORKED)
-
-				no->Forces-=(-point.x-point.y+1.0f)*forcevec;
-				na->Forces-=(point.x)*forcevec;
-				nb->Forces-=(point.y)*forcevec;
-				//MUTEX_UNLOCK(&itc_node_access_mutex);
+				no->Forces -= (-point.x - point.y + 1.0f) * forcevec;
+				na->Forces -= (point.x) * forcevec;
+				nb->Forces -= (point.y) * forcevec;
 			}
 		}
-	}
-}
-
-void Beam::intraTruckCollisionsFinal(Real dt)
-{
-	for (int i=0; i<free_collcab; i++)
-	{
-		if (!intra_collcabrate[i].update) continue;
-		if (intra_collcabrate[i].calcforward)
+		if (intra_collcabrate[i].update)
 		{
-			intra_collcabrate[i].rate = intra_collcabrate[i].distance - 1;
-			if (intra_collcabrate[i].distance < 13)
+			if (intra_collcabrate[i].calcforward)
 			{
-				intra_collcabrate[i].distance++;
+				intra_collcabrate[i].rate = intra_collcabrate[i].distance - 1;
+				if (intra_collcabrate[i].distance < 13)
+				{
+					intra_collcabrate[i].distance++;
+				}
+			} else
+			{
+				intra_collcabrate[i].distance /= 2;
+				intra_collcabrate[i].rate = 0;
 			}
-		} else
-		{
-			intra_collcabrate[i].distance /= 2;
-			intra_collcabrate[i].rate = 0;
 		}
 	}
 }
@@ -3042,7 +2874,7 @@ void Beam::updateSkidmarks()
 		// create skidmark object for wheels with data if not existing
 		if (!skidtrails[i])
 		{
-			skidtrails[i] = new Skidmark(&wheels[i], beamsRoot, 300, 200);
+			skidtrails[i] = new Skidmark(&wheels[i], beamsRoot, 300, 20);
 		}
 
 		skidtrails[i]->updatePoint();
@@ -3098,7 +2930,39 @@ Quaternion Beam::specialGetRotationTo(const Vector3& src, const Vector3& dest) c
 	return q;
 }
 
-
+void Beam::SetPropsCastShadows(bool do_cast_shadows)
+{
+	if (cabNode && cabNode->numAttachedObjects() && cabNode->getAttachedObject(0))
+	{
+		((Entity*)(cabNode->getAttachedObject(0)))->setCastShadows(do_cast_shadows);
+	}
+	int i;
+	for (i=0; i<free_prop; i++)
+	{
+		if (props[i].scene_node && props[i].scene_node->numAttachedObjects())
+		{
+			props[i].scene_node->getAttachedObject(0)->setCastShadows(do_cast_shadows);
+		}
+		if (props[i].wheel && props[i].wheel->numAttachedObjects())
+		{
+			props[i].wheel->getAttachedObject(0)->setCastShadows(do_cast_shadows);
+		}
+	}
+	for (i=0; i<free_wheel; i++) 
+	{
+		if (vwheels[i].cnode->numAttachedObjects())
+		{
+			vwheels[i].cnode->getAttachedObject(0)->setCastShadows(do_cast_shadows);
+		}
+	}
+	for (i=0; i<free_beam; i++)
+	{
+		if (beams[i].mEntity)
+		{
+			beams[i].mEntity->setCastShadows(do_cast_shadows);
+		}
+	}
+}
 
 void Beam::prepareInside(bool inside)
 {
@@ -3116,17 +2980,7 @@ void Beam::prepareInside(bool inside)
 
 		if (shadowOptimizations)
 		{
-			//disabling shadow
-			if (cabNode && cabNode->numAttachedObjects() && cabNode->getAttachedObject(0)) ((Entity*)(cabNode->getAttachedObject(0)))->setCastShadows(false);
-			int i;
-			for (i=0; i<free_prop; i++)
-			{
-				if (props[i].snode && props[i].snode->numAttachedObjects()) props[i].snode->getAttachedObject(0)->setCastShadows(false);
-				if (props[i].wheel && props[i].wheel->numAttachedObjects()) props[i].wheel->getAttachedObject(0)->setCastShadows(false);
-			}
-			for (i=0; i<free_wheel; i++) if (vwheels[i].cnode->numAttachedObjects()) vwheels[i].cnode->getAttachedObject(0)->setCastShadows(false);
-			for (i=0; i<free_beam; i++) if (beams[i].mEntity) beams[i].mEntity->setCastShadows(false);
-
+			this->SetPropsCastShadows(false);
 		}
 		if (cabNode)
 		{
@@ -3161,16 +3015,7 @@ void Beam::prepareInside(bool inside)
 
 		if (shadowOptimizations)
 		{
-			//enabling shadow
-			if (cabNode && cabNode->numAttachedObjects() && cabNode->getAttachedObject(0)) ((Entity*)(cabNode->getAttachedObject(0)))->setCastShadows(true);
-			int i;
-			for (i=0; i<free_prop; i++)
-			{
-				if (props[i].snode && props[i].snode->numAttachedObjects()) props[i].snode->getAttachedObject(0)->setCastShadows(true);
-				if (props[i].wheel && props[i].wheel->numAttachedObjects()) props[i].wheel->getAttachedObject(0)->setCastShadows(true);
-			}
-			for (i=0; i<free_wheel; i++) if (vwheels[i].cnode->numAttachedObjects()) vwheels[i].cnode->getAttachedObject(0)->setCastShadows(true);
-			for (i=0; i<free_beam; i++) if (beams[i].mEntity) beams[i].mEntity->setCastShadows(true);
+			this->SetPropsCastShadows(true);
 		}
 
 		if (cabNode)
@@ -3195,7 +3040,7 @@ void Beam::prepareInside(bool inside)
 void Beam::lightsToggle()
 {
 	// no lights toggling in skeleton mode because of possible bug with emissive texture
-	if (skeleton)
+	if (m_skeletonview_is_active)
 		return;
 
 	Beam **trucks = BeamFactory::getSingleton().getTrucks();
@@ -3285,109 +3130,115 @@ void Beam::updateFlares(float dt, bool isCurrent)
 	int i;
 	//okay, this is just ugly, we have flares in props!
 	//we have to update them here because they run
-	if (beacon)
+
+	// Get data
+	Ogre::Vector3 camera_position = mCamera->getPosition();
+
+	if (m_beacon_light_is_active)
 	{
 		for (i=0; i<free_prop; i++)
 		{
 			if (props[i].beacontype=='b')
 			{
-				beaconLightsNodes[i] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode(); //TODO check if this actually works
-				beaconLightsNodes[i]->attachObject(props[i].light[0]);
+				// Get data
+				Ogre::SceneNode* beacon_scene_node     = props[i].scene_node;
+				Quaternion       beacon_orientation    = beacon_scene_node->getOrientation();
+				Ogre::Light*     beacon_light          = props[i].beacon_light[0];
+				float            beacon_rotation_rate  = props[i].beacon_light_rotation_rate[0];
+				float            beacon_rotation_angle = props[i].beacon_light_rotation_angle[0]; // Updated at end of block
 
-				//update light
-				Quaternion orientation=props[i].snode->getOrientation();
-				beaconLightsNodes[i]->setPosition(props[i].snode->getPosition() + orientation*Vector3(0, 0, 0.12));
-				props[i].bpos[0]+=dt*props[i].brate[0];//rotate baby!
-				props[i].light[0]->setDirection(orientation*Vector3(cos(props[i].bpos[0]),sin(props[i].bpos[0]),0));
+				// Transform
+				beacon_light->setPosition(beacon_scene_node->getPosition()+beacon_orientation*Vector3(0,0,0.12));
+				beacon_rotation_angle += dt*beacon_rotation_rate;//rotate baby!
+				beacon_light->setDirection(beacon_orientation*Vector3(cos(beacon_rotation_angle),sin(beacon_rotation_angle),0));
 				//billboard
-				Vector3 vdir = beaconLightsNodes[i]->getPosition() - mCamera->getPosition();
+				Vector3 vdir=beacon_light->getPosition()-camera_position; // Any reason to query light position instead of scene node position? Where is light position updated, anyway? ~ only_a_ptr, 2015/11
 				float vlen=vdir.length();
-				if (vlen>100.0) {props[i].bbsnode[0]->setVisible(false);continue;}
+				if (vlen>100.0)
+				{
+					props[i].beacon_flare_billboard_scene_node[0]->setVisible(false);
+					continue;
+				}
 				//normalize
 				vdir=vdir/vlen;
-				props[i].bbsnode[0]->setPosition(beaconLightsNodes[i]->getPosition() - vdir*0.1);
-				float amplitude=props[i].light[0]->getDirection().dotProduct(vdir);
+				props[i].beacon_flare_billboard_scene_node[0]->setPosition(beacon_light->getPosition() - vdir*0.1);
+				float amplitude=beacon_light->getDirection().dotProduct(vdir);
 				if (amplitude>0)
 				{
-					props[i].bbsnode[0]->setVisible(true);
-					props[i].bbs[0]->setDefaultDimensions(amplitude*amplitude*amplitude, amplitude*amplitude*amplitude);
+					props[i].beacon_flare_billboard_scene_node[0]->setVisible(true);
+					props[i].beacon_flares_billboard_system[0]->setDefaultDimensions(amplitude*amplitude*amplitude, amplitude*amplitude*amplitude);
 				}
 				else
 				{
-					props[i].bbsnode[0]->setVisible(false);
+					props[i].beacon_flare_billboard_scene_node[0]->setVisible(false);
 				}
-				props[i].light[0]->setVisible(enableAll);
+				beacon_light->setVisible(enableAll);
+
+				// Update
+				props[i].beacon_light_rotation_angle[0] = beacon_rotation_angle;
+				// NOTE: Light position is not updated here!
 			}
-			if (props[i].beacontype=='p')
+			else if (props[i].beacontype=='p')
 			{
-				int k;
-				for (k=0; k<4; k++)
+				for (int k=0; k<4; k++)
 				{
 					//update light
-					Quaternion orientation=props[i].snode->getOrientation();
-					beaconLightsNodes[i] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode(); //TODO check if this actually works
-					beaconLightsNodes[i]->attachObject(props[i].light[k]);
-
+					Quaternion orientation=props[i].scene_node->getOrientation();
 					switch (k)
 					{
-						case 0: beaconLightsNodes[i]->setPosition(props[i].snode->getPosition() + orientation*Vector3(-0.64, 0, 0.14)); break;
-						case 1: beaconLightsNodes[i]->setPosition(props[i].snode->getPosition() + orientation*Vector3(-0.32, 0, 0.14)); break;
-						case 2: beaconLightsNodes[i]->setPosition(props[i].snode->getPosition() + orientation*Vector3(+0.32, 0, 0.14)); break;
-						case 3: beaconLightsNodes[i]->setPosition(props[i].snode->getPosition() + orientation*Vector3(+0.64, 0, 0.14)); break;
+					case 0: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(-0.64,0,0.14));break;
+					case 1: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(-0.32,0,0.14));break;
+					case 2: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(+0.32,0,0.14));break;
+					case 3: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(+0.64,0,0.14));break;
 					}
-
-					props[i].bpos[k]+=dt*props[i].brate[k];//rotate baby!
-					props[i].light[k]->setDirection(orientation*Vector3(cos(props[i].bpos[k]),sin(props[i].bpos[k]),0));
+					props[i].beacon_light_rotation_angle[k]+=dt*props[i].beacon_light_rotation_rate[k];//rotate baby!
+					props[i].beacon_light[k]->setDirection(orientation*Vector3(cos(props[i].beacon_light_rotation_angle[k]),sin(props[i].beacon_light_rotation_angle[k]),0));
 					//billboard
-					Vector3 vdir = beaconLightsNodes[i]->getPosition() - mCamera->getPosition();
+					Vector3 vdir=props[i].beacon_light[k]->getPosition()-mCamera->getPosition();
 					float vlen=vdir.length();
-					if (vlen>100.0) {props[i].bbsnode[k]->setVisible(false);continue;}
+					if (vlen>100.0) 
+					{
+						props[i].beacon_flare_billboard_scene_node[k]->setVisible(false);
+						continue;
+					}
 					//normalize
 					vdir=vdir/vlen;
-					props[i].bbsnode[k]->setPosition(beaconLightsNodes[i]->getPosition() - vdir*0.2);
-					float amplitude=props[i].light[k]->getDirection().dotProduct(vdir);
+					props[i].beacon_flare_billboard_scene_node[k]->setPosition(props[i].beacon_light[k]->getPosition()-vdir*0.2);
+					float amplitude=props[i].beacon_light[k]->getDirection().dotProduct(vdir);
 					if (amplitude>0)
 					{
-						props[i].bbsnode[k]->setVisible(true);
-						props[i].bbs[k]->setDefaultDimensions(amplitude*amplitude*amplitude, amplitude*amplitude*amplitude);
+						props[i].beacon_flare_billboard_scene_node[k]->setVisible(true);
+						props[i].beacon_flares_billboard_system[k]->setDefaultDimensions(amplitude*amplitude*amplitude, amplitude*amplitude*amplitude);
 					}
 					else
 					{
-						props[i].bbsnode[k]->setVisible(false);
+						props[i].beacon_flare_billboard_scene_node[k]->setVisible(false);
 					}
-					props[i].light[k]->setVisible(enableAll);
+					props[i].beacon_light[k]->setVisible(enableAll);
 				}
 			}
-			if (props[i].beacontype=='r')
+			else if (props[i].beacontype=='r')
 			{
-				Vector3 mposition = nodes[props[i].noderef].smoothpos + props[i].offsetx*(nodes[props[i].nodex].smoothpos - nodes[props[i].noderef].smoothpos) + props[i].offsety*(nodes[props[i].nodey].smoothpos - nodes[props[i].noderef].smoothpos);
-				
-				beaconLightsNodes[i] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode(); //TODO check if this actually works
-
 				//update light
-				Quaternion orientation=props[i].snode->getOrientation();
-
-				beaconLightsNodes[i]->setPosition(props[i].snode->getPosition() + orientation*Vector3(0, 0, 0.06));
-				beaconLightsNodes[i]->attachObject(props[i].light[0]);
-
-				props[i].bpos[0]+=dt*props[i].brate[0];//rotate baby!
+				Quaternion orientation=props[i].scene_node->getOrientation();
+				props[i].beacon_light[0]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(0,0,0.06));
+				props[i].beacon_light_rotation_angle[0]+=dt*props[i].beacon_light_rotation_rate[0];//rotate baby!
 				//billboard
-				Vector3 vdir = beaconLightsNodes[i]->getPosition() - mCamera->getPosition();
+				Vector3 vdir=props[i].beacon_light[0]->getPosition()-mCamera->getPosition();
 				float vlen=vdir.length();
-				if (vlen>100.0) {props[i].bbsnode[0]->setVisible(false);continue;}
+				if (vlen>100.0) {props[i].beacon_flare_billboard_scene_node[0]->setVisible(false);continue;}
 				//normalize
 				vdir=vdir/vlen;
-				props[i].bbsnode[0]->setPosition(beaconLightsNodes[i]->getPosition() - vdir*0.1);
+				props[i].beacon_flare_billboard_scene_node[0]->setPosition(props[i].beacon_light[0]->getPosition()-vdir*0.1);
 				bool visible=false;
-				if (props[i].bpos[0]>1.0)
+				if (props[i].beacon_light_rotation_angle[0]>1.0)
 				{
-					props[i].bpos[0]=0.0;
+					props[i].beacon_light_rotation_angle[0]=0.0;
 					visible=true;
 				}
 				visible = visible && enableAll;
-				props[i].light[0]->setVisible(visible);
-				props[i].bbsnode[0]->setVisible(visible);
-
+				props[i].beacon_light[0]->setVisible(visible);
+				props[i].beacon_flare_billboard_scene_node[0]->setVisible(visible);
 			}
 			if (props[i].beacontype=='R' || props[i].beacontype=='L')
 			{
@@ -3395,35 +3246,32 @@ void Beam::updateFlares(float dt, bool isCurrent)
 				//billboard
 				Vector3 vdir=mposition-mCamera->getPosition();
 				float vlen=vdir.length();
-				if (vlen>100.0) {props[i].bbsnode[0]->setVisible(false);continue;}
+				if (vlen>100.0) {props[i].beacon_flare_billboard_scene_node[0]->setVisible(false);continue;}
 				//normalize
 				vdir=vdir/vlen;
-				props[i].bbsnode[0]->setPosition(mposition-vdir*0.1);
+				props[i].beacon_flare_billboard_scene_node[0]->setPosition(mposition-vdir*0.1);
 			}
 			if (props[i].beacontype=='w')
 			{
 				Vector3 mposition=nodes[props[i].noderef].smoothpos+props[i].offsetx*(nodes[props[i].nodex].smoothpos-nodes[props[i].noderef].smoothpos)+props[i].offsety*(nodes[props[i].nodey].smoothpos-nodes[props[i].noderef].smoothpos);
-				beaconLightsNodes[i] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode(); //TODO check if this actually works
-				beaconLightsNodes[i]->setPosition(mposition);
-				beaconLightsNodes[i]->attachObject(props[i].light[0]);
-
-				props[i].bpos[0]+=dt*props[i].brate[0];//rotate baby!
+				props[i].beacon_light[0]->setPosition(mposition);
+				props[i].beacon_light_rotation_angle[0]+=dt*props[i].beacon_light_rotation_rate[0];//rotate baby!
 				//billboard
 				Vector3 vdir=mposition-mCamera->getPosition();
 				float vlen=vdir.length();
-				if (vlen>100.0) {props[i].bbsnode[0]->setVisible(false);continue;}
+				if (vlen>100.0) {props[i].beacon_flare_billboard_scene_node[0]->setVisible(false);continue;}
 				//normalize
 				vdir=vdir/vlen;
-				props[i].bbsnode[0]->setPosition(mposition-vdir*0.1);
+				props[i].beacon_flare_billboard_scene_node[0]->setPosition(mposition-vdir*0.1);
 				bool visible=false;
-				if (props[i].bpos[0]>1.0)
+				if (props[i].beacon_light_rotation_angle[0]>1.0)
 				{
-					props[i].bpos[0]=0.0;
+					props[i].beacon_light_rotation_angle[0]=0.0;
 					visible=true;
 				}
 				visible = visible && enableAll;
-				props[i].light[0]->setVisible(visible);
-				props[i].bbsnode[0]->setVisible(visible);
+				props[i].beacon_light[0]->setVisible(visible);
+				props[i].beacon_flare_billboard_scene_node[0]->setVisible(visible);
 			}
 		}
 	}
@@ -3540,11 +3388,9 @@ void Beam::updateFlares(float dt, bool isCurrent)
 		}
 		if (flares[i].light)
 		{
-			flares[i].light->setDirection(-normal - Vector3(0, 0.2, 0));
-			flaresNodes[i] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-			flaresNodes[i]->setPosition(mposition - 0.2*amplitude*normal);
-			flaresNodes[i]->attachObject(flares[i].light);
+			flares[i].light->setPosition(mposition-0.2*amplitude*normal);
 			// point the real light towards the ground a bit
+			flares[i].light->setDirection(-normal - Vector3(0, 0.2, 0));
 		}
 		if (flares[i].isVisible)
 		{
@@ -3625,18 +3471,18 @@ void Beam::updateProps()
 	//the props
 	for (i=0; i<free_prop; i++)
 	{
-		if (!props[i].snode) continue;
+		if (!props[i].scene_node) continue;
 		Vector3 normal=(nodes[props[i].nodey].smoothpos-nodes[props[i].noderef].smoothpos).crossProduct(nodes[props[i].nodex].smoothpos-nodes[props[i].noderef].smoothpos);
 		normal.normalise();
 		//position
 		Vector3 mposition=nodes[props[i].noderef].smoothpos+props[i].offsetx*(nodes[props[i].nodex].smoothpos-nodes[props[i].noderef].smoothpos)+props[i].offsety*(nodes[props[i].nodey].smoothpos-nodes[props[i].noderef].smoothpos);
-		props[i].snode->setPosition(mposition+normal*props[i].offsetz);
+		props[i].scene_node->setPosition(mposition+normal*props[i].offsetz);
 		//orientation
 		Vector3 refx=nodes[props[i].nodex].smoothpos-nodes[props[i].noderef].smoothpos;
 		refx.normalise();
 		Vector3 refy=refx.crossProduct(normal);
 		Quaternion orientation=Quaternion(refx, normal, refy)*props[i].rot;
-		props[i].snode->setOrientation(orientation);
+		props[i].scene_node->setOrientation(orientation);
 		if (props[i].wheel)
 		{
 			//display wheel
@@ -3815,58 +3661,45 @@ void Beam::updateVisualPrepare(float dt)
 		//wings[i].cnode->setPosition(wings[i].fa->flexit()); //todo fix ogre 2.0
 	}
 	//setup commands for hydros
-	hydroaileroncommand=autoaileron;
-	hydroruddercommand=autorudder;
-	hydroelevatorcommand=autoelevator;
+	hydroaileroncommand = autoaileron;
+	hydroruddercommand = autorudder;
+	hydroelevatorcommand = autoelevator;
 
-	if (cabFadeMode>0 && dt > 0)
+	if (cabFadeMode > 0 && dt > 0)
 	{
 		if (cabFadeTimer > 0)
-			cabFadeTimer-=dt;
+			cabFadeTimer -= dt;
+
 		if (cabFadeTimer < 0.1 && cabFadeMode == 1)
 		{
-			cabFadeMode=0;
+			cabFadeMode = 0;
 			cabFade(0.4);
 		} else if (cabFadeTimer < 0.1 && cabFadeMode == 2)
 		{
-			cabFadeMode=0;
+			cabFadeMode = 0;
 			cabFade(1);
 		}
 
 		if (cabFadeMode == 1)
-			cabFade(0.4 + 0.6 * cabFadeTimer/cabFadeTime);
+			cabFade(0.4 + 0.6 * cabFadeTimer / cabFadeTime);
 		else if (cabFadeMode == 2)
-			cabFade(1 - 0.6 * cabFadeTimer/cabFadeTime);
+			cabFade(1 - 0.6 * cabFadeTimer / cabFadeTime);
 	}
 
 	for (int i=0; i<free_beam; i++)
 	{
-		if (!skeleton)
+		if (!beams[i].disabled && beams[i].mSceneNode)
 		{
-			if (beams[i].broken==1 && beams[i].mSceneNode)
-			{
-				beams[i].mSceneNode->detachAllObjects();
-				beams[i].broken = 2;
-			}
-
-			if (beams[i].mSceneNode!=0 && !beams[i].disabled && beams[i].type!=BEAM_INVISIBLE && beams[i].type!=BEAM_INVISIBLE_HYDRO && beams[i].type!=BEAM_VIRTUAL)
+			if (beams[i].type != BEAM_INVISIBLE && beams[i].type != BEAM_INVISIBLE_HYDRO && beams[i].type != BEAM_VIRTUAL)
 			{
 				beams[i].mSceneNode->setPosition(beams[i].p1->smoothpos.midPoint(beams[i].p2->smoothpos));
 				beams[i].mSceneNode->setOrientation(specialGetRotationTo(ref, beams[i].p1->smoothpos-beams[i].p2->smoothpos));
-				//beams[i].mSceneNode->setScale(default_beam_diameter/100.0,(beams[i].p1->smoothpos-beams[i].p2->smoothpos).length()/100.0,default_beam_diameter/100.0);
 				beams[i].mSceneNode->setScale(beams[i].diameter, (beams[i].p1->smoothpos-beams[i].p2->smoothpos).length(), beams[i].diameter);
 			}
-		} else if (beams[i].mSceneNode!=0 && !beams[i].disabled)
-		{
-			beams[i].mSceneNode->setPosition(beams[i].p1->smoothpos.midPoint(beams[i].p2->smoothpos));
-			beams[i].mSceneNode->setOrientation(specialGetRotationTo(ref, beams[i].p1->smoothpos-beams[i].p2->smoothpos));
-			//beams[i].mSceneNode->setScale(default_beam_diameter/100.0,(beams[i].p1->smoothpos-beams[i].p2->smoothpos).length()/100.0,default_beam_diameter/100.0);
-			beams[i].mSceneNode->setScale(skeleton_beam_diameter, (beams[i].p1->smoothpos-beams[i].p2->smoothpos).length(), skeleton_beam_diameter);
 		}
-
 	}
 
-	if (skeleton == 2)
+	if (m_skeletonview_is_active)
 		updateSimpleSkeleton();
 
 	BES_GFX_START(BES_GFX_updateFlexBodies);
@@ -4000,65 +3833,50 @@ void Beam::preMapLabelRenderUpdate(bool mode, float charheight)
 	}
 }
 
-void Beam::showSkeleton(bool meshes, bool newMode, bool linked)
+void Beam::showSkeleton(bool meshes, bool linked)
 {
 	if (lockSkeletonchange)
 		return;
-	lockSkeletonchange=true;
-	int i;
 
-	skeleton=1;
-
-	if (newMode)
-		skeleton=2;
+	lockSkeletonchange = true;
+	m_skeletonview_is_active = true;
 
 	if (meshes)
 	{
-		cabFadeMode=1;
-		cabFadeTimer=cabFadeTime;
+		cabFadeMode = 1;
+		cabFadeTimer = cabFadeTime;
 	} else
 	{
-		cabFadeMode=-1;
+		cabFadeMode = -1;
 		// directly hide meshes, no fading
 		cabFade(0);
 	}
-	for (i=0; i<free_wheel; i++)
+
+	for (int i=0; i<free_wheel; i++)
 	{
-		if (vwheels[i].cnode) vwheels[i].cnode->setVisible(false);
-		if (vwheels[i].fm) vwheels[i].fm->setVisible(false);
+		if (vwheels[i].cnode)
+			vwheels[i].cnode->setVisible(false);
+
+		if (vwheels[i].fm)
+			vwheels[i].fm->setVisible(false);
 	}
-	for (i=0; i<free_prop; i++)
+
+	for (int i=0; i<free_prop; i++)
 	{
-		if (props[i].snode)
-			setMeshWireframe(props[i].snode, true);
+		if (props[i].scene_node)
+			setMeshWireframe(props[i].scene_node, true);
+
 		if (props[i].wheel)
 			setMeshWireframe(props[i].wheel, true);
 	}
 
-	if (!newMode)
+	if (simpleSkeletonNode)
 	{
-		for (i=0; i<free_beam; i++)
-		{
-			if (beams[i].mSceneNode && beams[i].mEntity)
-			{
-				if (!beams[i].broken && beams[i].mSceneNode->numAttachedObjects()==0)
-					beams[i].mSceneNode->attachObject(beams[i].mEntity);
-				//material
-				beams[i].mEntity->setMaterialName("vehicle-skeletonview-material");
-				beams[i].mEntity->setCastShadows(false);
-			}
-		}
-	}else
-	{
-		if (simpleSkeletonNode)
-		{
-			updateSimpleSkeleton();
-			simpleSkeletonNode->setVisible(true);
-		}
+		simpleSkeletonNode->setVisible(true);
 	}
 
 	// hide mesh wheels
-	for (i=0; i<free_wheel; i++)
+	for (int i=0; i<free_wheel; i++)
 	{
 		if (vwheels[i].fm && vwheels[i].meshwheel)
 		{
@@ -4069,85 +3887,73 @@ void Beam::showSkeleton(bool meshes, bool newMode, bool linked)
 	}
 
 	// wireframe drawning for flexbody
-	for (i=0; i<free_flexbody; i++)
+	for (int i=0; i<free_flexbody; i++)
 	{
 		SceneNode *s = flexbodies[i]->getSceneNode();
-		if (!s)
-			continue;
-		setMeshWireframe(s, true);
+		if (s)
+			setMeshWireframe(s, true);
 	}
 
 	for (std::vector<tie_t>::iterator it=ties.begin(); it!=ties.end(); it++)
 		if (it->beam->disabled)
 			it->beam->mSceneNode->detachAllObjects();
-	
+
 	if (linked)
 	{
-		// apply to the locked truck
+		// apply to all locked trucks
 		for (std::list<Beam*>::iterator it = linkedBeams.begin(); it != linkedBeams.end(); ++it)
 		{
-			(*it)->showSkeleton(meshes, newMode, false);
+			(*it)->showSkeleton(meshes, false);
 		}
 	}
 
-	lockSkeletonchange=false;
+	lockSkeletonchange = false;
 
 	TRIGGER_EVENT(SE_TRUCK_SKELETON_TOGGLE, trucknum);
 }
 
-void Beam::hideSkeleton(bool newMode, bool linked)
+void Beam::hideSkeleton(bool linked)
 {
 	if (lockSkeletonchange)
 		return;
-	lockSkeletonchange=true;
-	int i;
-	skeleton=0;
 
-	if (cabFadeMode>=0)
+	lockSkeletonchange=true;
+	m_skeletonview_is_active = false;
+
+	if (cabFadeMode >= 0)
 	{
-		cabFadeMode=2;
-		cabFadeTimer=cabFadeTime;
+		cabFadeMode = 2;
+		cabFadeTimer = cabFadeTime;
 	} else
 	{
-		cabFadeMode=-1;
+		cabFadeMode = -1;
 		// directly show meshes, no fading
 		cabFade(1);
 	}
 
 
-	for (i=0; i<free_wheel; i++)
+	for (int i=0; i<free_wheel; i++)
 	{
-		if (vwheels[i].cnode) vwheels[i].cnode->setVisible(true);
-		if (vwheels[i].fm) vwheels[i].fm->setVisible(true);
+		if (vwheels[i].cnode)
+			vwheels[i].cnode->setVisible(true);
+
+		if (vwheels[i].fm)
+			vwheels[i].fm->setVisible(true);
 	}
-	for (i=0; i<free_prop; i++)
+	for (int i=0; i<free_prop; i++)
 	{
-		if (props[i].snode)
-			setMeshWireframe(props[i].snode, false);
+		if (props[i].scene_node)
+			setMeshWireframe(props[i].scene_node, false);
+
 		if (props[i].wheel)
 			setMeshWireframe(props[i].wheel, false);
 	}
 
-	if (!newMode)
-	{
-		for (i=0; i<free_beam; i++)
-		{
-			if (beams[i].mSceneNode)
-			{
-				if (beams[i].type==BEAM_VIRTUAL || beams[i].type==BEAM_INVISIBLE || beams[i].type==BEAM_INVISIBLE_HYDRO) beams[i].mSceneNode->detachAllObjects();
-				//material
-				if (beams[i].type==BEAM_HYDRO || beams[i].type==BEAM_MARKED) beams[i].mEntity->setMaterialName("tracks/Chrome");
-				else beams[i].mEntity->setMaterialName(default_beam_material);
-			}
-		}
-	}else
-	{
-		if (simpleSkeletonNode)
-			simpleSkeletonNode->setVisible(false);
-	}
+	if (simpleSkeletonNode)
+		simpleSkeletonNode->setVisible(false);
 
 	// show mesh wheels
-	for (i=0; i<free_wheel; i++)
+	for (int i=0; i<free_wheel; i++)
 	{
 		if (vwheels[i].fm && vwheels[i].meshwheel)
 		{
@@ -4158,7 +3964,7 @@ void Beam::hideSkeleton(bool newMode, bool linked)
 	}
 
 	// normal drawning for flexbody
-	for (i=0; i<free_flexbody; i++)
+	for (int i=0; i<free_flexbody; i++)
 	{
 		SceneNode *s = flexbodies[i]->getSceneNode();
 		if (!s)
@@ -4172,14 +3978,14 @@ void Beam::hideSkeleton(bool newMode, bool linked)
 
 	if (linked)
 	{
-		// apply to the locked truck
+		// apply to all locked trucks
 		for (std::list<Beam*>::iterator it = linkedBeams.begin(); it != linkedBeams.end(); ++it)
 		{
-			(*it)->hideSkeleton(newMode, false);
+			(*it)->hideSkeleton(false);
 		}
 	}
 
-	lockSkeletonchange=false;
+	lockSkeletonchange = false;
 }
 
 void Beam::fadeMesh(SceneNode *node, float amount)
@@ -4288,10 +4094,10 @@ void Beam::setMeshVisibility(bool visible, bool linked)
 	{
 		if (props[i].mo)			props[i].mo->setVisible(visible);
 		if (props[i].wheel)		props[i].wheel->setVisible(visible);
-		if (props[i].bbsnode[0]) props[i].bbsnode[0]->setVisible(visible);
-		if (props[i].bbsnode[1]) props[i].bbsnode[1]->setVisible(visible);
-		if (props[i].bbsnode[2]) props[i].bbsnode[2]->setVisible(visible);
-		if (props[i].bbsnode[3]) props[i].bbsnode[3]->setVisible(visible);
+		if (props[i].beacon_flare_billboard_scene_node[0]) props[i].beacon_flare_billboard_scene_node[0]->setVisible(visible);
+		if (props[i].beacon_flare_billboard_scene_node[1]) props[i].beacon_flare_billboard_scene_node[1]->setVisible(visible);
+		if (props[i].beacon_flare_billboard_scene_node[2]) props[i].beacon_flare_billboard_scene_node[2]->setVisible(visible);
+		if (props[i].beacon_flare_billboard_scene_node[3]) props[i].beacon_flare_billboard_scene_node[3]->setVisible(visible);
 	}
 	for (int i=0; i < free_flexbody; i++)
 	{
@@ -4402,7 +4208,7 @@ void Beam::tieToggle(int group)
 			if (it->lockedto) it->lockedto->used--;
 			// disable the ties beam
 			it->beam->p2 = &nodes[0];
-			it->beam->p2truck = 0;
+			it->beam->p2truck = false;
 			it->beam->disabled = true;
 			it->beam->mSceneNode->detachAllObjects();
 			istied = true;
@@ -4464,7 +4270,7 @@ void Beam::tieToggle(int group)
 
 					// now trigger the tying action
 					it->beam->p2 = shorter;
-					it->beam->p2truck = shtruck;
+					it->beam->p2truck = shtruck != 0;
 					it->beam->stress = 0;
 					it->beam->L = it->beam->refL;
 					it->tied  = true;
@@ -4497,7 +4303,6 @@ void Beam::ropeToggle(int group)
 			// we unlock ropes
 			it->locked = UNLOCKED;
 			// remove node locking
-			if (it->lockedto)         it->lockedto->lockednode=0;
 			if (it->lockedto_ropable) it->lockedto_ropable->used--;
 			it->lockedto = &nodes[0];
 			it->lockedtruck = 0;
@@ -4600,11 +4405,6 @@ void Beam::hookToggle(int group, hook_states mode, int node_number)
 		{
 			// we unlock ropes
 			it->locked = UNLOCKED;
-			// remove node locking
-			if (it->lockNode)
-			{
-				it->lockNode->lockednode = 0;
-			}
 			if (it->group <= -2)
 			{
 				it->timer = it->timer_preset;	//timer reset for autolock nodes
@@ -4614,7 +4414,7 @@ void Beam::hookToggle(int group, hook_states mode, int node_number)
 			//disable hook-assistance beam
 			it->beam->mSceneNode->detachAllObjects();
 			it->beam->p2       = &nodes[0];
-			it->beam->p2truck  = 0;
+			it->beam->p2truck  = false;
 			it->beam->L        = (nodes[0].AbsPosition - it->hookNode->AbsPosition).length();
 			it->beam->disabled = true;
 		}
@@ -4720,12 +4520,12 @@ void Beam::hookToggle(int group, hook_states mode, int node_number)
 			{
 				(*it)->determineLinkedBeams();
 
-				if (skeleton && this != (*it) && !(*it)->skeleton)
+				if (m_skeletonview_is_active && this != (*it) && !(*it)->m_skeletonview_is_active)
 				{
-					(*it)->showSkeleton(true, skeleton==2, false);
-				} else if (skeleton && this != (*it) && (*it)->skeleton)
+					(*it)->showSkeleton(true, false);
+				} else if (m_skeletonview_is_active && this != (*it) && (*it)->m_skeletonview_is_active)
 				{
-					(*it)->hideSkeleton(skeleton==2, false);
+					(*it)->hideSkeleton(false);
 				}
 			}
 		}
@@ -4779,67 +4579,70 @@ void Beam::beaconsToggle()
 		return;
 	if (flaresMode==1)
 		enableLight=false;
-	int i;
-	beacon = !beacon;
-	for (i=0; i<free_prop; i++)
-	{
-		if (props[i].beacontype=='b')
-		{
-			props[i].light[0]->setVisible(beacon && enableLight);
-			props[i].bbsnode[0]->setVisible(beacon);
-			if (props[i].bbs[0] && beacon && !props[i].bbsnode[0]->numAttachedObjects())
-			{
-				props[i].bbs[0]->setVisible(true);
-				props[i].bbsnode[0]->attachObject(props[i].bbs[0]);
-			} else if (props[i].bbs[0] && !beacon)
-			{
-				props[i].bbsnode[0]->detachAllObjects();
-				props[i].bbs[0]->setVisible(false);
-			}
-		}
-		else if (props[i].beacontype=='R' || props[i].beacontype=='L')
-		{
-			props[i].bbsnode[0]->setVisible(beacon);
-			if (props[i].bbs[0] && beacon && !props[i].bbsnode[0]->numAttachedObjects())
-				props[i].bbsnode[0]->attachObject(props[i].bbs[0]);
-			else if (props[i].bbs[0] && !beacon)
-				props[i].bbsnode[0]->detachAllObjects();
-		}
-		else if (props[i].beacontype=='p')
-		{
-			for (int k=0; k<4; k++)
-			{
-				props[i].light[k]->setVisible(beacon && enableLight);
-				props[i].bbsnode[k]->setVisible(beacon);
-				if (props[i].bbs[k] && beacon && !props[i].bbsnode[k]->numAttachedObjects())
-					props[i].bbsnode[k]->attachObject(props[i].bbs[k]);
-				else if (props[i].bbs[k] && !beacon)
-					props[i].bbsnode[k]->detachAllObjects();
-			}
-		} else
-		{
-			for (int k=0; k<4; k++)
-			{
-				if (props[i].light[k])
-				{
-					props[i].light[k]->setVisible(beacon && enableLight);
-				}
-				if (props[i].bbsnode[k])
-				{
-					props[i].bbsnode[k]->setVisible(beacon);
 
-					if (props[i].bbs[k] && beacon && !props[i].bbsnode[k]->numAttachedObjects())
+	bool beacon_light_is_active = !m_beacon_light_is_active;
+	for (int i=0; i<free_prop; i++)
+	{
+		char beacon_type = props[i].beacontype;
+		if (beacon_type =='b')
+		{
+			props[i].beacon_light[0]->setVisible(beacon_light_is_active && enableLight);
+			props[i].beacon_flare_billboard_scene_node[0]->setVisible(beacon_light_is_active);
+			if (props[i].beacon_flares_billboard_system[0] && beacon_light_is_active && !props[i].beacon_flare_billboard_scene_node[0]->numAttachedObjects())
+			{
+				props[i].beacon_flares_billboard_system[0]->setVisible(true);
+				props[i].beacon_flare_billboard_scene_node[0]->attachObject(props[i].beacon_flares_billboard_system[0]);
+			} else if (props[i].beacon_flares_billboard_system[0] && !beacon_light_is_active)
+			{
+				props[i].beacon_flare_billboard_scene_node[0]->detachAllObjects();
+				props[i].beacon_flares_billboard_system[0]->setVisible(false);
+			}
+		}
+		else if (beacon_type=='R' || beacon_type=='L')
+		{
+			props[i].beacon_flare_billboard_scene_node[0]->setVisible(beacon_light_is_active);
+			if (props[i].beacon_flares_billboard_system[0] && beacon_light_is_active && !props[i].beacon_flare_billboard_scene_node[0]->numAttachedObjects())
+				props[i].beacon_flare_billboard_scene_node[0]->attachObject(props[i].beacon_flares_billboard_system[0]);
+			else if (props[i].beacon_flares_billboard_system[0] && !beacon_light_is_active)
+				props[i].beacon_flare_billboard_scene_node[0]->detachAllObjects();
+		}
+		else if (beacon_type=='p')
+		{
+			for (int k=0; k<4; k++)
+			{
+				props[i].beacon_light[k]->setVisible(beacon_light_is_active && enableLight);
+				props[i].beacon_flare_billboard_scene_node[k]->setVisible(beacon_light_is_active);
+				if (props[i].beacon_flares_billboard_system[k] && beacon_light_is_active && !props[i].beacon_flare_billboard_scene_node[k]->numAttachedObjects())
+					props[i].beacon_flare_billboard_scene_node[k]->attachObject(props[i].beacon_flares_billboard_system[k]);
+				else if (props[i].beacon_flares_billboard_system[k] && !beacon_light_is_active)
+					props[i].beacon_flare_billboard_scene_node[k]->detachAllObjects();
+			}
+		}
+		else
+		{
+			for (int k=0; k<4; k++)
+			{
+				if (props[i].beacon_light[k])
+				{
+					props[i].beacon_light[k]->setVisible(beacon_light_is_active && enableLight);
+				}
+				if (props[i].beacon_flare_billboard_scene_node[k])
+				{
+					props[i].beacon_flare_billboard_scene_node[k]->setVisible(beacon_light_is_active);
+
+					if (props[i].beacon_flares_billboard_system[k] && beacon_light_is_active && !props[i].beacon_flare_billboard_scene_node[k]->numAttachedObjects())
 					{
-						props[i].bbsnode[k]->attachObject(props[i].bbs[k]);
+						props[i].beacon_flare_billboard_scene_node[k]->attachObject(props[i].beacon_flares_billboard_system[k]);
 					}
-					else if (props[i].bbs[k] && !beacon)
+					else if (props[i].beacon_flares_billboard_system[k] && !beacon_light_is_active)
 					{
-						props[i].bbsnode[k]->detachAllObjects();
+						props[i].beacon_flare_billboard_scene_node[k]->detachAllObjects();
 					}
 				}
 			}
 		}
 	}
+	m_beacon_light_is_active = beacon_light_is_active;
 
 	//ScriptEvent - Beacon toggle
 	TRIGGER_EVENT(SE_TRUCK_BEACONS_TOGGLE, trucknum);
@@ -5460,11 +5263,11 @@ void Beam::updateDashBoards(float &dt)
 		dash->setFloat(DD_ENGINE_TURBO, turbo);
 
 		// ignition
-		bool ign = engine->contact;
+		bool ign = (engine->contact && !engine->running);
 		dash->setBool(DD_ENGINE_IGNITION, ign);
 
 		// battery
-		bool batt = (engine->contact && !engine->running);
+		bool batt = engine->contact;
 		dash->setBool(DD_ENGINE_BATTERY, batt);
 
 		// clutch warning
@@ -5831,11 +5634,18 @@ void Beam::updateDashBoards(float &dt)
 
 Vector3 Beam::getGForces()
 {
-	if (cameranodecount > 0 && cameranodepos[0] >= 0 && cameranodepos[0] < MAX_NODES && cameranodedir[0] >= 0 && cameranodedir[0] < MAX_NODES && cameranoderoll[0] >= 0 && cameranoderoll[0] < MAX_NODES)
+	if (cameranodepos[0] >= 0 && cameranodepos[0] < MAX_NODES && cameranodedir[0] >= 0 && cameranodedir[0] < MAX_NODES && cameranoderoll[0] >= 0 && cameranoderoll[0] < MAX_NODES)
 	{
-		Vector3 acc      = cameranodeacc / cameranodecount;
-		cameranodeacc    = Vector3::ZERO;
-		cameranodecount  = 0;
+		static Vector3 result = Vector3::ZERO;
+
+		if (cameranodecount == 0) // multiple calls in one single frame, avoid division by 0
+		{
+			return result;
+		}
+
+		Vector3 acc = cameranodeacc / cameranodecount;
+		cameranodeacc      = Vector3::ZERO;
+		cameranodecount    = 0;
 
 		float longacc     = acc.dotProduct((nodes[cameranodepos[0]].RelPosition - nodes[cameranodedir[0]].RelPosition).normalisedCopy());
 		float latacc      = acc.dotProduct((nodes[cameranodepos[0]].RelPosition - nodes[cameranoderoll[0]].RelPosition).normalisedCopy());
@@ -5855,7 +5665,9 @@ Vector3 Beam::getGForces()
 
 		float vertacc = std::abs(gravity) - acc.dotProduct(-upv);
 
-		return Vector3(vertacc / std::abs(gravity), longacc / std::abs(gravity), latacc / std::abs(gravity));
+		result = Vector3(vertacc / std::abs(gravity), longacc / std::abs(gravity), latacc / std::abs(gravity));
+
+		return result;
 	}
 
 	return Vector3::ZERO;
@@ -5896,109 +5708,27 @@ void Beam::engineTriggerHelper(int engineNumber, int type, float triggerValue)
 	}
 }
 
-void Beam::runThreadTask(Beam* truck, ThreadTask task, bool shared /*= false*/)
-{
-	ThreadTask old_thread_task = truck->thread_task;
-
-	truck->thread_index = 0;
-	truck->thread_number = 1;
-	truck->thread_task = task;
-
-	if (gEnv->threadPool && (!shared || gEnv->threadPool->getSize() / truck->num_simulated_trucks > 1))
-	{
-		truck->thread_number = gEnv->threadPool->getSize();
-		if (shared)
-		{
-			truck->thread_number /= truck->num_simulated_trucks;
-		}
-		truck->task_count[task] = truck->thread_number;
-
-		std::list<IThreadTask*> tasks;
-
-		// Push tasks into thread pool
-		for (int i=0; i<truck->thread_number; i++)
-		{
-			tasks.emplace_back(truck);
-		}
-
-		gEnv->threadPool->enqueue(tasks);
-
-		// Wait for all tasks to complete
-		MUTEX_LOCK(&truck->task_count_mutex[task]);
-		while (truck->task_count[task] > 0)
-		{
-			pthread_cond_wait(&truck->task_count_cv[task], &truck->task_count_mutex[task]);
-		}
-		MUTEX_UNLOCK(&truck->task_count_mutex[task]);
-	} else
-	{
-		truck->run();
-	}
-
-	truck->thread_task = old_thread_task;
-}
-
 void Beam::run()
 {
 	if (thread_task == THREAD_BEAMFORCESEULER)
 	{
-		calcForcesEulerCompute(curtstep==0, dtperstep, curtstep, tsteps);
+		calcForcesEulerCompute(curtstep==0, PHYSICS_DT, curtstep, tsteps);
 		if (!disableTruckTruckSelfCollisions)
 		{
-			intraTruckCollisionsPrepare(dtperstep);
-			intraTruckCollisionsCompute(dtperstep);
-			intraTruckCollisionsFinal(dtperstep);
+			intraTruckCollisions(PHYSICS_DT);
 		}
-	} else
+	} else if (thread_task == THREAD_INTER_TRUCK_COLLISIONS)
 	{
-		int index = 0;
-		if (thread_number > 1)
+		if (!disableTruckTruckCollisions)
 		{
-			MUTEX_LOCK(&task_index_mutex[thread_task]);
-			index = thread_index;
-			thread_index++;
-			MUTEX_UNLOCK(&task_index_mutex[thread_task]);
-		}
-
-		switch (thread_task)
-		{
-		case THREAD_BEAMS:
-			calcBeams(curtstep==0, dtperstep, curtstep, tsteps, index, thread_number);
-			break;
-		case THREAD_INTRA_TRUCK_COLLISIONS:
-			intraTruckCollisionsCompute(dtperstep, index, thread_number);
-			break;
-		case THREAD_INTER_TRUCK_COLLISIONS:
-			interTruckCollisionsCompute(dtperstep, index, thread_number);
-			break;
-		case THREAD_NODES:
-			calcNodes(curtstep==0, dtperstep, curtstep, tsteps, index, thread_number);
-			break;
+			interTruckCollisions(PHYSICS_DT);
 		}
 	}
 }
 
 void Beam::onComplete()
 {
-	if (thread_task == THREAD_BEAMFORCESEULER)
-	{
-		MUTEX_LOCK(&calledby->task_count_mutex[thread_task]);
-		calledby->task_count[thread_task]--;
-		MUTEX_UNLOCK(&calledby->task_count_mutex[thread_task]);
-		if (!calledby->task_count[thread_task])
-		{
-			pthread_cond_signal(&calledby->task_count_cv[thread_task]);
-		}
-	} else
-	{
-		MUTEX_LOCK(&task_count_mutex[thread_task]);
-		task_count[thread_task]--;
-		MUTEX_UNLOCK(&task_count_mutex[thread_task]);
-		if (!task_count[thread_task])
-		{
-			pthread_cond_signal(&task_count_cv[thread_task]);
-		}
-	}
+	BeamFactory::getSingleton().onTaskComplete();
 }
 
 Beam::Beam(
@@ -6022,7 +5752,7 @@ Beam::Beam(
 	, GUIFeaturesChanged(false)
 	, aileron(0)
 	, avichatter_timer(11.0f) // some pseudo random number,  doesn't matter
-	, beacon(false)
+	, m_beacon_light_is_active(false)
 	, beamsVisible(true)
 	, blinkingtype(BLINK_NONE)
 	, blinktreshpassed(false)
@@ -6067,6 +5797,8 @@ Beam::Beam(
 	, lockSkeletonchange(false)
 	, locked(0)
 	, lockedold(0)
+	, m_skeletonview_is_active(false)
+	, m_spawn_rotation(0.0)
 	, mTimeUntilNextToggle(0)
 	, meshesVisible(true)
 	, minCameraRadius(0)
@@ -6099,7 +5831,6 @@ Beam::Beam(
 	, simpleSkeletonInitiated(false)
 	, simpleSkeletonManualObject(0)
 	, simulated(false)
-	, skeleton(0)
 	, sleepcount(0)
 	, smokeNode(NULL)
 	, smoker(NULL)
@@ -6107,8 +5838,6 @@ Beam::Beam(
 	, stabratio(0.0)
 	, stabsleep(0.0)
 	, global_dt(0.1)
-	, thread_index(0)
-	, thread_number(0)
 	, thread_task(THREAD_BEAMFORCESEULER)
 	, totalmass(0)
 	, tsteps(100)
@@ -6123,14 +5852,6 @@ Beam::Beam(
 
 	pthread_cond_init(&flexable_task_count_cv, NULL);
 	pthread_mutex_init(&flexable_task_count_mutex, NULL);
-	for (int task=0; task < THREAD_MAX; task++)
-	{
-		task_count[task] = 0;
-		pthread_cond_init(&task_count_cv[task], NULL);
-		pthread_mutex_init(&task_count_mutex[task], NULL);
-		pthread_mutex_init(&task_index_mutex[task], NULL);
-	}
-	pthread_mutex_init(&itc_node_access_mutex, NULL);
 
     LOAD_RIG_PROFILE_CHECKPOINT(ENTRY_BEAM_CTOR_INITTHREADS);
 
@@ -6665,6 +6386,34 @@ bool Beam::LoadTruck(
 #endif // USE_MYGUI
     LOAD_RIG_PROFILE_CHECKPOINT(ENTRY_BEAM_LOADTRUCK_LOAD_DASHBOARDS);
 
+	// Set beam defaults
+	for (int i=0; i<free_beam; i++) {
+		initial_beam_strength[i] = beams[i].strength;
+		default_beam_deform[i] = beams[i].minmaxposnegstress;
+		default_beam_plastic_coef[i] = beams[i].plastic_coef;
+	}
+
+	if (cameranodepos[0] != cameranodedir[0] && cameranodepos[0] >= 0 && cameranodepos[0] < MAX_NODES && cameranodedir[0] >= 0 && cameranodedir[0] < MAX_NODES)
+	{
+		Vector3 cur_dir = nodes[cameranodepos[0]].RelPosition - nodes[cameranodedir[0]].RelPosition;
+		m_spawn_rotation = atan2(cur_dir.dotProduct(Vector3::UNIT_X), cur_dir.dotProduct(-Vector3::UNIT_Z));
+	} else if (free_node > 1)
+	{
+		float max_dist = 0.0f;
+		int furthest_node = 1;
+		for (int i=0; i<free_node; i++)
+		{
+			float dist = nodes[i].RelPosition.squaredDistance(nodes[0].RelPosition);
+			if (dist > max_dist)
+			{
+				max_dist = dist;
+				furthest_node = i;
+			}
+		}
+		Vector3 cur_dir = nodes[0].RelPosition - nodes[furthest_node].RelPosition;
+		m_spawn_rotation = atan2(cur_dir.dotProduct(Vector3::UNIT_X), cur_dir.dotProduct(-Vector3::UNIT_Z));
+	}
+
 	return true;
 }
 
@@ -6749,33 +6498,36 @@ bool Beam::getBrakeLightVisible()
 
 bool Beam::getCustomLightVisible(int number)
 {
-	return netCustomLightArray[number] != -1
-			&& flares[netCustomLightArray[number]].controltoggle_status;
+	if (number < 0 || number > 4)
+	{
+		LOG("AngelScript: Invalid Light ID (" + TOSTRING(number) + "), allowed range is (0 - 4)");
+		return false;
+	}
+
+	unsigned int flareID = netCustomLightArray[number];
+
+	return flareID < flares.size() && flares[flareID].controltoggle_status;
 }
 
 void Beam::setCustomLightVisible(int number, bool visible)
 {
-	if (number >= 5)
+	if (number < 0 || number > 4)
 	{
-		LOG("AngelScript: Light ID (" + TOSTRING(number) + ") overflow, max: 4...");
+		LOG("AngelScript: Invalid Light ID (" + TOSTRING(number) + "), allowed range is (0 - 4)");
 		return;
 	}
 
-	try
+	unsigned int flareID = netCustomLightArray[number];
+
+	if (flareID < flares.size() && flares[flareID].snode)
 	{
-		if (flares[netCustomLightArray[number]].snode)
-			flares[netCustomLightArray[number]].controltoggle_status = visible;
+		flares[flareID].controltoggle_status = visible;
 	}
-	catch (Exception ex)
-	{
-	}
-	/*else
-		LOG("AngelScript: Light ID (" + TOSTRING(number) + ") doesn't exist, ignored...");*/
 }
 
-bool Beam::getBeaconMode()
+bool Beam::getBeaconMode() // Angelscript export
 {
-	return beacon;
+	return m_beacon_light_is_active;
 }
 
 blinktype Beam::getBlinkType()
