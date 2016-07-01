@@ -180,6 +180,20 @@ set( SOURCE_FILES
   terrain/map/SurveyMapEntity.{h,cpp}
   terrain/map/SurveyMapManager.{h,cpp}
   terrain/map/SurveyMapTextureCreator.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrain.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainAutoUpdateLod.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainGroup.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainLayerBlendMap.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainLodManager.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainMaterialGenerator.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainMaterialGeneratorA.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperCg.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperGLSL.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperGLSLES.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperHLSL.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainPagedWorldSection.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainPaging.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainQuadTreeNode.{h,cpp}
   threadpool/ThreadPool.h
   utils/CollisionTools.{h,cpp}
   utils/ConfigFile.{h,cpp}
