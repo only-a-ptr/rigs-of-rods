@@ -45,24 +45,6 @@ namespace Ogre
 
 }
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT
-#   if defined( OGRE_STATIC_LIB )
-#       define _OgreTerrainExport
-#   else
-#       if defined( OGRE_TERRAIN_EXPORTS )
-#           define _OgreTerrainExport __declspec( dllexport )
-#       else
-#           if defined( __MINGW32__ )
-#               define _OgreTerrainExport
-#           else
-#               define _OgreTerrainExport __declspec( dllimport )
-#           endif
-#       endif
-#   endif
-#elif defined ( OGRE_GCC_VISIBILITY )
-#   define _OgreTerrainExport __attribute__ ((visibility("default")))
-#else
-#   define _OgreTerrainExport
-#endif 
+#define _OgreTerrainExport
 
 #endif 

@@ -551,8 +551,8 @@ namespace Ogre
                 // TODO: do we have no use for CPU vertex data after initial load?
                 // if so, destroy it to free RAM, this should be fast enough to 
                 // to direct
-                HardwareVertexBufferSharedPtr posbuf, deltabuf;
-                VertexData* targetVertexData = mVertexDataRecord->cpuVertexData;
+                v1::HardwareVertexBufferSharedPtr posbuf, deltabuf;
+                v1::VertexData* targetVertexData = mVertexDataRecord->cpuVertexData;
                 if(!cpuData)
                 {
                     if(mVertexDataRecord->gpuVertexData == NULL) 
@@ -599,10 +599,10 @@ namespace Ogre
             destroyCpuVertexData();
 
             // create vertex structure, not using GPU for now (these are CPU structures)
-            VertexDeclaration* dcl = OGRE_NEW VertexDeclaration();
-            VertexBufferBinding* bufbind = OGRE_NEW VertexBufferBinding();
+            v1::VertexDeclaration* dcl = OGRE_NEW v1::VertexDeclaration();
+            v1::VertexBufferBinding* bufbind = OGRE_NEW v1::VertexBufferBinding();
 
-            mVertexDataRecord->cpuVertexData = OGRE_NEW VertexData(dcl, bufbind);
+            mVertexDataRecord->cpuVertexData = OGRE_NEW v1::VertexData(dcl, bufbind);
 
             // Vertex declaration
             size_t offset = 0;
@@ -650,11 +650,19 @@ namespace Ogre
             mVertexDataRecord->skirtRowColSkip = (mVertexDataRecord->size - 1) / (mVertexDataRecord->numSkirtRowsCols - 1);
             numVerts += mVertexDataRecord->size * mVertexDataRecord->numSkirtRowsCols;
             numVerts += mVertexDataRecord->size * mVertexDataRecord->numSkirtRowsCols;
+            
             // manually create CPU-side buffer
-            HardwareVertexBufferSharedPtr posbuf(
-                OGRE_NEW DefaultHardwareVertexBuffer(dcl->getVertexSize(POSITION_BUFFER), numVerts, HardwareBuffer::HBU_STATIC_WRITE_ONLY));
-            HardwareVertexBufferSharedPtr deltabuf(
-                OGRE_NEW DefaultHardwareVertexBuffer(dcl->getVertexSize(DELTA_BUFFER), numVerts, HardwareBuffer::HBU_STATIC_WRITE_ONLY));
+            v1::HardwareVertexBufferSharedPtr posbuf(
+                OGRE_NEW v1::DefaultHardwareVertexBuffer(
+                    dcl->getVertexSize(POSITION_BUFFER),
+                    numVerts,
+                    v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY));
+            
+            v1::HardwareVertexBufferSharedPtr deltabuf(
+                OGRE_NEW v1::DefaultHardwareVertexBuffer(
+                    dcl->getVertexSize(DELTA_BUFFER), 
+                    numVerts, 
+                    v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY));
 
             mVertexDataRecord->cpuVertexData->vertexStart = 0;
             mVertexDataRecord->cpuVertexData->vertexCount = numVerts;
@@ -667,8 +675,10 @@ namespace Ogre
         }
     }
     //----------------------------------------------------------------------
-    void TerrainQuadTreeNode::updateVertexBuffer(HardwareVertexBufferSharedPtr& posbuf, 
-        HardwareVertexBufferSharedPtr& deltabuf, const Rect& rect)
+    void TerrainQuadTreeNode::updateVertexBuffer(
+        v1::HardwareVertexBufferSharedPtr& posbuf,
+        v1::HardwareVertexBufferSharedPtr& deltabuf,
+        const Rect& rect)
     {
         assert (rect.left >= mOffsetX && rect.right <= mBoundaryX && 
             rect.top >= mOffsetY && rect.bottom <= mBoundaryY);
@@ -682,15 +692,15 @@ namespace Ogre
         long destOffsetY = rect.top <= mOffsetY ? 0 : (rect.top - mOffsetY) / inc;
         // Fill the buffers
         
-        HardwareBuffer::LockOptions lockMode;
+        v1::HardwareBuffer::LockOptions lockMode;
         if (destOffsetX || destOffsetY || rect.width() < mSize
             || rect.height() < mSize)
         {
-            lockMode = HardwareBuffer::HBL_NORMAL;
+            lockMode = v1::HardwareBuffer::HBL_NORMAL;
         }
         else
         {
-            lockMode = HardwareBuffer::HBL_DISCARD;
+            lockMode = v1::HardwareBuffer::HBL_DISCARD;
         }
 
         Real uvScale = 1.0f / (mTerrain->getSize() - 1);
@@ -997,7 +1007,7 @@ namespace Ogre
 
     }
     //---------------------------------------------------------------------
-    void TerrainQuadTreeNode::populateIndexData(uint16 batchSize, IndexData* destData)
+    void TerrainQuadTreeNode::populateIndexData(uint16 batchSize, v1::IndexData* destData)
     {
         const VertexDataRecord* vdr = getVertexDataRecord();
 
@@ -1011,9 +1021,15 @@ namespace Ogre
         uint16 vdatasizeOffsetX = (mOffsetX - mNodeWithVertexData->mOffsetX) / resolutionRatio;
         uint16 vdatasizeOffsetY = (mOffsetY - mNodeWithVertexData->mOffsetY) / resolutionRatio;
 
-        destData->indexBuffer = mTerrain->getGpuBufferAllocator()->getSharedIndexBuffer(batchSize, vdr->size, 
-            vertexIncrement, vdatasizeOffsetX, vdatasizeOffsetY, 
-            vdr->numSkirtRowsCols, vdr->skirtRowColSkip);
+        destData->indexBuffer = mTerrain->getGpuBufferAllocator()->getSharedIndexBuffer(
+            batchSize,
+            vdr->size, 
+            vertexIncrement,
+            vdatasizeOffsetX,
+            vdatasizeOffsetY, 
+            vdr->numSkirtRowsCols,
+            vdr->skirtRowColSkip);
+
         destData->indexStart = 0;
         destData->indexCount = destData->indexBuffer->getNumIndexes();
 
@@ -1026,13 +1042,13 @@ namespace Ogre
         if (mVertexDataRecord && mVertexDataRecord->cpuVertexData && !mVertexDataRecord->gpuVertexData)
         {
             // copy data from CPU to GPU, but re-use vertex buffers (so don't use regular clone)
-            mVertexDataRecord->gpuVertexData = OGRE_NEW VertexData();
-            VertexData* srcData = mVertexDataRecord->cpuVertexData;
-            VertexData* destData = mVertexDataRecord->gpuVertexData;
+            mVertexDataRecord->gpuVertexData = OGRE_NEW v1::VertexData();
+            v1::VertexData* srcData = mVertexDataRecord->cpuVertexData;
+            v1::VertexData* destData = mVertexDataRecord->gpuVertexData;
 
             // copy vertex buffers
             // get new buffers
-            HardwareVertexBufferSharedPtr destPosBuf, destDeltaBuf;
+            v1::HardwareVertexBufferSharedPtr destPosBuf, destDeltaBuf;
             mTerrain->getGpuBufferAllocator()->allocateVertexBuffers(mTerrain, srcData->vertexCount, 
                 destPosBuf, destDeltaBuf);
                 
@@ -1048,9 +1064,9 @@ namespace Ogre
             destData->vertexStart = srcData->vertexStart;
             destData->vertexCount = srcData->vertexCount;
             // Copy elements
-            const VertexDeclaration::VertexElementList elems = 
+            const v1::VertexDeclaration::VertexElementList elems =
                 srcData->vertexDeclaration->getElements();
-            VertexDeclaration::VertexElementList::const_iterator ei, eiend;
+            v1::VertexDeclaration::VertexElementList::const_iterator ei, eiend;
             eiend = elems.end();
             for (ei = elems.begin(); ei != eiend; ++ei)
             {
@@ -1104,7 +1120,7 @@ namespace Ogre
             if (!ll->gpuIndexData)
             {
                 // clone, using default buffer manager ie hardware
-                ll->gpuIndexData = OGRE_NEW IndexData();
+                ll->gpuIndexData = OGRE_NEW v1::IndexData();
                 populateIndexData(ll->batchSize, ll->gpuIndexData);
             }
 
@@ -1421,7 +1437,8 @@ namespace Ogre
     {
         if (isRenderedAtCurrentLod())
         {
-            queue->addRenderable(mRend, mTerrain->getRenderQueueGroup());           
+            // TODO: Ogre 2.1 / This is probably wrong ~ only_a_ptr
+            queue->addRenderableV1(mTerrain->getRenderQueueGroup(), true, mRend, mMovable);
         }
     }
     //---------------------------------------------------------------------
@@ -1437,15 +1454,15 @@ namespace Ogre
     //---------------------------------------------------------------------
     Technique* TerrainQuadTreeNode::getTechnique(void) const
     { 
-        return getMaterial()->getBestTechnique( mMovable->getCurrentMaterialLod()[0], mRend);
+        return this->getMaterial()->getBestTechnique(0, mRend);
     }
     //---------------------------------------------------------------------
-    void TerrainQuadTreeNode::getRenderOperation(RenderOperation& op)
+    void TerrainQuadTreeNode::getRenderOperation(v1::RenderOperation& op)
     {
         mNodeWithVertexData->updateGpuVertexData();
 
         op.indexData = mLodLevels[mCurrentLod]->gpuIndexData;
-        op.operationType = RenderOperation::OT_TRIANGLE_STRIP;
+        op.operationType = v1::RenderOperation::OT_TRIANGLE_STRIP;
         op.useIndexes = true;
         op.vertexData = getVertexDataRecord()->gpuVertexData;
     }
@@ -1483,8 +1500,13 @@ namespace Ogre
     }
     //---------------------------------------------------------------------
     //---------------------------------------------------------------------
-    TerrainQuadTreeNode::Movable::Movable(IdType id, ObjectMemoryManager *objectMemoryManager, TerrainQuadTreeNode* parent)
-		: MovableObject(id, objectMemoryManager, RENDER_QUEUE_MAIN), mParent(parent)
+    TerrainQuadTreeNode::Movable::Movable(
+        IdType id, 
+        SceneManager* sceneManager, 
+        ObjectMemoryManager *objectMemoryManager, 
+        TerrainQuadTreeNode* parent)
+        // OGRE 2.1 port: The 'renderQueueID=0' parameter is most definitely wrong ~only_a_ptr
+        : MovableObject(id, objectMemoryManager, sceneManager, 0), mParent(parent)
     {
         setCastShadows(TerrainGlobalOptions::getSingleton().getCastsDynamicShadows());
     }
@@ -1572,7 +1594,7 @@ namespace Ogre
         return mParent->getTechnique();
     }
     //---------------------------------------------------------------------
-    void TerrainQuadTreeNode::Rend::getRenderOperation(RenderOperation& op)
+    void TerrainQuadTreeNode::Rend::getRenderOperation(v1::RenderOperation& op)
     {
         mParent->getRenderOperation(op);
     }
@@ -1599,9 +1621,8 @@ namespace Ogre
     //---------------------------------------------------------------------
 
 
-    
 
 
 
-}
+} // namespace Ogre
 

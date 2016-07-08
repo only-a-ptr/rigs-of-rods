@@ -544,10 +544,15 @@ namespace Ogre
             @param destPos Pointer to a vertex buffer for positions, to be bound
             @param destDelta Pointer to a vertex buffer for deltas, to be bound
             */
-            virtual void allocateVertexBuffers(Terrain* forTerrain, size_t numVertices, HardwareVertexBufferSharedPtr& destPos, HardwareVertexBufferSharedPtr& destDelta) = 0;
+            virtual void allocateVertexBuffers(
+                Terrain* forTerrain, size_t numVertices,
+                v1::HardwareVertexBufferSharedPtr& destPos,
+                v1::HardwareVertexBufferSharedPtr& destDelta) = 0;
             /** Free (or return to the pool) vertex buffers for terrain. 
             */
-            virtual void freeVertexBuffers(const HardwareVertexBufferSharedPtr& posbuf, const HardwareVertexBufferSharedPtr& deltabuf) = 0;
+            virtual void freeVertexBuffers(
+                const v1::HardwareVertexBufferSharedPtr& posbuf,
+                const v1::HardwareVertexBufferSharedPtr& deltabuf) = 0;
 
             /** Get a shared index buffer for a given number of settings.
             @remarks
@@ -563,7 +568,7 @@ namespace Ogre
             @param numSkirtRowsCols Number of rows and columns of skirts
             @param skirtRowColSkip The number of rows / cols to skip in between skirts
             */
-            virtual HardwareIndexBufferSharedPtr getSharedIndexBuffer(uint16 batchSize, 
+            virtual v1::HardwareIndexBufferSharedPtr getSharedIndexBuffer(uint16 batchSize,
                 uint16 vdatasize, size_t vertexIncrement, uint16 xoffset, uint16 yoffset, uint16 numSkirtRowsCols, 
                 uint16 skirtRowColSkip) = 0;
 
@@ -577,9 +582,18 @@ namespace Ogre
         public:
             DefaultGpuBufferAllocator();
             virtual ~DefaultGpuBufferAllocator();
-            void allocateVertexBuffers(Terrain* forTerrain, size_t numVertices, HardwareVertexBufferSharedPtr& destPos, HardwareVertexBufferSharedPtr& destDelta);
-            void freeVertexBuffers(const HardwareVertexBufferSharedPtr& posbuf, const HardwareVertexBufferSharedPtr& deltabuf);
-            HardwareIndexBufferSharedPtr getSharedIndexBuffer(uint16 batchSize, 
+
+            void allocateVertexBuffers(
+                Terrain* forTerrain,
+                size_t numVertices,
+                v1::HardwareVertexBufferSharedPtr& destPos,
+                v1::HardwareVertexBufferSharedPtr& destDelta);
+
+            void freeVertexBuffers(
+                const v1::HardwareVertexBufferSharedPtr& posbuf,
+                const v1::HardwareVertexBufferSharedPtr& deltabuf);
+            
+            v1::HardwareIndexBufferSharedPtr getSharedIndexBuffer(uint16 batchSize,
                 uint16 vdatasize, size_t vertexIncrement, uint16 xoffset, uint16 yoffset, uint16 numSkirtRowsCols, 
                 uint16 skirtRowColSkip);
             void freeAllBuffers();
@@ -591,16 +605,17 @@ namespace Ogre
                 uint16 minBatchSize);
 
         protected:
-            typedef list<HardwareVertexBufferSharedPtr>::type VBufList;
+            typedef list<v1::HardwareVertexBufferSharedPtr>::type VBufList;
             VBufList mFreePosBufList;
             VBufList mFreeDeltaBufList;
-            typedef map<uint32, HardwareIndexBufferSharedPtr>::type IBufMap;
+            typedef map<uint32, v1::HardwareIndexBufferSharedPtr>::type IBufMap;
             IBufMap mSharedIBufMap;
 
             uint32 hashIndexBuffer(uint16 batchSize, 
                 uint16 vdatasize, size_t vertexIncrement, uint16 xoffset, uint16 yoffset, uint16 numSkirtRowsCols, 
                 uint16 skirtRowColSkip);
-            HardwareVertexBufferSharedPtr getVertexBuffer(VBufList& list, size_t vertexSize, size_t numVertices);
+            
+            v1::HardwareVertexBufferSharedPtr getVertexBuffer(VBufList& list, size_t vertexSize, size_t numVertices);
 
         };
 
@@ -1876,6 +1891,7 @@ namespace Ogre
         Terrain* mNeighbours[NEIGHBOUR_COUNT];
 
         GpuBufferAllocator* mCustomGpuBufferAllocator;
+
         DefaultGpuBufferAllocator mDefaultGpuBufferAllocator;
 
         size_t getPositionBufVertexSize() const;

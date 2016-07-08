@@ -102,7 +102,7 @@ namespace Ogre
         , mLightMapDir(Vector3(1, -1, 0).normalisedCopy())
         , mCastsShadows(false)
         , mMaxPixelError(3.0)
-        , mRenderQueueGroup(RENDER_QUEUE_MAIN)
+        , mRenderQueueGroup(0) // TODO:  RENDER_QUEUE_MAIN in Ogre 2.1?
         , mVisibilityFlags(0xFFFFFFFF)
         , mQueryFlags(0xFFFFFFFF)
         , mUseRayBoxDistanceCalculation(false)
@@ -2847,13 +2847,13 @@ namespace Ogre
     //---------------------------------------------------------------------
     void Terrain::copyBlendTextureChannel(uint8 srcIndex, uint8 srcChannel, uint8 destIndex, uint8 destChannel )
     {
-        HardwarePixelBufferSharedPtr srcBuffer = getLayerBlendTexture(srcIndex)->getBuffer();
-        HardwarePixelBufferSharedPtr destBuffer = getLayerBlendTexture(destIndex)->getBuffer();
+        v1::HardwarePixelBufferSharedPtr srcBuffer = getLayerBlendTexture(srcIndex)->getBuffer();
+        v1::HardwarePixelBufferSharedPtr destBuffer = getLayerBlendTexture(destIndex)->getBuffer();
 
         unsigned char rgbaShift[4];
         Image::Box box(0, 0, destBuffer->getWidth(), destBuffer->getHeight());
 
-        uint8* pDestBase = static_cast<uint8*>(destBuffer->lock(box, HardwareBuffer::HBL_NORMAL).data);
+        uint8* pDestBase = static_cast<uint8*>(destBuffer->lock(box, v1::HardwareBuffer::HBL_NORMAL).data);
         PixelUtil::getBitShifts(destBuffer->getFormat(), rgbaShift);
         uint8* pDest = pDestBase + rgbaShift[destChannel] / 8;
         size_t destInc = PixelUtil::getNumElemBytes(destBuffer->getFormat());
@@ -2868,7 +2868,7 @@ namespace Ogre
         }
         else
         {
-            pSrc = static_cast<uint8*>(srcBuffer->lock(box, HardwareBuffer::HBL_READ_ONLY).data);
+            pSrc = static_cast<uint8*>(srcBuffer->lock(box, Ogre::v1::HardwareBuffer::HBL_READ_ONLY).data);
             PixelUtil::getBitShifts(srcBuffer->getFormat(), rgbaShift);
             pSrc += rgbaShift[srcChannel] / 8;
             srcInc = PixelUtil::getNumElemBytes(srcBuffer->getFormat());
@@ -2891,12 +2891,12 @@ namespace Ogre
     //---------------------------------------------------------------------
     void Terrain::clearGPUBlendChannel(uint8 index, uint channel)
     {
-        HardwarePixelBufferSharedPtr buffer = getLayerBlendTexture(index)->getBuffer();
+        v1::HardwarePixelBufferSharedPtr buffer = getLayerBlendTexture(index)->getBuffer();
 
         unsigned char rgbaShift[4];
         Image::Box box(0, 0, buffer->getWidth(), buffer->getHeight());
 
-        uint8* pData = static_cast<uint8*>(buffer->lock(box, HardwareBuffer::HBL_NORMAL).data);
+        uint8* pData = static_cast<uint8*>(buffer->lock(box, v1::HardwareBuffer::HBL_NORMAL).data);
         PixelUtil::getBitShifts(buffer->getFormat(), rgbaShift);
         pData += rgbaShift[channel] / 8;
         size_t inc = PixelUtil::getNumElemBytes(buffer->getFormat());
@@ -2954,8 +2954,8 @@ namespace Ogre
             {
                 // initialise black
                 Box box(0, 0, mLayerBlendMapSize, mLayerBlendMapSize);
-                HardwarePixelBufferSharedPtr buf = mBlendTextureList[i]->getBuffer();
-                uint8* pInit = static_cast<uint8*>(buf->lock(box, HardwarePixelBuffer::HBL_DISCARD).data);
+                v1::HardwarePixelBufferSharedPtr buf = mBlendTextureList[i]->getBuffer();
+                uint8* pInit = static_cast<uint8*>(buf->lock(box, v1::HardwarePixelBuffer::HBL_DISCARD).data);
                 memset(pInit, 0, PixelUtil::getNumElemBytes(fmt) * mLayerBlendMapSize * mLayerBlendMapSize);
                 buf->unlock();
             }
@@ -3737,8 +3737,8 @@ namespace Ogre
             {
                 // initialise to full-bright
                 Box box(0, 0, mLightmapSizeActual, mLightmapSizeActual);
-                HardwarePixelBufferSharedPtr buf = mLightmap->getBuffer();
-                uint8* pInit = static_cast<uint8*>(buf->lock(box, HardwarePixelBuffer::HBL_DISCARD).data);
+                v1::HardwarePixelBufferSharedPtr buf = mLightmap->getBuffer();
+                uint8* pInit = static_cast<uint8*>(buf->lock(box, v1::HardwarePixelBuffer::HBL_DISCARD).data);
                 memset(pInit, 255, mLightmapSizeActual * mLightmapSizeActual);
                 buf->unlock();
 
@@ -3778,8 +3778,8 @@ namespace Ogre
             {
                 // initialise to black
                 Box box(0, 0, mCompositeMapSizeActual, mCompositeMapSizeActual);
-                HardwarePixelBufferSharedPtr buf = mCompositeMap->getBuffer();
-                uint8* pInit = static_cast<uint8*>(buf->lock(box, HardwarePixelBuffer::HBL_DISCARD).data);
+                v1::HardwarePixelBufferSharedPtr buf = mCompositeMap->getBuffer();
+                uint8* pInit = static_cast<uint8*>(buf->lock(box, v1::HardwarePixelBuffer::HBL_DISCARD).data);
                 memset(pInit, 0, mCompositeMapSizeActual * mCompositeMapSizeActual * 4);
                 buf->unlock();
 
@@ -4625,15 +4625,18 @@ namespace Ogre
         freeAllBuffers();
     }
     //---------------------------------------------------------------------
-    void Terrain::DefaultGpuBufferAllocator::allocateVertexBuffers(Terrain* forTerrain, 
-        size_t numVertices, HardwareVertexBufferSharedPtr& destPos, HardwareVertexBufferSharedPtr& destDelta)
+    void Terrain::DefaultGpuBufferAllocator::allocateVertexBuffers(
+        Terrain* forTerrain, 
+        size_t numVertices, 
+        v1::HardwareVertexBufferSharedPtr& destPos, 
+        v1::HardwareVertexBufferSharedPtr& destDelta)
     {
-        destPos = getVertexBuffer(mFreePosBufList, forTerrain->getPositionBufVertexSize(), numVertices);
-        destDelta = getVertexBuffer(mFreeDeltaBufList, forTerrain->getDeltaBufVertexSize(), numVertices);
+        destPos = this->getVertexBuffer(mFreePosBufList, forTerrain->getPositionBufVertexSize(), numVertices);
+        destDelta = this->getVertexBuffer(mFreeDeltaBufList, forTerrain->getDeltaBufVertexSize(), numVertices);
 
     }
     //---------------------------------------------------------------------
-    HardwareVertexBufferSharedPtr Terrain::DefaultGpuBufferAllocator::getVertexBuffer(
+    v1::HardwareVertexBufferSharedPtr Terrain::DefaultGpuBufferAllocator::getVertexBuffer(
         VBufList& list, size_t vertexSize, size_t numVertices)
     {
         size_t sz = vertexSize * numVertices;
@@ -4641,27 +4644,33 @@ namespace Ogre
         {
             if ((*i)->getSizeInBytes() == sz)
             {
-                HardwareVertexBufferSharedPtr ret = *i;
+                v1::HardwareVertexBufferSharedPtr ret = *i;
                 list.erase(i);
                 return ret;
             }
         }
         // Didn't find one?
-        return HardwareBufferManager::getSingleton()
-            .createVertexBuffer(vertexSize, numVertices, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+        return v1::HardwareBufferManager::getSingleton()
+            .createVertexBuffer(vertexSize, numVertices, v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 
     }
     //---------------------------------------------------------------------
     void Terrain::DefaultGpuBufferAllocator::freeVertexBuffers(
-        const HardwareVertexBufferSharedPtr& posbuf, const HardwareVertexBufferSharedPtr& deltabuf)
+        const v1::HardwareVertexBufferSharedPtr& posbuf, 
+        const v1::HardwareVertexBufferSharedPtr& deltabuf)
     {
         mFreePosBufList.push_back(posbuf);
         mFreeDeltaBufList.push_back(deltabuf);
     }
     //---------------------------------------------------------------------
-    HardwareIndexBufferSharedPtr Terrain::DefaultGpuBufferAllocator::getSharedIndexBuffer(uint16 batchSize, 
-        uint16 vdatasize, size_t vertexIncrement, uint16 xoffset, uint16 yoffset, uint16 numSkirtRowsCols, 
+    v1::HardwareIndexBufferSharedPtr Terrain::DefaultGpuBufferAllocator::getSharedIndexBuffer(
+        uint16 batchSize,
+        uint16 vdatasize, 
+        size_t vertexIncrement, 
+        uint16 xoffset, 
+        uint16 yoffset, 
+        uint16 numSkirtRowsCols, 
         uint16 skirtRowColSkip)
     {
         uint32 hsh = hashIndexBuffer(batchSize, vdatasize, vertexIncrement, xoffset, yoffset, 
@@ -4672,10 +4681,10 @@ namespace Ogre
         {
             // create new
             size_t indexCount = Terrain::_getNumIndexesForBatchSize(batchSize);
-            HardwareIndexBufferSharedPtr ret = HardwareBufferManager::getSingleton()
-                .createIndexBuffer(HardwareIndexBuffer::IT_16BIT, indexCount, 
-                HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-            uint16* pI = static_cast<uint16*>(ret->lock(HardwareBuffer::HBL_DISCARD));
+            v1::HardwareIndexBufferSharedPtr ret = v1::HardwareBufferManager::getSingleton()
+                .createIndexBuffer(v1::HardwareIndexBuffer::IT_16BIT, indexCount,
+                    v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+            uint16* pI = static_cast<uint16*>(ret->lock(v1::HardwareBuffer::HBL_DISCARD));
             Terrain::_populateIndexBuffer(pI, batchSize, vdatasize, vertexIncrement, xoffset, yoffset, numSkirtRowsCols, skirtRowColSkip);
             ret->unlock();
 

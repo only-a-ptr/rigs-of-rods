@@ -135,7 +135,7 @@ namespace Ogre
             /// Number of vertices rendered down one side (not including skirts)
             uint16 batchSize;
             /// Index data on the gpu
-            IndexData* gpuIndexData;
+            v1::IndexData* gpuIndexData;
             /// Maximum delta height between this and the next lower lod
             Real maxHeightDelta;
             /// Temp calc area for max height delta
@@ -288,8 +288,8 @@ namespace Ogre
 
         struct VertexDataRecord : public TerrainAlloc
         {
-            VertexData* cpuVertexData;
-            VertexData* gpuVertexData;
+            v1::VertexData* cpuVertexData;
+            v1::VertexData* gpuVertexData;
             /// Resolution of the data compared to the base terrain data (NOT number of vertices!)
             uint16 resolution;
             /// Size of the data along one edge
@@ -336,7 +336,7 @@ namespace Ogre
         protected:
             TerrainQuadTreeNode* mParent;
         public:
-            Movable(IdType id, ObjectMemoryManager *objectMemoryManager, TerrainQuadTreeNode* parent);
+            Movable(IdType id, SceneManager* sceneManager, ObjectMemoryManager *objectMemoryManager, TerrainQuadTreeNode* parent);
             virtual ~Movable();
             
             // necessary overrides
@@ -369,7 +369,7 @@ namespace Ogre
 
             const MaterialPtr& getMaterial(void) const;
             Technique* getTechnique(void) const;
-            void getRenderOperation(RenderOperation& op);
+            void getRenderOperation(v1::RenderOperation& op, bool casterPass);
             void getWorldTransforms(Matrix4* xform) const;
             Real getSquaredViewDepth(const Camera* cam) const;
             const LightList& getLights(void) const;
@@ -385,7 +385,7 @@ namespace Ogre
         // actual implementations of Renderable methods
         const MaterialPtr& getMaterial(void) const;
         Technique* getTechnique(void) const;
-        void getRenderOperation(RenderOperation& op);
+        void getRenderOperation(v1::RenderOperation& op);
         void getWorldTransforms(Matrix4* xform) const;
         Real getSquaredViewDepth(const Camera* cam) const;
         const LightList& getLights(void) const;
@@ -397,7 +397,10 @@ namespace Ogre
         /* Update the vertex buffers - the rect in question is relative to the whole terrain, 
             not the local vertex data (which may use a subset)
         */
-        void updateVertexBuffer(HardwareVertexBufferSharedPtr& posbuf, HardwareVertexBufferSharedPtr& deltabuf, const Rect& rect);
+        void updateVertexBuffer(
+            v1::HardwareVertexBufferSharedPtr& posbuf, 
+            v1::HardwareVertexBufferSharedPtr& deltabuf, 
+            const Rect& rect);
         void destroyCpuVertexData();
 
         void createGpuVertexData();
@@ -406,7 +409,7 @@ namespace Ogre
         void createGpuIndexData();
         void destroyGpuIndexData();
 
-        void populateIndexData(uint16 batchSize, IndexData* destData);
+        void populateIndexData(uint16 batchSize, v1::IndexData* destData);
         void writePosVertex(bool compress, uint16 x, uint16 y, float height, const Vector3& pos, float uvScale, float** ppPos);
         void writeDeltaVertex(bool compress, uint16 x, uint16 y, float delta, float deltaThresh, float** ppDelta);
         

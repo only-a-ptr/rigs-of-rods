@@ -66,7 +66,7 @@ namespace Ogre
         uint8 mChannelOffset; // in pixel format
         Box mDirtyBox;
         bool mDirty;
-        HardwarePixelBuffer* mBuffer;
+        v1::HardwarePixelBuffer* mBuffer;
         float* mData;
 
         void download();
@@ -78,7 +78,7 @@ namespace Ogre
         @param layerIndex The layer index (should be 1 or higher)
         @param buf The buffer holding the data
         */
-        TerrainLayerBlendMap(Terrain* parent, uint8 layerIndex, HardwarePixelBuffer* buf);
+        TerrainLayerBlendMap(Terrain* parent, uint8 layerIndex, v1::HardwarePixelBuffer* buf);
         virtual ~TerrainLayerBlendMap();
         /// Get the parent terrain
         Terrain* getParent() const { return mParent; }

@@ -424,7 +424,7 @@ namespace Ogre
             // composite map
             TextureUnitState* tu = pass->createTextureUnitState();
             tu->setTextureName(terrain->getCompositeMap()->getName());
-            tu->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
+            //tu->setTextureAddressingMode(TextureUnitState::TAM_CLAMP); // TODO: ogre21
 
             // That's it!
 
@@ -442,8 +442,9 @@ namespace Ogre
             {
                 TextureUnitState* tu = pass->createTextureUnitState();
                 tu->setContentType(TextureUnitState::CONTENT_SHADOW);
-                tu->setTextureAddressingMode(TextureUnitState::TAM_BORDER);
-                tu->setTextureBorderColour(ColourValue::White);
+                //tu->setTextureAddressingMode(TextureUnitState::TAM_BORDER);
+                //tu->setTextureBorderColour(ColourValue::White);
+                //TODO: ogre21
             }
         }
 
