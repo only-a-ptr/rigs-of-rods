@@ -36,7 +36,7 @@ public:
 	Ogre::String getCameraName();
 	Ogre::String getTextureName();
 
-	void setStaticGeometry(Ogre::StaticGeometry *staticGeometry);
+	//void setStaticGeometry(Ogre::StaticGeometry *staticGeometry); //FIXME: ogre21
 
 	void update();
 
@@ -50,7 +50,7 @@ protected:
 	Ogre::Camera *mCamera;
 	Ogre::MaterialPtr mMaterial;
 	Ogre::RenderTarget *mRttTex;
-	Ogre::StaticGeometry *mStatics;
+	//Ogre::StaticGeometry *mStatics; //FIXME: ogre21
 	Ogre::TextureUnitState *mTextureUnitState;
 	Ogre::Viewport *mViewport;
 

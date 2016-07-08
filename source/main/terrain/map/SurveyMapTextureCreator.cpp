@@ -30,7 +30,7 @@ int SurveyMapTextureCreator::mCounter = 0;
 SurveyMapTextureCreator::SurveyMapTextureCreator() :
 	  mCamera(NULL)
 	, mRttTex(NULL)
-	, mStatics(NULL)
+	//, mStatics(NULL) // FIXME: ogre21
 	, mTextureUnitState(NULL)
 	, mViewport(NULL)
 	, mMapCenter(Vector2::ZERO)
@@ -47,10 +47,12 @@ bool SurveyMapTextureCreator::init()
 	return false;
 }
 
+/* FIXME ogre21
 void SurveyMapTextureCreator::setStaticGeometry(StaticGeometry *staticGeometry)
 {
 	mStatics = staticGeometry;
 }
+*/
 
 void SurveyMapTextureCreator::update()
 {

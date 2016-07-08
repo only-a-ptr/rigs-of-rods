@@ -29,7 +29,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <OgreTerrain.h>
 #include <OgreTerrainMaterialGeneratorA.h>
-#include <OgreTerrainPaging.h>
+//#include <OgreTerrainPaging.h>
 #include <OgreTerrainQuadTreeNode.h>
 #include <OgreTerrainGroup.h>
 
@@ -90,8 +90,8 @@ protected:
 
 	// terrain engine specific
 	Ogre::TerrainGroup *mTerrainGroup;
-	Ogre::TerrainPaging* mTerrainPaging;
-	Ogre::PageManager* mPageManager;
+	//Ogre::TerrainPaging* mTerrainPaging;
+	//Ogre::PageManager* mPageManager;
 
 	typedef struct blendLayerInfo_t {
 		Ogre::String blendMapTextureFilename;

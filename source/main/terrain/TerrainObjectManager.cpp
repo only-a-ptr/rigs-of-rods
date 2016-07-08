@@ -39,7 +39,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "Utils.h"
 #include "WriteTextToTexture.h"
 
-#include <OgreRTShaderSystem.h>
+//#include <OgreRTShaderSystem.h>
 #include <OgreFontManager.h>
 #include <OgreParticleSystem.h>
 
@@ -210,7 +210,7 @@ void TerrainObjectManager::loadObjectConfigFile(Ogre::String odefname)
 			Ogre::ManualObject *mReferenceObject = gEnv->sceneManager->createManualObject();
 			mReferenceObject->setName("ReferenceGrid");
 
-			mReferenceObject->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_LIST);
+			mReferenceObject->begin("BaseWhiteNoLighting", Ogre::v1::RenderOperation::OT_LINE_LIST);
 
 			Ogre::Real step = 1.0f;
 			unsigned int count = 50;
@@ -827,11 +827,11 @@ void TerrainObjectManager::loadObject(const Ogre::String &name, const Ogre::Vect
 		{
 			for (unsigned int i = 0; i < mo->getEntity()->getNumSubEntities(); i++)
 			{
-				SubEntity *se = mo->getEntity()->getSubEntity(i);
-				String matname = se->getMaterialName();
+				v1::SubEntity *se = mo->getEntity()->getSubEntity(i);
+				String matname = se->getMaterial()->getName();
 				String newmatname = matname + "/" + instancename;
 				se->getMaterial()->clone(newmatname);
-				se->setMaterialName(newmatname);
+				se->setMaterialName(newmatname, ""); // FIXME: ogre21
 			}
 		}
 
@@ -1054,11 +1054,7 @@ void TerrainObjectManager::loadObject(const Ogre::String &name, const Ogre::Vect
 			{
 				char mat[256]="";
 				sscanf(ptline, "generateMaterialShaders %s", mat);
-				if (use_rt_shader_system)
-				{
-					Ogre::RTShader::ShaderGenerator::getSingleton().createShaderBasedTechnique(String(mat), Ogre::MaterialManager::DEFAULT_SCHEME_NAME, Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-					Ogre::RTShader::ShaderGenerator::getSingleton().invalidateMaterial(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, String(mat));
-				}
+
 
 				continue;
 			}
@@ -1069,7 +1065,7 @@ void TerrainObjectManager::loadObject(const Ogre::String &name, const Ogre::Vect
 				sscanf(ptline, "playanimation %f, %f, %s", &speedfactorMin, &speedfactorMax, animname);
 				if (tenode && mo->getEntity() && strnlen(animname,250)>0)
 				{
-					AnimationStateSet *s = mo->getEntity()->getAllAnimationStates();
+					v1::AnimationStateSet *s = mo->getEntity()->getAllAnimationStates();
 					if (!s->hasAnimationState(String(animname)))
 					{
 						LOG("ODEF: animation '" + String(animname) + "' for mesh: '" + String(mesh) + "' in odef file '" + name + ".odef' not found!");
@@ -1103,7 +1099,7 @@ void TerrainObjectManager::loadObject(const Ogre::String &name, const Ogre::Vect
 			{
 				if (!mo->getEntity())
 					continue;
-				String matName = mo->getEntity()->getSubEntity(0)->getMaterialName();
+				String matName = mo->getEntity()->getSubEntity(0)->getMaterial()->getName();
 				MaterialPtr m = MaterialManager::getSingleton().getByName(matName);
 				if (m.getPointer() == 0)
 				{

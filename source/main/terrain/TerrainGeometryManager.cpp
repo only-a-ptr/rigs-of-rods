@@ -23,7 +23,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "LoadingWindow.h"
 #include "TerrainManager.h"
 #include "ShadowManager.h"
-#include "OgreTerrainPSSMMaterialGenerator.h"
 #include "Utils.h"
 
 using namespace Ogre;
@@ -364,7 +363,8 @@ bool TerrainGeometryManager::update(float dt)
 		terrainOptions->setLightMapDirection(light->getDerivedDirection());
 		terrainOptions->setCompositeMapDiffuse(light->getDiffuseColour());
 	}
-	terrainOptions->setCompositeMapAmbient(gEnv->sceneManager->getAmbientLight());
+	terrainOptions->setCompositeMapAmbient(ColourValue(.5,.5,.5)); // OLD: gEnv->sceneManager->getAmbientLight()
+    //TODO: OGRE21
 
 	mTerrainGroup->update();
 	return true;
@@ -374,14 +374,12 @@ void TerrainGeometryManager::configureTerrainDefaults()
 {
 	OGRE_NEW TerrainGlobalOptions();
 
-	Ogre::TerrainPSSMMaterialGenerator *matGen = new Ogre::TerrainPSSMMaterialGenerator();
-	Ogre::TerrainMaterialGeneratorPtr ptr = Ogre::TerrainMaterialGeneratorPtr();
-	ptr.bind(matGen);
+	
 
 	Light *light = gEnv->terrainManager->getMainLight();
 	TerrainGlobalOptions *terrainOptions = TerrainGlobalOptions::getSingletonPtr();
 
-	terrainOptions->setDefaultMaterialGenerator(ptr);
+	
 	// Configure global
 	terrainOptions->setMaxPixelError(m_terrain_config.GetInt("MaxPixelError", 5));
 
@@ -391,7 +389,8 @@ void TerrainGeometryManager::configureTerrainDefaults()
 		terrainOptions->setLightMapDirection(light->getDerivedDirection());
 		terrainOptions->setCompositeMapDiffuse(light->getDiffuseColour());
 	}
-	terrainOptions->setCompositeMapAmbient(gEnv->sceneManager->getAmbientLight());
+	terrainOptions->setCompositeMapAmbient(ColourValue(.5,.5,.5));//OLD: (gEnv->sceneManager->getAmbientLight());
+    //TODO: ogre21
 
 	// Configure default import settings for if we use imported image
 	Ogre::Terrain::ImportData& defaultimp = mTerrainGroup->getDefaultImportSettings();
@@ -401,25 +400,7 @@ void TerrainGeometryManager::configureTerrainDefaults()
 	defaultimp.minBatchSize = m_terrain_config.GetInt("minBatchSize", 33);
 	defaultimp.maxBatchSize = m_terrain_config.GetInt("maxBatchSize", 65);
 
-	// optimizations
-	TerrainPSSMMaterialGenerator::SM2Profile* matProfile = static_cast<TerrainPSSMMaterialGenerator::SM2Profile*>(terrainOptions->getDefaultMaterialGenerator()->getActiveProfile());
-	if (matProfile)
-	{
-		matProfile->setLightmapEnabled(m_terrain_config.GetBool("LightmapEnabled", false));
-		// Fix for OpenGL, otherwise terrains are black
-		if (Root::getSingleton().getRenderSystem()->getName() == "OpenGL Rendering Subsystem") {
-			matProfile->setLayerNormalMappingEnabled(true);
-			matProfile->setLayerSpecularMappingEnabled(true);
-		} else {
-			matProfile->setLayerNormalMappingEnabled(m_terrain_config.GetBool("NormalMappingEnabled", false));
-			matProfile->setLayerSpecularMappingEnabled(m_terrain_config.GetBool("SpecularMappingEnabled", false));
-		}
-		matProfile->setLayerParallaxMappingEnabled(m_terrain_config.GetBool("ParallaxMappingEnabled", false));
-		matProfile->setGlobalColourMapEnabled(m_terrain_config.GetBool("GlobalColourMapEnabled", false));
-		matProfile->setReceiveDynamicShadowsDepth(m_terrain_config.GetBool("ReceiveDynamicShadowsDepth", false));
-
-		terrainManager->getShadowManager()->updateTerrainMaterial(matProfile);
-	}
+	
 
 	terrainOptions->setLayerBlendMapSize(m_terrain_config.GetInt("LayerBlendMapSize", 1024));
 	terrainOptions->setCompositeMapSize(m_terrain_config.GetInt("CompositeMapSize", 1024));
@@ -427,8 +408,7 @@ void TerrainGeometryManager::configureTerrainDefaults()
 	terrainOptions->setSkirtSize(m_terrain_config.GetInt("SkirtSize", 30));
 	terrainOptions->setLightMapSize(m_terrain_config.GetInt("LightMapSize", 1024));
 
-	if (matProfile->getReceiveDynamicShadowsPSSM())
-		terrainOptions->setCastsDynamicShadows(true);
+	
 
 	terrainOptions->setUseRayBoxDistanceCalculation(false);
 
