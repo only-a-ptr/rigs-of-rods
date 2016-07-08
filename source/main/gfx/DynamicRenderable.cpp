@@ -62,7 +62,7 @@ void DynamicRenderable::prepareHardwareBuffers(size_t vertexCount,
 	{
 		mVertexBufferCapacity = newVertCapacity;
 		// Create new vertex buffer
-		HardwareVertexBufferSharedPtr vbuf =
+		v1::HardwareVertexBufferSharedPtr vbuf =
 			HardwareBufferManager::getSingleton().createVertexBuffer(
 			mRenderOp.vertexData->vertexDeclaration->getVertexSize(0),
 			mVertexBufferCapacity,

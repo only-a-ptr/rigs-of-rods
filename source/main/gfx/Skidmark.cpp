@@ -175,12 +175,15 @@ void Skidmark::addObject(Vector3 start, String texture)
 	MaterialPtr mat=(MaterialPtr)(MaterialManager::getSingleton().create(bname, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME));
 	Pass *p = mat->getTechnique(0)->getPass(0);
 	
+    //TODO: Fix OGRE 2.1
+    /*
 	TextureUnitState *tus = p->createTextureUnitState(texture);
 	p->setSceneBlending(SBT_TRANSPARENT_ALPHA);
 	p->setLightingEnabled(false);
 	p->setDepthWriteEnabled(false);
 	p->setDepthBias(3, 3);
 	p->setCullingMode(CULL_NONE);
+    */
 
 	skid.points.resize(lenght);
 	skid.faceSizes.resize(lenght);
@@ -188,9 +191,9 @@ void Skidmark::addObject(Vector3 start, String texture)
 	skid.obj = gEnv->sceneManager->createManualObject();
 	skid.obj->setName("skidmark" + TOSTRING(instanceCounter++));
 
-	skid.obj->setDynamic(true);
+	
 	skid.obj->setRenderingDistance(800); // 800m view distance
-	skid.obj->begin(bname, RenderOperation::OT_TRIANGLE_STRIP);
+	skid.obj->begin(bname, v1::RenderOperation::OT_TRIANGLE_STRIP);
 	for (int i = 0; i < lenght; i++)
 	{
 		skid.points[i] = start;

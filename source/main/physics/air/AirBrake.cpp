@@ -101,7 +101,7 @@ Airbrake::Airbrake(char* basename, int num, node_t *ndref, node_t *ndx, node_t *
 
     /// Allocate vertex buffer of the requested number of vertices (vertexCount)
     /// and bytes per vertex (offset)
-    HardwareVertexBufferSharedPtr vbuf =
+    v1::HardwareVertexBufferSharedPtr vbuf =
         HardwareBufferManager::getSingleton().createVertexBuffer(
             offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 

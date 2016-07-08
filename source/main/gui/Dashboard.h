@@ -24,6 +24,8 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RoRPrerequisites.h"
 
+#include <OgreRenderTargetListener.h>
+
 // Forward
 namespace Ogre
 {

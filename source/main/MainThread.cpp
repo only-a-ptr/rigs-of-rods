@@ -77,7 +77,7 @@
 #include <OgreString.h>
 #include <OgreOverlayManager.h>
 
-#include <MyGUI_OgrePlatform.h>
+#include <MyGUI_Ogre2Platform.h>
 
 #ifdef USE_ANGELSCRIPT
 #    include "ScriptEngine.h"

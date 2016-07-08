@@ -29,9 +29,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RoRPrerequisites.h"
 
-#include "OgreTerrainPSSMMaterialGenerator.h"
-
-
 enum {
 	SHADOWS_NONE,
 	SHADOWS_TEXTURE,
@@ -59,7 +56,7 @@ public:
 
 	void updatePSSM();
 
-	void updateTerrainMaterial(Ogre::TerrainPSSMMaterialGenerator::SM2Profile* matProfile);
+	
 
 	int getShadowsType() { return ShadowsType; }
 

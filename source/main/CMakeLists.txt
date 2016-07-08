@@ -86,7 +86,6 @@ set( SOURCE_FILES
   gfx/particle/FireExtinguisherAffector.{h,cpp}
   gfx/particle/FireExtinguisherAffectorFactory.h
   gfx/particle/OgreParticleCustomParam.h
-  gfx/particle/OgreShaderParticleRenderer.{h,cpp}
   gui/Console.{h,cpp}
   gui/Dashboard.{h,cpp}
   gui/DashBoardManager.{h,cpp}

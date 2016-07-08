@@ -28,7 +28,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 using namespace Ogre;
 
 //Some ugly code here..
-Entity* pPlaneEnt;
+v1::Entity* pPlaneEnt;
 
 Plane waterPlane;
 Plane bottomPlane;
@@ -218,10 +218,11 @@ void Water::processWater(int mType)
 	waterPlane.normal = Vector3::UNIT_Y;
 	waterPlane.d = 0;
 
-		mprt = MeshManager::getSingleton().createPlane("WaterPlane",
+		mprt = v1::MeshManager::getSingleton().createPlane("WaterPlane",
 			ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 			waterPlane,
-			mapSize.x * mScale, mapSize.z * mScale, WAVEREZ, WAVEREZ, true, 1, 50, 50, Vector3::UNIT_Z, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+			mapSize.x * mScale, mapSize.z * mScale, WAVEREZ, WAVEREZ, true, 1, 50, 50, Vector3::UNIT_Z,
+            v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 		pPlaneEnt = gEnv->sceneManager->createEntity("WaterPlane");
 		pPlaneEnt->setName("plane");
 		pPlaneEnt->setMaterialName("tracks/basicwater");
@@ -236,11 +237,11 @@ void Water::processWater(int mType)
 	//bottom
 	bottomPlane.normal = Vector3::UNIT_Y;
 	bottomPlane.d = -wbHeight; //30m below waterline
-	MeshManager::getSingleton().createPlane("BottomPlane",
+    v1::MeshManager::getSingleton().createPlane("BottomPlane",
 		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 		bottomPlane,
 		mapSize.x * mScale, mapSize.z * mScale, 1, 1, true, 1, 1, 1, Vector3::UNIT_Z);
-	Entity *pE = gEnv->sceneManager->createEntity("BottomPlane");
+    v1::Entity *pE = gEnv->sceneManager->createEntity("BottomPlane");
 	pE->setName("bplane");
 	pE->setMaterialName("tracks/seabottom");
 	pE->setCastShadows(false);
@@ -251,7 +252,7 @@ void Water::processWater(int mType)
 	pBottomNode->attachObject(pE);
 	pBottomNode->setPosition(Vector3((mapSize.x * mScale) / 2, 0, (mapSize.z * mScale) / 2));
 	//setup for waves
-	wbuf = mprt->sharedVertexData->vertexBufferBinding->getBuffer(0);
+	wbuf = mprt->sharedVertexData[0]->vertexBufferBinding->getBuffer(0);
 
 	if (wbuf->getSizeInBytes() == (WAVEREZ + 1)*(WAVEREZ + 1) * 32)
 	{

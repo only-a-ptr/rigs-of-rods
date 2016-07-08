@@ -149,7 +149,7 @@ void ColoredTextAreaOverlayElement::updateColours(void)
 	Root::getSingleton().convertColourValue(ColourValue::White, &topColour);
 	Root::getSingleton().convertColourValue(ColourValue::White, &bottomColour);
 
-	HardwareVertexBufferSharedPtr vbuf =
+	v1::HardwareVertexBufferSharedPtr vbuf =
 		mRenderOp.vertexData->vertexBufferBinding->getBuffer(COLOUR_BINDING);
 
 	//RGBA* pDest = static_cast<RGBA*>(

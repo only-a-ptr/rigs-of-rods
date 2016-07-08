@@ -89,7 +89,7 @@ private:
 	Ogre::SubMesh* subface;
 	Ogre::SubMesh* subband;
 	Ogre::VertexDeclaration* decl;
-	Ogre::HardwareVertexBufferSharedPtr vbuf;
+	Ogre::v1::HardwareVertexBufferSharedPtr vbuf;
 
 	size_t nVertices;
 	size_t vbufCount;

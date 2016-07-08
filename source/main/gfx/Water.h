@@ -86,7 +86,7 @@ private:
 	int mType;
 	bool ForceUpdate;
 
-	Ogre::MeshPtr mprt;
+	Ogre::v1::MeshPtr mprt;
 	Ogre::Vector3 mapSize;
 	Ogre::Camera *mRenderCamera;
 	Ogre::Camera *mReflectCam;

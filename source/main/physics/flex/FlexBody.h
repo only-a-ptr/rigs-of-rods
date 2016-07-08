@@ -111,15 +111,15 @@ private:
     int               m_camera_mode; //!< Visibility control {-2 = always, -1 = 3rdPerson only, 0+ = cinecam index}
 
 	int                                 m_shared_buf_num_verts;
-	Ogre::HardwareVertexBufferSharedPtr m_shared_vbuf_pos;
-	Ogre::HardwareVertexBufferSharedPtr m_shared_vbuf_norm;
-	Ogre::HardwareVertexBufferSharedPtr m_shared_vbuf_color;
+	Ogre::v1::HardwareVertexBufferSharedPtr m_shared_vbuf_pos;
+	Ogre::v1::HardwareVertexBufferSharedPtr m_shared_vbuf_norm;
+	Ogre::v1::HardwareVertexBufferSharedPtr m_shared_vbuf_color;
 	
     int                                 m_num_submesh_vbufs;
 	int                                 m_submesh_vbufs_vertex_counts[16];
-	Ogre::HardwareVertexBufferSharedPtr m_submesh_vbufs_pos[16]; //!< positions
-	Ogre::HardwareVertexBufferSharedPtr m_submesh_vbufs_norm[16]; //!< normals
-	Ogre::HardwareVertexBufferSharedPtr m_submesh_vbufs_color[16]; //!< colors
+	Ogre::v1::HardwareVertexBufferSharedPtr m_submesh_vbufs_pos[16]; //!< positions
+	Ogre::v1::HardwareVertexBufferSharedPtr m_submesh_vbufs_norm[16]; //!< normals
+	Ogre::v1::HardwareVertexBufferSharedPtr m_submesh_vbufs_color[16]; //!< colors
 
 	bool m_is_enabled;
     bool m_is_faulty;

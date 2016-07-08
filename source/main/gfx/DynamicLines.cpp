@@ -112,7 +112,7 @@ void DynamicLines::fillHardwareBuffers()
 	Vector3 vaabMin = mPoints[0];
 	Vector3 vaabMax = mPoints[0];
 
-	HardwareVertexBufferSharedPtr vbuf =
+	v1::HardwareVertexBufferSharedPtr vbuf =
 	mRenderOp.vertexData->vertexBufferBinding->getBuffer(0);
 
 	Real *prPos = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));

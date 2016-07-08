@@ -95,7 +95,7 @@ private:
 	Ogre::MeshPtr msh;
 	Ogre::SubMesh* sub;
 	Ogre::VertexDeclaration* decl;
-	Ogre::HardwareVertexBufferSharedPtr vbuf;
+	Ogre::v1::HardwareVertexBufferSharedPtr vbuf;
 
 	size_t nVertices;
 	size_t vbufCount;

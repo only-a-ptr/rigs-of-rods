@@ -407,7 +407,7 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
 
 // Get the mesh information for the given mesh.
 // Code found on this forum link: http://www.ogre3d.org/wiki/index.php/RetrieveVertexData
-void CollisionTools::GetMeshInformation(const Ogre::MeshPtr mesh,
+void CollisionTools::GetMeshInformation(const Ogre::v1::MeshPtr mesh,
 								size_t &vertex_count,
 								Ogre::Vector3* &vertices,
 								size_t &index_count,
@@ -472,7 +472,7 @@ void CollisionTools::GetMeshInformation(const Ogre::MeshPtr mesh,
 			const Ogre::VertexElement* posElem =
 				vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
 
-			Ogre::HardwareVertexBufferSharedPtr vbuf =
+			Ogre::v1::HardwareVertexBufferSharedPtr vbuf =
 				vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
 
 			unsigned char* vertex =
@@ -582,7 +582,7 @@ void CollisionTools::getStaticGeometry(
 			Ogre::VertexData const *vertex_data = gb->getVertexData();
 
 			const Ogre::VertexElement* posElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
-			Ogre::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
+			Ogre::v1::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
 			unsigned char* vertex = reinterpret_cast<unsigned char*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
 
 			vertices.resize(vertices.size() + vertex_data->vertexCount);

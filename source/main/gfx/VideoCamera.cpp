@@ -125,7 +125,7 @@ void VideoCamera::init()
 	mVidCam->setAspectRatio((float)mirrorSize.x/(float)mirrorSize.y);
 
 	disabledTexture = mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->getTextureName();
-	mat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+	
 
 	if (rttTex)
 	{
@@ -156,7 +156,7 @@ void VideoCamera::init()
 	
 	if (debugMode)
 	{
-		Entity *ent = gEnv->sceneManager->createEntity("debug-camera.mesh");
+		v1::Entity *ent = gEnv->sceneManager->createEntity("debug-camera.mesh");
 		debugNode = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 		ent->setMaterialName("ror-camera");
 		debugNode->attachObject(ent);

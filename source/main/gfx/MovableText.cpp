@@ -242,7 +242,7 @@ void MovableText::_setupGeometry()
 	if (!decl->findElementBySemantic(VES_TEXTURE_COORDINATES))
 		decl->addElement(POS_TEX_BINDING, offset, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, 0);
 
-	HardwareVertexBufferSharedPtr ptbuf = HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(POS_TEX_BINDING),
+	v1::HardwareVertexBufferSharedPtr ptbuf = HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(POS_TEX_BINDING),
 		mRenderOp.vertexData->vertexCount,
 		HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 	bind->setBinding(POS_TEX_BINDING, ptbuf);
@@ -251,7 +251,7 @@ void MovableText::_setupGeometry()
 	if (!decl->findElementBySemantic(VES_DIFFUSE))
 		decl->addElement(COLOUR_BINDING, 0, VET_COLOUR, VES_DIFFUSE);
 
-	HardwareVertexBufferSharedPtr cbuf = HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(COLOUR_BINDING),
+	v1::HardwareVertexBufferSharedPtr cbuf = HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(COLOUR_BINDING),
 		mRenderOp.vertexData->vertexCount,
 		HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 	bind->setBinding(COLOUR_BINDING, cbuf);
@@ -493,7 +493,7 @@ void MovableText::_updateColors(void)
 	// Convert to system-specific
 	RGBA color;
 	Root::getSingleton().convertColourValue(mColor, &color);
-	HardwareVertexBufferSharedPtr vbuf = mRenderOp.vertexData->vertexBufferBinding->getBuffer(COLOUR_BINDING);
+	v1::HardwareVertexBufferSharedPtr vbuf = mRenderOp.vertexData->vertexBufferBinding->getBuffer(COLOUR_BINDING);
 	//RGBA *pDest = static_cast<RGBA*>(vbuf->lock(HardwareBuffer::HBL_NORMAL));
 	RGBA* pDest=(RGBA*)malloc(vbuf->getSizeInBytes());
 	RGBA* oDest=pDest;

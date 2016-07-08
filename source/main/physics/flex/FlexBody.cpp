@@ -258,7 +258,7 @@ FlexBody::FlexBody(
 				m_mesh->sharedVertexData->vertexDeclaration->addElement(index, 0, VET_COLOUR_ARGB, VES_DIFFUSE);
 				m_mesh->sharedVertexData->vertexDeclaration->sort();
 				index=m_mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)->getSource();
-				HardwareVertexBufferSharedPtr vbuf=HardwareBufferManager::getSingleton().createVertexBuffer(VertexElement::getTypeSize(VET_COLOUR_ARGB), m_mesh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+				v1::HardwareVertexBufferSharedPtr vbuf=HardwareBufferManager::getSingleton().createVertexBuffer(VertexElement::getTypeSize(VET_COLOUR_ARGB), m_mesh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 				m_mesh->sharedVertexData->vertexBufferBinding->setBinding(index, vbuf);
 			}
 		}
@@ -275,7 +275,7 @@ FlexBody::FlexBody(
 				    vertex_decl->addElement(index, 0, VET_COLOUR_ARGB, VES_DIFFUSE);
 				    vertex_decl->sort();
 				    vertex_decl->findElementBySemantic(VES_DIFFUSE)->getSource();
-				    HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
+				    v1::HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
                         VertexElement::getTypeSize(VET_COLOUR_ARGB), vertex_data->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 				    vertex_data->vertexBufferBinding->setBinding(index, vbuf);
 			    }

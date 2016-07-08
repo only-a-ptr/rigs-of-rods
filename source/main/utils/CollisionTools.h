@@ -110,7 +110,7 @@ private:
 
 	float _heightAdjust;
 
-	void GetMeshInformation(const Ogre::MeshPtr mesh,
+	void GetMeshInformation(const Ogre::v1::MeshPtr mesh,
                                 size_t &vertex_count,
                                 Ogre::Vector3* &vertices,
                                 size_t &index_count,
