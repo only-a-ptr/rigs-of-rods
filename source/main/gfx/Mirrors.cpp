@@ -62,14 +62,16 @@ void Init()
 		((Real)RoR::Application::GetOgreSubsystem()->GetRenderWindow()->getViewport(0)->getActualWidth() / 
 		 (Real)RoR::Application::GetOgreSubsystem()->GetRenderWindow()->getViewport(0)->getActualHeight()) / 2.0f);
 
-	Viewport *v = mRttTex->addViewport(mMirrorCam);
+	/* FIXME: ogre21
+    Viewport *v = mRttTex->addViewport();
 	v->setClearEveryFrame(true);
 	v->setBackgroundColour(gEnv->mainCamera->getViewport()->getBackgroundColour());
 	v->setOverlaysEnabled(false);
+    */
 
 	mMat = MaterialManager::getSingleton().getByName("mirror");
 	mMat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName("mirror.dds");
-	mMat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+	//mMat->getTechnique(0)->getPass(0)->setLightingEnabled(false);//fixme OGRE21
 
 	mInitialized = true;
 }

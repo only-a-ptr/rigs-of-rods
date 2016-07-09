@@ -79,7 +79,7 @@ protected:
 
     /******************************** public methods ******************************/
 public:
-	MovableText(IdType id, ObjectMemoryManager *objectMemoryManager, const NameValuePairList* params);
+	MovableText(IdType id, ObjectMemoryManager *objectMemoryManager, Ogre::SceneManager* ogreSceneMgr, const NameValuePairList* params);
 	//MovableText(const UTFString &name, const UTFString &caption, const UTFString &fontName = "CyberbitEnglish", Real charHeight = 1.0, const ColourValue &color = ColourValue::Black);
 	virtual ~MovableText();
 

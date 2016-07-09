@@ -70,11 +70,9 @@ void TextureToolWindow::fillCombo()
 
 	while (it.hasMoreElements())
 	{
-#ifdef ROR_USE_OGRE_1_9
-		TexturePtr txt(it.getNext().staticCast<Texture>());
-#else
-		TexturePtr txt(it.getNext());
-#endif
+
+		TexturePtr txt(it.getNext().staticCast<Texture>()); // FIXME: ogre21 will crash??
+
 		
 		if (dynamicOnly && ((txt->getUsage() & TU_STATIC) != 0)) continue;
 		

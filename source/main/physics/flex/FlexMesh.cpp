@@ -43,8 +43,8 @@ FlexMesh::FlexMesh(
 	, nodes(nds)
 	, rim_ratio(rimratio)
 {
-	/// Create the mesh via the MeshManager
-	msh = MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+	/// Create the mesh via the v1::MeshManager
+	msh = v1::MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 	/// Create submeshes
 	subface = msh->createSubMesh();
@@ -147,67 +147,67 @@ FlexMesh::FlexMesh(
 	updateVertices();
 
 	/// Create vertex data structure for 8 vertices shared between submeshes
-	msh->sharedVertexData = new VertexData();
-	msh->sharedVertexData->vertexCount = nVertices;
+	msh->sharedVertexData[Ogre::VpNormal] = new v1::VertexData();
+	msh->sharedVertexData[Ogre::VpNormal]->vertexCount = nVertices;
 
 	/// Create declaration (memory format) of vertex data
-	decl = msh->sharedVertexData->vertexDeclaration;
+	decl = msh->sharedVertexData[Ogre::VpNormal]->vertexDeclaration;
 	size_t offset = 0;
 	decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
+	offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 	decl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
+	offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 //        decl->addElement(0, offset, VET_FLOAT3, VES_DIFFUSE);
-//        offset += VertexElement::getTypeSize(VET_FLOAT3);
+//        offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 	decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
-	offset += VertexElement::getTypeSize(VET_FLOAT2);
+	offset += v1::VertexElement::getTypeSize(VET_FLOAT2);
 
 	/// Allocate vertex buffer of the requested number of vertices (vertexCount)
 	/// and bytes per vertex (offset)
 	vbuf =
-		HardwareBufferManager::getSingleton().createVertexBuffer(
-			offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+		v1::HardwareBufferManager::getSingleton().createVertexBuffer(
+			offset, msh->sharedVertexData[Ogre::VpNormal]->vertexCount, v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
 	/// Upload the vertex data to the card
 	vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
 	/// Set vertex buffer binding so buffer 0 is bound to our vertex buffer
-	VertexBufferBinding* bind = msh->sharedVertexData->vertexBufferBinding;
+	v1::VertexBufferBinding* bind = msh->sharedVertexData[Ogre::VpNormal]->vertexBufferBinding;
 	bind->setBinding(0, vbuf);
 
 	//for the face
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-	HardwareIndexBufferSharedPtr faceibuf = HardwareBufferManager::getSingleton().
+	v1::HardwareIndexBufferSharedPtr faceibuf = v1::HardwareBufferManager::getSingleton().
 		createIndexBuffer(
-			HardwareIndexBuffer::IT_16BIT,
+            v1::HardwareIndexBuffer::IT_16BIT,
 			faceibufCount,
-			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+			v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 	/// Upload the index data to the card
 	faceibuf->writeData(0, faceibuf->getSizeInBytes(), facefaces, true);
 
 	/// Set parameters of the submesh
 	subface->useSharedVertices = true;
-	subface->indexData->indexBuffer = faceibuf;
-	subface->indexData->indexCount = faceibufCount;
-	subface->indexData->indexStart = 0;
+	subface->indexData[Ogre::VpNormal]->indexBuffer = faceibuf;
+	subface->indexData[Ogre::VpNormal]->indexCount = faceibufCount;
+	subface->indexData[Ogre::VpNormal]->indexStart = 0;
 
 	//for the band
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-	HardwareIndexBufferSharedPtr bandibuf = HardwareBufferManager::getSingleton().
+	v1::HardwareIndexBufferSharedPtr bandibuf = v1::HardwareBufferManager::getSingleton().
 		createIndexBuffer(
-			HardwareIndexBuffer::IT_16BIT,
+            v1::HardwareIndexBuffer::IT_16BIT,
 			bandibufCount,
-			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+			v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 	/// Upload the index data to the card
 	bandibuf->writeData(0, bandibuf->getSizeInBytes(), bandfaces, true);
 
 	/// Set parameters of the submesh
 	subband->useSharedVertices = true;
-	subband->indexData->indexBuffer = bandibuf;
-	subband->indexData->indexCount = bandibufCount;
-	subband->indexData->indexStart = 0;
+	subband->indexData[Ogre::VpNormal]->indexBuffer = bandibuf;
+	subband->indexData[Ogre::VpNormal]->indexCount = bandibufCount;
+	subband->indexData[Ogre::VpNormal]->indexStart = 0;
 
 	/// Set bounding information (for culling)
 	msh->_setBounds(AxisAlignedBox(-1,-1,0,1,1,0), true);
@@ -418,10 +418,10 @@ void FlexMesh::flexitCompute()
 
 Vector3 FlexMesh::flexitFinal()
 {
-	//vbuf->lock(HardwareBuffer::HBL_NORMAL);
+	//vbuf->lock(v1::HardwareBuffer::HBL_NORMAL);
 	vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 	//vbuf->unlock();
-	//msh->sharedVertexData->vertexBufferBinding->getBuffer(0)->writeData(0, vbuf->getSizeInBytes(), vertices, true);
+	//msh->sharedVertexData[Ogre::VpNormal]->vertexBufferBinding->getBuffer(0)->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
 	return flexit_center;
 }

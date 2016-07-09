@@ -47,7 +47,7 @@ TruckHUD::TruckHUD() :
 		avVelos[i] = 0;
 	}
 
-	truckHUD = OverlayManager::getSingleton().getByName("tracks/TruckInfoBox");
+	truckHUD = v1::OverlayManager::getSingleton().getByName("tracks/TruckInfoBox");
 }
 
 void TruckHUD::show(bool value)
@@ -64,21 +64,21 @@ bool TruckHUD::isVisible()
 	return truckHUD->isVisible();
 }
 
-void TruckHUD::checkOverflow(OverlayElement* e)
+void TruckHUD::checkOverflow(v1::OverlayElement* e)
 {
 	int newval = e->getLeft() + e->getWidth() + border;
 
 	if (newval > this->width)
 	{
 		this->width = newval;
-		OverlayElement *panel = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MainPanel");
+		v1::OverlayElement *panel = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MainPanel");
 		panel->setWidth(width);
 	}
 }
 
 bool TruckHUD::update(float dt, Beam *truck, bool visible)
 {
-	OverlayElement *overlayElement = 0;
+	v1::OverlayElement *overlayElement = 0;
 
 	// only update every 300 ms
 	if (visible)
@@ -97,11 +97,11 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 
 	if (visible)
 	{
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Truckname");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Truckname");
 		overlayElement->setCaption(truck->getTruckName());
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Truckauthor");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Truckauthor");
 		overlayElement->setCaption(_L("(no author information available)"));
 		std::vector<authorinfo_t> file_authors = truck->getAuthors();
 		if (!file_authors.empty())
@@ -118,7 +118,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		std::vector<std::string> description = truck->getDescription();
 		for (unsigned int i=1; i < 3; i++)
 		{
-			overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/DescriptionLine" + TOSTRING(i+1));
+			overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/DescriptionLine" + TOSTRING(i+1));
 			overlayElement->setCaption("");
 			if (i < description.size())
 			{
@@ -151,15 +151,15 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 			average_deformation += current_deformation;
 		}
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamTotal");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamTotal");
 		overlayElement->setCaption(_L("beam count: ") + TOUTFSTRING(beamCount));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamBroken");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamBroken");
 		overlayElement->setCaption(_L("broken: ") + TOUTFSTRING(beambroken) + U(" (") + TOUTFSTRING(Round((float)beambroken / (float)beamCount, 2) * 100.0f) + U("%)"));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamHealth");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamHealth");
 		float health = ((float)beambroken / (float)beamCount) * 10.0f + ((float)beamdeformed / (float)beamCount);
 		if (health < 1.0f)
 		{
@@ -175,21 +175,21 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		checkOverflow(overlayElement);
 
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamDeformed");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/BeamDeformed");
 		overlayElement->setCaption(_L("deformed: ") + TOUTFSTRING(beamdeformed) + U(" (") + TOUTFSTRING(Round((float)beamdeformed / (float)beamCount, 2) * 100.0f) + U("%)"));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageBeamDeformation");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageBeamDeformation");
 		overlayElement->setCaption(_L("average deformation: ") + TOUTFSTRING(Round((float)average_deformation / (float)beamCount, 4) * 100.0f));
 		checkOverflow(overlayElement);
 		
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageBeamStress");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageBeamStress");
 		wchar_t beamstressstr[256];
 		swprintf(beamstressstr, 256, L"%+08.0f", 1-(float)beamstress/(float)beamCount);
 		overlayElement->setCaption(_L("average stress: ") + UTFString(beamstressstr));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/NodeCount");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/NodeCount");
 		int ncount = truck->getNodeCount();
 		int wcount =  truck->getWheelNodeCount();
 		wchar_t nodecountstr[256];
@@ -197,14 +197,14 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		overlayElement->setCaption(_L("node count: ") + UTFString(nodecountstr));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/TruckWeight");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/TruckWeight");
 		wchar_t truckmassstr[256];
 		UTFString massstr = _L("current mass:");
 		swprintf(truckmassstr, 256, L"%ls %8.2f kg (%.2f tons)", massstr.asWStr_c_str(), mass, mass / 1000.0f);
 		overlayElement->setCaption(UTFString(truckmassstr));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Gees");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Gees");
 		wchar_t geesstr[256];
 		Vector3 gees = truck->getGForces();
 		// apply deadzones ==> no flickering +/-
@@ -243,19 +243,19 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 					maxNegLatG[truck->driveable]
 				);
 
-			overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Gees2");
+			overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Gees2");
 			overlayElement->setCaption(UTFString(geesstr));
 			checkOverflow(overlayElement);
 		}
 	}
 
 	// always update these statistics, also if not visible!
-	overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentRPM");
+	overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentRPM");
 	overlayElement->setCaption("");
 	UTFString rpmsstr = _L("current RPM:");
 	if (truck->driveable == TRUCK && truck->engine)
 	{
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentRPM");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentRPM");
 		overlayElement->setCaption(rpmsstr + U(" ") + TOUTFSTRING(Round(truck->engine->getRPM())) + U(" / ") + TOUTFSTRING(Round(truck->engine->getMaxRPM())));
 	} else if (truck->driveable == AIRPLANE)
 	{
@@ -266,7 +266,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 				rpmsstr = rpmsstr + U(" / ") + TOUTFSTRING(Round(truck->aeroengines[i]->getRPM()));
 			}
 		}
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentRPM");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentRPM");
 		overlayElement->setCaption(UTFString(rpmsstr));
 	}
 	checkOverflow(overlayElement);
@@ -280,7 +280,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		maxVelos[truck->driveable] = std::max(maxVelos[truck->driveable], truck->WheelSpeed);
 		minVelos[truck->driveable] = std::min(truck->WheelSpeed, minVelos[truck->driveable]);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentVelocity");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentVelocity");
 		
 		float velocityKMH = truck->WheelSpeed* 3.6f;
 		float velocityMPH = truck->WheelSpeed * 2.23693629f;
@@ -292,7 +292,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		overlayElement->setCaption(cspeedstr + TOUTFSTRING(Round(velocityKMH)) + U(" km/h (") + TOUTFSTRING(Round(velocityMPH)) + U(" mph)"));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MaxVelocity");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MaxVelocity");
 		float velocityMaxKMH = maxVelos[truck->driveable] * 3.6f;
 		float velocityMinKMH = minVelos[truck->driveable] * 3.6f;
 		float velocityMaxMPH = maxVelos[truck->driveable] * 2.23693629f;
@@ -300,7 +300,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		overlayElement->setCaption(mspeedstr + TOUTFSTRING(Round(velocityMaxKMH)) + U("km/h (") + TOUTFSTRING(Round(velocityMaxMPH)) + U("mph)") + U(", min: ") + TOUTFSTRING(Round(velocityMinKMH)) + U("km/h (") + TOUTFSTRING(Round(velocityMinMPH)) + U("mph)"));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageVelocity");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageVelocity");
 		overlayElement->setCaption("");
 	} else if (truck->driveable == AIRPLANE || truck->driveable == BOAT)
 	{
@@ -315,7 +315,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		maxVelos[truck->driveable] = std::max(maxVelos[truck->driveable], velocity);
 		minVelos[truck->driveable] = std::min(velocity, minVelos[truck->driveable]);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentVelocity");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentVelocity");
 		float velocityKN = velocity * 1.94384449f;
 		// apply a deadzone ==> no flickering +/-
 		if (fabs(velocity) < 1.0f)
@@ -325,13 +325,13 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		overlayElement->setCaption(cspeedstr + TOUTFSTRING(Round(velocityKN)) + U(" kn"));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MaxVelocity");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MaxVelocity");
 		float velocityMaxKN = maxVelos[truck->driveable] * 1.94384449f;
 		float velocityMinKN = minVelos[truck->driveable] * 1.94384449f;
 		overlayElement->setCaption(mspeedstr + TOUTFSTRING(Round(velocityMaxKN)) + U(" kn, min: ") + TOUTFSTRING(Round(velocityMinKN)) + U(" kn"));
 		checkOverflow(overlayElement);
 
-		overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageVelocity");
+		overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageVelocity");
 		overlayElement->setCaption("");
 		if (truck->driveable == AIRPLANE)
 		{
@@ -341,12 +341,12 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		}
 	} else if (truck->driveable == MACHINE)
 	{
-		OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MaxVelocity")->setCaption("");
-		OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentVelocity")->setCaption("");
-		OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageVelocity")->setCaption("");
+		v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/MaxVelocity")->setCaption("");
+		v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CurrentVelocity")->setCaption("");
+		v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/AverageVelocity")->setCaption("");
 	}
 
-	OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/TimeStats")->setCaption("");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/TimeStats")->setCaption("");
 
 	if (visible)
 	{
@@ -355,7 +355,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		// clear them first
 		for (int i=1; i <= COMMANDS_VISIBLE; i++)
 		{
-			overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Command" + TOSTRING(i));
+			overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Command" + TOSTRING(i));
 			overlayElement->setCaption("");
 		}
 
@@ -381,7 +381,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 
 			keyStr = keya + "/" + keyb;
 
-			overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Command" + TOSTRING(filledCommands));
+			overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/Command" + TOSTRING(filledCommands));
 			
 			if (truck->commandkey[i].description.empty())
 			{
@@ -394,7 +394,7 @@ bool TruckHUD::update(float dt, Beam *truck, bool visible)
 		}
 
 		// hide command section title if no commands
-		overlayElement = overlayElement = OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CommandsTitleLabel");
+		overlayElement = overlayElement = v1::OverlayManager::getSingleton().getOverlayElement("tracks/TruckInfoBox/CommandsTitleLabel");
 		overlayElement->setCaption("");
 		if (filledCommands > 0)
 		{

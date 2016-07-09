@@ -70,8 +70,10 @@ void PreviewRenderer::render()
 	//vp->setClearEveryFrame(true);
 
 	// better mipmapping
+    /* FIXME: Ogre 21
 	MaterialManager::getSingleton().setDefaultAnisotropy(8);
 	MaterialManager::getSingleton().setDefaultTextureFiltering(TFO_ANISOTROPIC);
+    */
 
 	// now reset the truck to the scene's center
 	//Vector3 tsize = AxisAlignedBox(truck->minx, truck->miny, truck->minz, truck->maxx, truck->maxy, truck->maxz).getSize();

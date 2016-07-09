@@ -267,7 +267,7 @@ void CameraBehaviorVehicleSpline::createSpline(const CameraManager::CameraContex
 		splineObject = gEnv->sceneManager->createManualObject();
 		SceneNode* splineNode = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 
-		splineObject->begin("tracks/transred", Ogre::RenderOperation::OT_LINE_STRIP);
+		splineObject->begin("tracks/transred", Ogre::v1::RenderOperation::OT_LINE_STRIP);
 		for (int i = 0; i < splineDrawResolution; i++)
 		{
 			splineObject->position(0, 0, 0);

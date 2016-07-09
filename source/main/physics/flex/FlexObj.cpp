@@ -79,10 +79,10 @@ FlexObj::FlexObj(node_t *nds, int numtexcoords, Vector3* texcoords, int numtrian
 	gEnv->sceneManager=gEnv->sceneManager;
 	nodes=nds;
 	/// Create the mesh via the MeshManager
-    msh = MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    msh = v1::MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
     /// Create submeshes
-	subs=(SubMesh**)malloc(numsubmeshes*sizeof(SubMesh*));
+	subs=(v1::SubMesh**)malloc(numsubmeshes*sizeof(v1::SubMesh*));
 	for (j=0; j<numsubmeshes; j++)
 	{
 		subs[j] = msh->createSubMesh();
@@ -145,35 +145,35 @@ FlexObj::FlexObj(node_t *nds, int numtexcoords, Vector3* texcoords, int numtrian
 
 
     /// Create vertex data structure for vertices shared between submeshes
-    msh->sharedVertexData = new VertexData();
-    msh->sharedVertexData->vertexCount = nVertices;
+    msh->sharedVertexData[Ogre::VpNormal] = new v1::VertexData();
+    msh->sharedVertexData[Ogre::VpNormal]->vertexCount = nVertices;
 
 
     /// Create declaration (memory format) of vertex data
-    decl = msh->sharedVertexData->vertexDeclaration;
+    decl = msh->sharedVertexData[Ogre::VpNormal]->vertexDeclaration;
     size_t offset = 0;
     decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
     decl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 //        decl->addElement(0, offset, VET_FLOAT3, VES_DIFFUSE);
 //        offset += VertexElement::getTypeSize(VET_FLOAT3);
     decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
-    offset += VertexElement::getTypeSize(VET_FLOAT2);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT2);
 
 
     /// Allocate vertex buffer of the requested number of vertices (vertexCount)
     /// and bytes per vertex (offset)
     vbuf =
-      HardwareBufferManager::getSingleton().createVertexBuffer(
-          offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+        v1::HardwareBufferManager::getSingleton().createVertexBuffer(
+          offset, msh->sharedVertexData[Ogre::VpNormal]->vertexCount, v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
     /// Upload the vertex data to the card
     vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
 
     /// Set vertex buffer binding so buffer 0 is bound to our vertex buffer
-    VertexBufferBinding* bind = msh->sharedVertexData->vertexBufferBinding;
+    v1::VertexBufferBinding* bind = msh->sharedVertexData[Ogre::VpNormal]->vertexBufferBinding;
     bind->setBinding(0, vbuf);
 
 
@@ -185,17 +185,17 @@ FlexObj::FlexObj(node_t *nds, int numtexcoords, Vector3* texcoords, int numtrian
 		int smcount=3*(subtriindex[j+1]-subtriindex[j]);
         subs[j]->useSharedVertices = true;
 		/// Allocate index buffer of the requested number of vertices (ibufCount)
-		HardwareIndexBufferSharedPtr ibuf = HardwareBufferManager::getSingleton().
+		v1::HardwareIndexBufferSharedPtr ibuf = v1::HardwareBufferManager::getSingleton().
 		 createIndexBuffer(
-			 HardwareIndexBuffer::IT_16BIT,
+             v1::HardwareIndexBuffer::IT_16BIT,
 				smcount,
-				HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+             v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 		/// Upload the index data to the card
 		ibuf->writeData(0, ibuf->getSizeInBytes(), &faces[subtriindex[j]*3], true);
-	    subs[j]->indexData->indexBuffer = ibuf;
-		subs[j]->indexData->indexCount = smcount;
-        subs[j]->indexData->indexStart = 0;
+	    subs[j]->indexData[Ogre::VpNormal]->indexBuffer = ibuf;
+		subs[j]->indexData[Ogre::VpNormal]->indexCount = smcount;
+        subs[j]->indexData[Ogre::VpNormal]->indexStart = 0;
 	}
 
 

@@ -67,7 +67,7 @@ public:
 
     ~FlexBody();
 
-	void printMeshInfo(Ogre::Mesh* mesh);
+	void printMeshInfo(Ogre::v1::Mesh* mesh);
 	void reset();
 	void updateBlend();
 	void writeBlend();
@@ -107,7 +107,7 @@ private:
 	int	              m_node_y;
 	Ogre::Vector3     m_center_offset;
 	Ogre::SceneNode*  m_scene_node;
-    Ogre::MeshPtr     m_mesh;
+    Ogre::v1::MeshPtr m_mesh;
     int               m_camera_mode; //!< Visibility control {-2 = always, -1 = 3rdPerson only, 0+ = cinecam index}
 
 	int                                 m_shared_buf_num_verts;

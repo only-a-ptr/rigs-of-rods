@@ -338,7 +338,7 @@ int DecalSpline::showDebugLine(bool enabled)
 			mo_spline_node = snparent->createChildSceneNode();
 		else
 			mo_spline_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-		mo_spline->begin("tracks/transred", Ogre::RenderOperation::OT_LINE_STRIP);
+		mo_spline->begin("tracks/transred", Ogre::v1::RenderOperation::OT_LINE_STRIP);
 		for (float j=0;j<1;j+=0.001)
 		{
 			mo_spline->position(spline->interpolate(j));

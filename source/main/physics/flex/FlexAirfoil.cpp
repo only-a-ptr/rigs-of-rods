@@ -117,7 +117,7 @@ FlexAirfoil::FlexAirfoil(Ogre::String const & name, node_t *nds, int pnfld, int 
 		for (i=0; i<12; i++) airfoilpos[54+12+i]=airfoilpos[54+i];
 	}
 	/// Create the mesh via the MeshManager
-    msh = MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    msh = v1::MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
     /// Create submeshes
     subface = msh->createSubMesh();
@@ -303,101 +303,101 @@ FlexAirfoil::FlexAirfoil(Ogre::String const & name, node_t *nds, int pnfld, int 
 	updateVertices();
 
 	/// Create vertex data structure for 8 vertices shared between submeshes
-    msh->sharedVertexData = new VertexData();
-    msh->sharedVertexData->vertexCount = nVertices;
+    msh->sharedVertexData[0] = new v1::VertexData();
+    msh->sharedVertexData[0]->vertexCount = nVertices;
 
     /// Create declaration (memory format) of vertex data
-    decl = msh->sharedVertexData->vertexDeclaration;
+    decl = msh->sharedVertexData[0]->vertexDeclaration;
     size_t offset = 0;
     decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
     decl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 //        decl->addElement(0, offset, VET_FLOAT3, VES_DIFFUSE);
 //        offset += VertexElement::getTypeSize(VET_FLOAT3);
     decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
-    offset += VertexElement::getTypeSize(VET_FLOAT2);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT2);
 
     /// Allocate vertex buffer of the requested number of vertices (vertexCount)
     /// and bytes per vertex (offset)
     vbuf =
-      HardwareBufferManager::getSingleton().createVertexBuffer(
-          offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+        v1::HardwareBufferManager::getSingleton().createVertexBuffer(
+          offset, msh->sharedVertexData[0]->vertexCount, v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
     /// Upload the vertex data to the card
     vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
     /// Set vertex buffer binding so buffer 0 is bound to our vertex buffer
-    VertexBufferBinding* bind = msh->sharedVertexData->vertexBufferBinding;
+    v1::VertexBufferBinding* bind = msh->sharedVertexData[0]->vertexBufferBinding;
     bind->setBinding(0, vbuf);
 
     //for the face
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-    HardwareIndexBufferSharedPtr faceibuf = HardwareBufferManager::getSingleton().
+    v1::HardwareIndexBufferSharedPtr faceibuf = v1::HardwareBufferManager::getSingleton().
      createIndexBuffer(
-         HardwareIndexBuffer::IT_16BIT,
+         v1::HardwareIndexBuffer::IT_16BIT,
             faceibufCount,
-            HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+         v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
     /// Upload the index data to the card
     faceibuf->writeData(0, faceibuf->getSizeInBytes(), facefaces, true);
 
     /// Set parameters of the submesh
     subface->useSharedVertices = true;
-    subface->indexData->indexBuffer = faceibuf;
-    subface->indexData->indexCount = faceibufCount;
-    subface->indexData->indexStart = 0;
+    subface->indexData[0]->indexBuffer = faceibuf;
+    subface->indexData[0]->indexCount = faceibufCount;
+    subface->indexData[0]->indexStart = 0;
 
     //for the band
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-    HardwareIndexBufferSharedPtr bandibuf = HardwareBufferManager::getSingleton().
+    v1::HardwareIndexBufferSharedPtr bandibuf = v1::HardwareBufferManager::getSingleton().
      createIndexBuffer(
-         HardwareIndexBuffer::IT_16BIT,
+         v1::HardwareIndexBuffer::IT_16BIT,
             bandibufCount,
-            HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+         v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
     /// Upload the index data to the card
     bandibuf->writeData(0, bandibuf->getSizeInBytes(), bandfaces, true);
 
     /// Set parameters of the submesh
     subband->useSharedVertices = true;
-    subband->indexData->indexBuffer = bandibuf;
-    subband->indexData->indexCount = bandibufCount;
-    subband->indexData->indexStart = 0;
+    subband->indexData[0]->indexBuffer = bandibuf;
+    subband->indexData[0]->indexCount = bandibufCount;
+    subband->indexData[0]->indexStart = 0;
 
     //for the aileron up
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-    HardwareIndexBufferSharedPtr cupibuf = HardwareBufferManager::getSingleton().
+    v1::HardwareIndexBufferSharedPtr cupibuf = v1::HardwareBufferManager::getSingleton().
      createIndexBuffer(
-         HardwareIndexBuffer::IT_16BIT,
+         v1::HardwareIndexBuffer::IT_16BIT,
             cupibufCount,
-            HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+         v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
     /// Upload the index data to the card
     cupibuf->writeData(0, cupibuf->getSizeInBytes(), cupfaces, true);
 
     /// Set parameters of the submesh
     subcup->useSharedVertices = true;
-    subcup->indexData->indexBuffer = cupibuf;
-    subcup->indexData->indexCount = cupibufCount;
-    subcup->indexData->indexStart = 0;
+    subcup->indexData[0]->indexBuffer = cupibuf;
+    subcup->indexData[0]->indexCount = cupibufCount;
+    subcup->indexData[0]->indexStart = 0;
 
     //for the aileron down
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-    HardwareIndexBufferSharedPtr cdnibuf = HardwareBufferManager::getSingleton().
+    v1::HardwareIndexBufferSharedPtr cdnibuf = v1::HardwareBufferManager::getSingleton().
      createIndexBuffer(
-         HardwareIndexBuffer::IT_16BIT,
+         v1::HardwareIndexBuffer::IT_16BIT,
             cdnibufCount,
-            HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+         v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
     /// Upload the index data to the card
     cdnibuf->writeData(0, cdnibuf->getSizeInBytes(), cdnfaces, true);
 
     /// Set parameters of the submesh
     subcdn->useSharedVertices = true;
-    subcdn->indexData->indexBuffer = cdnibuf;
-    subcdn->indexData->indexCount = cdnibufCount;
-    subcdn->indexData->indexStart = 0;
+    subcdn->indexData[0]->indexBuffer = cdnibuf;
+    subcdn->indexData[0]->indexCount = cdnibufCount;
+    subcdn->indexData[0]->indexStart = 0;
 
     /// Set bounding information (for culling)
     msh->_setBounds(AxisAlignedBox(-20,-20,-20,20,20,20), true);

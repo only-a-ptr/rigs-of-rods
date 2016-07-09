@@ -50,7 +50,6 @@ set( SOURCE_FILES
   gfx/DecalManager.{h,cpp}
   gfx/DustManager.{h,cpp}
   gfx/DustPool.{h,cpp}
-  gfx/DynamicLines.{h,cpp}
   gfx/DynamicRenderable.{h,cpp}
   gfx/EnvironmentMap.{h,cpp}
   gfx/GlowMaterialListener.h
@@ -63,7 +62,6 @@ set( SOURCE_FILES
   gfx/MovableText.{h,cpp}
   gfx/OgreSubsystem.{h,cpp}
   gfx/PreviewRenderer.{h,cpp}
-  gfx/ShadowManager.{h,cpp}
   gfx/Skidmark.{h,cpp}
   gfx/SkyManager.{h,cpp}
   gfx/VideoCamera.{h,cpp}
@@ -172,7 +170,6 @@ set( SOURCE_FILES
   resources/CacheSystemTable.h
   resources/ContentManager.{h,cpp}
   terrain/IHeightFinder.h
-  terrain/OgreTerrainPSSMMaterialGenerator.{h,cpp}
   terrain/TerrainGeometryManager.{h,cpp}
   terrain/TerrainManager.{h,cpp}
   terrain/TerrainObjectManager.{h,cpp}
@@ -186,10 +183,9 @@ set( SOURCE_FILES
   terrain/ogre_terrain_port/OgreTerrainLodManager.{h,cpp}
   terrain/ogre_terrain_port/OgreTerrainMaterialGenerator.{h,cpp}
   terrain/ogre_terrain_port/OgreTerrainMaterialGeneratorA.{h,cpp}
-  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperCg.{h,cpp}
-  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperGLSL.{h,cpp}
-  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperGLSLES.{h,cpp}
-  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperHLSL.{h,cpp}
+  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperGLSL.cpp
+  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperGLSLES.cpp
+  terrain/ogre_terrain_port/OgreTerrainMaterialShaderHelperHLSL.cpp
   terrain/ogre_terrain_port/OgreTerrainPagedWorldSection.{h,cpp}
   terrain/ogre_terrain_port/OgreTerrainPaging.{h,cpp}
   terrain/ogre_terrain_port/OgreTerrainQuadTreeNode.{h,cpp}
@@ -328,6 +324,7 @@ target_include_directories( ${BINNAME} PRIVATE
  scripting
  terrain
  terrain/map
+ terrain/ogre_terrain_port
  threadpool
  utils
  utils/profiler

@@ -80,12 +80,12 @@ ColourValue ColoredTextAreaOverlayElement::GetColor(unsigned char ID, float Valu
 	return ColourValue::Black;
 }
 
-DisplayString ColoredTextAreaOverlayElement::StripColors(const Ogre::String& otext)
+Ogre::UTFString ColoredTextAreaOverlayElement::StripColors(const Ogre::String& otext)
 {
 	try
 	{
-		DisplayString text = DisplayString(otext.c_str());
-		DisplayString StrippedText;
+        UTFString text = UTFString(otext.c_str());
+        UTFString StrippedText;
 		int i;
 		for (i = 0; i < (int)text.size()-1; ++i)
 		{
@@ -109,7 +109,7 @@ DisplayString ColoredTextAreaOverlayElement::StripColors(const Ogre::String& ote
 	return String("UTF8 error (String cannot be displayed with current font set)");
 }
 
-void ColoredTextAreaOverlayElement::setCaption(const DisplayString& text)
+void ColoredTextAreaOverlayElement::setCaption(const UTFString& text)
 {
 	m_Colors.clear();
 	m_Colors.resize(text.size(), 9);

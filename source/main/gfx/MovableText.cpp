@@ -36,8 +36,8 @@ using namespace Ogre;
 #define POS_TEX_BINDING    0
 #define COLOUR_BINDING     1
 
-MovableText::MovableText(Ogre::IdType id, ObjectMemoryManager *objectMemoryManager, const NameValuePairList* params)
-: MovableObject(id, objectMemoryManager, 1)
+MovableText::MovableText(Ogre::IdType id, ObjectMemoryManager *objectMemoryManager, Ogre::SceneManager* ogreSceneMgr, const NameValuePairList* params)
+: MovableObject(id, objectMemoryManager, ogreSceneMgr, 1)
 , mpCam(NULL)
 , mpWin(NULL)
 , mpFont(NULL)
@@ -121,11 +121,15 @@ void MovableText::setFontName(const UTFString &fontName)
 		if (!mpMaterial->isLoaded())
 			mpMaterial->load();
 
-		mpMaterial->setDepthCheckEnabled(!mOnTop);
+		/* FIXME ogre21
+        mpMaterial->setDepthCheckEnabled(!mOnTop);
 		mpMaterial->setDepthBias(1.0,1.0);
+        */
 		mpMaterial->setFog(true);
+        /* FIXME ogre21
 		mpMaterial->setDepthWriteEnabled(mOnTop);
 		mpMaterial->setLightingEnabled(false);
+        */
 		mNeedUpdate = true;
 	}
 }
@@ -194,9 +198,11 @@ void MovableText::showOnTop(bool show)
 	if ( mOnTop != show && !mpMaterial.isNull() )
 	{
 		mOnTop = show;
+        /* FIXME ogre21
 		mpMaterial->setDepthBias(1.0,1.0);
 		mpMaterial->setDepthCheckEnabled(!mOnTop);
 		mpMaterial->setDepthWriteEnabled(mOnTop);
+        */
 	}
 }
 
@@ -221,39 +227,39 @@ void MovableText::_setupGeometry()
 	}
 
 	if (!mRenderOp.vertexData)
-		mRenderOp.vertexData = new VertexData();
+		mRenderOp.vertexData = new Ogre::v1::VertexData();
 
 	mRenderOp.indexData = 0;
 	mRenderOp.vertexData->vertexStart = 0;
 	mRenderOp.vertexData->vertexCount = vertexCount;
-	mRenderOp.operationType = RenderOperation::OT_TRIANGLE_LIST;
+	mRenderOp.operationType = Ogre::v1::RenderOperation::OT_TRIANGLE_LIST;
 	mRenderOp.useIndexes = false;
 
-	VertexDeclaration  *decl = mRenderOp.vertexData->vertexDeclaration;
-	VertexBufferBinding   *bind = mRenderOp.vertexData->vertexBufferBinding;
+    Ogre::v1::VertexDeclaration  *decl = mRenderOp.vertexData->vertexDeclaration;
+    Ogre::v1::VertexBufferBinding   *bind = mRenderOp.vertexData->vertexBufferBinding;
 	size_t offset = 0;
 
 	// create/bind positions/tex.ccord. buffer
 	if (!decl->findElementBySemantic(VES_POSITION))
 		decl->addElement(POS_TEX_BINDING, offset, VET_FLOAT3, VES_POSITION);
 
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
+	offset += Ogre::v1::VertexElement::getTypeSize(VET_FLOAT3);
 
 	if (!decl->findElementBySemantic(VES_TEXTURE_COORDINATES))
 		decl->addElement(POS_TEX_BINDING, offset, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES, 0);
 
-	v1::HardwareVertexBufferSharedPtr ptbuf = HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(POS_TEX_BINDING),
+	v1::HardwareVertexBufferSharedPtr ptbuf = Ogre::v1::HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(POS_TEX_BINDING),
 		mRenderOp.vertexData->vertexCount,
-		HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+        Ogre::v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 	bind->setBinding(POS_TEX_BINDING, ptbuf);
 
 	// Colours - store these in a separate buffer because they change less often
 	if (!decl->findElementBySemantic(VES_DIFFUSE))
 		decl->addElement(COLOUR_BINDING, 0, VET_COLOUR, VES_DIFFUSE);
 
-	v1::HardwareVertexBufferSharedPtr cbuf = HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(COLOUR_BINDING),
+	v1::HardwareVertexBufferSharedPtr cbuf = Ogre::v1::HardwareBufferManager::getSingleton().createVertexBuffer(decl->getVertexSize(COLOUR_BINDING),
 		mRenderOp.vertexData->vertexCount,
-		HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+        Ogre::v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 	bind->setBinding(COLOUR_BINDING, cbuf);
 
 	//Real *pPCBuff = static_cast<Real*>(ptbuf->lock(HardwareBuffer::HBL_NORMAL));
@@ -546,7 +552,7 @@ void MovableText::getWorldTransforms(Matrix4 *xform) const
 	}
 }
 
-void MovableText::getRenderOperation(RenderOperation &op)
+void MovableText::getRenderOperation(Ogre::v1::RenderOperation &op, bool caster_pass)
 {
 	if (this->isVisible())
 	{
@@ -572,7 +578,13 @@ void MovableText::_updateRenderQueue(RenderQueue* queue, Camera *camera, const C
 		if (mUpdateColors)
 			this->_updateColors();
 
-		queue->addRenderable(this, mRenderQueueID, OGRE_RENDERABLE_DEFAULT_PRIORITY);
+        // FIXME: ogre21
+		queue->addRenderableV1(
+            mRenderQueueID,
+            false, // caster pass? bool
+            this,
+            nullptr // MovableObject* -> this will probably crash
+        ); 
 		//      queue->addRenderable(this, mRenderQueueID, RENDER_QUEUE_SKIES_LATE);
 	}
 }
@@ -590,7 +602,7 @@ MovableObject* MovableTextFactory::createInstanceImpl(IdType id,
 	ObjectMemoryManager *objectMemoryManager,
 	const NameValuePairList* params)
 {
-	return OGRE_NEW MovableText(id, objectMemoryManager, params);
+	return OGRE_NEW MovableText(id, objectMemoryManager, gEnv->sceneManager, params);
 }
 //-----------------------------------------------------------------------
 void MovableTextFactory::destroyInstance(MovableObject* obj)

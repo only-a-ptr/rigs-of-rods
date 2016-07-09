@@ -82,9 +82,9 @@ private:
 		Ogre::Vector2 texcoord;
 	};
 
-	Ogre::MeshPtr msh;
-	Ogre::SubMesh** subs;
-	Ogre::VertexDeclaration* decl;
+	Ogre::v1::MeshPtr msh;
+	Ogre::v1::SubMesh** subs;
+	Ogre::v1::VertexDeclaration* decl;
 	Ogre::v1::HardwareVertexBufferSharedPtr vbuf;
 
 	size_t nVertices;

@@ -89,14 +89,14 @@ private:
 		Ogre::Vector2 texcoord;
 	} norVertice_t;
 
-	Ogre::MeshPtr msh;
-	Ogre::SubMesh* subface;
-	Ogre::SubMesh* subband;
+	Ogre::v1::MeshPtr msh;
+	Ogre::v1::SubMesh* subface;
+	Ogre::v1::SubMesh* subband;
 
-	Ogre::SubMesh* subcup;
-	Ogre::SubMesh* subcdn;
+	Ogre::v1::SubMesh* subcup;
+	Ogre::v1::SubMesh* subcdn;
 
-	Ogre::VertexDeclaration* decl;
+	Ogre::v1::VertexDeclaration* decl;
 	Ogre::v1::HardwareVertexBufferSharedPtr vbuf;
 
 	size_t nVertices;

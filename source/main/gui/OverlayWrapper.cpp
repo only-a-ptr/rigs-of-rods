@@ -72,13 +72,13 @@ OverlayWrapper::~OverlayWrapper()
 	}
 }
 
-void OverlayWrapper::resizePanel(OverlayElement *oe)
+void OverlayWrapper::resizePanel(v1::OverlayElement *oe)
 {
 	oe->setHeight(oe->getHeight()*(Real)win->getWidth()/(Real)win->getHeight());
 	oe->setTop(oe->getTop()*(Real)win->getWidth()/(Real)win->getHeight());
 }
 
-void OverlayWrapper::reposPanel(OverlayElement *oe)
+void OverlayWrapper::reposPanel(v1::OverlayElement *oe)
 {
 	oe->setTop(oe->getTop()*(Real)win->getWidth()/(Real)win->getHeight());
 }
@@ -89,9 +89,9 @@ void OverlayWrapper::placeNeedle(SceneNode *node, float x, float y, float len)
 	node->setScale(0.0025, 0.007*len, 0.007);
 }
 
-Overlay *OverlayWrapper::loadOverlay(String name, bool autoResizeRation)
+v1::Overlay *OverlayWrapper::loadOverlay(String name, bool autoResizeRation)
 {
-	Overlay *o = OverlayManager::getSingleton().getByName(name);
+    v1::Overlay *o = v1::OverlayManager::getSingleton().getByName(name);
 	if (!o) return NULL;
 
 	if (autoResizeRation)
@@ -135,9 +135,9 @@ void OverlayWrapper::windowResized()
 	}
 }
 
-OverlayElement *OverlayWrapper::loadOverlayElement(String name)
+v1::OverlayElement *OverlayWrapper::loadOverlayElement(String name)
 {
-	return OverlayManager::getSingleton().getOverlayElement(name);
+	return v1::OverlayManager::getSingleton().getOverlayElement(name);
 }
 
 int OverlayWrapper::init()
@@ -146,13 +146,13 @@ int OverlayWrapper::init()
 	m_direction_arrow_overlay = loadOverlay("tracks/DirectionArrow", false);
 	try
 	{
-		directionArrowText = (TextAreaOverlayElement*)loadOverlayElement("tracks/DirectionArrow/Text");
+		directionArrowText = (v1::TextAreaOverlayElement*)loadOverlayElement("tracks/DirectionArrow/Text");
 	} catch(...)
 	{
 		String url = "https://rigsofrods.github.io/en/docs/errors/index.html#Error_Resources_Not_Found";
 		ErrorUtils::ShowOgreWebError("Resources not found!", "please ensure that your installation is complete and the resources are installed properly. If this error persists please re-install RoR.", url);
 	}
-	directionArrowDistance = (TextAreaOverlayElement*)loadOverlayElement("tracks/DirectionArrow/Distance");
+	directionArrowDistance = (v1::TextAreaOverlayElement*)loadOverlayElement("tracks/DirectionArrow/Distance");
 
 	// openGL fix
 	m_direction_arrow_overlay->show();
@@ -162,7 +162,7 @@ int OverlayWrapper::init()
 	m_debug_beam_timing_overlay = loadOverlay("tracks/DebugBeamTiming", false);
 	m_debug_beam_timing_overlay->hide();
 
-	OverlayElement *vere = loadOverlayElement("Core/RoRVersionString");
+    v1::OverlayElement *vere = loadOverlayElement("Core/RoRVersionString");
 	if (vere) vere->setCaption("Rigs of Rods version " + String(ROR_VERSION_STRING));
 	
 
@@ -205,18 +205,18 @@ int OverlayWrapper::init()
 	resizePanel(clutcho=loadOverlayElement("tracks/clutch"));
 	resizePanel(lightso=loadOverlayElement("tracks/lights"));
 
-	resizePanel(OverlayManager::getSingleton().getOverlayElement("tracks/machinedashbar"));
-	resizePanel(OverlayManager::getSingleton().getOverlayElement("tracks/machinedashfiller"));
+	resizePanel(v1::OverlayManager::getSingleton().getOverlayElement("tracks/machinedashbar"));
+	resizePanel(v1::OverlayManager::getSingleton().getOverlayElement("tracks/machinedashfiller"));
 
-	resizePanel(OverlayManager::getSingleton().getOverlayElement("tracks/airdashbar"));
-	resizePanel(OverlayManager::getSingleton().getOverlayElement("tracks/airdashfiller"));
+	resizePanel(v1::OverlayManager::getSingleton().getOverlayElement("tracks/airdashbar"));
+	resizePanel(v1::OverlayManager::getSingleton().getOverlayElement("tracks/airdashfiller"));
 	
-	OverlayElement* tempoe;
-	resizePanel(tempoe=OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack1"));
+	v1::OverlayElement* tempoe;
+	resizePanel(tempoe=v1::OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack1"));
 
-	resizePanel(OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack2"));
-	resizePanel(OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack3"));
-	resizePanel(OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack4"));
+	resizePanel(v1::OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack2"));
+	resizePanel(v1::OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack3"));
+	resizePanel(v1::OverlayManager::getSingleton().getOverlayElement("tracks/thrusttrack4"));
 
 	resizePanel(thro1=loadOverlayElement("tracks/thrust1"));
 	resizePanel(thro2=loadOverlayElement("tracks/thrust2"));
@@ -251,8 +251,8 @@ int OverlayWrapper::init()
 	resizePanel(loadOverlayElement("tracks/vvi"));
 	resizePanel(loadOverlayElement("tracks/altimeter"));
 	resizePanel(loadOverlayElement("tracks/altimeter_val"));
-	alt_value_taoe=(TextAreaOverlayElement*)loadOverlayElement("tracks/altimeter_val");
-	boat_depth_value_taoe=(TextAreaOverlayElement*)loadOverlayElement("tracks/boatdepthmeter_val");
+	alt_value_taoe=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/altimeter_val");
+	boat_depth_value_taoe=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/boatdepthmeter_val");
 	resizePanel(loadOverlayElement("tracks/adi-tape"));
 	resizePanel(loadOverlayElement("tracks/adi"));
 	resizePanel(loadOverlayElement("tracks/adi-bugs"));
@@ -300,11 +300,11 @@ int OverlayWrapper::init()
 
 	//adjust dashboard mask
 	//pitch mask
-	OverlayElement *pmask=loadOverlayElement("tracks/pitchmask");
+	v1::OverlayElement *pmask=loadOverlayElement("tracks/pitchmask");
 	pmask->setHeight(pmask->getHeight()*(Real)win->getWidth()/(Real)win->getHeight());
 	pmask->setTop(pmask->getTop()*(Real)win->getWidth()/(Real)win->getHeight());
 	//roll mask
-	OverlayElement *rmask=loadOverlayElement("tracks/rollmask");
+	v1::OverlayElement *rmask=loadOverlayElement("tracks/rollmask");
 	rmask->setHeight(rmask->getHeight()*(Real)win->getWidth()/(Real)win->getHeight());
 	rmask->setTop(rmask->getTop()*(Real)win->getWidth()/(Real)win->getHeight());
 
@@ -372,17 +372,17 @@ int OverlayWrapper::init()
 	guiGear3D=loadOverlayElement("tracks/3DGear");
 	guiRoll=loadOverlayElement("tracks/rollmask");
 
-	guiAuto[0]=(TextAreaOverlayElement*)loadOverlayElement("tracks/AGearR");
-	guiAuto[1]=(TextAreaOverlayElement*)loadOverlayElement("tracks/AGearN");
-	guiAuto[2]=(TextAreaOverlayElement*)loadOverlayElement("tracks/AGearD");
-	guiAuto[3]=(TextAreaOverlayElement*)loadOverlayElement("tracks/AGear2");
-	guiAuto[4]=(TextAreaOverlayElement*)loadOverlayElement("tracks/AGear1");
+	guiAuto[0]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/AGearR");
+	guiAuto[1]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/AGearN");
+	guiAuto[2]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/AGearD");
+	guiAuto[3]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/AGear2");
+	guiAuto[4]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/AGear1");
 
-	guiAuto3D[0]=(TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGearR");
-	guiAuto3D[1]=(TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGearN");
-	guiAuto3D[2]=(TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGearD");
-	guiAuto3D[3]=(TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGear2");
-	guiAuto3D[4]=(TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGear1");
+	guiAuto3D[0]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGearR");
+	guiAuto3D[1]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGearN");
+	guiAuto3D[2]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGearD");
+	guiAuto3D[3]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGear2");
+	guiAuto3D[4]=(v1::TextAreaOverlayElement*)loadOverlayElement("tracks/3DAGear1");
 
 	guipedclutch=loadOverlayElement("tracks/pedalclutch");
 	guipedbrake=loadOverlayElement("tracks/pedalbrake");
@@ -392,10 +392,10 @@ int OverlayWrapper::init()
 	m_truck_pressure_needle_overlay = loadOverlay("tracks/PressureNeedleOverlay");
 
 	m_racing_overlay = loadOverlay("tracks/Racing", false);
-	laptimemin = (TextAreaOverlayElement*)loadOverlayElement("tracks/LapTimemin");
-	laptimes = (TextAreaOverlayElement*)loadOverlayElement("tracks/LapTimes");
-	laptimems = (TextAreaOverlayElement*)loadOverlayElement("tracks/LapTimems");
-	lasttime = (TextAreaOverlayElement*)loadOverlayElement("tracks/LastTime");
+	laptimemin = (v1::TextAreaOverlayElement*)loadOverlayElement("tracks/LapTimemin");
+	laptimes = (v1::TextAreaOverlayElement*)loadOverlayElement("tracks/LapTimes");
+	laptimems = (v1::TextAreaOverlayElement*)loadOverlayElement("tracks/LapTimems");
+	lasttime = (v1::TextAreaOverlayElement*)loadOverlayElement("tracks/LastTime");
 	lasttime->setCaption("");
 
 	// openGL fix
@@ -535,10 +535,10 @@ void OverlayWrapper::updateStats(bool detailed)
 	// update stats when necessary
 	try
 	{
-		OverlayElement* guiAvg   = OverlayManager::getSingleton().getOverlayElement("Core/AverageFps");
-		OverlayElement* guiCurr  = OverlayManager::getSingleton().getOverlayElement("Core/CurrFps");
-		OverlayElement* guiBest  = OverlayManager::getSingleton().getOverlayElement("Core/BestFps");
-		OverlayElement* guiWorst = OverlayManager::getSingleton().getOverlayElement("Core/WorstFps");
+		v1::OverlayElement* guiAvg   = v1::OverlayManager::getSingleton().getOverlayElement("Core/AverageFps");
+		v1::OverlayElement* guiCurr  = v1::OverlayManager::getSingleton().getOverlayElement("Core/CurrFps");
+		v1::OverlayElement* guiBest  = v1::OverlayManager::getSingleton().getOverlayElement("Core/BestFps");
+		v1::OverlayElement* guiWorst = v1::OverlayManager::getSingleton().getOverlayElement("Core/WorstFps");
 
 
 /*		guiAvg->setCaption(avgFps + TOUTFSTRING(stats.avgFPS));
@@ -546,7 +546,7 @@ void OverlayWrapper::updateStats(bool detailed)
 		guiBest->setCaption(bestFps + TOUTFSTRING(stats.bestFPS) + U(" ") + TOUTFSTRING(stats.bestFrameTime) + U(" ms"));
 		guiWorst->setCaption(worstFps + TOUTFSTRING(stats.worstFPS) + U(" ") + TOUTFSTRING(stats.worstFrameTime) + U(" ms"));
 		*/
-		OverlayElement* guiTris = OverlayManager::getSingleton().getOverlayElement("Core/NumTris");
+		v1::OverlayElement* guiTris = v1::OverlayManager::getSingleton().getOverlayElement("Core/NumTris");
 		UTFString triss = tris + TOUTFSTRING(stats.triangleCount);
 		if (stats.triangleCount > 1000000)
 			triss = tris + TOUTFSTRING(stats.triangleCount/1000000.0f) + U(" M");
@@ -556,7 +556,7 @@ void OverlayWrapper::updateStats(bool detailed)
 
 		// TODO: TOFIX
 		/*
-		OverlayElement* guiDbg = OverlayManager::getSingleton().getOverlayElement("Core/DebugText");
+		v1::OverlayElement* guiDbg = v1::OverlayManager::getSingleton().getOverlayElement("Core/DebugText");
 		UTFString debugText = "";
 		for (int t=0;t<free_truck;t++)
 		{
@@ -581,15 +581,15 @@ void OverlayWrapper::updateStats(bool detailed)
 			memoryText = memoryText + _L("HL GPU Program: ") + formatBytes(HighLevelGpuProgramManager ::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(HighLevelGpuProgramManager ::getSingleton().getMemoryBudget()) + U("\n");
 		if (MaterialManager::getSingleton().getMemoryUsage() > 1)
 			memoryText = memoryText + _L("Materials: ") + formatBytes(MaterialManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(MaterialManager::getSingleton().getMemoryBudget()) + U("\n");
-		if (MeshManager::getSingleton().getMemoryUsage() > 1)
-			memoryText = memoryText + _L("Meshes: ") + formatBytes(MeshManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(MeshManager::getSingleton().getMemoryBudget()) + U("\n");
+		if (v1::MeshManager::getSingleton().getMemoryUsage() > 1)
+			memoryText = memoryText + _L("Meshes: ") + formatBytes(v1::MeshManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(v1::MeshManager::getSingleton().getMemoryBudget()) + U("\n");
 	//	if (SkeletonManager::getSingleton().getMemoryUsage() > 1)
 		//	memoryText = memoryText + _L("Skeletons: ") + formatBytes(SkeletonManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(SkeletonManager::getSingleton().getMemoryBudget()) + U("\n");
 		if (MaterialManager::getSingleton().getMemoryUsage() > 1)
 			memoryText = memoryText + _L("Materials: ") + formatBytes(MaterialManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(MaterialManager::getSingleton().getMemoryBudget()) + U("\n");
 		memoryText = memoryText + U("\n");
 
-		OverlayElement* memoryDbg = OverlayManager::getSingleton().getOverlayElement("Core/MemoryText");
+		v1::OverlayElement* memoryDbg = v1::OverlayManager::getSingleton().getOverlayElement("Core/MemoryText");
 		memoryDbg->setCaption(memoryText);
 
 
@@ -597,7 +597,7 @@ void OverlayWrapper::updateStats(bool detailed)
 		//float sumMem = TextureManager::getSingleton().getMemoryUsage() + CompositorManager::getSingleton().getMemoryUsage() + FontManager::getSingleton().getMemoryUsage() + GpuProgramManager::getSingleton().getMemoryUsage() + HighLevelGpuProgramManager ::getSingleton().getMemoryUsage() + MaterialManager::getSingleton().getMemoryUsage() + MeshManager::getSingleton().getMemoryUsage() + SkeletonManager::getSingleton().getMemoryUsage() + MaterialManager::getSingleton().getMemoryUsage();
 		//String sumMemoryText = _L("Memory (Ogre): ") + formatBytes(sumMem) + U("\n");
 
-		OverlayElement* memorySumDbg = OverlayManager::getSingleton().getOverlayElement("Core/CurrMemory");
+		v1::OverlayElement* memorySumDbg = v1::OverlayManager::getSingleton().getOverlayElement("Core/CurrMemory");
 		//memorySumDbg->setCaption(sumMemoryText);
 
 	}
@@ -610,7 +610,7 @@ void OverlayWrapper::updateStats(bool detailed)
 int OverlayWrapper::getDashBoardHeight()
 {
 	if (!m_truck_dashboard_overlay) return 0;
-	float top = 1 + OverlayManager::getSingleton().getOverlayElement("tracks/dashbar")->getTop() * m_truck_dashboard_overlay->getScaleY(); // tracks/dashbar top = -0.15 by default
+	float top = 1 + v1::OverlayManager::getSingleton().getOverlayElement("tracks/dashbar")->getTop() * m_truck_dashboard_overlay->getScaleY(); // tracks/dashbar top = -0.15 by default
 	return (int)(top * (float)win->getHeight());
 }
 
@@ -631,7 +631,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 
 	if (curr_truck->driveable == AIRPLANE && ms.buttonDown(OIS::MB_Left))
 	{
-		OverlayElement *element=m_aerial_dashboard_needles_overlay->findElementAt(mouseX, mouseY);
+		v1::OverlayElement *element=m_aerial_dashboard_needles_overlay->findElementAt(mouseX, mouseY);
 		if (element)
 		{
 			res = true;
@@ -643,7 +643,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 			if (!strncmp(name, "tracks/thrust4", 14) && curr_truck->free_aeroengine>3) curr_truck->aeroengines[3]->setThrottle(1.0f-((mouseY-thrtop-throffset)/thrheight));
 		}
 		//also for main dashboard
-		OverlayElement *element2=m_aerial_dashboard_overlay->findElementAt(mouseX,mouseY);
+		v1::OverlayElement *element2=m_aerial_dashboard_overlay->findElementAt(mouseX,mouseY);
 		if (element2)
 		{
 			res = true;
@@ -659,77 +659,77 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 			{
 				mTimeUntilNextToggle = 0.2;
 				if (curr_truck->autopilot->toggleHeading(Autopilot::HEADING_FIXED)==Autopilot::HEADING_FIXED)
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
 			}
 			if (!strcmp(name, "tracks/ap_wlv_but") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
 				mTimeUntilNextToggle = 0.2;
 				if (curr_truck->autopilot->toggleHeading(Autopilot::HEADING_WLV)==Autopilot::HEADING_WLV)
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
 			}
 			if (!strcmp(name, "tracks/ap_nav_but") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
 				mTimeUntilNextToggle = 0.2;
 				if (curr_truck->autopilot->toggleHeading(Autopilot::HEADING_NAV)==Autopilot::HEADING_NAV)
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
 			}
 			//altitude group
 			if (!strcmp(name, "tracks/ap_alt_but") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
 				mTimeUntilNextToggle = 0.2;
 				if (curr_truck->autopilot->toggleAlt(Autopilot::ALT_FIXED)==Autopilot::ALT_FIXED)
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
 			}
 			if (!strcmp(name, "tracks/ap_vs_but") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
 				mTimeUntilNextToggle = 0.2;
 				if (curr_truck->autopilot->toggleAlt(Autopilot::ALT_VS)==Autopilot::ALT_VS)
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
 			}
 			//IAS
 			if (!strcmp(name, "tracks/ap_ias_but") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
 				mTimeUntilNextToggle = 0.2;
 				if (curr_truck->autopilot->toggleIAS())
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-off");
 			}
 			//GPWS
 			if (!strcmp(name, "tracks/ap_gpws_but") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
 				mTimeUntilNextToggle = 0.2;
 				if (curr_truck->autopilot->toggleGPWS())
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_gpws_but")->setMaterialName("tracks/gpws-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_gpws_but")->setMaterialName("tracks/gpws-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_gpws_but")->setMaterialName("tracks/gpws-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_gpws_but")->setMaterialName("tracks/gpws-off");
 			}
 			//BRKS
 			if (!strcmp(name, "tracks/ap_brks_but") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
 				curr_truck->parkingbrakeToggle();
 				if (curr_truck->parkingbrake)
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-on");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-on");
 				else
-					OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-off");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-off");
 				mTimeUntilNextToggle = 0.2;
 			}
 			//trims
@@ -739,7 +739,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 				int val=curr_truck->autopilot->adjHDG(1);
 				char str[10];
 				sprintf(str, "%.3u", val);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_val")->setCaption(str);
 			}
 			if (!strcmp(name, "tracks/ap_hdg_dn") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
@@ -747,7 +747,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 				int val=curr_truck->autopilot->adjHDG(-1);
 				char str[10];
 				sprintf(str, "%.3u", val);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_val")->setCaption(str);
 			}
 			if (!strcmp(name, "tracks/ap_alt_up") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
@@ -755,7 +755,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 				int val=curr_truck->autopilot->adjALT(100);
 				char str[10];
 				sprintf(str, "%i00", val/100);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_val")->setCaption(str);
 			}
 			if (!strcmp(name, "tracks/ap_alt_dn") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
@@ -763,7 +763,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 				int val=curr_truck->autopilot->adjALT(-100);
 				char str[10];
 				sprintf(str, "%i00", val/100);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_val")->setCaption(str);
 			}
 			if (!strcmp(name, "tracks/ap_vs_up") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
@@ -774,7 +774,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 					sprintf(str, "%i00", val/100);
 				else if (val==0) strcpy(str, "000");
 				else sprintf(str, "+%i00", val/100);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_val")->setCaption(str);
 			}
 			if (!strcmp(name, "tracks/ap_vs_dn") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
@@ -785,7 +785,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 					sprintf(str, "%i00", val/100);
 				else if (val==0) strcpy(str, "000");
 				else sprintf(str, "+%i00", val/100);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_val")->setCaption(str);
 			}
 			if (!strcmp(name, "tracks/ap_ias_up") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
@@ -793,7 +793,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 				int val=curr_truck->autopilot->adjIAS(1);
 				char str[10];
 				sprintf(str, "%.3u", val);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_val")->setCaption(str);
 			}
 			if (!strcmp(name, "tracks/ap_ias_dn") && curr_truck->autopilot && mTimeUntilNextToggle <= 0)
 			{
@@ -801,7 +801,7 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
 				int val=curr_truck->autopilot->adjIAS(-1);
 				char str[10];
 				sprintf(str, "%.3u", val);
-				OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_val")->setCaption(str);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_val")->setCaption(str);
 			}
 		}
 	}

@@ -135,7 +135,7 @@ private:
 	void eventRequestTag(const MyGUI::UString& _tag, MyGUI::UString& _result);
 
 	MyGUI::Gui* mGUI;
-	MyGUI::OgrePlatform* mPlatform;
+	MyGUI::Ogre2Platform* mPlatform;
 	Ogre::String mResourceFileName;
 	bool mExit;
 	

@@ -19,17 +19,21 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "Dashboard.h"
 
-#ifdef ROR_USE_OGRE_1_9
-#	include <Overlay/OgreOverlayManager.h>
-#	include <Overlay/OgreOverlay.h>
-#else
+
 #	include <OgreOverlayManager.h>
 #	include <OgreOverlayElement.h>
-#endif
+
 
 #include "Console.h"
 #include "OgreOverlayManager.h"
 #include "TruckHUD.h"
+#include <OgreTextureManager.h>
+#include <OgreCamera.h>
+#include <OgreSceneManager.h>
+#include <OgreMaterialManager.h>
+#include <OgreTechnique.h>
+#include <OgreRenderTexture.h>
+#include <OgreHardwarePixelBuffer.h>
 
 using namespace Ogre;
 
@@ -64,10 +68,10 @@ Dashboard::Dashboard() :
 
 	rttTex->addListener(mDashboardListener);
 
-	mDashboardListener->dashOverlay     = OverlayManager::getSingleton().getByName("tracks/3D_DashboardOverlay");
-	mDashboardListener->needlesOverlay  = OverlayManager::getSingleton().getByName("tracks/3D_NeedlesOverlay");
-	mDashboardListener->blendOverlay    = OverlayManager::getSingleton().getByName("tracks/3D_BlendOverlay");
-	mDashboardListener->truckHUDOverlay = OverlayManager::getSingleton().getByName("tracks/TruckInfoBox");
+	mDashboardListener->dashOverlay     = v1::OverlayManager::getSingleton().getByName("tracks/3D_DashboardOverlay");
+	mDashboardListener->needlesOverlay  = v1::OverlayManager::getSingleton().getByName("tracks/3D_NeedlesOverlay");
+	mDashboardListener->blendOverlay    = v1::OverlayManager::getSingleton().getByName("tracks/3D_BlendOverlay");
+	mDashboardListener->truckHUDOverlay = v1::OverlayManager::getSingleton().getByName("tracks/TruckInfoBox");
 //	mDashboardListener->dbdebugOverlay  = OverlayManager::getSingleton().getByName("Core/DebugOverlay");
 //	mDashboardListener->dbeditorOverlay = OverlayManager::getSingleton().getByName("tracks/EditorOverlay");
 }
@@ -115,7 +119,7 @@ void DashboardListener::preRenderTargetUpdate(const RenderTargetEvent& evt)
 	} else
 	{
 		// this must be here and not in the constructor, as upon construction time the overlaymanager is not working, somehow
-		fpsOverlay = OverlayManager::getSingleton().getByName("Core/DebugOverlay");
+		fpsOverlay = v1::OverlayManager::getSingleton().getByName("Core/DebugOverlay");
 	}
 
 	// hide truck HUD

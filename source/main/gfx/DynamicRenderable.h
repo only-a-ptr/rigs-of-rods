@@ -8,7 +8,7 @@
 #include <OgreSimpleRenderable.h>
 
 /// Abstract base class providing mechanisms for dynamically growing hardware buffers.
-class DynamicRenderable : public Ogre::SimpleRenderable
+class DynamicRenderable : public Ogre::Renderable
 {
 public:
 	/// Constructor
@@ -24,7 +24,7 @@ public:
 	@param operationType The type of render operation to perform.
 	@param useIndices Specifies whether to use indices to determine the
 			vertices to use as input. */
-	void initialize(Ogre::RenderOperation::OperationType operationType,
+	void initialize(Ogre::v1::RenderOperation::OperationType operationType,
 					bool useIndices);
 
 	/// Implementation of Ogre::SimpleRenderable

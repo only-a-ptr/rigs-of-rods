@@ -39,7 +39,7 @@ private:
 		Ogre::Vector2 texcoord;
 	} CoVertice_t;
 
-	Ogre::MeshPtr msh;
+	Ogre::v1::MeshPtr msh;
 	Ogre::SceneNode *snode;
 	node_t *noderef;
 	node_t *nodex;

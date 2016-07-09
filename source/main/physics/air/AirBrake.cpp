@@ -22,6 +22,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "BeamData.h"
 
 #include <Ogre.h>
+#include <OgreMesh.h>
 
 using namespace Ogre;
 
@@ -38,7 +39,7 @@ Airbrake::Airbrake(char* basename, int num, node_t *ndref, node_t *ndx, node_t *
 	char meshname[256];
 	sprintf(meshname, "airbrakemesh-%s-%i", basename, num);
 	/// Create the mesh via the MeshManager
-    msh = MeshManager::getSingleton().createManual(meshname, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    msh = v1::MeshManager::getSingleton().createManual(meshname, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 	union
 	{
@@ -47,7 +48,7 @@ Airbrake::Airbrake(char* basename, int num, node_t *ndref, node_t *ndx, node_t *
 	};
 
     /// Create submesh
-    SubMesh* sub = msh->createSubMesh();
+    v1::SubMesh* sub = msh->createSubMesh();
 
 	//materials
 	sub->setMaterialName(texname);
@@ -84,49 +85,49 @@ Airbrake::Airbrake(char* basename, int num, node_t *ndref, node_t *ndx, node_t *
 	covertices[3].normal=Vector3(0,1,0);
 
     /// Create vertex data structure for vertices shared between submeshes
-    msh->sharedVertexData = new VertexData();
-    msh->sharedVertexData->vertexCount = nVertices;
+    msh->sharedVertexData[0] = new v1::VertexData(); // FIXME: ogre21 - correct???
+    msh->sharedVertexData[0]->vertexCount = nVertices;
 
     /// Create declaration (memory format) of vertex data
-    VertexDeclaration* decl = msh->sharedVertexData->vertexDeclaration;
+    v1::VertexDeclaration* decl = msh->sharedVertexData[0]->vertexDeclaration;
     size_t offset = 0;
     decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
     decl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 //        decl->addElement(0, offset, VET_FLOAT3, VES_DIFFUSE);
 //        offset += VertexElement::getTypeSize(VET_FLOAT3);
     decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
-    offset += VertexElement::getTypeSize(VET_FLOAT2);
+    offset += v1::VertexElement::getTypeSize(VET_FLOAT2);
 
     /// Allocate vertex buffer of the requested number of vertices (vertexCount)
     /// and bytes per vertex (offset)
     v1::HardwareVertexBufferSharedPtr vbuf =
-        HardwareBufferManager::getSingleton().createVertexBuffer(
-            offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+        v1::HardwareBufferManager::getSingleton().createVertexBuffer(
+            offset, msh->sharedVertexData[0]->vertexCount, v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
     /// Upload the vertex data to the card
     vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
     /// Set vertex buffer binding so buffer 0 is bound to our vertex buffer
-    VertexBufferBinding* bind = msh->sharedVertexData->vertexBufferBinding;
+    v1::VertexBufferBinding* bind = msh->sharedVertexData[0]->vertexBufferBinding;
     bind->setBinding(0, vbuf);
 
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-    HardwareIndexBufferSharedPtr faceibuf = HardwareBufferManager::getSingleton().
+    v1::HardwareIndexBufferSharedPtr faceibuf = v1::HardwareBufferManager::getSingleton().
         createIndexBuffer(
-            HardwareIndexBuffer::IT_16BIT,
+            v1::HardwareIndexBuffer::IT_16BIT,
             ibufCount,
-            HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+            v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
     /// Upload the index data to the card
     faceibuf->writeData(0, faceibuf->getSizeInBytes(), faces, true);
 
     /// Set parameters of the submesh
     sub->useSharedVertices = true;
-    sub->indexData->indexBuffer = faceibuf;
-    sub->indexData->indexCount = ibufCount;
-    sub->indexData->indexStart = 0;
+    sub->indexData[0]->indexBuffer = faceibuf; // FIXME: ogre21 - correct???
+    sub->indexData[0]->indexCount = ibufCount;
+    sub->indexData[0]->indexStart = 0;
 
     /// Set bounding information (for culling)
     msh->_setBounds(AxisAlignedBox(-1,-1,0,1,1,0), true);

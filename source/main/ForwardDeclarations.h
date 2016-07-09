@@ -51,7 +51,7 @@ namespace RoR
 
 namespace MyGUI
 {
-	class  OgrePlatform;
+	class  Ogre2Platform;
 }
 
 struct node_t;

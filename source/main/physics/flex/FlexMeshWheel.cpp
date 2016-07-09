@@ -58,7 +58,7 @@ FlexMeshWheel::FlexMeshWheel(
 	//the rim object
 	Ogre::String rim_name = "rim-" + name;
 	rimEnt = gEnv->sceneManager->createEntity(rim_name, mesh_name);
-	rimEnt->setName(rim_name.str());
+	rimEnt->setName(rim_name);
 
 	MaterialFunctionMapper::replaceSimpleMeshMaterials(rimEnt, ColourValue(0, 0.5, 0.8));
 	if (material_function_mapper != nullptr)
@@ -76,8 +76,8 @@ FlexMeshWheel::FlexMeshWheel(
 	rnode=gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 	rnode->attachObject(rimEnt);
 
-	/// Create the mesh via the MeshManager
-	msh = MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+	/// Create the mesh via the v1::MeshManager
+	msh = v1::MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 	/// Create submeshes
 	sub = msh->createSubMesh();
@@ -136,50 +136,50 @@ FlexMeshWheel::FlexMeshWheel(
 	updateVertices();
 
 	/// Create vertex data structure for 8 vertices shared between submeshes
-	msh->sharedVertexData = new VertexData();
-	msh->sharedVertexData->vertexCount = nVertices;
+	msh->sharedVertexData[Ogre::VpNormal] = new v1::VertexData();
+	msh->sharedVertexData[Ogre::VpNormal]->vertexCount = nVertices;
 
 	/// Create declaration (memory format) of vertex data
-	decl = msh->sharedVertexData->vertexDeclaration;
+	decl = msh->sharedVertexData[Ogre::VpNormal]->vertexDeclaration;
 	size_t offset = 0;
 	decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
+	offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 	decl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
-	offset += VertexElement::getTypeSize(VET_FLOAT3);
+	offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 //        decl->addElement(0, offset, VET_FLOAT3, VES_DIFFUSE);
-//        offset += VertexElement::getTypeSize(VET_FLOAT3);
+//        offset += v1::VertexElement::getTypeSize(VET_FLOAT3);
 	decl->addElement(0, offset, VET_FLOAT2, VES_TEXTURE_COORDINATES, 0);
-	offset += VertexElement::getTypeSize(VET_FLOAT2);
+	offset += v1::VertexElement::getTypeSize(VET_FLOAT2);
 
 	/// Allocate vertex buffer of the requested number of vertices (vertexCount)
 	/// and bytes per vertex (offset)
 	vbuf =
-	  HardwareBufferManager::getSingleton().createVertexBuffer(
-		  offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+	  v1::HardwareBufferManager::getSingleton().createVertexBuffer(
+		  offset, msh->sharedVertexData[Ogre::VpNormal]->vertexCount, v1::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
 	/// Upload the vertex data to the card
 	vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
 	/// Set vertex buffer binding so buffer 0 is bound to our vertex buffer
-	VertexBufferBinding* bind = msh->sharedVertexData->vertexBufferBinding;
+	v1::VertexBufferBinding* bind = msh->sharedVertexData[Ogre::VpNormal]->vertexBufferBinding;
 	bind->setBinding(0, vbuf);
 
 	//for the face
 	/// Allocate index buffer of the requested number of vertices (ibufCount)
-	HardwareIndexBufferSharedPtr ibuf = HardwareBufferManager::getSingleton().
+	v1::HardwareIndexBufferSharedPtr ibuf = v1::HardwareBufferManager::getSingleton().
 	 createIndexBuffer(
-		 HardwareIndexBuffer::IT_16BIT,
+		 v1::HardwareIndexBuffer::IT_16BIT,
 			ibufCount,
-			HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+			v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 
 	/// Upload the index data to the card
 	ibuf->writeData(0, ibuf->getSizeInBytes(), faces, true);
 
 	/// Set parameters of the submesh
 	sub->useSharedVertices = true;
-	sub->indexData->indexBuffer = ibuf;
-	sub->indexData->indexCount = ibufCount;
-	sub->indexData->indexStart = 0;
+	sub->indexData[Ogre::VpNormal]->indexBuffer = ibuf;
+	sub->indexData[Ogre::VpNormal]->indexCount = ibufCount;
+	sub->indexData[Ogre::VpNormal]->indexStart = 0;
 
 
 	/// Set bounding information (for culling)
@@ -338,10 +338,10 @@ void FlexMeshWheel::flexitCompute()
 Vector3 FlexMeshWheel::flexitFinal()
 {
 
-	//vbuf->lock(HardwareBuffer::HBL_NORMAL);
+	//vbuf->lock(v1::HardwareBuffer::HBL_NORMAL);
 	vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 	//vbuf->unlock();
-	//msh->sharedVertexData->vertexBufferBinding->getBuffer(0)->writeData(0, vbuf->getSizeInBytes(), vertices, true);
+	//msh->sharedVertexData[Ogre::VpNormal]->vertexBufferBinding->getBuffer(0)->writeData(0, vbuf->getSizeInBytes(), vertices, true);
 
 	return flexit_center;
 }

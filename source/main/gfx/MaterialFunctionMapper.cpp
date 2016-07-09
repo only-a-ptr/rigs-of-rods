@@ -115,12 +115,12 @@ void MaterialFunctionMapper::replaceMeshMaterials(Ogre::v1::Entity *e)
 	{
 		for (std::vector<materialmapping_t>::iterator mm = mfb->second.begin(); mm != mfb->second.end(); mm++)
 		{
-			MeshPtr m = e->getMesh();
+			Ogre::v1::MeshPtr m = e->getMesh();
 			if (!m.isNull())
 			{
 				for (int n=0; n < (int)m->getNumSubMeshes(); n++)
 				{
-					SubMesh *sm = m->getSubMesh(n);
+					Ogre::v1::SubMesh *sm = m->getSubMesh(n);
 					if (sm->getMaterialName() ==  mm->originalmaterial)
 					{
 						sm->setMaterialName(mm->material);
@@ -131,10 +131,10 @@ void MaterialFunctionMapper::replaceMeshMaterials(Ogre::v1::Entity *e)
 
 			for (int n=0; n < (int)e->getNumSubEntities(); n++)
 			{
-				SubEntity *subent = e->getSubEntity(n);
-				if (subent->getMaterialName() ==  mm->originalmaterial)
+				Ogre::v1::SubEntity *subent = e->getSubEntity(n);
+				if (subent->getMaterial()->getName() ==  mm->originalmaterial)
 				{
-					subent->setMaterialName(mm->material);
+					subent->setMaterialName(mm->material, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 					LOG("MaterialFunctionMapper: replaced entity material " + mm->originalmaterial + " with new new material " + mm->material + " on entity " + e->getName());
 				}
 			}
@@ -161,19 +161,19 @@ void MaterialFunctionMapper::replaceSimpleMeshMaterials(Ogre::v1::Entity *e, Ogr
 
 	simpleMaterialCounter++;
 	
-	MeshPtr m = e->getMesh();
+	Ogre::v1::MeshPtr m = e->getMesh();
 	if (!m.isNull())
 	{
 		for (int n=0; n < (int)m->getNumSubMeshes(); n++)
 		{
-			SubMesh *sm = m->getSubMesh(n);
+			Ogre::v1::SubMesh *sm = m->getSubMesh(n);
 			sm->setMaterialName(newMatName);
 		}
 	}
 
 	for (int n=0; n < (int)e->getNumSubEntities(); n++)
 	{
-		SubEntity *subent = e->getSubEntity(n);
-		subent->setMaterialName(newMatName);
+		Ogre::v1::SubEntity *subent = e->getSubEntity(n);
+		subent->setMaterialName(newMatName, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 	}
 }

@@ -19,8 +19,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef __ColoredTextAreaOverlayElement_H_
-#define __ColoredTextAreaOverlayElement_H_
 
 #include <vector>
 #include <OgreTextAreaOverlayElement.h>
@@ -36,8 +34,8 @@ public:
 
 	void setValueBottom(float Value);
 	void setValueTop(float Value);
-	void setCaption(const Ogre::DisplayString& text);
-	static Ogre::DisplayString StripColors(const Ogre::String& text);
+	void setCaption(const Ogre::UTFString& text);
+	static Ogre::UTFString StripColors(const Ogre::String& text);
 	static Ogre::ColourValue GetColor(unsigned char ID, float Value = 1.0f);
 
 	void updateColours(void);
@@ -48,4 +46,3 @@ protected:
 	float m_ValueBottom;
 };
 
-#endif // __ColoredTextAreaOverlayElement_H_

@@ -194,7 +194,7 @@ public:
 	ground_model_t *getGroundModelByString(const Ogre::String name);
 	ground_model_t *last_used_ground_model;
 
-	void getMeshInformation(Ogre::Mesh* mesh, size_t &vertex_count, Ogre::Vector3* &vertices,
+	void getMeshInformation(Ogre::v1::Mesh* mesh, size_t &vertex_count, Ogre::Vector3* &vertices,
 		size_t &index_count, unsigned* &indices,
 		const Ogre::Vector3 &position = Ogre::Vector3::ZERO,
 		const Ogre::Quaternion &orient = Ogre::Quaternion::IDENTITY, const Ogre::Vector3 &scale = Ogre::Vector3::UNIT_SCALE);

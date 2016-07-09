@@ -26,7 +26,7 @@
 
 #include "GUIManager.h"
 
-#include <MyGUI_OgrePlatform.h>
+#include <MyGUI_Ogre2Platform.h>
 
 #include "Application.h"
 #include "BeamFactory.h"
@@ -86,8 +86,11 @@ void GUIManager::createGui()
 {
 	String gui_logfilename = SSETTING("Log Path", "") + "MyGUI.log";
 
-	mPlatform = new MyGUI::OgrePlatform();
-	mPlatform->initialise(RoR::Application::GetOgreSubsystem()->GetRenderWindow(), ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, gui_logfilename); // use cache resource group so preview images are working
+	mPlatform = new MyGUI::Ogre2Platform();
+	mPlatform->initialise(
+        RoR::Application::GetOgreSubsystem()->GetRenderWindow(), 
+        gEnv->sceneManager, // OGRE21 port: Whatever!!! ~only_a_ptr, 2016-07
+        gui_logfilename); // use cache resource group so preview images are working
 	mGUI = new MyGUI::Gui();
 
 	// empty init

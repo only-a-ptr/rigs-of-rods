@@ -61,7 +61,7 @@ private:
 	int finishTerrainDecal();
 
 	Ogre::SceneNode *terrain_decals_snode;
-	Ogre::StaticGeometry *terrain_decals_sg;
+	//Ogre::StaticGeometry *terrain_decals_sg; // FIXME: Ogre21
 	int terrain_decal_count;
 
 	// parser things

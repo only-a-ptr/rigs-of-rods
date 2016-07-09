@@ -613,7 +613,7 @@ void Road2::createMesh()
 
 	/// Allocate vertex buffer of the requested number of vertices (vertexCount)
 	/// and bytes per vertex (offset)
-	Ogre::v1::v1::HardwareVertexBufferSharedPtr vbuf =
+	Ogre::v1::HardwareVertexBufferSharedPtr vbuf =
 		Ogre::v1::HardwareBufferManager::getSingleton().createVertexBuffer(
 		offset, msh->sharedVertexData[0]->vertexCount, Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 

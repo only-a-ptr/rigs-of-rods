@@ -145,7 +145,7 @@ Collisions::Collisions() :
 	if (debugMode)
 	{
 		debugmo = gEnv->sceneManager->createManualObject();
-		debugmo->begin("tracks/debug/collision/triangle", RenderOperation::OT_TRIANGLE_LIST);
+		debugmo->begin("tracks/debug/collision/triangle", Ogre::v1::RenderOperation::OT_TRIANGLE_LIST);
 	}
 }
 
@@ -659,7 +659,7 @@ int Collisions::addCollisionBox(SceneNode *tenode, bool rotating, bool virt, Vec
 		{
 			aa->merge(cube_points[i]);
 		}
-		mo->begin(matName, Ogre::RenderOperation::OT_TRIANGLE_LIST);
+		mo->begin(matName, Ogre::v1::RenderOperation::OT_TRIANGLE_LIST);
 		mo->position(cube_points[0]);
 		mo->position(cube_points[1]);
 		mo->position(cube_points[2]);
@@ -695,7 +695,7 @@ int Collisions::addCollisionBox(SceneNode *tenode, bool rotating, bool virt, Vec
 
 		// the border
 		mo = gEnv->sceneManager->createManualObject();
-		mo->begin(matName, Ogre::RenderOperation::OT_LINE_LIST);
+		mo->begin(matName, Ogre::v1::RenderOperation::OT_LINE_LIST);
 		mo->position(cube_points[0]);
 		mo->position(cube_points[1]);
 		mo->position(cube_points[2]);
@@ -1502,14 +1502,18 @@ int Collisions::createCollisionDebugVisualization()
 		float f = fabs(((float)i)/100);
 		Pass *p = mat->getTechnique(0)->getPass(0); //
 		p->createTextureUnitState()->setColourOperationEx(LBX_MODULATE, LBS_MANUAL, LBS_CURRENT, ColourValue(f*2.0, 2.0*(1.0-f), 0.2, 0.7));
-		p->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+		// FIXME: ogre21
+        /*
+        p->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 		p->setLightingEnabled(false);
 		p->setDepthWriteEnabled(false);
 		p->setDepthBias(3, 3);
 		p->setCullingMode(Ogre::CULL_NONE);
+        */
 
 		Pass *p2 = mat->getTechnique(0)->createPass();
-		p2->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+		/*FIXME: ogre21
+        p2->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 		p2->setLightingEnabled(false);
 		p2->setDepthWriteEnabled(false);
 		p2->setDepthBias(3, 3);
@@ -1517,9 +1521,10 @@ int Collisions::createCollisionDebugVisualization()
 		p2->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 		TextureUnitState *tus2 = p2->createTextureUnitState();
 		tus2->setTextureName("tile.png");
+        */
 
 
-		mat->setLightingEnabled(false);
+		//mat->setLightingEnabled(false); //FIXME: ogre21
 		mat->setReceiveShadows(false);
 	}
 
@@ -1567,7 +1572,7 @@ int Collisions::createCollisionDebugVisualization()
 				SceneNode *mo_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 				mo_node->setName("collisionDebugVisualization_node" + cell_name);
 
-				mo->begin(matName, Ogre::RenderOperation::OT_TRIANGLE_LIST);
+				mo->begin(matName, Ogre::v1::RenderOperation::OT_TRIANGLE_LIST);
 
 				// 1st tri
 				mo->position(-CELL_SIZE/(float)2.0, 0, -CELL_SIZE/(float)2.0);
@@ -1620,7 +1625,7 @@ int Collisions::createCollisionDebugVisualization()
 int Collisions::addCollisionMesh(Ogre::String meshname, Ogre::Vector3 pos, Ogre::Quaternion q, Ogre::Vector3 scale, ground_model_t *gm, std::vector<int> *collTris)
 {
 	// normal, non virtual collision box
-	Entity *ent = gEnv->sceneManager->createEntity(meshname);
+	v1::Entity *ent = gEnv->sceneManager->createEntity(meshname);
 	ent->setMaterialName("tracks/debug/collision/mesh");
 
 	if (!gm)
@@ -1678,7 +1683,7 @@ int Collisions::addCollisionMesh(Ogre::String meshname, Ogre::Vector3 pos, Ogre:
 	return 0;
 }
 
-void Collisions::getMeshInformation(Mesh* mesh,size_t &vertex_count,Vector3* &vertices,
+void Collisions::getMeshInformation(v1::Mesh* mesh,size_t &vertex_count,Vector3* &vertices,
 											  size_t &index_count, unsigned* &indices,
 											  const Vector3 &position,
 											  const Quaternion &orient,const Vector3 &scale)
@@ -1696,25 +1701,25 @@ void Collisions::getMeshInformation(Mesh* mesh,size_t &vertex_count,Vector3* &ve
 	// Calculate how many vertices and indices we're going to need
 	for (int i = 0;i < mesh->getNumSubMeshes();i++)
 	{
-		SubMesh* submesh = mesh->getSubMesh(i);
+		v1::SubMesh* submesh = mesh->getSubMesh(i);
 
 		// We only need to add the shared vertices once
 		if (submesh->useSharedVertices)
 		{
 			if (!added_shared)
 			{
-				VertexData* vertex_data = mesh->sharedVertexData;
+				v1::VertexData* vertex_data = mesh->sharedVertexData[0];
 				vertex_count += vertex_data->vertexCount;
 				added_shared = true;
 			}
 		} else
 		{
-			VertexData* vertex_data = submesh->vertexData;
+			v1::VertexData* vertex_data = submesh->vertexData[0];
 			vertex_count += vertex_data->vertexCount;
 		}
 
 		// Add the indices
-		Ogre::IndexData* index_data = submesh->indexData;
+		Ogre::v1::IndexData* index_data = submesh->indexData[0];
 		index_count += index_data->indexCount;
 	}
 
@@ -1727,9 +1732,9 @@ void Collisions::getMeshInformation(Mesh* mesh,size_t &vertex_count,Vector3* &ve
 	// Run through the sub-meshes again, adding the data into the arrays
 	for (int i = 0;i < mesh->getNumSubMeshes();i++)
 	{
-		SubMesh* submesh = mesh->getSubMesh(i);
+		v1::SubMesh* submesh = mesh->getSubMesh(i);
 
-		Ogre::VertexData* vertex_data = submesh->useSharedVertices ? mesh->sharedVertexData : submesh->vertexData;
+		Ogre::v1::VertexData* vertex_data = submesh->useSharedVertices ? mesh->sharedVertexData[0] : submesh->vertexData[0];
 		if ((!submesh->useSharedVertices)||(submesh->useSharedVertices && !added_shared))
 		{
 			if (submesh->useSharedVertices)
@@ -1738,9 +1743,9 @@ void Collisions::getMeshInformation(Mesh* mesh,size_t &vertex_count,Vector3* &ve
 				shared_offset = current_offset;
 			}
 
-			const Ogre::VertexElement* posElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
+			const Ogre::v1::VertexElement* posElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
 			Ogre::v1::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
-			unsigned char* vertex = static_cast<unsigned char*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+			unsigned char* vertex = static_cast<unsigned char*>(vbuf->lock(Ogre::v1::HardwareBuffer::HBL_READ_ONLY));
 			Ogre::Real* pReal;
 
 			for (size_t j = 0; j < vertex_data->vertexCount; ++j, vertex += vbuf->getVertexSize())
@@ -1763,19 +1768,19 @@ void Collisions::getMeshInformation(Mesh* mesh,size_t &vertex_count,Vector3* &ve
 			next_offset += vertex_data->vertexCount;
 		}
 
-		Ogre::IndexData* index_data = submesh->indexData;
+		Ogre::v1::IndexData* index_data = submesh->indexData[0];
 
 		size_t numTris = index_data->indexCount / 3;
 		unsigned short* pShort = 0;
 		unsigned int* pInt = 0;
-		Ogre::HardwareIndexBufferSharedPtr ibuf = index_data->indexBuffer;
+		Ogre::v1::HardwareIndexBufferSharedPtr ibuf = index_data->indexBuffer;
 		
-		bool use32bitindexes = (ibuf->getType() == Ogre::HardwareIndexBuffer::IT_32BIT);
+		bool use32bitindexes = (ibuf->getType() == Ogre::v1::HardwareIndexBuffer::IT_32BIT);
 
 		if (use32bitindexes)
-			pInt = static_cast<unsigned int*>(ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+			pInt = static_cast<unsigned int*>(ibuf->lock(Ogre::v1::HardwareBuffer::HBL_READ_ONLY));
 		else
-			pShort = static_cast<unsigned short*>(ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+			pShort = static_cast<unsigned short*>(ibuf->lock(Ogre::v1::HardwareBuffer::HBL_READ_ONLY));
 
 		for (size_t k = 0; k < numTris; ++k)
 		{
