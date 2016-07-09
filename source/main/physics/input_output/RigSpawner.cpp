@@ -591,12 +591,15 @@ void RigSpawner::FinalizeRig()
 		{
 			transmat->getTechnique(0)->removePass(1);
 		}
+        /* FIXME: ogre21
 		transmat->getTechnique(0)->getPass(0)->setAlphaRejectSettings(Ogre::CMPF_LESS_EQUAL, 128);
 		transmat->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+        
 		if (transmat->getTechnique(0)->getPass(0)->getNumTextureUnitStates()>0)
 		{
 			transmat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_NONE);
 		}
+        */
 		transmat->compile();
 
 		//-back
@@ -2043,6 +2046,8 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 			beacon_light->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
 			beacon_light->setCastShadows(false);
 			beacon_light->setVisible(false);
+            auto beacon_light_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+            beacon_light_node->attachObject(beacon_light);
 			/* the flare billboard */
 
 			auto flare_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
@@ -2051,7 +2056,9 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 			flare_billboard_sys->createBillboard(0,0,0);
 			if (flare_billboard_sys)
 			{
-				flare_billboard_sys->setMaterialName(def.special_prop_beacon.flare_material_name);
+				flare_billboard_sys->setMaterialName(
+                    def.special_prop_beacon.flare_material_name, 
+                    Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 				flare_billboard_sys->setVisibilityFlags(DEPTHMAP_DISABLED);
 			}
 			flare_scene_node->setVisible(false);
@@ -2061,6 +2068,7 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 			prop.beacon_flare_billboard_scene_node[0] = flare_scene_node;
 			prop.beacon_flares_billboard_system[0] = flare_billboard_sys;
 			prop.beacon_light[0] = beacon_light;
+            prop.beacon_light_scene_node[0] = beacon_light_node;
 		}
 		else if(def.special == RigDef::Prop::SPECIAL_REDBEACON)
 		{
@@ -2075,11 +2083,13 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 			beacon_light->setAttenuation(50.0, 1.0, 0.3, 0.0);
 			beacon_light->setCastShadows(false);
 			beacon_light->setVisible(false);
+            auto beacon_light_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+            beacon_light_node->attachObject(beacon_light);
 			//the flare billboard
 			auto flare_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 			auto flare_billboard_sys =gEnv->sceneManager->createBillboardSet(1); //propname,1);
 			flare_billboard_sys->createBillboard(0,0,0);
-			flare_billboard_sys->setMaterialName("tracks/redbeaconflare");
+			flare_billboard_sys->setMaterialName("tracks/redbeaconflare", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 			flare_billboard_sys->setVisibilityFlags(DEPTHMAP_DISABLED);
 			flare_scene_node->attachObject(flare_billboard_sys);
 			flare_scene_node->setVisible(false);
@@ -2089,6 +2099,7 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 			prop.beacon_light[0] = beacon_light;
 			prop.beacon_flare_billboard_scene_node[0] = flare_scene_node;
 			prop.beacon_flares_billboard_system[0] = flare_billboard_sys;
+            prop.beacon_light_scene_node[0] = beacon_light_node;
 			
 		}
 		else if(def.special == RigDef::Prop::SPECIAL_LIGHTBAR)
@@ -2119,6 +2130,8 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 				prop.beacon_light[k]->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
 				prop.beacon_light[k]->setCastShadows(false);
 				prop.beacon_light[k]->setVisible(false);
+                prop.beacon_light_scene_node[k] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+                prop.beacon_light_scene_node[k]->attachObject(prop.beacon_light[k]);
 				//the flare billboard
 				prop.beacon_flare_billboard_scene_node[k] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
 				prop.beacon_flares_billboard_system[k]=gEnv->sceneManager->createBillboardSet(1);
@@ -2127,11 +2140,11 @@ void RigSpawner::ProcessProp(RigDef::Prop & def)
 				{
 					if (k>1)
 					{
-						prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightredflare");
+						prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightredflare", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 					}
 					else
 					{
-						prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightblueflare");
+						prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightblueflare", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 					}
 
 					prop.beacon_flares_billboard_system[k]->setVisibilityFlags(DEPTHMAP_DISABLED);
@@ -2498,21 +2511,21 @@ void RigSpawner::ProcessFlare2(RigDef::Flare2 & def)
 		{
 			if (def.type == RigDef::Flare2::TYPE_b_BRAKELIGHT)
 			{
-				flare.bbs->setMaterialName("tracks/brakeflare");
+				flare.bbs->setMaterialName("tracks/brakeflare", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 			}
 			else if (def.type == RigDef::Flare2::TYPE_l_LEFT_BLINKER || (def.type == RigDef::Flare2::TYPE_r_RIGHT_BLINKER))
 			{
-				flare.bbs->setMaterialName("tracks/blinkflare");
+				flare.bbs->setMaterialName("tracks/blinkflare", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 			}
 			else
 			{
-				flare.bbs->setMaterialName("tracks/flare");
+				flare.bbs->setMaterialName("tracks/flare", Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 			}
 		}
 		else
 		{
 			using_default_material = false;
-			flare.bbs->setMaterialName(def.material_name);
+			flare.bbs->setMaterialName(def.material_name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 		}
 		flare.snode->attachObject(flare.bbs);
 	}
@@ -2598,6 +2611,8 @@ void RigSpawner::ProcessFlare2(RigDef::Flare2 & def)
 		flare.light->setType(Ogre::Light::LT_SPOTLIGHT);
 		flare.light->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
 		flare.light->setCastShadows(false);
+        flare.light_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+        flare.light_scene_node->attachObject(flare.light);
 	}
 	m_rig->flares.push_back(flare);
 	m_rig->free_flare++;
@@ -2724,10 +2739,10 @@ void RigSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 	{
 		if (def.options.double_sided)
 		{
-			material->getTechnique("BaseTechnique")->getPass("BaseRender")->setCullingMode(Ogre::CULL_NONE);
+			//material->getTechnique("BaseTechnique")->getPass("BaseRender")->setCullingMode(Ogre::CULL_NONE);//FIXME ogre21
 			if (def.HasSpecularMap())
 			{
-				material->getTechnique("BaseTechnique")->getPass("SpecularMapping1")->setCullingMode(Ogre::CULL_NONE);
+				//material->getTechnique("BaseTechnique")->getPass("SpecularMapping1")->setCullingMode(Ogre::CULL_NONE);//FIXME ogre21
 			}
 		}
 	}

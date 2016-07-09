@@ -408,6 +408,7 @@ struct flare_t
 	Ogre::SceneNode *snode;
 	Ogre::v1::BillboardSet *bbs;
 	Ogre::Light *light;
+    Ogre::SceneNode* light_scene_node;
 	char type;
 	int controlnumber;
 	bool controltoggle_status;
@@ -450,6 +451,7 @@ struct prop_t
 
 	// formerly named "light"
 	Ogre::Light *beacon_light[4];
+    Ogre::SceneNode *beacon_light_scene_node[4];
 
 	// formerly named "brate"
 	float beacon_light_rotation_rate[4]; //<! Radians per second

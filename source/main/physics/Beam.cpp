@@ -427,9 +427,9 @@ void Beam::initSimpleSkeleton()
 
 	simpleSkeletonManualObject->estimateIndexCount(free_beam*2);
 	simpleSkeletonManualObject->setCastShadows(false);
-	simpleSkeletonManualObject->setDynamic(true);
+	//simpleSkeletonManualObject->setDynamic(true);//FIXME ogre21
 	simpleSkeletonManualObject->setRenderingDistance(300);
-	simpleSkeletonManualObject->begin("vehicle-skeletonview-material", RenderOperation::OT_LINE_LIST);
+	simpleSkeletonManualObject->begin("vehicle-skeletonview-material", v1::RenderOperation::OT_LINE_LIST);
 	for (int i=0; i<free_beam; i++)
 	{
 		simpleSkeletonManualObject->position(beams[i].p1->AbsPosition);
@@ -537,9 +537,11 @@ void Beam::CreateSimpleSkeletonMaterial()
 	MaterialPtr mat=(MaterialPtr)(MaterialManager::getSingleton().create("vehicle-skeletonview-material", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME));
 
 	mat->getTechnique(0)->getPass(0)->createTextureUnitState();
-	mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(TFO_ANISOTROPIC);
+	/*FIXME ogre21
+    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(TFO_ANISOTROPIC);
 	mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureAnisotropy(3);
 	mat->setLightingEnabled(false);
+    */
 	mat->setReceiveShadows(false);
 }
 
@@ -1430,28 +1432,28 @@ void Beam::calculateDriverPos(Vector3 &out_pos, Quaternion &out_rot)
 void Beam::resetAutopilot()
 {
 	autopilot->disconnect();
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_gpws_but")->setMaterialName("tracks/gpws-on");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_val")->setCaption("000");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_val")->setCaption("1000");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_val")->setCaption("000");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_val")->setCaption("150");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_gpws_but")->setMaterialName("tracks/gpws-on");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_brks_but")->setMaterialName("tracks/brks-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_val")->setCaption("000");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_val")->setCaption("1000");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_val")->setCaption("000");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_val")->setCaption("150");
 }
 void Beam::disconnectAutopilot()
 {
 	autopilot->disconnect();
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
-	OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_hdg_but")->setMaterialName("tracks/hdg-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_wlv_but")->setMaterialName("tracks/wlv-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_nav_but")->setMaterialName("tracks/nav-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_alt_but")->setMaterialName("tracks/hold-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_vs_but")->setMaterialName("tracks/vs-off");
+	v1::OverlayManager::getSingleton().getOverlayElement("tracks/ap_ias_but")->setMaterialName("tracks/athr-off");
 }
 
 
@@ -2724,7 +2726,7 @@ void Beam::SetPropsCastShadows(bool do_cast_shadows)
 {
 	if (cabNode && cabNode->numAttachedObjects() && cabNode->getAttachedObject(0))
 	{
-		((Entity*)(cabNode->getAttachedObject(0)))->setCastShadows(do_cast_shadows);
+		((v1::Entity*)(cabNode->getAttachedObject(0)))->setCastShadows(do_cast_shadows);
 	}
 	int i;
 	for (i=0; i<free_prop; i++)
@@ -2770,8 +2772,10 @@ void Beam::prepareInside(bool inside)
 
 		// enable transparent seat
 		MaterialPtr seatmat=(MaterialPtr)(MaterialManager::getSingleton().getByName("driversseat"));
+        /* FIXME ogre21
 		seatmat->setDepthWriteEnabled(false);
 		seatmat->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+        */
 	} else
 	{
 #ifdef USE_MYGUI
@@ -2791,8 +2795,10 @@ void Beam::prepareInside(bool inside)
 
 		// disable transparent seat
 		MaterialPtr seatmat = (MaterialPtr)(MaterialManager::getSingleton().getByName("driversseat"));
+        /* FIXME ogre21
 		seatmat->setDepthWriteEnabled(true);
 		seatmat->setSceneBlending(SBT_REPLACE);
+        */
 	}
 
 	if (cabNode)
@@ -2852,14 +2858,17 @@ void Beam::lightsToggle()
 			sprintf(clomatname, "%s-noem", texname);
 			if (cabNode && cabNode->numAttachedObjects())
 			{
-				Entity* ent=((Entity*)(cabNode->getAttachedObject(0)));
+				v1::Entity* ent=((v1::Entity*)(cabNode->getAttachedObject(0)));
 				int numsubent=ent->getNumSubEntities();
 				for (int i=0; i<numsubent; i++)
 				{
-					SubEntity *subent=ent->getSubEntity(i);
-					if (!strcmp((subent->getMaterialName()).c_str(), texname)) subent->setMaterialName(clomatname);
+					v1::SubEntity *subent=ent->getSubEntity(i);
+                    if (!strcmp((subent->getMaterial()->getName()).c_str(), texname))
+                    {
+                        subent->setMaterialName(clomatname, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                    }
 				}
-				//			((Entity*)(cabNode->getAttachedObject(0)))->setMaterialName(clomatname);
+				//			((v1::Entity*)(cabNode->getAttachedObject(0)))->setMaterialName(clomatname);
 			}
 		}
 	}
@@ -2880,14 +2889,17 @@ void Beam::lightsToggle()
 			sprintf(clomatname, "%s-noem", texname);
 			if (cabNode && cabNode->numAttachedObjects())
 			{
-				Entity* ent=((Entity*)(cabNode->getAttachedObject(0)));
+				v1::Entity* ent=((v1::Entity*)(cabNode->getAttachedObject(0)));
 				int numsubent=ent->getNumSubEntities();
 				for (int i=0; i<numsubent; i++)
 				{
-					SubEntity *subent=ent->getSubEntity(i);
-					if (!strcmp((subent->getMaterialName()).c_str(), clomatname)) subent->setMaterialName(texname);
+					v1::SubEntity *subent=ent->getSubEntity(i);
+                    if (!strcmp((subent->getMaterial()->getName()).c_str(), clomatname))
+                    {
+                        subent->setMaterialName(texname, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+                    }
 				}
-				//			((Entity*)(cabNode->getAttachedObject(0)))->setMaterialName(texname);
+				//			((v1::Entity*)(cabNode->getAttachedObject(0)))->setMaterialName(texname);
 			}
 		}
 	}
@@ -2924,15 +2936,16 @@ void Beam::updateFlares(float dt, bool isCurrent)
 				Ogre::SceneNode* beacon_scene_node     = props[i].scene_node;
 				Quaternion       beacon_orientation    = beacon_scene_node->getOrientation();
 				Ogre::Light*     beacon_light          = props[i].beacon_light[0];
+                Ogre::SceneNode* beacon_light_node     = props[i].beacon_light_scene_node[0];
 				float            beacon_rotation_rate  = props[i].beacon_light_rotation_rate[0];
 				float            beacon_rotation_angle = props[i].beacon_light_rotation_angle[0]; // Updated at end of block
 
 				// Transform
-				beacon_light->setPosition(beacon_scene_node->getPosition()+beacon_orientation*Vector3(0,0,0.12));
+                beacon_light_node->setPosition(beacon_scene_node->getPosition()+beacon_orientation*Vector3(0,0,0.12));
 				beacon_rotation_angle += dt*beacon_rotation_rate;//rotate baby!
 				beacon_light->setDirection(beacon_orientation*Vector3(cos(beacon_rotation_angle),sin(beacon_rotation_angle),0));
 				//billboard
-				Vector3 vdir=beacon_light->getPosition()-camera_position; // Any reason to query light position instead of scene node position? Where is light position updated, anyway? ~ only_a_ptr, 2015/11
+				Vector3 vdir= beacon_light_node->getPosition()-camera_position; // Any reason to query light position instead of scene node position? Where is light position updated, anyway? ~ only_a_ptr, 2015/11
 				float vlen=vdir.length();
 				if (vlen>100.0)
 				{
@@ -2941,7 +2954,7 @@ void Beam::updateFlares(float dt, bool isCurrent)
 				}
 				//normalize
 				vdir=vdir/vlen;
-				props[i].beacon_flare_billboard_scene_node[0]->setPosition(beacon_light->getPosition() - vdir*0.1);
+				props[i].beacon_flare_billboard_scene_node[0]->setPosition(beacon_light_node->getPosition() - vdir*0.1);
 				float amplitude=beacon_light->getDirection().dotProduct(vdir);
 				if (amplitude>0)
 				{
@@ -2966,15 +2979,15 @@ void Beam::updateFlares(float dt, bool isCurrent)
 					Quaternion orientation=props[i].scene_node->getOrientation();
 					switch (k)
 					{
-					case 0: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(-0.64,0,0.14));break;
-					case 1: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(-0.32,0,0.14));break;
-					case 2: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(+0.32,0,0.14));break;
-					case 3: props[i].beacon_light[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(+0.64,0,0.14));break;
+					case 0: props[i].beacon_light_scene_node[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(-0.64,0,0.14));break;
+					case 1: props[i].beacon_light_scene_node[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(-0.32,0,0.14));break;
+					case 2: props[i].beacon_light_scene_node[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(+0.32,0,0.14));break;
+					case 3: props[i].beacon_light_scene_node[k]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(+0.64,0,0.14));break;
 					}
 					props[i].beacon_light_rotation_angle[k]+=dt*props[i].beacon_light_rotation_rate[k];//rotate baby!
 					props[i].beacon_light[k]->setDirection(orientation*Vector3(cos(props[i].beacon_light_rotation_angle[k]),sin(props[i].beacon_light_rotation_angle[k]),0));
 					//billboard
-					Vector3 vdir=props[i].beacon_light[k]->getPosition()-mCamera->getPosition();
+					Vector3 vdir=props[i].beacon_light_scene_node[k]->getPosition()-mCamera->getPosition();
 					float vlen=vdir.length();
 					if (vlen>100.0) 
 					{
@@ -2983,7 +2996,7 @@ void Beam::updateFlares(float dt, bool isCurrent)
 					}
 					//normalize
 					vdir=vdir/vlen;
-					props[i].beacon_flare_billboard_scene_node[k]->setPosition(props[i].beacon_light[k]->getPosition()-vdir*0.2);
+					props[i].beacon_flare_billboard_scene_node[k]->setPosition(props[i].beacon_light_scene_node[k]->getPosition()-vdir*0.2);
 					float amplitude=props[i].beacon_light[k]->getDirection().dotProduct(vdir);
 					if (amplitude>0)
 					{
@@ -3001,15 +3014,16 @@ void Beam::updateFlares(float dt, bool isCurrent)
 			{
 				//update light
 				Quaternion orientation=props[i].scene_node->getOrientation();
-				props[i].beacon_light[0]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(0,0,0.06));
+                assert(props[i].beacon_light_scene_node[0] != nullptr);
+				props[i].beacon_light_scene_node[0]->setPosition(props[i].scene_node->getPosition()+orientation*Vector3(0,0,0.06));
 				props[i].beacon_light_rotation_angle[0]+=dt*props[i].beacon_light_rotation_rate[0];//rotate baby!
 				//billboard
-				Vector3 vdir=props[i].beacon_light[0]->getPosition()-mCamera->getPosition();
+				Vector3 vdir=props[i].beacon_light_scene_node[0]->getPosition()-mCamera->getPosition();
 				float vlen=vdir.length();
 				if (vlen>100.0) {props[i].beacon_flare_billboard_scene_node[0]->setVisible(false);continue;}
 				//normalize
 				vdir=vdir/vlen;
-				props[i].beacon_flare_billboard_scene_node[0]->setPosition(props[i].beacon_light[0]->getPosition()-vdir*0.1);
+				props[i].beacon_flare_billboard_scene_node[0]->setPosition(props[i].beacon_light_scene_node[0]->getPosition()-vdir*0.1);
 				bool visible=false;
 				if (props[i].beacon_light_rotation_angle[0]>1.0)
 				{
@@ -3034,7 +3048,7 @@ void Beam::updateFlares(float dt, bool isCurrent)
 			if (props[i].beacontype=='w')
 			{
 				Vector3 mposition=nodes[props[i].noderef].AbsPosition+props[i].offsetx*(nodes[props[i].nodex].AbsPosition-nodes[props[i].noderef].AbsPosition)+props[i].offsety*(nodes[props[i].nodey].AbsPosition-nodes[props[i].noderef].AbsPosition);
-				props[i].beacon_light[0]->setPosition(mposition);
+				props[i].beacon_light_scene_node[0]->setPosition(mposition);
 				props[i].beacon_light_rotation_angle[0]+=dt*props[i].beacon_light_rotation_rate[0];//rotate baby!
 				//billboard
 				Vector3 vdir=mposition-mCamera->getPosition();
@@ -3168,7 +3182,7 @@ void Beam::updateFlares(float dt, bool isCurrent)
 		}
 		if (flares[i].light)
 		{
-			flares[i].light->setPosition(mposition-0.2*amplitude*normal);
+			flares[i].light_scene_node->setPosition(mposition-0.2*amplitude*normal);
 			// point the real light towards the ground a bit
 			flares[i].light->setDirection(-normal - Vector3(0, 0.2, 0));
 		}
@@ -3661,7 +3675,7 @@ void Beam::showSkeleton(bool meshes, bool linked)
 	{
 		if (vwheels[i].fm && vwheels[i].meshwheel)
 		{
-			Entity *e = ((FlexMeshWheel*)(vwheels[i].fm))->getRimEntity();
+			v1::Entity *e = ((FlexMeshWheel*)(vwheels[i].fm))->getRimEntity();
 			if (e)
 				e->setVisible(false);
 		}
@@ -3731,7 +3745,7 @@ void Beam::hideSkeleton(bool linked)
 	{
 		if (vwheels[i].fm && vwheels[i].meshwheel)
 		{
-			Entity *e = ((FlexMeshWheel *)(vwheels[i].fm))->getRimEntity();
+			v1::Entity *e = ((FlexMeshWheel *)(vwheels[i].fm))->getRimEntity();
 			if (e)
 				e->setVisible(true);
 		}
@@ -3761,7 +3775,7 @@ void Beam::fadeMesh(SceneNode *node, float amount)
 {
 	for (int a=0;a<node->numAttachedObjects();a++)
 	{
-		Entity *e = (Entity *)node->getAttachedObject(a);
+		v1::Entity *e = (v1::Entity *)node->getAttachedObject(a);
 		MaterialPtr m = e->getSubEntity(0)->getMaterial();
 		if (m.getPointer() == 0)
 			continue;
@@ -3782,7 +3796,7 @@ float Beam::getAlphaRejection(SceneNode *node)
 {
 	for (int a=0;a<node->numAttachedObjects();a++)
 	{
-		Entity *e = (Entity *)node->getAttachedObject(a);
+		v1::Entity *e = (v1::Entity *)node->getAttachedObject(a);
 		MaterialPtr m = e->getSubEntity(0)->getMaterial();
 		if (m.getPointer() == 0)
 			continue;
@@ -3801,7 +3815,7 @@ void Beam::setAlphaRejection(SceneNode *node, float amount)
 {
 	for (int a=0;a<node->numAttachedObjects();a++)
 	{
-		Entity *e = (Entity *)node->getAttachedObject(a);
+		v1::Entity *e = (v1::Entity *)node->getAttachedObject(a);
 		MaterialPtr m = e->getSubEntity(0)->getMaterial();
 		if (m.getPointer() == 0)
 			continue;
@@ -3819,18 +3833,22 @@ void Beam::setMeshWireframe(SceneNode *node, bool value)
 {
 	for (int a=0;a<node->numAttachedObjects();a++)
 	{
-		Entity *e = (Entity *)node->getAttachedObject(a);
+		v1::Entity *e = (v1::Entity *)node->getAttachedObject(a);
 		for (int se=0;se<(int)e->getNumSubEntities();se++)
 		{
 			MaterialPtr m = e->getSubEntity(se)->getMaterial();
 			if (m.getPointer() == 0)
 				continue;
+
+            /* FIXME ogre21
 			for (int x=0;x<m->getNumTechniques();x++)
 				for (int y=0;y<m->getTechnique(x)->getNumPasses();y++)
-					if (value)
+					
+                    if (value)
 						m->getTechnique(x)->getPass(y)->setPolygonMode(PM_WIREFRAME);
 					else
 						m->getTechnique(x)->getPass(y)->setPolygonMode(PM_SOLID);
+                        */
 		}
 	}
 }
@@ -4477,7 +4495,7 @@ void Beam::setDebugOverlayState(int mode)
 			// collision nodes debug, also mimics as node visual
 			SceneNode *s = t.node->createChildSceneNode();
 			deletion_sceneNodes.emplace_back(s);
-			Entity *b = gEnv->sceneManager->createEntity("sphere.mesh");
+			v1::Entity *b = gEnv->sceneManager->createEntity("sphere.mesh");
 			b->setName(entName);
 
 			deletion_Entities.emplace_back(b);
@@ -4659,7 +4677,7 @@ void Beam::updateNetworkInfo()
 		info = RoR::Networking::GetLocalUserData();
 	}
 		Ogre::NameValuePairList params;
-		params["name"] = wname;
+        params["name"] = "name?"; //wname; // FIXME ogre21
 		params["caption"] = "n" + networkUsername;
 		netMT = static_cast<Ogre::MovableText*>(gEnv->sceneManager->createMovableObject(Ogre::MovableTextFactory::FACTORY_TYPE_NAME,
 			&gEnv->sceneManager->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC), &params));
@@ -5568,7 +5586,12 @@ Beam::Beam(
 		{
 			char wname[256];
 			sprintf(wname, "netlabel-%s", truckname);
-			netMT = new MovableText(wname, networkUsername);
+            Ogre::NameValuePairList params;
+            params["name"] = wname;
+            params["caption"] = networkUsername;
+
+            netMT = static_cast<Ogre::MovableText*>(gEnv->sceneManager->createMovableObject(Ogre::MovableTextFactory::FACTORY_TYPE_NAME,
+                &gEnv->sceneManager->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC), &params));
 			netMT->setFontName("CyberbitEnglish");
 			netMT->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
 			//netMT->setAdditionalHeight(2);
