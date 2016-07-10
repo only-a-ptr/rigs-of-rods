@@ -473,17 +473,23 @@ endif()
 
 
 # --- AngelScript - scripting interface ---
-find_package( AngelScript )
-if( TARGET AngelScript::AngelScript)
-  target_link_libraries( ${BINNAME} PRIVATE
-    AngelScript::AngelScript
-    AngelScript::use_namespace
-  )
-  target_compile_definitions( ${BINNAME} PRIVATE USE_ANGELSCRIPT )
+if(ROR_USE_ANGELSCRIPT)
 
-  # TODO angelscript_addons
-  target_include_directories( ${BINNAME} PRIVATE ../angelscript_addons )
-  target_link_libraries( ${BINNAME} PRIVATE angelscript_addons )
+	find_package( AngelScript )
+	if( TARGET AngelScript::AngelScript)
+	  target_link_libraries( ${BINNAME} PRIVATE
+	    AngelScript::AngelScript
+	    AngelScript::use_namespace
+	  )
+	  target_compile_definitions( ${BINNAME} PRIVATE USE_ANGELSCRIPT )
+	
+	  # TODO angelscript_addons
+	  target_include_directories( ${BINNAME} PRIVATE ../angelscript_addons )
+	  target_link_libraries( ${BINNAME} PRIVATE angelscript_addons )
+	else()
+	  message( WARNING "Building ${BINNAME} without AngelScript. Some functionality may be missing." )
+	endif()
+
 else()
   message( WARNING "Building ${BINNAME} without AngelScript. Some functionality may be missing." )
 endif()
