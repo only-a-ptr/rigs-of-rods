@@ -1,5 +1,23 @@
-# Building instructions
-Please refer to http://www.rigsofrods.com/wiki/pages/Compiling_Sources
+# Building instructions for 'Ogre-2.1' branch.
+
+## Dependencies
+
+1. Check out https://github.com/only-a-ptr/ror-dependencies/tree/ogre-2.1
+2. Make sure you're on branch 'ogre-2.1'
+3. Configure with CMake. No special settings needed.
+4. Build
+
+## RoR
+
+1. Check out https://github.com/only-a-ptr/rigs-of-rods/tree/Ogre-2.1
+2. Make sure you're on branch 'Ogre-2.1'
+3. Configure with CMake.
+   On Windows, you need to set CMAKE_PREFIX_PATH to build directory of dependencies.
+   See https://github.com/RigsOfRods/rigs-of-rods/pull/924 for more info.
+4. Build.
+
+# Other building instructions
+Please refer to https://ror.avrintech.net/rorwikibackup/index.php/Compiling_Sources
 
 # Dependencies
 core requirements:
