@@ -360,10 +360,6 @@ namespace Ogre
             {
                 mShaderGen = OGRE_NEW ShaderHelperGLSLES();
             }
-            else if (hmgr.isLanguageSupported("cg"))
-            {
-                mShaderGen = OGRE_NEW ShaderHelperCg();
-            }
             
             // check SM3 features
             mSM3Available = GpuProgramManager::getSingleton().isSyntaxSupported("ps_3_0");
