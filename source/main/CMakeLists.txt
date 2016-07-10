@@ -401,15 +401,13 @@ target_link_libraries( ${BINNAME} PRIVATE
 find_package( OGRE REQUIRED )
 target_link_libraries( ${BINNAME} PRIVATE
   ${OGRE_LIBRARIES} 
-  ${OGRE_Paging_LIBRARIES}
-  ${OGRE_RTShaderSystem_LIBRARIES}
-  ${OGRE_Terrain_LIBRARIES}
+  ${OGRE_HlmsPbs_LIBRARIES}
+  ${OGRE_HlmsUnlit_LIBRARIES}
 )
 target_include_directories( ${BINNAME} PRIVATE
   ${OGRE_INCLUDE_DIRS} 
-  ${OGRE_Paging_INCLUDE_DIRS}
-  ${OGRE_RTShaderSystem_INCLUDE_DIRS}
-  ${OGRE_Terrain_INCLUDE_DIRS}
+  ${OGRE_HlmsPbs_INCLUDE_DIRS}
+  ${OGRE_HlmsUnlit_INCLUDE_DIRS}
 )
 if( OGRE_VERSION VERSION_GREATER 1.8 )
   target_link_libraries( ${BINNAME} PRIVATE ${OGRE_Overlay_LIBRARIES} )
