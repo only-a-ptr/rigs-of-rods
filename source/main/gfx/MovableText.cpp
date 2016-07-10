@@ -600,9 +600,10 @@ const String& MovableTextFactory::getType(void) const
 //-----------------------------------------------------------------------
 MovableObject* MovableTextFactory::createInstanceImpl(IdType id,
 	ObjectMemoryManager *objectMemoryManager,
+    Ogre::SceneManager* ogreSceneMgr,
 	const NameValuePairList* params)
 {
-	return OGRE_NEW MovableText(id, objectMemoryManager, gEnv->sceneManager, params);
+	return OGRE_NEW MovableText(id, objectMemoryManager, ogreSceneMgr, params);
 }
 //-----------------------------------------------------------------------
 void MovableTextFactory::destroyInstance(MovableObject* obj)

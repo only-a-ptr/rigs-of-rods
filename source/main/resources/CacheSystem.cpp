@@ -41,6 +41,7 @@
 #include "SoundScriptManager.h"
 #include "TerrainManager.h"
 #include "Utils.h"
+#include "Settings.h"
 
 #ifdef USE_MYGUI
 #include "LoadingWindow.h"
@@ -1474,20 +1475,20 @@ int CacheSystem::addUniqueString(std::set<Ogre::String> &list, Ogre::String str)
 Ogre::String CacheSystem::addMeshMaterials(CacheEntry &entry, Ogre::v1::Entity *e)
 {
 	String materials = "";
-	MeshPtr m = e->getMesh();
+	v1::MeshPtr m = e->getMesh();
 	if (!m.isNull())
 	{
 		for (int n=0; n<(int)m->getNumSubMeshes();n++)
 		{
-			SubMesh *sm = m->getSubMesh(n);
+			v1::SubMesh *sm = m->getSubMesh(n);
 			addUniqueString(entry.materials, sm->getMaterialName());
 		}
 	}
 
 	for (int n=0; n<(int)e->getNumSubEntities();n++)
 	{
-		SubEntity *subent = e->getSubEntity(n);
-		addUniqueString(entry.materials, subent->getMaterialName());
+		v1::SubEntity *subent = e->getSubEntity(n);
+		addUniqueString(entry.materials, subent->getMaterial()->getName());
 	}
 	return materials;
 }
@@ -2261,11 +2262,9 @@ void CacheSystem::checkForNewContent()
 std::time_t CacheSystem::fileTime(Ogre::String filename)
 {
 	FileSystemArchiveFactory FSAF;
-#ifdef ROR_USE_OGRE_1_9
+
 	Archive *fsa = FSAF.createInstance(filename, true);
-#else
-	Archive *fsa = FSAF.createInstance(filename);
-#endif
+
 
 	std::time_t ft = fsa->getModifiedTime(filename);
 

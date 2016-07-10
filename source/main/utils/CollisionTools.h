@@ -119,7 +119,8 @@ private:
                                 const Ogre::Quaternion &orient,
                                 const Ogre::Vector3 &scale);
 
-	void getStaticGeometry(Ogre::v1::StaticGeometry* mesh,
+    // FIXME ogre21
+	/*void getStaticGeometry(Ogre::v1::StaticGeometry* mesh,
 								Ogre::v1::StaticGeometry::Region* rg,
 								size_t &overtex_count,
 								Ogre::Vector3* &overtices,
@@ -127,7 +128,7 @@ private:
 								Ogre::uint32* &oindices,
 								const Ogre::Vector3 &position,
 								const Ogre::Quaternion &orient,
-								const Ogre::Vector3 &scale);
+								const Ogre::Vector3 &scale);*/
 
 	std::map<Ogre::String, mesh_info_t> meshInfoStorage;
 };

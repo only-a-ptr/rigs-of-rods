@@ -248,6 +248,10 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::v
 
 bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::MovableObject* &target,float &closest_distance, const Ogre::uint32 queryMask)
 {
+    return false;
+
+    /* FIXME ogre21
+    // HACK! - temporary, just to compile ogre21
 	target = NULL;
 
 	// check we are initialised
@@ -312,7 +316,8 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
 		{
 			// static geometry
 			Ogre::MovableObject *pentity = static_cast<Ogre::MovableObject*>(query_result[qr_idx].movable);
-			Ogre::StaticGeometry::Region *rg = static_cast<Ogre::StaticGeometry::Region*>(query_result[qr_idx].movable);
+			
+            //FIXME ogre21 Ogre::StaticGeometry::Region *rg = static_cast<Ogre::StaticGeometry::Region*>(query_result[qr_idx].movable);
 
 			// this is a quick hack to prevent that we allocate unlimited amount of memory
 			// it clears the memory if we have more than 4 regions saved
@@ -329,6 +334,7 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
 				meshInfoStorage.clear();
 			}
 
+
 			if (meshInfoStorage.find(rg->getName()) == meshInfoStorage.end())
 			{
 				// get mesh and store it
@@ -344,10 +350,13 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
 				meshInfo.store = true;
 				meshInfoStorage[rg->getName()] = meshInfo;
 			} else
+
 				// existing, get it
 				meshInfo = meshInfoStorage[rg->getName()];
 			valid = true;
+            
 		}
+
 
 
 		if (valid)
@@ -402,6 +411,7 @@ bool CollisionTools::raycast(const Ogre::Ray &ray, Ogre::Vector3 &result,Ogre::M
 		// raycast failed
 		return (false);
 	}
+    */
 }
 
 
@@ -427,24 +437,24 @@ void CollisionTools::GetMeshInformation(const Ogre::v1::MeshPtr mesh,
 	// Calculate how many vertices and indices we're going to need
 	for (unsigned short i = 0; i < mesh->getNumSubMeshes(); ++i)
 	{
-		Ogre::SubMesh* submesh = mesh->getSubMesh( i );
+		Ogre::v1::SubMesh* submesh = mesh->getSubMesh( i );
 
 		// We only need to add the shared vertices once
 		if (submesh->useSharedVertices)
 		{
 			if ( !added_shared )
 			{
-				vertex_count += mesh->sharedVertexData->vertexCount;
+				vertex_count += mesh->sharedVertexData[Ogre::VpNormal]->vertexCount;
 				added_shared = true;
 			}
 		}
 		else
 		{
-			vertex_count += submesh->vertexData->vertexCount;
+			vertex_count += submesh->vertexData[Ogre::VpNormal]->vertexCount;
 		}
 
 		// Add the indices
-		index_count += submesh->indexData->indexCount;
+		index_count += submesh->indexData[Ogre::VpNormal]->indexCount;
 	}
 
 
@@ -457,9 +467,11 @@ void CollisionTools::GetMeshInformation(const Ogre::v1::MeshPtr mesh,
 	// Run through the submeshes again, adding the data into the arrays
 	for ( unsigned short i = 0; i < mesh->getNumSubMeshes(); ++i)
 	{
-		Ogre::SubMesh* submesh = mesh->getSubMesh(i);
+		Ogre::v1::SubMesh* submesh = mesh->getSubMesh(i);
 
-		Ogre::VertexData* vertex_data = submesh->useSharedVertices ? mesh->sharedVertexData : submesh->vertexData;
+		Ogre::v1::VertexData* vertex_data = submesh->useSharedVertices 
+            ? mesh->sharedVertexData[Ogre::VpNormal] 
+            : submesh->vertexData[Ogre::VpNormal];
 
 		if ((!submesh->useSharedVertices)||(submesh->useSharedVertices && !added_shared))
 		{
@@ -469,14 +481,14 @@ void CollisionTools::GetMeshInformation(const Ogre::v1::MeshPtr mesh,
 				shared_offset = current_offset;
 			}
 
-			const Ogre::VertexElement* posElem =
+			const Ogre::v1::VertexElement* posElem =
 				vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
 
 			Ogre::v1::HardwareVertexBufferSharedPtr vbuf =
 				vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
 
 			unsigned char* vertex =
-				static_cast<unsigned char*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+				static_cast<unsigned char*>(vbuf->lock(Ogre::v1::HardwareBuffer::HBL_READ_ONLY));
 
 			// There is _no_ baseVertexPointerToElement() which takes an Ogre::Ogre::Real or a double
 			//  as second argument. So make it float, to avoid trouble when Ogre::Ogre::Real will
@@ -498,13 +510,13 @@ void CollisionTools::GetMeshInformation(const Ogre::v1::MeshPtr mesh,
 		}
 
 
-		Ogre::IndexData* index_data = submesh->indexData;
+		Ogre::v1::IndexData* index_data = submesh->indexData[Ogre::VpNormal];
 		size_t numTris = index_data->indexCount / 3;
-		Ogre::HardwareIndexBufferSharedPtr ibuf = index_data->indexBuffer;
+		Ogre::v1::HardwareIndexBufferSharedPtr ibuf = index_data->indexBuffer;
 
-		bool use32bitindexes = (ibuf->getType() == Ogre::HardwareIndexBuffer::IT_32BIT);
+		bool use32bitindexes = (ibuf->getType() == Ogre::v1::HardwareIndexBuffer::IT_32BIT);
 
-		Ogre::uint32*  pLong = static_cast<Ogre::uint32*>(ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+		Ogre::uint32*  pLong = static_cast<Ogre::uint32*>(ibuf->lock(Ogre::v1::HardwareBuffer::HBL_READ_ONLY));
 		unsigned short* pShort = reinterpret_cast<unsigned short*>(pLong);
 
 
@@ -530,6 +542,9 @@ void CollisionTools::GetMeshInformation(const Ogre::v1::MeshPtr mesh,
 		current_offset = next_offset;
 	}
 }
+
+/* FIXME ogre21
+
 
 //retrieved from http://svn.rtti.de/filedetails.php?repname=CoA%20Jump%20n%20Run&path=/tags/run01_2008-01-29/src/SceneryTest.cpp&rev=254&sc=1
 void CollisionTools::getStaticGeometry(
@@ -629,6 +644,8 @@ void CollisionTools::getStaticGeometry(
 		memcpy(oindices, &indices[0], sizeof(*oindices)*oindex_count);
 	}
 }
+
+*/
 
 void CollisionTools::setHeightAdjust(const float heightadjust) {
 	_heightAdjust = heightadjust;

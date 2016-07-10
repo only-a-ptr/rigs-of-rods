@@ -147,11 +147,8 @@ void MainThread::Go()
 	Ogre::SceneManager* scene_manager = Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, numThreads, threadedCullingMethod);
 
 	gEnv->sceneManager = scene_manager;
-	if (overlay_system)
-	{
-		scene_manager->addRenderQueueListener(overlay_system);
-		gEnv->overlaySystem = nullptr;
-	}
+    Ogre::v1::OverlaySystem* overlay_system = new v1::OverlaySystem(); //Overlay init
+    scene_manager->addRenderQueueListener(overlay_system);
 	
 	Ogre::Camera* camera = scene_manager->createCamera("PlayerCam");
 	camera->setPosition(Ogre::Vector3(128,25,128)); // Position it at 500 in Z direction
@@ -163,7 +160,8 @@ void MainThread::Go()
 	gEnv->mainCamera = camera;
 
 	//Set ambiant light
-	gEnv->sceneManager->setAmbientLight(Ogre::ColourValue::White);
+	gEnv->sceneManager->setAmbientLight(Ogre::ColourValue::White, Ogre::ColourValue::White,
+        Ogre::Vector3::NEGATIVE_UNIT_Y); // Top-down light direction
 
 	// Create rendering overlay
 	Ogre::v1::OverlayManager& overlay_manager = Ogre::v1::OverlayManager::getSingleton();
@@ -173,8 +171,7 @@ void MainThread::Go()
 		OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Cannot find loading overlay for startup screen", "MainThread::Go");
 	}
 
-	//For shadows and stuff
-	initMatManager();
+
 
 	//Init gui before the compositor
 	Application::CreateGuiManagerIfNotExists();
@@ -234,12 +231,14 @@ void MainThread::Go()
 	Application::GetContentManager()->init();
 
 	//Maybe somewhere else?
-	Ogre::MovableTextFactory* movableTextFactory = new Ogre::MovableTextFactory();
+    Ogre::MovableTextFactory* movableTextFactory = new Ogre::MovableTextFactory();
 	Application::GetOgreSubsystem()->GetOgreRoot()->addMovableObjectFactory(movableTextFactory);
 
 	// Back to full rendering
+    /* FIXME ogre21
 	scene_manager->clearSpecialCaseRenderQueues();
 	scene_manager->setSpecialCaseRenderQueueMode(Ogre::SceneManager::SCRQM_EXCLUDE);
+    */
 
 	// create console, must be done early
 	Application::CreateConsoleIfNotExists();
@@ -323,7 +322,7 @@ void MainThread::Go()
 	
 	if (gEnv->multiplayer)
 	{
-		RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::MODELS);
+		RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::MESHES);
 		RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::MATERIALS);
 		RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::FLAGS);
 		RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::ICONS);
@@ -560,7 +559,8 @@ bool MainThread::SetupGameplayLoop(Ogre::String preselected_map)
 	Application::CreateOverlayWrapper();
 	Application::GetOverlayWrapper()->SetupDirectionArrow();
 
-	gEnv->sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.3f, 0.3f));
+    Ogre::ColourValue ambient = Ogre::ColourValue(0.3f, 0.3f, 0.3f);
+	gEnv->sceneManager->setAmbientLight(ambient, ambient, Ogre::Vector3::NEGATIVE_UNIT_Y); // Direction = top-down
 
 	if (!m_base_resource_loaded)
 	{
@@ -574,7 +574,8 @@ bool MainThread::SetupGameplayLoop(Ogre::String preselected_map)
 	{
 		wchar_t tmp[255] = L"";
 		UTFString format = _L("Press %ls to start chatting");
-		swprintf(tmp, 255, format.asWStr_c_str(), ANSI_TO_WCHAR(RoR::Application::GetInputEngine()->getKeyForCommand(EV_COMMON_ENTER_CHATMODE)).c_str());
+		swprintf(tmp, 255, format.asWStr_c_str(), ANSI_TO_WCHAR(
+            RoR::Application::GetInputEngine()->getKeyForCommand(EV_COMMON_ENTER_CHATMODE)).c_str());
 		Application::GetGuiManager()->pushMessageChatBox(UTFString(tmp));
 
 		user_info_t info = RoR::Networking::GetLocalUserData();
@@ -1161,7 +1162,7 @@ void MainThread::ChangedCurrentVehicle(Beam *previous_vehicle, Beam *current_veh
 		// hide unused items
 		if (RoR::Application::GetOverlayWrapper() && current_vehicle->free_active_shock==0)
 		{
-			(OverlayManager::getSingleton().getOverlayElement("tracks/rollcorneedle"))->hide();
+			(v1::OverlayManager::getSingleton().getOverlayElement("tracks/rollcorneedle"))->hide();
 		}
 
 		// force feedback
@@ -1182,12 +1183,12 @@ void MainThread::ChangedCurrentVehicle(Beam *previous_vehicle, Beam *current_veh
 			{
 				if (current_vehicle->hashelp)
 				{
-					OverlayManager::getSingleton().getOverlayElement("tracks/helppanel")->setMaterialName(current_vehicle->helpmat);
-					OverlayManager::getSingleton().getOverlayElement("tracks/machinehelppanel")->setMaterialName(current_vehicle->helpmat);
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/helppanel")->setMaterialName(current_vehicle->helpmat);
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/machinehelppanel")->setMaterialName(current_vehicle->helpmat);
 				} else
 				{
-					OverlayManager::getSingleton().getOverlayElement("tracks/helppanel")->setMaterialName("tracks/black");
-					OverlayManager::getSingleton().getOverlayElement("tracks/machinehelppanel")->setMaterialName("tracks/black");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/helppanel")->setMaterialName("tracks/black");
+					v1::OverlayManager::getSingleton().getOverlayElement("tracks/machinehelppanel")->setMaterialName("tracks/black");
 				}
 			} catch(Ogre::Exception& ex)
 			{
@@ -1205,18 +1206,18 @@ void MainThread::ChangedCurrentVehicle(Beam *previous_vehicle, Beam *current_veh
 			// enable gui mods
 			if (! current_vehicle->speedomat.empty())
 			{
-				OverlayManager::getSingleton().getOverlayElement("tracks/speedo")->setMaterialName(current_vehicle->speedomat);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/speedo")->setMaterialName(current_vehicle->speedomat);
 			} else
 			{
-				OverlayManager::getSingleton().getOverlayElement("tracks/speedo")->setMaterialName("tracks/Speedo");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/speedo")->setMaterialName("tracks/Speedo");
 			}
 
 			if (! current_vehicle->tachomat.empty())
 			{
-				OverlayManager::getSingleton().getOverlayElement("tracks/tacho")->setMaterialName(current_vehicle->tachomat);
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/tacho")->setMaterialName(current_vehicle->tachomat);
 			} else
 			{
-				OverlayManager::getSingleton().getOverlayElement("tracks/tacho")->setMaterialName("tracks/Tacho");
+				v1::OverlayManager::getSingleton().getOverlayElement("tracks/tacho")->setMaterialName("tracks/Tacho");
 			}
 		}
 
@@ -1266,24 +1267,4 @@ void MainThread::RegenCache()
 	}
 }
 
-void MainThread::initMatManager()
-{
-	Ogre::String managed_materials_dir_path = SSETTING("Resources Path", "") + "managed_materials/";
 
-	//Dirty, needs to be improved
-	if (SSETTING("Shadow technique", "Parallel-split Shadow Maps") == "Parallel-split Shadow Maps")
-		ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path + "shadows/on/", "FileSystem", "ShadowsMats");
-	else
-		ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path + "shadows/off/", "FileSystem", "ShadowsMats");
-	ResourceGroupManager::getSingleton().initialiseResourceGroup("ShadowsMats");
-
-	ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path + "texture/", "FileSystem", "TextureManager");
-	ResourceGroupManager::getSingleton().initialiseResourceGroup("TextureManager");
-
-	Envmap* env = new Envmap();
-	gEnv->envMap = env;
-
-	//Last
-	ResourceGroupManager::getSingleton().addResourceLocation(managed_materials_dir_path, "FileSystem", "ManagedMats");
-	ResourceGroupManager::getSingleton().initialiseResourceGroup("ManagedMats");
-}

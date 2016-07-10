@@ -35,7 +35,7 @@
 #include "RoRFrameListener.h"
 #include "Scripting.h"
 #include "Settings.h"
-#include "ShadowManager.h"
+
 #include "SkyManager.h"
 #include "SoundScriptManager.h"
 #include "SurveyMapManager.h"
@@ -562,8 +562,7 @@ void TerrainManager::initDashboards()
 
 void TerrainManager::initShadows()
 {
-	shadow_manager = new ShadowManager();
-	shadow_manager->loadConfiguration();
+
 }
 
 void TerrainManager::loadTerrainObjects()

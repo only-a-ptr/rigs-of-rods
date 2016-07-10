@@ -50,7 +50,6 @@ set( SOURCE_FILES
   gfx/DecalManager.{h,cpp}
   gfx/DustManager.{h,cpp}
   gfx/DustPool.{h,cpp}
-  gfx/DynamicRenderable.{h,cpp}
   gfx/EnvironmentMap.{h,cpp}
   gfx/GlowMaterialListener.h
   gfx/HDRListener.{h,cpp}
@@ -189,6 +188,23 @@ set( SOURCE_FILES
   terrain/ogre_terrain_port/OgreTerrainPagedWorldSection.{h,cpp}
   terrain/ogre_terrain_port/OgreTerrainPaging.{h,cpp}
   terrain/ogre_terrain_port/OgreTerrainQuadTreeNode.{h,cpp}
+  terrain/ogre_paging_port/OgreSimplePageContentCollection.h
+  terrain/ogre_paging_port/OgreSimplePageContentCollection.cpp
+  terrain/ogre_paging_port/OgrePagingPrerequisites.h
+  terrain/ogre_paging_port/OgrePaging.h
+  terrain/ogre_paging_port/OgrePageStrategy.h
+  terrain/ogre_paging_port/OgrePageManager.{h,cpp}
+  terrain/ogre_paging_port/OgrePageFileFormats.h
+  terrain/ogre_paging_port/OgrePagedWorldSection.{h,cpp}
+  terrain/ogre_paging_port/OgrePagedWorld.{h,cpp}
+  terrain/ogre_paging_port/OgrePageContentFactory.h
+  terrain/ogre_paging_port/OgrePageContentCollectionFactory.h
+  terrain/ogre_paging_port/OgrePageContentCollection.{h,cpp}
+  terrain/ogre_paging_port/OgrePageContent.{h,cpp}
+  terrain/ogre_paging_port/OgrePageConnection.h
+  terrain/ogre_paging_port/OgrePage.{h,cpp}
+  terrain/ogre_paging_port/OgreGrid3DPageStrategy.{h,cpp}
+  terrain/ogre_paging_port/OgreGrid2DPageStrategy.{h,cpp}
   threadpool/ThreadPool.h
   utils/CollisionTools.{h,cpp}
   utils/ConfigFile.{h,cpp}
@@ -325,6 +341,7 @@ target_include_directories( ${BINNAME} PRIVATE
  terrain
  terrain/map
  terrain/ogre_terrain_port
+ terrain/ogre_paging_port
  threadpool
  utils
  utils/profiler
@@ -482,25 +499,6 @@ else()
   message( WARNING "Building ${BINNAME} without cURL. Some functionality may be missing." )
 endif()
 
-# --- Caelum -- Ogre addon for realistic sky rendering ---
-find_package( Caelum )
-if( TARGET Caelum::Caelum)
-  target_link_libraries( ${BINNAME} PRIVATE Caelum::Caelum)
-  target_compile_definitions( ${BINNAME} PRIVATE USE_CAELUM )
-else()
-  message( WARNING "Building ${BINNAME} without Caelum. Some functionality may be missing." )
-endif()
-
-
-# --- PagedGeometry -- Ogre addon ---
-find_package( PagedGeometry )
-if( TARGET PagedGeometry::PagedGeometry)
-  target_link_libraries( ${BINNAME} PRIVATE PagedGeometry::PagedGeometry)
-  target_compile_definitions( ${BINNAME} PRIVATE USE_PAGED )
-else()
-  message( WARNING "Building ${BINNAME} without PagedGeometry. Some functionality may be missing." )
-endif()
-
 
 
 ####################################################################################################
@@ -535,26 +533,12 @@ if(WIN32)
 		# OGRE
 		OgreMain.dll
 		OgreOverlay.dll
-		OgrePaging.dll
-		OgreTerrain.dll
-		OgreRTShaderSystem.dll
-		OgreVolume.dll
-		Plugin_BSPSceneManager.dll
-		Plugin_CgProgramManager.dll
-		Plugin_OctreeSceneManager.dll
-		Plugin_OctreeZone.dll
-		Plugin_ParticleFX.dll
-		Plugin_PCZSceneManager.dll
-		RenderSystem_GL.dll
 		RenderSystem_GL3Plus.dll
-		RenderSystem_Direct3D9.dll
 		plugins.cfg
 		OIS.dll
 		cg.dll
 		# MyGUI
 		MyGUIEngine.dll
-		# Caelum
-		Caelum.dll
 		# Curl
 		libcurl.dll
 		# OpenAL

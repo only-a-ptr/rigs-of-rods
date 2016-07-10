@@ -134,7 +134,7 @@ void LanguageEngine::postSetup()
 	{
 		try
 		{
-			Ogre::v1::TextAreaOverlayElement *ot = (Ogre::v1::TextAreaOverlayElement *)OverlayManager::getSingleton().getOverlayElement(overlays[i]);
+			Ogre::v1::TextAreaOverlayElement *ot = (Ogre::v1::TextAreaOverlayElement *)v1::OverlayManager::getSingleton().getOverlayElement(overlays[i]);
 			if (ot) ot->setFontName(newfont);
 		}
 		catch (...)

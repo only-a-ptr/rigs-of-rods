@@ -40,7 +40,7 @@ public:
 	void setCastShadows(bool b);
 	void setMeshEnabled(bool e);
 	void setVisible(bool b);
-	Ogre::MeshPtr getMesh() { return mesh; };
+	Ogre::v1::MeshPtr getMesh() { return mesh; };
 	Ogre::v1::Entity *getEntity() { return ent; };
 
 protected:
@@ -49,7 +49,7 @@ protected:
 	Ogre::String entityName;
 	Ogre::SceneNode *sceneNode;
 	Ogre::v1::Entity *ent;
-	Ogre::MeshPtr mesh;
+	Ogre::v1::MeshPtr mesh;
 	Ogre::BackgroundProcessTicket ticket;
 	bool backgroundLoading;
 	bool loaded;

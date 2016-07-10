@@ -25,6 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+
+#include "RoRPrerequisites.h"
+
 #include "OgreTerrainQuadTreeNode.h"
 #include "OgreTerrain.h"
 #include "OgreVertexIndexData.h"
@@ -133,7 +136,7 @@ namespace Ogre
         // would this be better?
         mTerrain->getPoint(midpointx, midpointy, 0, &mLocalCentre);
 
-        mMovable = OGRE_NEW Movable(Id::generateNewId<MovableObject>(), objectMemoryManager, this);
+        mMovable = OGRE_NEW Movable(Id::generateNewId<MovableObject>(), gEnv->sceneManager, objectMemoryManager, this);
         mMovable->_notifyManager(terrain->_getRootSceneNode()->getCreator());
         mRend = OGRE_NEW Rend(this);
     }
@@ -1563,6 +1566,7 @@ namespace Ogre
     //---------------------------------------------------------------------
     void TerrainQuadTreeNode::Movable::setMaterialLodValues( const MaterialPtr &material )
     {
+        /* FIXME ogre21
         mLodMaterial.clear();
         if( material.isNull() )
         {
@@ -1572,6 +1576,7 @@ namespace Ogre
         {
             mLodMaterial.push_back( material->_getLodValues() );
         }
+        */
     }
     //------------------------------------------------------------------------
     //---------------------------------------------------------------------
@@ -1594,7 +1599,7 @@ namespace Ogre
         return mParent->getTechnique();
     }
     //---------------------------------------------------------------------
-    void TerrainQuadTreeNode::Rend::getRenderOperation(v1::RenderOperation& op)
+    void TerrainQuadTreeNode::Rend::getRenderOperation(v1::RenderOperation& op, bool casterPass)
     {
         mParent->getRenderOperation(op);
     }

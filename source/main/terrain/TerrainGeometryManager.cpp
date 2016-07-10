@@ -22,7 +22,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "Language.h"
 #include "LoadingWindow.h"
 #include "TerrainManager.h"
-#include "ShadowManager.h"
+
 #include "Utils.h"
 
 using namespace Ogre;

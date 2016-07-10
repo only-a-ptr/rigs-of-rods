@@ -162,7 +162,7 @@ void MeshObject::postProcess()
 				else if (i == 4) distance = std::max(20.0f, sightrange * 0.4f);
 			}
 
-			Ogre::MeshManager::getSingleton().load(iterFiles->filename, mesh->getGroup());
+			Ogre::v1::MeshManager::getSingleton().load(iterFiles->filename, mesh->getGroup());
 //			mesh->createManualLodLevel(distance, iterFiles->filename); //todo fix ogre 2.0
 		}
 
@@ -176,7 +176,7 @@ void MeshObject::postProcess()
 			int r = sscanf(iterFiles->filename.c_str(), format.c_str(), &i);
 			if (r <= 0 || i < 0) continue;
 
-			Ogre::MeshManager::getSingleton().load(iterFiles->filename, mesh->getGroup());
+			Ogre::v1::MeshManager::getSingleton().load(iterFiles->filename, mesh->getGroup());
 //			mesh->createManualLodLevel(i, iterFiles->filename); //todo fix ogre 2.0
 		}
 	}
@@ -224,13 +224,13 @@ void MeshObject::loadMesh()
 	try
 	{
 		Ogre::String resourceGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
-		mesh = static_cast<Ogre::MeshPtr>(Ogre::MeshManager::getSingleton().create(meshName, resourceGroup));
+		mesh = static_cast<Ogre::v1::MeshPtr>(Ogre::v1::MeshManager::getSingleton().create(meshName, resourceGroup));
 		if (backgroundLoading)
 		{
 			mesh->setBackgroundLoaded(true);
 			mesh->addListener(this);
 			ticket = Ogre::ResourceBackgroundQueue::getSingleton().load(
-				Ogre::MeshManager::getSingletonPtr()->getResourceType(),
+				Ogre::v1::MeshManager::getSingletonPtr()->getResourceType(),
 				mesh->getName(),
 				resourceGroup,
 				false,
@@ -241,7 +241,7 @@ void MeshObject::loadMesh()
 			// try to load its textures in the background
 			for (int i=0; i<mesh->getNumSubMeshes(); i++)
 			{
-				SubMesh *sm = mesh->getSubMesh(i);
+				v1::SubMesh *sm = mesh->getSubMesh(i);
 				String materialName = sm->getMaterialName();
 				Ogre::MaterialPtr mat = static_cast<Ogre::MaterialPtr>(Ogre::MaterialManager::getSingleton().getByName(materialName)); //, resourceGroup));
 				if (mat.isNull()) continue;

@@ -59,7 +59,7 @@ public:
 		static const ResourcePack FLAGS;
 		static const ResourcePack ICONS;
 		static const ResourcePack MATERIALS;
-		static const ResourcePack MODELS;
+		static const ResourcePack MESHES;
 		static const ResourcePack MYGUI;
 		static const ResourcePack MYGUI_LAYOUTS;
 		static const ResourcePack OVERLAYS;

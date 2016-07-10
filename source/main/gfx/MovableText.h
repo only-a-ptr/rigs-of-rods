@@ -138,7 +138,11 @@ protected:
 	class MovableTextFactory : public MovableObjectFactory
 	{
 	protected:
-		virtual MovableObject* createInstanceImpl(IdType id, ObjectMemoryManager *objectMemoryManager, const NameValuePairList* params = 0);
+
+        MovableObject* createInstanceImpl(IdType id, ObjectMemoryManager *objectMemoryManager,
+            SceneManager* manager,
+            const NameValuePairList* params = 0);
+
 	public:
 		MovableTextFactory() {}
 		~MovableTextFactory() {}

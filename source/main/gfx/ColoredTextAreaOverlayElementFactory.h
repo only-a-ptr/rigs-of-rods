@@ -19,8 +19,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef __ColoredTextAreaOverlayElementFactory_H_
-#define __ColoredTextAreaOverlayElementFactory_H_
+
 
 #include "RoRPrerequisites.h"
 
@@ -30,7 +29,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "ColoredTextAreaOverlayElement.h"
 
 /** Factory for creating TextAreaOverlayElement instances. */
-class ColoredTextAreaOverlayElementFactory : public Ogre::OverlayElementFactory
+class ColoredTextAreaOverlayElementFactory : public Ogre::v1::OverlayElementFactory
 {
 public:
 	/** See OverlayElementFactory */
@@ -46,4 +45,4 @@ public:
 	}
 };
 
-#endif // __ColoredTextAreaOverlayElementFactory_H_
+

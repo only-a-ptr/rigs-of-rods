@@ -30,9 +30,10 @@
 #include "PlatformUtils.h"
 
 #include "CacheSystem.h"
-
+/* FIXME: ogre21
 #include "OgreShaderParticleRenderer.h"
 #include "OgreBoxEmitterFactory.h"
+*/
 #include "OgreOverlayManager.h"
 
 #ifdef USE_ANGELSCRIPT
@@ -64,7 +65,7 @@ DECLARE_RESOURCE_PACK(  8, FAMICONS,              "famicons",             "LoadB
 DECLARE_RESOURCE_PACK(  9, FLAGS,                 "flags",                "LoadBeforeMap");
 DECLARE_RESOURCE_PACK( 10, ICONS,                 "icons",                "LoadBeforeMap");
 DECLARE_RESOURCE_PACK( 11, MATERIALS,             "materials",            "LoadBeforeMap");
-DECLARE_RESOURCE_PACK( 12, MODELS,                "models",               "LoadBeforeMap");
+DECLARE_RESOURCE_PACK( 12, MESHES,                "meshes",               "LoadBeforeMap");
 DECLARE_RESOURCE_PACK( 13, MYGUI,                 "mygui",                "mygui_init");
 DECLARE_RESOURCE_PACK( 14, OVERLAYS,              "overlays",             "LoadBeforeMap");
 DECLARE_RESOURCE_PACK( 15, PAGED,                 "paged",                "LoadBeforeMap");
@@ -72,7 +73,6 @@ DECLARE_RESOURCE_PACK( 16, PARTICLES,             "particles",            "LoadB
 DECLARE_RESOURCE_PACK( 17, SCRIPTS,               "scripts",              "LoadBeforeMap");
 DECLARE_RESOURCE_PACK( 18, SOUNDS,                "sounds",               "General");
 DECLARE_RESOURCE_PACK( 19, TEXTURES,              "textures",             "LoadBeforeMap");
-DECLARE_RESOURCE_PACK( 20, RIG_EDITOR,            "rig_editor",           "RigEditor");
 DECLARE_RESOURCE_PACK( 21, MYGUI_LAYOUTS,		  "mygui_layouts",		  "mygui_init");
 
 // ================================================================================
@@ -159,9 +159,12 @@ bool ContentManager::init(void)
 #ifdef _WIN32
 	// TODO: FIX UNDER LINUX!
 	// register particle classes
+
+    /*FIXME: ogre21
 	LOG("RoR|ContentManager: Registering Particle Box Emitter");
 	ParticleSystemRendererFactory *mParticleSystemRendererFact = OGRE_NEW ShaderParticleRendererFactory();
 	ParticleSystemManager::getSingleton().addRendererFactory(mParticleSystemRendererFact);
+    */
 
 	// Removed by Skybon as part of OGRE 1.9 port 
 	// Disabling temporarily for 1.8.1 as well.  ~ only_a_ptr, 2015-11
@@ -210,7 +213,7 @@ bool ContentManager::init(void)
 	LOG("RoR|ContentManager: Registering colored text overlay factory");
 	
 	ColoredTextAreaOverlayElementFactory *pCT = new ColoredTextAreaOverlayElementFactory();
-	OverlayManager::getSingleton().addOverlayElementFactory(pCT);
+	v1::OverlayManager::getSingleton().addOverlayElementFactory(pCT);
 
 	// set default mipmap level (NB some APIs ignore this)
 	if (TextureManager::getSingletonPtr())
@@ -220,8 +223,10 @@ bool ContentManager::init(void)
 	if (tft=="Bilinear") tfo=TFO_BILINEAR;
 	if (tft=="Trilinear") tfo=TFO_TRILINEAR;
 	if (tft=="Anisotropic (best looking)") tfo=TFO_ANISOTROPIC;
-	MaterialManager::getSingleton().setDefaultAnisotropy(8);
+	/* FIXME ogre21
+    MaterialManager::getSingleton().setDefaultAnisotropy(8);
 	MaterialManager::getSingleton().setDefaultTextureFiltering(tfo);
+    */
 
 	// load all resources now, so the zip files are also initiated
 	LOG("RoR|ContentManager: Calling initialiseAllResourceGroups()");

@@ -25,15 +25,17 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include <OgreFont.h>
 #include <OgreTexture.h>
 #include <OgreTextureManager.h>
+#include <OgreFont.h>
+#include <OgreTechnique.h>
 
 // source: ogre wiki: http://www.ogre3d.org/wiki/index.php/HowTo:_Write_text_on_texture
 using namespace Ogre;
 
 void SaveImage(TexturePtr TextureToSave, String filename)
 {
-    HardwarePixelBufferSharedPtr readbuffer;
+    v1::HardwarePixelBufferSharedPtr readbuffer;
     readbuffer = TextureToSave->getBuffer(0, 0);
-    readbuffer->lock(HardwareBuffer::HBL_NORMAL );
+    readbuffer->lock(v1::HardwareBuffer::HBL_NORMAL );
     const PixelBox &readrefpb = readbuffer->getCurrentLock();
     uchar *readrefdata = static_cast<uchar*>(readrefpb.data);
 
@@ -59,10 +61,10 @@ void WriteToTexture(const String &str, TexturePtr destTexture, Image::Box destRe
 
 	TexturePtr fontTexture = (TexturePtr) TextureManager::getSingleton().getByName(font->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState(0)->getTextureName());
 	
-	HardwarePixelBufferSharedPtr fontBuffer = fontTexture->getBuffer();
-	HardwarePixelBufferSharedPtr destBuffer = destTexture->getBuffer();
+    v1::HardwarePixelBufferSharedPtr fontBuffer = fontTexture->getBuffer();
+    v1::HardwarePixelBufferSharedPtr destBuffer = destTexture->getBuffer();
 
-	PixelBox destPb = destBuffer->lock(destRectangle,HardwareBuffer::HBL_NORMAL);
+	PixelBox destPb = destBuffer->lock(destRectangle, v1::HardwareBuffer::HBL_NORMAL);
 	
 		// The font texture buffer was created write only...so we cannot read it back :o). One solution is to copy the buffer  instead of locking it. (Maybe there is a way to create a font texture which is not write_only ?)
 
