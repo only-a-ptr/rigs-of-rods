@@ -131,7 +131,6 @@ void MainThread::Go()
 
 	// Add startup resources
 	RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::OGRE_CORE);
-	RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::GUI_STARTUP_SCREEN);
 	RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::GUI_MENU_WALLPAPERS);
 	RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::MYGUI_LAYOUTS);
 	RoR::Application::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::MYGUI);
@@ -162,16 +161,6 @@ void MainThread::Go()
 	//Set ambiant light
 	gEnv->sceneManager->setAmbientLight(Ogre::ColourValue::White, Ogre::ColourValue::White,
         Ogre::Vector3::NEGATIVE_UNIT_Y); // Top-down light direction
-
-	// Create rendering overlay
-	Ogre::v1::OverlayManager& overlay_manager = Ogre::v1::OverlayManager::getSingleton();
-    Ogre::v1::Overlay* startup_screen_overlay = static_cast<Ogre::v1::Overlay*>( overlay_manager.getByName("RoR/StartupScreen") );
-	if (!startup_screen_overlay)
-	{
-		OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND, "Cannot find loading overlay for startup screen", "MainThread::Go");
-	}
-
-
 
 	//Init gui before the compositor
 	Application::CreateGuiManagerIfNotExists();
