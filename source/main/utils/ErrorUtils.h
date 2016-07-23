@@ -65,7 +65,7 @@ struct ErrorUtils
 	 * @param url the URL to open if the user wishs
 	 * @return 0 on success, everything else on error
 	 */
-	static int ShowWebError(Ogre::UTFString title, Ogre::UTFString message, Ogre::UTFString url);
+	static int ShowErrorDialog(Ogre::UTFString title, Ogre::UTFString message, Ogre::UTFString url);
 
 
 	/**

@@ -96,30 +96,17 @@ int ErrorUtils::ShowOgreWebError(Ogre::UTFString title, Ogre::UTFString err, Ogr
 void ErrorUtils::ShowStoredOgreWebErrors()
 {
 	if (!storederror) return;
-	ErrorUtils::ShowWebError(stored_title, stored_err, stored_url);
+	ErrorUtils::ShowErrorDialog(stored_title, stored_err, stored_url);
 }
 
-int ErrorUtils::ShowWebError(Ogre::UTFString title, Ogre::UTFString err, Ogre::UTFString url)
+int ErrorUtils::ShowErrorDialog(Ogre::UTFString title, Ogre::UTFString err, Ogre::UTFString url)
 {
-	// NO logmanager use, because it could be that its not initialized yet!
-	//LOG("web message box: " + title + ": " + err + " / url: " + url);
+    // NO logmanager use, because it could be that its not initialized yet!
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-	Ogre::UTFString additional = _L("\n\nYou may find help here:\n\n") + url + _L("\n\nDo you want to open this address in your default browser now?");
-	err = err + additional;
-	int Response = MessageBoxW( NULL, err.asWStr_c_str(), title.asWStr_c_str(), MB_YESNO | MB_ICONERROR | MB_TOPMOST | MB_SYSTEMMODAL | MB_SETFOREGROUND );
-	// 6 (IDYES) = yes, 7 (IDNO) = no
-	if (Response == IDYES)
-	{
-		// Microsoft conversion hell follows :|
-		wchar_t *command = L"open";
-		ShellExecuteW(NULL, command, url.asWStr_c_str(), NULL, NULL, SW_SHOWNORMAL);
-	}
-#elif OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-	printf("\n\n%s: %s / url: %s\n\n", title.asUTF8_c_str(), err.asUTF8_c_str(), url.asUTF8_c_str());
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-	printf("\n\n%s: %s / url: %s\n\n", title.asUTF8_c_str(), err.asUTF8_c_str(), url.asUTF8_c_str());
-	//CFOptionFlags flgs;
-	//CFUserNotificationDisplayAlert(0, kCFUserNotificationStopAlertLevel, NULL, NULL, NULL, "An exception has occured!", err.c_str(), NULL, NULL, NULL, &flgs);
+    UINT flags = MB_OK | MB_ICONERROR | MB_TOPMOST | MB_SYSTEMMODAL | MB_SETFOREGROUND;
+    int Response = MessageBoxW( NULL, err.asWStr_c_str(), title.asWStr_c_str(), flags);
+#else
+    printf("\n\n%s: %s / url: %s\n\n", title.asUTF8_c_str(), err.asUTF8_c_str(), url.asUTF8_c_str());
 #endif
-	return 0;
+    return 0;
 }
