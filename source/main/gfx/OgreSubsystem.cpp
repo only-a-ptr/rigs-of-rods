@@ -40,6 +40,10 @@
 #include <OgreTimer.h>
 #include <Compositor/OgreCompositorManager2.h>
 #include <OgreTextureManager.h>
+#include <OgreArchiveManager.h>
+#include <Hlms/Unlit/OgreHlmsUnlit.h>
+#include <Hlms/Pbs/OgreHlmsPbs.h>
+#include <OgreHlmsManager.h>
 
 namespace RoR
 {
@@ -173,17 +177,6 @@ bool OgreSubsystem::StartOgre(Ogre::String const & name, Ogre::String const & hw
 	// configure RoR
 	Configure();
 
-	//GetOgreRoot()->initialiseCompositor();
-
-	/*
-    m_viewport = m_render_window->addViewport(nullptr);
-	
-    m_viewport->setBackgroundColour(Ogre::ColourValue(0.5f, 0.5f, 0.5f, 1.0f));
-
-    m_viewport->setCamera(nullptr);
-	m_viewport->setBackgroundColour(Ogre::ColourValue::Black);
-	*/
-
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
     m_timer = new Ogre::Timer();
@@ -191,9 +184,56 @@ bool OgreSubsystem::StartOgre(Ogre::String const & name, Ogre::String const & hw
 
     m_render_window->setActive(true);
 
+    this->RegisterHlms();
+
     return true;
 }
 
+// Source: OGRE example framework.
+void OgreSubsystem::RegisterHlms()
+{
+    Ogre::RenderSystem* render_system = m_ogre_root->getRenderSystem();
+    const bool is_directx = render_system->getName() == "Direct3D11 Rendering Subsystem";
+
+    Ogre::String shader_syntax = is_directx ? "GLSL" : "HLSL";
+    Ogre::String data_folder = SSETTING("Resources Path", "") + "materials_hlms/";
+
+    Ogre::Archive* archive_library = Ogre::ArchiveManager::getSingletonPtr()->load(
+        data_folder + "OgreCommon/" + shader_syntax,
+        "FileSystem", true);
+
+    Ogre::ArchiveVec library;
+    library.push_back(archive_library);
+
+    Ogre::Archive* archive_unlit = Ogre::ArchiveManager::getSingletonPtr()->load(
+        data_folder + "OgreUnlit/" + shader_syntax,
+        "FileSystem", true);
+
+    Ogre::HlmsUnlit* hlms_unlit = OGRE_NEW Ogre::HlmsUnlit(archive_unlit, &library);
+    m_ogre_root->getHlmsManager()->registerHlms(hlms_unlit);
+
+    Ogre::Archive* archive_pbs = Ogre::ArchiveManager::getSingletonPtr()->load(
+        data_folder + "OgrePbs/" + shader_syntax,
+        "FileSystem", true);
+
+    Ogre::HlmsPbs* hlms_pbs = OGRE_NEW Ogre::HlmsPbs(archive_pbs, &library);
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlms_pbs);
+
+    if (is_directx)
+    {
+        // Set lower limits 512kb instead of the default 4MB per Hlms in D3D 11.0
+        // and below to avoid saturating AMD's discard limit (8MB) or
+        // saturate the PCIE bus in some low end machines.
+        bool supportsNoOverwriteOnTextureBuffers;
+        render_system->getCustomAttribute("MapNoOverwriteOnDynamicBufferSRV", &supportsNoOverwriteOnTextureBuffers);
+
+        if (!supportsNoOverwriteOnTextureBuffers)
+        {
+            hlms_pbs->setTextureBufferDefaultSize(512 * 1024);
+            hlms_unlit->setTextureBufferDefaultSize(512 * 1024);
+        }
+    }
+}
 
 void OgreSubsystem::WindowResized(Ogre::Vector2 const & size)
 {

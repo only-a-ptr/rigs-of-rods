@@ -77,21 +77,21 @@ public:
 
 private:
 
-	OgreSubsystem();
+    OgreSubsystem();
+    ~OgreSubsystem();
 
-	~OgreSubsystem();
+    Ogre::String        m_hwnd;
+    Ogre::String        m_main_hwnd;
+    Ogre::String        m_name;
 
-	Ogre::String        m_hwnd; 
-	Ogre::String        m_main_hwnd;
-	Ogre::String        m_name;
+    Ogre::Root*         m_ogre_root;
+    Ogre::RenderWindow* m_render_window;
+    Ogre::Viewport*     m_viewport;
+    Ogre::Timer*        m_timer;
 
-	Ogre::Root*		    m_ogre_root;
-	Ogre::RenderWindow*	m_render_window;
-	Ogre::Viewport*		m_viewport;
-	Ogre::Timer*		m_timer;
-
-	bool Configure();
-	bool LoadOgrePlugins(Ogre::String const & pluginsfile);
+    bool                Configure();
+    bool                LoadOgrePlugins(Ogre::String const & pluginsfile);
+    void                RegisterHlms();
 };
 
 } // namespace RoR
