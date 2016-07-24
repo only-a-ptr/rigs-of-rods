@@ -40,6 +40,7 @@ public:
 		, surveyMap(0)
 		, terrainManager(0)
 		, threadPool(0)
+		, envMap(0)
 	{
 	}
 
