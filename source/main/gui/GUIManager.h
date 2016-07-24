@@ -125,7 +125,7 @@ private:
 	virtual ~GUIManager();
 
 	bool create();
-	void createGui();
+	void SetupGUI();
 	void destroyGui();
 
 	virtual bool frameStarted(const Ogre::FrameEvent& _evt);

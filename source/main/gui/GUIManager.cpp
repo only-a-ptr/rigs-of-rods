@@ -62,7 +62,7 @@ bool GUIManager::create()
 
 	windowResized(RoR::Application::GetOgreSubsystem()->GetRenderWindow());
 
-	createGui();
+	SetupGUI();
 
 
 	// Create panels
@@ -82,36 +82,49 @@ void GUIManager::destroy()
 	destroyGui();
 }
 
-void GUIManager::createGui()
+void GUIManager::SetupGUI()
 {
-	String gui_logfilename = SSETTING("Log Path", "") + "MyGUI.log";
+    try
+    {
+        mPlatform = new MyGUI::Ogre2Platform();
+        mPlatform->initialise(
+            RoR::Application::GetOgreSubsystem()->GetRenderWindow(),    // Ogre::RenderWindow
+            gEnv->sceneManager,                                         // Ogre::SceneManager
+            Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, // Resource group name
+            SSETTING("Log Path", "") + "MyGUI.log");                    // Log filename
 
-	mPlatform = new MyGUI::Ogre2Platform();
-	mPlatform->initialise(
-        RoR::Application::GetOgreSubsystem()->GetRenderWindow(), 
-        gEnv->sceneManager, // OGRE21 port: Whatever!!! ~only_a_ptr, 2016-07
-        gui_logfilename); // use cache resource group so preview images are working
-	mGUI = new MyGUI::Gui();
+        mGUI = new MyGUI::Gui();
+        // empty init
+        mGUI->initialise("");
 
-	// empty init
-	mGUI->initialise("");
+        // add layer factory
+        MyGUI::FactoryManager::getInstance().registerFactory<MyGUI::RTTLayer>("Layer");
 
-	// add layer factory
-	MyGUI::FactoryManager::getInstance().registerFactory<MyGUI::RTTLayer>("Layer");
+        // then load the actual config
+        MyGUI::ResourceManager::getInstance().load(mResourceFileName);
 
-	// then load the actual config
-	MyGUI::ResourceManager::getInstance().load(mResourceFileName);
+        MyGUI::ResourceManager::getInstance().load(LanguageEngine::getSingleton().getMyGUIFontConfigFilename());
 
-	MyGUI::ResourceManager::getInstance().load(LanguageEngine::getSingleton().getMyGUIFontConfigFilename());
+        // move the mouse into the middle of the screen, assuming we start at the top left corner (0,0)
+        MyGUI::InputManager::getInstance().injectMouseMove(RoR::Application::GetOgreSubsystem()->GetRenderWindow()->getWidth()*0.5f, RoR::Application::GetOgreSubsystem()->GetRenderWindow()->getHeight()*0.5f, 0);
 
-	// move the mouse into the middle of the screen, assuming we start at the top left corner (0,0)
-	MyGUI::InputManager::getInstance().injectMouseMove(RoR::Application::GetOgreSubsystem()->GetRenderWindow()->getWidth()*0.5f, RoR::Application::GetOgreSubsystem()->GetRenderWindow()->getHeight()*0.5f, 0);
-
-	MyGUI::PointerManager::getInstance().setVisible(true);
+        MyGUI::PointerManager::getInstance().setVisible(true);
 
 #ifdef _WIN32
-	MyGUI::LanguageManager::getInstance().eventRequestTag = MyGUI::newDelegate(this, &GUIManager::eventRequestTag);
+        MyGUI::LanguageManager::getInstance().eventRequestTag = MyGUI::newDelegate(this, &GUIManager::eventRequestTag);
 #endif // _WIN32
+
+    }
+    catch (MyGUI::Exception& ex)
+    {
+        std::stringstream msg;
+        msg << "INTERNAL ERROR";
+        msg << "\n\nGuiManager::createGUI(): An MyGUI::Exception occurred";
+        msg << "\n\n" << ex.getFullDescription();
+        
+        LOG(msg.str());
+        throw std::runtime_error(msg.str());
+    }
 }
 
 void GUIManager::destroyGui()
