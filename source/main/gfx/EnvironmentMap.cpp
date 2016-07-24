@@ -29,10 +29,11 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "MainThread.h"
 #include "OgreSubsystem.h"
 
-#include "Compositor/OgreCompositorWorkspace.h"
-#include "Compositor/OgreCompositorWorkspaceDef.h"
-#include "Compositor/OgreCompositorWorkspaceListener.h"
-#include "Compositor/OgreCompositorChannel.h"
+#include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/OgreCompositorWorkspaceDef.h>
+#include <Compositor/OgreCompositorWorkspaceListener.h>
+#include <Compositor/OgreCompositorChannel.h>
+#include <Compositor/OgreCompositorManager2.h>
 
 
 using namespace Ogre;

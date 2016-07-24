@@ -33,15 +33,17 @@
 namespace RoR
 {
 
-class OgreSubsystem : public ZeroedMemoryAllocator
+class OgreSubsystem
 {
-	friend class Application; // Manages lifecycle of this class
+    friend class Application; // Manages lifecycle of this class
 
 public:
 
 	bool StartOgre(Ogre::String const & name, Ogre::String const & hwnd, Ogre::String const & mainhwnd);
 
 	void WindowResized(Ogre::Vector2 const & size);
+
+    void SetupOgre2Compositor();
 
 	Ogre::String GetMainHWND() 
 	{ 
@@ -88,6 +90,8 @@ private:
     Ogre::RenderWindow* m_render_window;
     Ogre::Viewport*     m_viewport;
     Ogre::Timer*        m_timer;
+
+    Ogre::CompositorWorkspace* m_compositor_workspace;
 
     bool                Configure();
     bool                LoadOgrePlugins(Ogre::String const & pluginsfile);

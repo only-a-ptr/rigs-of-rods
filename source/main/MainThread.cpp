@@ -165,35 +165,8 @@ void MainThread::Go()
 	//Init gui before the compositor
 	Application::CreateGuiManagerIfNotExists();
 
-	//Init compositor
-	const Ogre::String workspaceName = "RoRSceneWorkSpace";
-	const Ogre::IdString workspaceNameHash = workspaceName;
-
-	pCompositorManager = Ogre::Root::getSingleton().getCompositorManager2();
-	nodeDef = pCompositorManager->addNodeDefinition("WorkSpace1");
-
-	//Input texture
-	nodeDef->addTextureSourceName("WindowRT", 0, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
-	nodeDef->setNumTargetPass(1);
-	{
-		targetDef = nodeDef->addTargetPass("WindowRT");
-		targetDef->setNumPasses(3);
-		{
-			{
-				Ogre::CompositorPassClearDef* passClear = static_cast<Ogre::CompositorPassClearDef*>(targetDef->addPass(Ogre::PASS_CLEAR));
-				Ogre::CompositorPassSceneDef *passScene = static_cast<Ogre::CompositorPassSceneDef*>(targetDef->addPass(Ogre::PASS_SCENE));
-
-				passScene->mShadowNode = "ExampleShadows_PssmShadowNode";
-
-				// For the MyGUI pass
-				targetDef->addPass(Ogre::PASS_CUSTOM, MyGUI::OgreCompositorPassProvider::mPassId);
-			}
-		}
-	}
-	Ogre::CompositorWorkspaceDef *workDef = pCompositorManager->addWorkspaceDefinition(workspaceNameHash);
-	workDef->connectOutput(nodeDef->getName(), 0);
-
-	mWorkSpace = pCompositorManager->addWorkspace(gEnv->sceneManager, Application::GetOgreSubsystem()->GetRenderWindow(), gEnv->mainCamera, workspaceNameHash, true);
+    // Init OGRE 2.1 compositor
+    Application::GetOgreSubsystem()->SetupOgre2Compositor();
 
 	// Load and show menu wallpaper
 	Ogre::String menu_wallpaper_texture_name = GUIManager::getRandomWallpaperImage(); // TODO: manage by class Application
@@ -231,6 +204,8 @@ void MainThread::Go()
 
 	// create console, must be done early
 	Application::CreateConsoleIfNotExists();
+
+    Application::GetOgreSubsystem()->SetupOgre2Compositor();
 
 #ifdef USE_ANGELSCRIPT
 	new ScriptEngine(); // Init singleton. TODO: Move under Application

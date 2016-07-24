@@ -38,12 +38,19 @@
 #include <OgreConfigFile.h>
 #include <OgreRenderWindow.h>
 #include <OgreTimer.h>
-#include <Compositor/OgreCompositorManager2.h>
 #include <OgreTextureManager.h>
 #include <OgreArchiveManager.h>
 #include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 #include <OgreHlmsManager.h>
+#include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorNodeDef.h>
+#include <Compositor/OgreCompositorWorkspaceDef.h>
+#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
+#include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
+#include <Compositor/OgreTextureDefinition.h>
+#include <Compositor/OgreCompositorShadowNode.h>
+#include <Compositor/OgreCompositorWorkspace.h>
 
 namespace RoR
 {
@@ -233,6 +240,21 @@ void OgreSubsystem::RegisterHlms()
             hlms_unlit->setTextureBufferDefaultSize(512 * 1024);
         }
     }
+}
+
+void OgreSubsystem::SetupOgre2Compositor()
+{
+
+    Ogre::CompositorManager2* compo_manager = m_ogre_root->getCompositorManager2();
+
+    const Ogre::IdString workspace_name("RoR Workspace");
+    if (!compo_manager->hasWorkspaceDefinition(workspace_name))
+    {
+        compo_manager->createBasicWorkspaceDef(
+            workspace_name, Ogre::ColourValue::Black, Ogre::IdString());
+    }
+
+    m_compositor_workspace = compo_manager->addWorkspace(gEnv->sceneManager, m_render_window, gEnv->mainCamera, workspace_name, true);
 }
 
 void OgreSubsystem::WindowResized(Ogre::Vector2 const & size)
