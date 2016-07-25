@@ -36,6 +36,7 @@
 
 #include <OgreRoot.h>
 #include <OgreConfigFile.h>
+#include <OgreCamera.h>
 #include <OgreRenderWindow.h>
 #include <OgreTimer.h>
 #include <OgreTextureManager.h>
@@ -85,6 +86,9 @@ bool OgreSubsystem::Configure()
 	}
 	if (ok)
 	{
+        // Ogre examples do this, may not be needed
+        m_ogre_root->getRenderSystem()->setConfigOption("sRGB Gamma Conversion", "Yes");
+
 		// If returned true, user clicked OK so initialise
 		// Here we choose to let the system create a default rendering window by passing 'true'
 		m_render_window = m_ogre_root->initialise(true, "Rigs of Rods version " + Ogre::String(ROR_VERSION_STRING));
@@ -179,21 +183,58 @@ bool OgreSubsystem::StartOgre(Ogre::String const & name, Ogre::String const & hw
     m_ogre_root = new Ogre::Root("", ogreConfig, logFilename);
 
 	// load plugins manually
-	LoadOgrePlugins(pluginsConfig);
+	this->LoadOgrePlugins(pluginsConfig);
 
 	// configure RoR
-	Configure();
+	this->Configure();
 
-    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+    //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5); // Not done in OGRE21 samples
 
     m_timer = new Ogre::Timer();
     m_timer->reset();
 
-    m_render_window->setActive(true);
-
-    this->RegisterHlms();
-
     return true;
+}
+
+void OgreSubsystem::CreateOverlaySystem()
+{
+    m_overlay_system = new Ogre::v1::OverlaySystem();
+}
+
+void OgreSubsystem::ShutdownOgre()
+{
+    m_scene_manager->destroyCamera(m_camera);
+    m_ogre_root->destroySceneManager(m_scene_manager);
+}
+
+void OgreSubsystem::CreateSceneManager()
+{
+    const size_t num_threads = std::max<int>(1, Ogre::PlatformInformation::getNumLogicalCores());
+    Ogre::InstancingThreadedCullingMethod cull_threading = (num_threads > 1)
+        ? Ogre::INSTANCING_CULLING_THREADED
+        : Ogre::INSTANCING_CULLING_SINGLETHREAD;
+
+    // Setup rendering (menu + simulation)
+    m_scene_manager = m_ogre_root->createSceneManager(Ogre::ST_GENERIC, num_threads, cull_threading);
+    m_scene_manager->addRenderQueueListener(m_overlay_system);
+    //Set sane defaults for proper shadow mapping
+    m_scene_manager->setShadowDirectionalLightExtrusionDistance(500.0f);
+    m_scene_manager->setShadowFarDistance(500.0f);
+
+    gEnv->sceneManager = m_scene_manager;
+}
+
+void OgreSubsystem::CreateCamera()
+{
+    m_camera = m_scene_manager->createCamera("Main camera");
+
+    // Position it at 500 in Z direction
+    m_camera->setPosition(Ogre::Vector3(0, 5, 15));
+    // Look back along -Z
+    m_camera->lookAt(Ogre::Vector3(0, 0, 0));
+    m_camera->setNearClipDistance(0.2f);
+    m_camera->setFarClipDistance(1000.0f);
+    m_camera->setAutoAspectRatio(true);
 }
 
 // Source: OGRE example framework.
@@ -242,9 +283,8 @@ void OgreSubsystem::RegisterHlms()
     }
 }
 
-void OgreSubsystem::SetupOgre2Compositor()
+void OgreSubsystem::SetupCompositor()
 {
-
     Ogre::CompositorManager2* compo_manager = m_ogre_root->getCompositorManager2();
 
     const Ogre::IdString workspace_name("RoR Workspace");

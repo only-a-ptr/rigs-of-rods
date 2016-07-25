@@ -39,11 +39,15 @@ class OgreSubsystem
 
 public:
 
-	bool StartOgre(Ogre::String const & name, Ogre::String const & hwnd, Ogre::String const & mainhwnd);
+    bool StartOgre(Ogre::String const & name, Ogre::String const & hwnd, Ogre::String const & mainhwnd);
+    void SetupCompositor();
+    void RegisterHlms();
+    void CreateOverlaySystem();
+    void CreateSceneManager();
+    void CreateCamera();
+    void ShutdownOgre();
 
-	void WindowResized(Ogre::Vector2 const & size);
-
-    void SetupOgre2Compositor();
+    void WindowResized(Ogre::Vector2 const & size);
 
 	Ogre::String GetMainHWND() 
 	{ 
@@ -92,10 +96,12 @@ private:
     Ogre::Timer*        m_timer;
 
     Ogre::CompositorWorkspace* m_compositor_workspace;
+    Ogre::v1::OverlaySystem*   m_overlay_system;
+    Ogre::SceneManager*        m_scene_manager;
+    Ogre::Camera*              m_camera;
 
     bool                Configure();
     bool                LoadOgrePlugins(Ogre::String const & pluginsfile);
-    void                RegisterHlms();
 };
 
 } // namespace RoR

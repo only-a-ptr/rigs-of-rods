@@ -121,12 +121,10 @@ void Application::DeleteSceneMouse()
 	ms_scene_mouse = nullptr;
 }
 
-void Application::CreateGuiManagerIfNotExists()
+void Application::CreateGuiManager()
 {
-	if (ms_gui_manager == nullptr)
-	{
-		ms_gui_manager = new GUIManager();
-	}
+    assert(ms_gui_manager == nullptr);
+    ms_gui_manager = new GUIManager();
 }
 
 void Application::DeleteGuiManagerIfExists()

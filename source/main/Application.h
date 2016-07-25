@@ -122,9 +122,7 @@ private:
 
 	static void DeleteSceneMouse();
 
-	/** Creates instance if it doesn't already exist.
-	*/
-	static void CreateGuiManagerIfNotExists();
+	static void CreateGuiManager();
 
 	/** Destroys instance if it exists.
 	*/

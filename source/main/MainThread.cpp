@@ -120,10 +120,9 @@ void MainThread::Go()
 		throw std::runtime_error("[RoR] MainThread::go(): Failed to setup file paths");
 	}
 
-	Application::StartOgreSubsystem();
-#ifdef ROR_USE_OGRE_1_9
-	Ogre::OverlaySystem* overlay_system = new OverlaySystem(); //Overlay init
-#endif
+    Application::StartOgreSubsystem();
+    Application::GetOgreSubsystem()->CreateOverlaySystem();
+    Application::GetOgreSubsystem()->RegisterHlms();
 
 	Application::CreateContentManager();
 
@@ -138,38 +137,20 @@ void MainThread::Go()
 	Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("Bootstrap");
 	Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("mygui_init");
 
-	const size_t numThreads = std::max<int>(1, Ogre::PlatformInformation::getNumLogicalCores());
-	Ogre::InstancingThreadedCullingMethod threadedCullingMethod = Ogre::INSTANCING_CULLING_SINGLETHREAD;
-	if (numThreads > 1) Ogre::InstancingThreadedCullingMethod threadedCullingMethod = Ogre::INSTANCING_CULLING_THREADED;
+    Application::GetContentManager()->init();
+    Application::GetOgreSubsystem()->CreateSceneManager();
+    Application::GetOgreSubsystem()->CreateCamera();
 
-	// Setup rendering (menu + simulation)
-	Ogre::SceneManager* scene_manager = Root::getSingleton().createSceneManager(Ogre::ST_EXTERIOR_CLOSE, numThreads, threadedCullingMethod);
-
-	gEnv->sceneManager = scene_manager;
-    Ogre::v1::OverlaySystem* overlay_system = new v1::OverlaySystem(); //Overlay init
-    scene_manager->addRenderQueueListener(overlay_system);
-	
-	Ogre::Camera* camera = scene_manager->createCamera("PlayerCam");
-	camera->setPosition(Ogre::Vector3(128,25,128)); // Position it at 500 in Z direction
-	camera->lookAt(Ogre::Vector3(0,0,-300)); // Look back along -Z
-	camera->setNearClipDistance( 0.5 );
-	camera->setFarClipDistance( 1000.0*1.733 );
-	camera->setFOVy(Ogre::Degree(60));
-	camera->setAutoAspectRatio(true);
-	gEnv->mainCamera = camera;
-
-	//Set ambiant light
-	gEnv->sceneManager->setAmbientLight(Ogre::ColourValue::White, Ogre::ColourValue::White,
-        Ogre::Vector3::NEGATIVE_UNIT_Y); // Top-down light direction
-
-	//Init gui before the compositor
-	Application::CreateGuiManagerIfNotExists();
+    //Init gui before the compositor
+//    Application::CreateGuiManager();
 
     // Init OGRE 2.1 compositor
-    Application::GetOgreSubsystem()->SetupOgre2Compositor();
+    Application::GetOgreSubsystem()->SetupCompositor();
+
+    Application::CreateGuiManager();
 
 	// Load and show menu wallpaper
-	Ogre::String menu_wallpaper_texture_name = GUIManager::getRandomWallpaperImage(); // TODO: manage by class Application
+	Ogre::String menu_wallpaper_texture_name = GUIManager::getRandomWallpaperImage();
 	MyGUI::VectorWidgetPtr v = MyGUI::LayoutManager::getInstance().loadLayout("wallpaper.layout");
 	MyGUI::Widget* menu_wallpaper_widget = nullptr;
 	if (!v.empty())
@@ -187,25 +168,15 @@ void MainThread::Go()
 	Application::GetOgreSubsystem()->GetOgreRoot()->renderOneFrame();
 
 	RoR::Application::CreateCacheSystem();
-
 	RoR::Application::GetCacheSystem()->setLocation(SSETTING("Cache Path", ""), SSETTING("Config Root", ""));
 
-	Application::GetContentManager()->init();
-
-	//Maybe somewhere else?
+    //TODO: Remove class "MovableText" and handle network labels as UI elements ~ only_a_ptr, 07/2016
     Ogre::MovableTextFactory* movableTextFactory = new Ogre::MovableTextFactory();
-	Application::GetOgreSubsystem()->GetOgreRoot()->addMovableObjectFactory(movableTextFactory);
+    Application::GetOgreSubsystem()->GetOgreRoot()->addMovableObjectFactory(movableTextFactory);
 
-	// Back to full rendering
-    /* FIXME ogre21
-	scene_manager->clearSpecialCaseRenderQueues();
-	scene_manager->setSpecialCaseRenderQueueMode(Ogre::SceneManager::SCRQM_EXCLUDE);
-    */
 
 	// create console, must be done early
 	Application::CreateConsoleIfNotExists();
-
-    Application::GetOgreSubsystem()->SetupOgre2Compositor();
 
 #ifdef USE_ANGELSCRIPT
 	new ScriptEngine(); // Init singleton. TODO: Move under Application
@@ -459,13 +430,6 @@ void MainThread::Go()
 	}
 #endif
 
-	scene_manager->destroyCamera(camera);
-	RoR::Application::GetOgreSubsystem()->GetOgreRoot()->destroySceneManager(scene_manager);
-#ifdef ROR_USE_OGRE_1_9
-	// Produces a segfault
-	// delete overlay_system;
-#endif
-
 	Application::DestroyOverlayWrapper();
 
 	Application::DestroyContentManager();
@@ -479,6 +443,7 @@ void MainThread::Go()
 	delete gEnv;
 	gEnv = nullptr;
 
+    Application::GetOgreSubsystem()->ShutdownOgre();
 }
 
 bool MainThread::SetupGameplayLoop(Ogre::String preselected_map)
