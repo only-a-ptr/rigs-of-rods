@@ -86,10 +86,6 @@
 #include <limits>
 #include <sstream>
 
-#ifdef USE_MPLATFORM
-#include "MPlatformFD.h"
-#endif //USE_MPLATFORM
-
 #ifdef FEAT_TIMING
 #include "BeamStats.h"
 #endif //FEAT_TIMING
