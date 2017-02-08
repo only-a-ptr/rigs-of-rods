@@ -254,14 +254,6 @@ int main(int argc, char *argv[])
         ScriptEngine::getSingleton().SetFrameListener(frame_listener);
 #endif
 
-#ifdef USE_MPLATFORM
-	    m_frame_listener->m_platform = new MPlatform_FD();
-	    if (m_frame_listener->m_platform) 
-	    {
-		    m_platform->connect();
-	    }
-#endif
-
         frame_listener->windowResized(App::GetOgreSubsystem()->GetRenderWindow());
         RoRWindowEventUtilities::addWindowEventListener(App::GetOgreSubsystem()->GetRenderWindow(), frame_listener);
 
@@ -397,17 +389,6 @@ int main(int argc, char *argv[])
 
         //TODO: we should destroy OIS here
         //TODO: we could also try to destroy SoundScriptManager, but we don't care!
-
-#ifdef USE_MPLATFORM
-	    if (frame_listener->mplatform != nullptr)
-	    {
-		    if (frame_listener->mplatform->disconnect())
-		    {
-			    delete(frame_listener->mplatform);
-			    frame_listener->mplatform = nullptr;
-		    }
-	    }
-#endif
 
         scene_manager->destroyCamera(camera);
         App::GetOgreSubsystem()->GetOgreRoot()->destroySceneManager(scene_manager);
