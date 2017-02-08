@@ -1235,6 +1235,14 @@ void BeamFactory::UpdatePhysicsSimulation()
                 }
                 gEnv->threadPool->Parallelize(tasks);
             }
+
+#ifdef USE_MPLATFORM
+            Beam* player_vehicle = BeamFactory::getSingleton().getCurrentTruck();
+            if (player_vehicle != nullptr)
+            {
+                RoR::App::GetMainMenu()->GetFrameListener()->UpdateMotionPlatform(player_vehicle);
+            }
+#endif
         }
     }
     else
@@ -1292,6 +1300,14 @@ void BeamFactory::UpdatePhysicsSimulation()
                 }
                 BES_STOP(BES_CORE_Contacters);
             }
+
+#ifdef USE_MPLATFORM
+            Beam* player_vehicle = BeamFactory::getSingleton().getCurrentTruck();
+            if (player_vehicle != nullptr)
+            {
+                RoR::App::GetMainMenu()->GetFrameListener()->UpdateMotionPlatform(player_vehicle);
+            }
+#endif
         }
     }
     for (int t = 0; t < m_free_truck; t++)

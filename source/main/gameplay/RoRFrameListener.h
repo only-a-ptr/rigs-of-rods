@@ -23,6 +23,10 @@
 #include "RoRPrerequisites.h"
 #include "ForceFeedback.h"
 
+#ifdef USE_MPLATFORM
+#include "MotionPlatform.h"
+#endif
+
 #include <Ogre.h>
 
 class RoRFrameListener: public Ogre::FrameListener, public Ogre::WindowEventListener, public ZeroedMemoryAllocator
@@ -56,6 +60,10 @@ public:
     /// @return True if everything was prepared OK and simulation may start.
     bool   SetupGameplayLoop     ();
     void   EnterGameplayLoop     ();
+
+#ifdef USE_MPLATFORM
+    inline void  UpdateMotionPlatform  (Beam* vehicle) { m_motion_platform.MPlatformUpdate(vehicle); }
+#endif
 
 protected:
 
@@ -103,4 +111,8 @@ protected:
 
     Ogre::Vector3            m_reload_pos;
     Ogre::Quaternion         m_reload_dir;
+
+#ifdef USE_MPLATFORM
+    RoR::MotionPlatform      m_motion_platform;
+#endif
 };

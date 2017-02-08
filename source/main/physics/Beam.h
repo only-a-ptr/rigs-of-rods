@@ -542,8 +542,13 @@ public:
     bool isPreloadedWithTerrain() { return m_preloaded_with_terrain; };
 
     // Inline getters
-    inline Ogre::SceneNode*                 getSceneNode()            { return beamsRoot; }
-    inline RoR::PerVehicleCameraContext*    GetCameraContext()        { return &m_camera_context; }
+    inline Ogre::SceneNode*                 getSceneNode()     { return beamsRoot; }
+    inline RoR::PerVehicleCameraContext*    GetCameraContext() { return &m_camera_context; }
+
+    inline Ogre::Vector3      GetCinecamPos(size_t idx)        { return nodes[cinecameranodepos[idx]].AbsPosition; }
+    inline Ogre::Vector3      GetCamcoordCenterPos(size_t idx) { return nodes[cameranodepos    [idx]].AbsPosition; }
+    inline Ogre::Vector3      GetCamcoordRearPos(size_t idx)   { return nodes[cameranodedir    [idx]].AbsPosition; }
+    inline Ogre::Vector3      GetCamcoordLeftPos(size_t idx)   { return nodes[cameranoderoll   [idx]].AbsPosition; }
 
 #ifdef USE_MYGUI
     DashBoardManager *dash;
