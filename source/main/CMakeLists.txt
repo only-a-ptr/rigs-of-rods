@@ -180,8 +180,6 @@ set( SOURCE_FILES
   physics/flex/FlexMeshWheel.{h,cpp}
   physics/flex/FlexObj.{h,cpp}
   physics/flex/Locator_t.h
-  physics/mplatform/MPlatformBase.{h,cpp}
-  physics/mplatform/MPlatformFD.{h,cpp}
   physics/utils/BeamStats.{h,cpp}
   physics/utils/RigLoadingProfiler.h
   physics/water/Buoyance.{h,cpp}
@@ -315,7 +313,6 @@ target_include_directories( ${BINNAME} PRIVATE
  physics/air
  physics/collision
  physics/flex
- physics/mplatform
  physics/threading
  physics/utils
  physics/water
