@@ -28,6 +28,10 @@
 #include "RoRPrerequisites.h"
 
 
+#ifdef USE_MPLATFORM
+#include "MotionPlatform.h"
+#endif
+
 #include <Ogre.h>
 
 /// The simulation controller object (TODO: Rename this class to SimController)
@@ -81,6 +85,10 @@ public:
 
     RoR::BeamFactory*           GetBeamFactory  ()         { return &m_beam_factory; } // TODO: Eliminate this. All operations upon actors should be done through above methods. ~ only_a_ptr, 06/2017
     RoR::SkidmarkConfig*        GetSkidmarkConf ()         { return m_skidmark_conf; }
+
+#ifdef USE_MPLATFORM
+    inline void  UpdateMotionPlatform  (Beam* vehicle) { m_motion_platform.MPlatformUpdate(vehicle); }
+#endif
 
 private:
 
@@ -138,4 +146,8 @@ private:
 
     Ogre::Vector3            m_reload_pos;
     Ogre::Quaternion         m_reload_dir;
+
+#ifdef USE_MPLATFORM
+    RoR::MotionPlatform      m_motion_platform;
+#endif
 };

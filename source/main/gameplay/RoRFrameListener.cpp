@@ -2459,6 +2459,10 @@ void RoRFrameListener::EnterGameplayLoop()
         minTimePerFrame = 1000 / fpsLimit;
     }
 
+#ifdef USE_MPLATFORM
+    m_motion_platform.MPlatformConnect();
+#endif
+
     /* LOOP */
 
     while (App::app_state.GetPending() == AppState::SIMULATION)
@@ -2501,6 +2505,10 @@ void RoRFrameListener::EnterGameplayLoop()
 
     App::sim_state.SetActive(SimState::OFF);
     this->CleanupAfterSimulation();
+
+#ifdef USE_MPLATFORM
+    m_motion_platform.MPlatformDisconnect();
+#endif
 
     /* RESTORE ENVIRONMENT */
 

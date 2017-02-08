@@ -572,6 +572,9 @@
       <Filter>Source Files\scripting</Filter>
     </ClCompile>
     <ClCompile Include="..\tools\windows\pch\Precompiled.cpp" />
+    <ClCompile Include="..\source\main\physics\MotionPlatform.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\main\Application.h">
@@ -1269,6 +1272,9 @@
     </ClInclude>
     <ClInclude Include="..\source\main\scripting\LocalStorage.h">
       <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\MotionPlatform.h">
+      <Filter>Header Files\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -191,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main\gui\panels\GUI_GameSettings.cpp" />
+    <ClCompile Include="..\source\main\physics\MotionPlatform.cpp" />
     <ClCompile Include="..\source\main\resources\otc_fileformat\OTCFileformat.cpp" />
     <ClCompile Include="..\source\main\scripting\as_addon\scriptany.cpp" />
     <ClCompile Include="..\source\main\scripting\as_addon\scriptarray.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="..\source\main\GlobalEnvironment.h" />
     <ClInclude Include="..\source\main\gui\panels\GUI_GameSettings.h" />
     <ClInclude Include="..\source\main\MainMenu.h" />
+    <ClInclude Include="..\source\main\physics\MotionPlatform.h" />
     <ClInclude Include="..\source\main\resources\otc_fileformat\OTCFileformat.h" />
     <ClInclude Include="..\source\main\RoRPrerequisites.h" />
     <ClInclude Include="..\source\main\audio\MumbleIntegration.h" />
