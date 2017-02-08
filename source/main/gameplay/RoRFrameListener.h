@@ -26,6 +26,10 @@
 #include "CharacterFactory.h"
 #include "BeamFactory.h"
 
+#ifdef USE_MPLATFORM
+#include "MotionPlatform.h"
+#endif
+
 #include <Ogre.h>
 
 namespace RoR { struct Terrn2Telepoint; } // Forward decl.
@@ -63,6 +67,10 @@ public:
 
     RoR::BeamFactory*           GetBeamFactory  () { return &m_beam_factory; }
     RoR::SkidmarkConfig*        GetSkidmarkConf () { return m_skidmark_conf; }
+
+#ifdef USE_MPLATFORM
+    inline void  UpdateMotionPlatform  (Beam* vehicle) { m_motion_platform.MPlatformUpdate(vehicle); }
+#endif
 
 protected:
 
@@ -115,4 +123,8 @@ protected:
 
     Ogre::Vector3            m_reload_pos;
     Ogre::Quaternion         m_reload_dir;
+
+#ifdef USE_MPLATFORM
+    RoR::MotionPlatform      m_motion_platform;
+#endif
 };
