@@ -76,6 +76,7 @@ protected:
     MyGUI::MenuItem*                 m_item_never_sleep;
     MyGUI::MenuItem*                 m_item_sleep_all;
     MyGUI::MenuItem*                 m_item_spawner_log;
+    MyGUI::MenuItem*                 m_item_motion_platform;
     int                              m_menu_width;
     int                              m_menu_height;
     std::atomic<bool>                m_vehicle_list_needs_update;

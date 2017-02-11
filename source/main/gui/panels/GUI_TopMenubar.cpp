@@ -52,6 +52,7 @@ TopMenubar::TopMenubar() :
       m_item_activate_all(nullptr)
     , m_item_never_sleep(nullptr)
     , m_item_sleep_all(nullptr)
+    , m_item_motion_platform(nullptr)
     , m_menu_width(350)
     , m_menu_height(20)
     , m_vehicle_list_needs_update(false)
@@ -113,8 +114,11 @@ TopMenubar::TopMenubar() :
     p->addItem(_L("Friction Settings"),  MyGUI::MenuItemType::Normal, "frictiongui");
     p->addItem(_L("Show Console"),       MyGUI::MenuItemType::Normal, "showConsole");
     p->addItem(_L("Texture Tool"),       MyGUI::MenuItemType::Normal, "texturetool");
-    p->addItem(_L("Debug Options"),		 MyGUI::MenuItemType::Normal, "debugoptions");
-    m_item_spawner_log = p->addItem(_L("Spawner log"), MyGUI::MenuItemType::Normal, "spawnerlog");
+    p->addItem(_L("Debug Options"),      MyGUI::MenuItemType::Normal, "debugoptions");
+    m_item_spawner_log       = p->addItem(_L("Spawner log"),    MyGUI::MenuItemType::Normal, "spawnerlog");
+#ifdef USE_MPLATFORM
+    m_item_motion_platform   = p->addItem(_L("MotionPlatform"), MyGUI::MenuItemType::Normal);
+#endif
     m_popup_menus.push_back(p);
 
     /* -------------------------------------------------------------------------------- */
@@ -309,6 +313,10 @@ void TopMenubar::onMenuBtn(MyGUI::MenuCtrlPtr _sender, MyGUI::MenuItemPtr _item)
     if (_item == m_item_spawner_log)
     {
         App::GetGuiManager()->SetVisible_SpawnerReport(true);
+    }
+    else if (_item == m_item_motion_platform)
+    {
+        App::GetGuiManager()->SetVisible_MotionPlatformWindow(true);
     }
     else if (miname == _L("Get new vehicle") && gEnv->player)
     {

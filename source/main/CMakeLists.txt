@@ -158,6 +158,8 @@ set( SOURCE_FILES
   gui/panels/GUI_MainSelectorLayout.{h,cpp}
   gui/panels/GUI_MessageBox.{h,cpp}
   gui/panels/GUI_MessageBoxLayout.{h,cpp}
+  gui/panels/GUI_MotionPlatformWindowLayout.{h,cpp}
+  gui/panels/GUI_MotionPlatformWindow.{h,cpp}  
   gui/panels/GUI_MultiplayerSelector.{h,cpp}
   gui/panels/GUI_MultiplayerSelectorLayout.{h,cpp}
   gui/panels/GUI_MultiplayerClientList.{h,cpp} 
