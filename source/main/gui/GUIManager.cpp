@@ -45,6 +45,7 @@
 #include "GUI_GameChatBox.h"
 #include "GUI_LoadingWindow.h"
 #include "GUI_MessageBox.h"
+#include "GUI_MotionPlatformWindow.h"
 #include "GUI_MultiplayerSelector.h"
 #include "GUI_MultiplayerClientList.h"
 #include "GUI_MainSelector.h"
@@ -77,6 +78,7 @@ struct GuiManagerImpl
     GUI::gMessageBox            panel_MessageBox;
     GUI::MultiplayerSelector    panel_MultiplayerSelector;
     GUI::MainSelector           panel_MainSelector;
+    GUI::MotionPlatformWindow   panel_MotionPlatformWin;
     GUI::GameChatBox            panel_ChatBox;
     GUI::RigSpawnerReportWindow panel_SpawnerReport;
     GUI::VehicleDescription     panel_VehicleDescription;
@@ -106,6 +108,7 @@ void GUIManager::SetVisible_TextureToolWindow   (bool v) { m_impl->panel_Texture
 void GUIManager::SetVisible_LoadingWindow       (bool v) { m_impl->panel_LoadingWindow      .SetVisible(v); }
 void GUIManager::SetVisible_TopMenubar          (bool v) { m_impl->panel_TopMenubar         .SetVisible(v); }
 void GUIManager::SetVisible_Console             (bool v) { m_impl->panel_GameConsole        .SetVisible(v); }
+void GUIManager::SetVisible_MotionPlatformWindow(bool v) { m_impl->panel_MotionPlatformWin  .SetVisible(v); }
 
 bool GUIManager::IsVisible_GameMainMenu         () { return m_impl->panel_GameMainMenu       .IsVisible(); }
 bool GUIManager::IsVisible_GameAbout            () { return m_impl->panel_GameAbout          .IsVisible(); }
@@ -124,6 +127,7 @@ bool GUIManager::IsVisible_TextureToolWindow    () { return m_impl->panel_Textur
 bool GUIManager::IsVisible_LoadingWindow        () { return m_impl->panel_LoadingWindow      .IsVisible(); }
 bool GUIManager::IsVisible_TopMenubar           () { return m_impl->panel_TopMenubar         .IsVisible(); }
 bool GUIManager::IsVisible_Console              () { return m_impl->panel_GameConsole        .IsVisible(); }
+bool GUIManager::IsVisible_MotionPlatformWindow () { return m_impl->panel_MotionPlatformWin  .IsVisible(); }
 
 // GUI GetInstance*()
 Console*                    GUIManager::GetConsole()           { return &m_impl->panel_GameConsole         ; }
@@ -134,6 +138,7 @@ GUI::MultiplayerSelector*   GUIManager::GetMpSelector()        { return &m_impl-
 GUI::FrictionSettings*      GUIManager::GetFrictionSettings()  { return &m_impl->panel_FrictionSettings    ; }
 GUI::SimUtils*              GUIManager::GetSimUtils()          { return &m_impl->panel_SimUtils            ; }
 GUI::TopMenubar*            GUIManager::GetTopMenubar()        { return &m_impl->panel_TopMenubar          ; }
+GUI::MotionPlatformWindow*  GUIManager::GetMotionPlatform()    { return &m_impl->panel_MotionPlatformWin   ; }
 
 GUIManager::GUIManager() :
     m_renderwindow_closed(false),
@@ -383,6 +388,7 @@ void GUIManager::ReflectGameState()
         m_impl->panel_SpawnerReport      .SetVisible(false);
         m_impl->panel_SimUtils           .SetBaseVisible(false);
         m_impl->panel_MpClientList       .SetVisible(mp_state == App::MP_STATE_CONNECTED);
+        m_impl->panel_MotionPlatformWin  .SetVisible(false);
         return;
     }
     if (app_state == App::APP_STATE_SIMULATION)
