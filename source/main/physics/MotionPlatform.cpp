@@ -145,8 +145,9 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
         LOG("[RoR|MotionPlatform] Failed to send data!");
     }
 
-    char text_buf[1000];
     // Debug display
+    // !!TODO!!: Don't do this inside physics update!
+    char text_buf[1000];
     snprintf(text_buf, 1000, "Time: %03d \n\n"
         " oriX: %8.4f\n oriY: %8.4f\n oriZ: %8.4f\n\n velX: %8.4f\n velY: %8.4f\n velZ: %8.4f\n"
         " accX: %8.4f\n accY: %6.f\n accZ: %8.4f\n\n angVX: %8.4f\n angVY: %8.4f\n angVZ: %8.4f",
