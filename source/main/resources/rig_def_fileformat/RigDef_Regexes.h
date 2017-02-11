@@ -245,6 +245,7 @@ namespace Regexes
     E_KEYWORD_BLOCK("materialflarebindings")                      \
     E_KEYWORD_BLOCK("meshwheels")                                 \
     E_KEYWORD_BLOCK("meshwheels2")                                \
+    E_KEYWORD_BLOCK("meshwheels3")                                \
     E_KEYWORD_BLOCK("minimass")                                   \
     E_KEYWORD_BLOCK("nodecollision")                              \
     E_KEYWORD_BLOCK("nodes")                                      \

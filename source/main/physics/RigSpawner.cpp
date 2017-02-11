@@ -4444,12 +4444,6 @@ void RigSpawner::ProcessFlexBodyWheel(RigDef::FlexBodyWheel & def)
 
 void RigSpawner::ProcessMeshWheel(RigDef::MeshWheel & meshwheel_def)
 {
-    if (meshwheel_def._is_meshwheel2)
-    {
-        this->ProcessMeshWheel2(meshwheel_def);
-        return;
-    }
-
     SPAWNER_PROFILE_SCOPED();
 
     unsigned int base_node_index = m_rig->free_node;
@@ -4507,7 +4501,7 @@ void RigSpawner::ProcessMeshWheel(RigDef::MeshWheel & meshwheel_def)
         );
 }
 
-void RigSpawner::ProcessMeshWheel2(RigDef::MeshWheel & def)
+void RigSpawner::ProcessMeshWheel2Or3(RigDef::MeshWheel & def)
 {
     SPAWNER_PROFILE_SCOPED();
 
@@ -4524,13 +4518,13 @@ void RigSpawner::ProcessMeshWheel2(RigDef::MeshWheel & def)
     Ogre::Vector3 pos_1 = axis_node_1->AbsPosition;
     Ogre::Vector3 pos_2 = axis_node_2->AbsPosition;
 
-    /* Enforce the "second node must have a larger Z coordinate than the first" constraint */
+    // Enforce the "second node must have a larger Z coordinate than the first" constraint
     if (pos_1.z > pos_2.z)
     {
         node_t *swap = axis_node_1;
         axis_node_1 = axis_node_2;
         axis_node_2 = swap;
-    }	
+    }
 
     unsigned int wheel_index = BuildWheelObjectAndNodes(
         def.num_rays,
@@ -4546,8 +4540,7 @@ void RigSpawner::ProcessMeshWheel2(RigDef::MeshWheel & def)
         def.mass
     );
 
-    /* --- Beams --- */
-    /* Use data from directive 'set_beam_defaults' for the tiretread beams */
+    // Use data from directive 'set_beam_defaults' for the tiretread beams
     float tyre_spring = def.spring;
     float tyre_damp = def.damping;
     float rim_spring = def.beam_defaults->springiness;
@@ -4567,10 +4560,26 @@ void RigSpawner::ProcessMeshWheel2(RigDef::MeshWheel & def)
         0.15 // max_extension
     );
 
-    /* --- Visuals --- */
+    if (def.mw_type == RigDef::MeshWheel::MESHWHEEL_TYPE_3)
+    {
+        // Add reinforcement beams which prevent the wheel from expanding at speed.
+        float spring = def.beam_defaults->GetScaledSpringiness();
+        float damp   = def.beam_defaults->GetScaledDamping();
+        for (size_t i = 0; i < def.num_rays; ++i)
+        {
+            size_t node_a1_idx = base_node_index + (i * 2);
+            size_t node_a2_idx = ((base_node_index + 1) % def.num_rays) + (i * 2);
+            this->AddWheelBeam(m_rig->GetNode(node_a1_idx), m_rig->GetNode(node_a2_idx), spring, damp, def.beam_defaults);
+
+            size_t node_b1_idx = node_a1_idx + 1;
+            size_t node_b2_idx = node_a2_idx + 1;
+            this->AddWheelBeam(m_rig->GetNode(node_b1_idx), m_rig->GetNode(node_b2_idx), spring, damp, def.beam_defaults);
+        }
+    }
+
     BuildMeshWheelVisuals(
-        wheel_index, 
-        base_node_index, 
+        wheel_index,
+        base_node_index,
         axis_node_1->pos,
         axis_node_2->pos,
         def.num_rays,

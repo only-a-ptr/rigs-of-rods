@@ -852,7 +852,7 @@ struct MeshWheel: BaseWheel
         side(SIDE_INVALID),
         rim_radius(0),
         tyre_radius(0),
-        _is_meshwheel2(false)
+        mw_type(MESHWHEEL_TYPE_INVALID)
     {}
 
     enum Side
@@ -862,6 +862,14 @@ struct MeshWheel: BaseWheel
         SIDE_LEFT      = 'l'
     };
 
+    enum MeshWheelType
+    {
+        MESHWHEEL_TYPE_INVALID = 0,
+        MESHWHEEL_TYPE_1       = 1,
+        MESHWHEEL_TYPE_2       = 2,
+        MESHWHEEL_TYPE_3       = 3
+    };
+
     Side side;
     Ogre::String mesh_name;
     Ogre::String material_name;
@@ -869,7 +877,7 @@ struct MeshWheel: BaseWheel
     float tyre_radius;
     float spring;
     float damping;
-    bool _is_meshwheel2;
+    MeshWheelType mw_type;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -2069,6 +2077,7 @@ struct File
         KEYWORD_MATERIALFLAREBINDINGS,
         KEYWORD_MESHWHEELS,
         KEYWORD_MESHWHEELS2,
+        KEYWORD_MESHWHEELS3,
         KEYWORD_MINIMASS,
         KEYWORD_NODECOLLISION,
         KEYWORD_NODES,
@@ -2148,7 +2157,7 @@ struct File
         SECTION_FLARES,
         SECTION_FLARES_2,
         SECTION_FLEXBODIES,
-        SECTION_FLEX_BODY_WHEELS,	
+        SECTION_FLEX_BODY_WHEELS,
         SECTION_FUSEDRAG,
         SECTION_GLOBALS,
         SECTION_GUI_SETTINGS,
@@ -2160,6 +2169,7 @@ struct File
         SECTION_MATERIAL_FLARE_BINDINGS,
         SECTION_MESH_WHEELS,
         SECTION_MESH_WHEELS_2,
+        SECTION_MESH_WHEELS_3,
         SECTION_MINIMASS,
         SECTION_NODES,
         SECTION_NODES_2,
@@ -2184,7 +2194,7 @@ struct File
         SECTION_TORQUE_CURVE,
         SECTION_TRACTION_CONTROL,
         SECTION_TRIGGERS,
-        SECTION_TRUCK_NAME, ///< The very start of file	
+        SECTION_TRUCK_NAME, ///< The very start of file
         SECTION_TURBOJETS,
         SECTION_TURBOPROPS,
         SECTION_TURBOPROPS_2,

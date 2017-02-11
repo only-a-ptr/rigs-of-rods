@@ -319,9 +319,9 @@ protected:
     void ProcessMeshWheel(RigDef::MeshWheel & meshwheel_def);
 
     /**
-    * Section 'meshwheels2'.
+    * Section 'meshwheels2' or 'meshwheels3'.
     */
-    void ProcessMeshWheel2(RigDef::MeshWheel & def);
+    void ProcessMeshWheel2Or3(RigDef::MeshWheel & def);
 
     /**
     * Section 'minimass'.

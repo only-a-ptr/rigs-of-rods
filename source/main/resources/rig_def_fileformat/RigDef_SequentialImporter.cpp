@@ -63,6 +63,7 @@ void SequentialImporter::GenerateNodesForWheel(File::Keyword generated_from, int
     // wheels2        | addWheel2()   | Rim nodes: A, B, A, B... (num_rays*2), Tyre nodes: A, B, A, B... (num_rays*2)
     // meshwheels     | addWheel()    | Tyre nodes: A, B, A, B... (num_rays*2)
     // meshwheels2    | addWheel()    | Tyre nodes: A, B, A, B... (num_rays*2)
+    // meshwheels3    | new in v0.4.8 | Tyre nodes: A, B, A, B... (num_rays*2)
     // flexbodywheels | addWheel3()   | Rim nodes: A, B, A, B... (num_rays*2), Tyre nodes: A, B, A, B... (num_rays*2)
 
     NodeMapEntry::OriginDetail detail;

@@ -544,6 +544,7 @@ public:
     // Inline getters
     inline Ogre::SceneNode*                 getSceneNode()            { return beamsRoot; }
     inline RoR::PerVehicleCameraContext*    GetCameraContext()        { return &m_camera_context; }
+    inline node_t*                          GetNode(size_t index)     { return &nodes[index]; }
 
 #ifdef USE_MYGUI
     DashBoardManager *dash;

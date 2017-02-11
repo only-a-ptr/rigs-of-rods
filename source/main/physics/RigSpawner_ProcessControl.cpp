@@ -229,10 +229,25 @@ rig_t *RigSpawner::SpawnRig()
     PROCESS_SECTION_IN_ALL_MODULES(RigDef::File::KEYWORD_WHEELS2, wheels_2, ProcessWheel2);
 
     // Section 'meshwheels'
-    PROCESS_SECTION_IN_ALL_MODULES_COND(RigDef::File::KEYWORD_MESHWHEELS, mesh_wheels, (!itor->_is_meshwheel2), ProcessMeshWheel);
+    PROCESS_SECTION_IN_ALL_MODULES_COND(
+        RigDef::File::KEYWORD_MESHWHEELS,
+        mesh_wheels,
+        (itor->mw_type == RigDef::MeshWheel::MESHWHEEL_TYPE_1),
+        ProcessMeshWheel);
 
     // Section 'meshwheels2'
-    PROCESS_SECTION_IN_ALL_MODULES_COND(RigDef::File::KEYWORD_MESHWHEELS2, mesh_wheels, (itor->_is_meshwheel2), ProcessMeshWheel2);
+    PROCESS_SECTION_IN_ALL_MODULES_COND(
+        RigDef::File::KEYWORD_MESHWHEELS2,
+        mesh_wheels,
+        (itor->mw_type == RigDef::MeshWheel::MESHWHEEL_TYPE_2),
+        ProcessMeshWheel2Or3);
+
+    // Section 'meshwheels3'
+    PROCESS_SECTION_IN_ALL_MODULES_COND(
+        RigDef::File::KEYWORD_MESHWHEELS3,
+        mesh_wheels,
+        (itor->mw_type == RigDef::MeshWheel::MESHWHEEL_TYPE_3),
+        ProcessMeshWheel2Or3);
 
     // Section 'flexbodywheels'
     PROCESS_SECTION_IN_ALL_MODULES(RigDef::File::KEYWORD_FLEXBODYWHEELS, flex_body_wheels, ProcessFlexBodyWheel);

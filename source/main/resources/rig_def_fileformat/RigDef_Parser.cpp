@@ -1540,9 +1540,26 @@ void Parser::ParseMeshWheelUnified()
     if (! this->CheckNumArguments(16)) { return; }
 
     MeshWheel mesh_wheel;
-    mesh_wheel._is_meshwheel2     = (m_current_section == File::SECTION_MESH_WHEELS_2);
     mesh_wheel.node_defaults      = m_user_node_defaults;
     mesh_wheel.beam_defaults      = m_user_beam_defaults;
+
+    File::Keyword keyword;
+    switch (m_current_section)
+    {
+    case File::SECTION_MESH_WHEELS:
+        mesh_wheel.mw_type = MeshWheel::MESHWHEEL_TYPE_1;
+        keyword = File::KEYWORD_MESHWHEELS;
+        break;
+    case File::SECTION_MESH_WHEELS_2:
+        mesh_wheel.mw_type = MeshWheel::MESHWHEEL_TYPE_2;
+        keyword = File::KEYWORD_MESHWHEELS2;
+        break;
+    case File::SECTION_MESH_WHEELS_3:
+        mesh_wheel.mw_type = MeshWheel::MESHWHEEL_TYPE_3;
+        keyword = File::KEYWORD_MESHWHEELS3;
+        break;
+    default: return; // Unreachable state
+    }
 
     mesh_wheel.tyre_radius        = this->GetArgFloat        ( 0);
     mesh_wheel.rim_radius         = this->GetArgFloat        ( 1);
@@ -1563,9 +1580,6 @@ void Parser::ParseMeshWheelUnified()
 
     if (m_sequential_importer.IsEnabled())
     {
-        File::Keyword keyword = (mesh_wheel._is_meshwheel2)
-            ? File::KEYWORD_MESHWHEELS2
-            : File::KEYWORD_MESHWHEELS;
         m_sequential_importer.GenerateNodesForWheel(keyword, mesh_wheel.num_rays, mesh_wheel.rigidity_node.IsValidAnyState());
     }
 
