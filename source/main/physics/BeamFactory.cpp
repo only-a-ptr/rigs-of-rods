@@ -1246,10 +1246,10 @@ void BeamFactory::UpdatePhysicsSimulation()
             }
 
 #ifdef USE_MPLATFORM
-            Beam* player_vehicle = BeamFactory::getSingleton().getCurrentTruck();
+            Beam* player_vehicle = App::GetSimController()->GetPlayerActor();
             if (player_vehicle != nullptr)
             {
-                RoR::App::GetMainMenu()->GetFrameListener()->UpdateMotionPlatform(player_vehicle);
+                App::GetSimController()->UpdateMotionPlatform(player_vehicle);
             }
 #endif
         }
@@ -1311,10 +1311,10 @@ void BeamFactory::UpdatePhysicsSimulation()
             }
 
 #ifdef USE_MPLATFORM
-            Beam* player_vehicle = BeamFactory::getSingleton().getCurrentTruck();
+            Beam* player_vehicle = App::GetSimController()->GetPlayerActor();
             if (player_vehicle != nullptr)
             {
-                RoR::App::GetMainMenu()->GetFrameListener()->UpdateMotionPlatform(player_vehicle);
+                App::GetSimController()->UpdateMotionPlatform(player_vehicle);
             }
 #endif
         }

@@ -62,7 +62,7 @@ namespace RoR {
 struct DBox
 {
     int32_t       time_sec;     // time in seconds since game start
-    int32_t       position_x;   // position m
+    int32_t       position_x;   // position (meters/10000)
     int32_t       position_y;
     int32_t       position_z;
     Ogre::Vector3 velocity;    // velocity m.s-1
@@ -73,7 +73,7 @@ struct DBox
 };
 
 const char    MPLATFORM_GAME_ID[] = {'R','o','R',' '};
-const size_t  MPLATFORM_SEND_RATE = 25; ///< Datagrams per second. Value is arbitrary.
+const size_t  MPLATFORM_SEND_RATE = 60; ///< Datagrams per second.
 
 class MotionPlatform
 {
