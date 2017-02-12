@@ -59,21 +59,21 @@
 
 namespace RoR {
 
-struct DBox
+struct UdpElsaco1
 {
-    int32_t       time_sec;     // time in seconds since game start
-    int32_t       position_x;   // position (meters/10000)
-    int32_t       position_y;
-    int32_t       position_z;
-    Ogre::Vector3 velocity;    // velocity m.s-1
-    Ogre::Vector3 angular_vel; // angular velocity, rad/s
-    Ogre::Vector3 accel;       // acceleration, m.s-2
-    Ogre::Vector3 orient;      // orientation vector, radians
-    int32_t       game;        // 4 letter game identification, e.g. "GAME" would be 0x71657769
+    int32_t       time_milis;   ///< Time since game start (miliseconds)
+    int32_t       position_x;   ///< World position (meters/10000)
+    int32_t       position_y;   ///< World position (meters/10000)
+    int32_t       position_z;   ///< World position (meters/10000)
+    Ogre::Vector3 velocity;     ///< World velocity m.s-1
+    Ogre::Vector3 _unused;      
+    Ogre::Vector3 accel;        ///< World acceleration, m.s-2
+    Ogre::Vector3 orient;       ///< orientation vector (x=pitch, y=roll, z=yaw), radians
+    int32_t       game;         ///< 4 letter game identification, e.g. "GAME" would be 0x71657769
 };
 
 const char    MPLATFORM_GAME_ID[] = {'R','o','R',' '};
-const size_t  MPLATFORM_SEND_RATE = 60; ///< Datagrams per second.
+const size_t  MPLATFORM_SEND_RATE = 60; ///< Number of datagrams per second.
 
 class MotionPlatform
 {
@@ -91,8 +91,8 @@ private:
     ENetAddress   m_addr_remote;
     ENetAddress   m_addr_local;
     ENetSocket    m_socket;
-    size_t        m_elapsed_time;
-    size_t        m_last_update_time;
+    size_t        m_elapsed_time; ///< Microseconds
+    size_t        m_last_update_time; ///< Microseconds
     Ogre::Vector3 m_last_cinecam_pos;
     Ogre::Vector3 m_last_velocity;
     Ogre::Vector3 m_last_orient_euler;

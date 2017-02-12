@@ -33,7 +33,7 @@ using namespace RoR;
 // RoR's physics frequency is 2000hz (0.0005 sec)
 
 const size_t SEND_INTERVAL_MICROSEC = 1000000/MPLATFORM_SEND_RATE;
-const float  SEND_INTERVAL_SEC = 1.f/static_cast<float>(MPLATFORM_SEND_RATE);
+const float  UPDATES_PER_SEC        = static_cast<float>(MPLATFORM_SEND_RATE);
 
 
 MotionPlatform::MotionPlatform():
@@ -105,12 +105,13 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
         return;
     }
 
-    DBox datagram;
+    UdpElsaco1 datagram;
+    datagram._unused    = Ogre::Vector3::ZERO;
     datagram.game       = reinterpret_cast<int32_t>(MPLATFORM_GAME_ID);
-    datagram.time_sec   = m_elapsed_time/1000; // Microsec->milisec (TODO: update header comment)
+    datagram.time_milis = m_elapsed_time/1000; // microsec -> milisec
 
     // ## OGRE engine coords: Right-handed; X is right, Y is up (screen-like), Z is back
-    // ## Motion plat. coords: Z is up, X is ??? 
+    // ## Motion plat. coords: Z is up, Y/X is mixed.
 
     // Readings
     Ogre::Vector3 cinecam_pos  = vehicle->GetCinecamPos(0); // Proof of concept: hardcoded to "cinecam" method
@@ -119,71 +120,39 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
     Ogre::Vector3 pitch_axis   = -(vehicle->GetCamcoordLeftPos(0) - coord_center);
     Ogre::Vector3 yaw_axis     = pitch_axis.crossProduct(roll_axis);
 
-    datagram.position_x = static_cast<int32_t>((cinecam_pos.x  * 10000.f)*static_cast<float>(MPLATFORM_SEND_RATE));
-    datagram.position_y = static_cast<int32_t>((-cinecam_pos.z * 10000.f)*static_cast<float>(MPLATFORM_SEND_RATE));
-    datagram.position_z = static_cast<int32_t>((cinecam_pos.y  * 10000.f)*static_cast<float>(MPLATFORM_SEND_RATE));
+    datagram.position_x = static_cast<int32_t>((cinecam_pos.x  * 10000.f) * UPDATES_PER_SEC);
+    datagram.position_y = static_cast<int32_t>((-cinecam_pos.z * 10000.f) * UPDATES_PER_SEC);
+    datagram.position_z = static_cast<int32_t>((cinecam_pos.y  * 10000.f) * UPDATES_PER_SEC);
 
     // Orientation
     Ogre::Matrix3 orient_mtx;
     orient_mtx.FromAxes(pitch_axis, yaw_axis, roll_axis);
     Ogre::Radian yaw, pitch, roll;
-    orient_mtx.ToEulerAnglesYXZ(yaw, pitch, roll);
-    datagram.orient.x = roll.valueRadians();
-    datagram.orient.y = pitch.valueRadians();
+    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch);
+    datagram.orient.x = pitch.valueRadians();
+    datagram.orient.y = roll.valueRadians();
     datagram.orient.z = yaw.valueRadians();
 
     // Velocity
-    Ogre::Vector3 ogre_velocity = (cinecam_pos - m_last_cinecam_pos) * static_cast<float>(MPLATFORM_SEND_RATE);
-    datagram.velocity = ogre_velocity;
-    const float targetY = -datagram.velocity.z;
-    datagram.velocity.z = datagram.velocity.y;
-    datagram.velocity.y = targetY;
+    Ogre::Vector3 ogre_velocity = (cinecam_pos - m_last_cinecam_pos) * UPDATES_PER_SEC;
+    datagram.velocity.x = ogre_velocity.x;
+    datagram.velocity.y = -ogre_velocity.z;
+    datagram.velocity.z = ogre_velocity.y;
 
     // Acceleration
-    datagram.accel = (ogre_velocity - m_last_velocity) * static_cast<float>(MPLATFORM_SEND_RATE);
-    const float accTargetY = -datagram.accel.z;
-    datagram.accel.z = datagram.accel.y;
-    datagram.accel.y = accTargetY;
-
-    // Angular velocity
-    datagram.angular_vel = Ogre::Vector3::ZERO;
+    Ogre::Vector3 ogre_accel = (ogre_velocity - m_last_velocity) * UPDATES_PER_SEC;
+    datagram.accel.x = ogre_accel.x;
+    datagram.accel.y = -ogre_accel.z;
+    datagram.accel.z = ogre_accel.y;
 
     // Send data
     ENetBuffer buf;
     buf.data       = static_cast<void*>(&datagram);
-    buf.dataLength = sizeof(DBox);
+    buf.dataLength = sizeof(UdpElsaco1);
     if (enet_socket_send(m_socket, &m_addr_remote, &buf, 1) != 0)
     {
         LOG("[RoR|MotionPlatform] Failed to send data!");
     }
-    else
-    {
-        LOG("[RoR|MotionPlatform] data sent OK");
-    }
-
-    // Test: local vel/acc
-    Ogre::Matrix3 local_mtx;
-    local_mtx.FromAxes(pitch_axis.normalisedCopy(), yaw_axis.normalisedCopy(), roll_axis.normalisedCopy());
-    Ogre::Vector3 local_vel;// = (orient_mtx - ) - (orient_mtx * m_last_cinecam_pos);
-
-    // Debug display
-    // !!TODO!!: Don't do this inside physics update!
-    /*
-    char text_buf[1000];
-    snprintf(text_buf, 1000, "Time: %03d \n\n"
-        " posX: %d\n posY: %d, posZ: %d\n\n"
-        " oriX: %8.4f\n oriY: %8.4f\n oriZ: %8.4f\n\n velX: %8.4f\n velY: %8.4f\n velZ: %8.4f\n"
-        " accX: %8.4f\n accY: %6.f\n accZ: %8.4f\n\n angVX: %8.4f\n angVY: %8.4f\n angVZ: %8.4f\n\n"
-        " -- TEST --\nLocal vel X: %8.4f\n Local vel Y:%8.4f\n Local vel Z:%8.4f",
-        datagram.time_sec,
-        datagram.position_x,    datagram.position_y,    datagram.position_z,
-        datagram.orient.x,      datagram.orient.y,      datagram.orient.z,
-        datagram.velocity.x,    datagram.velocity.y,    datagram.velocity.z,
-        datagram.accel.x,       datagram.accel.y,       datagram.accel.z,
-        datagram.angular_vel.x, datagram.angular_vel.y, datagram.angular_vel.z,
-        local_vel.x, local_vel.y, local_vel.z);
-    App::GetGuiManager()->GetMotionPlatform()->SetDisplayText(text_buf);
-    */
 
     // Remember values
     m_last_update_time  = m_elapsed_time;
