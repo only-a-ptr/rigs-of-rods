@@ -30,7 +30,6 @@
 class BeamEngine : public ZeroedMemoryAllocator
 {
     friend class RigSpawner;
-    friend class RigInspector; // Debug utility class
 
 public:
 
@@ -158,6 +157,20 @@ public:
     void autoShiftSet(int mode);
     void autoShiftUp();
     void setManualClutch(float val);
+    inline bool   IsStarterActive          () const { return starter != 0; }
+    inline bool   IsBovSoundActive         () const { return m_audio_bov_active; }
+    inline bool   IsTurboFluttering        () const { return b_flutter; } ///< Is turbo's wastegate fluttering?
+    inline bool   IsBackfireSoundActive    () const { return m_audio_backfire_active; }
+    inline bool   AudioWasAirPurged        () const { return m_audio_air_purged; }
+    inline bool   AudioWasGearShifted      () const { return m_audio_shift_once; }
+    inline void   AudioResetGearShifted    ()       { m_audio_shift_once = false; }
+    inline bool   AudioIsShifting          () const { return m_audio_shift_active; }
+    inline bool   AudioDidGearsSlide       () const { return m_audio_gears_slided; }
+    inline void   AudioResetGearSlide      ()       { m_audio_gears_slided = false; }
+    inline float  GetInjectorAudioLevel    () const { return m_audio_injector; }
+    inline float  GetTurboRPM              () const { return (hasturbo) ? curTurboRPM[0] : 0.f; } // All turbos have equal RPMs
+    inline float  GetClutchTorque          () const { return curClutchTorque; }
+    inline float  GetWheelRevolutions      () const { return curWheelRevolutions; }
 
     /**
     * Changes gear by a relative offset. Plays sounds.
@@ -169,11 +182,6 @@ public:
     * @see BeamEngine::shift
     */
     void shiftTo(int val);
-
-    /**
-    * Changes gears. Plays sounds.
-    */
-    void updateShifts();
 
     void update(float dt, int doUpdate);
 
@@ -198,7 +206,7 @@ public:
         NEW
     };
 
-protected:
+private:
 
     enum shiftmodes
     {
@@ -208,6 +216,8 @@ protected:
         MANUAL_STICK,
         MANUAL_RANGES
     };
+
+    void updateShifts(); ///< Changes gears.
 
     // gear stuff
     float refWheelRevolutions; //!< Gears; estimated wheel revolutions based on current vehicle speed along the long axis
@@ -248,6 +258,11 @@ protected:
     float minRPM; //!< Engine attribute
     float stallRPM; //!< Engine
     bool is_priming; //!< Engine
+    bool m_audio_air_purged;
+    bool m_audio_shift_once; ///< Play once
+    bool m_audio_shift_active; ///< Sound is active
+    bool m_audio_gears_slided;
+    float m_audio_injector;
 
     // shifting
     float post_shift_time; //!< Shift attribute
@@ -286,6 +301,8 @@ protected:
     float turboEngineRpmOperation;
     float turboMaxPSI;
     bool b_BOV;
+    bool m_audio_bov_active;
+    bool m_audio_backfire_active;
     float curBOVTurboRPM[MAXTURBO];
     int minBOVPsi;
     bool b_WasteGate;

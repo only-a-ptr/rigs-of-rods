@@ -23,10 +23,13 @@
 #include "SoundScriptManager.h"
 
 #include "Application.h"
+#include "AutoPilot.h"
 #include "Beam.h"
+#include "BeamEngine.h"
 #include "Settings.h"
 #include "Sound.h"
 #include "SoundManager.h"
+#include "TurboJet.h"
 #include "Utils.h"
 
 #include <OgreResourceGroupManager.h>
@@ -50,32 +53,8 @@ SoundScriptManager::SoundScriptManager() :
     , rolloff_factor(1.0f)
     , reference_distance(7.5f)
     , sound_manager(0)
+    , m_music(nullptr)
 {
-    for (int i = 0; i < SS_MAX_TRIG; i++)
-    {
-        free_trigs[i] = 0;
-    }
-
-    for (int i = 0; i < SS_MAX_MOD; i++)
-    {
-        free_pitches[i] = 0;
-        free_gains[i] = 0;
-    }
-
-    // TODO: there is a memory corruption going on here, need to fix
-    for (int i = 0; i < SS_MAX_TRIG * MAX_INSTANCES_PER_GROUP; i++)
-    {
-        trigs[i] = 0;
-    }
-
-    for (int i = 0; i < SS_MAX_MOD * MAX_INSTANCES_PER_GROUP; i++)
-    {
-        pitches[i] = 0;
-        gains[i] = 0;
-    }
-
-    // reset all states
-    state_map.clear();
 
     sound_manager = new SoundManager();
 
@@ -96,202 +75,6 @@ SoundScriptManager::SoundScriptManager() :
     LOG("SoundScriptManager: Sound Manager started with " + TOSTRING(sound_manager->getNumHardwareSources())+" sources");
     script_patterns.push_back("*.soundscript");
     ResourceGroupManager::getSingleton()._registerScriptLoader(this);
-}
-
-void SoundScriptManager::trigOnce(Beam* truck, int trig)
-{
-    if (disabled)
-        return;
-
-    if (truck)
-    {
-        this->trigOnce(truck->trucknum, trig);
-    }
-}
-
-void SoundScriptManager::trigOnce(int truck, int trig)
-{
-    if (disabled)
-        return;
-
-    for (int i = 0; i < free_trigs[trig]; i++)
-    {
-        // cycle through all instance groups
-        SoundScriptInstance* inst = trigs[trig + i * SS_MAX_TRIG];
-
-        if (inst && inst->truck_id == truck)
-        {
-            inst->runOnce();
-        }
-    }
-}
-
-void SoundScriptManager::trigStart(Beam* truck, int trig)
-{
-    if (disabled)
-        return;
-
-    if (truck)
-    {
-        this->trigStart(truck->trucknum, trig);
-    }
-}
-
-void SoundScriptManager::trigStart(int truck, int trig)
-{
-    if (disabled)
-        return;
-    if (this->getTrigState(truck, trig))
-        return;
-
-    state_map[truck][trig] = true;
-
-    for (int i = 0; i < free_trigs[trig]; i++)
-    {
-        SoundScriptInstance* inst = trigs[trig + i * SS_MAX_TRIG];
-
-        if (inst && inst->truck_id == truck)
-        {
-            inst->start();
-        }
-    }
-}
-
-void SoundScriptManager::trigStop(Beam* truck, int trig)
-{
-    if (disabled)
-        return;
-
-    if (truck)
-    {
-        this->trigStop(truck->trucknum, trig);
-    }
-}
-
-void SoundScriptManager::trigStop(int truck, int trig)
-{
-    if (disabled)
-        return;
-    if (!this->getTrigState(truck, trig))
-        return;
-
-    state_map[truck][trig] = false;
-    for (int i = 0; i < free_trigs[trig]; i++)
-    {
-        SoundScriptInstance* inst = trigs[trig + i * SS_MAX_TRIG];
-
-        if (inst && inst->truck_id == truck)
-        {
-            inst->stop();
-        }
-    }
-}
-
-void SoundScriptManager::trigKill(int truck, int trig)
-{
-    if (disabled)
-        return;
-    if (!this->getTrigState(truck, trig))
-        return;
-
-    state_map[truck][trig] = false;
-    for (int i = 0; i < free_trigs[trig]; i++)
-    {
-        SoundScriptInstance* inst = trigs[trig + i * SS_MAX_TRIG];
-
-        if (inst && inst->truck_id == truck)
-        {
-            inst->kill();
-        }
-    }
-}
-
-void SoundScriptManager::trigToggle(Beam* truck, int trig)
-{
-    if (disabled)
-        return;
-
-    if (truck)
-    {
-        this->trigToggle(truck->trucknum, trig);
-    }
-}
-
-void SoundScriptManager::trigToggle(int truck, int trig)
-{
-    if (disabled)
-        return;
-
-    if (this->getTrigState(truck, trig))
-        this->trigStop(truck, trig);
-    else
-        this->trigStart(truck, trig);
-}
-
-bool SoundScriptManager::getTrigState(Beam* truck, int trig)
-{
-    if (disabled)
-        return false;
-
-    if (truck)
-        return this->getTrigState(truck->trucknum, trig);
-    else
-        return false;
-}
-
-bool SoundScriptManager::getTrigState(int truck, int trig)
-{
-    if (disabled)
-        return false;
-
-    return state_map[truck][trig];
-}
-
-void SoundScriptManager::modulate(Beam* truck, int mod, float value)
-{
-    if (disabled)
-        return;
-
-    if (truck)
-    {
-        this->modulate(truck->trucknum, mod, value);
-    }
-}
-
-// TIGHT-LOOP
-// -- BeamEngine
-void SoundScriptManager::modulate(int truck, int mod, float value)
-{
-    if (disabled)
-        return;
-
-    if (mod >= SS_MAX_MOD)
-        return;
-
-    for (int i = 0; i < free_gains[mod]; i++)
-    {
-        SoundScriptInstance* inst = gains[mod + i * SS_MAX_MOD];
-        if (inst && inst->truck_id == truck)
-        {
-            // this one requires modulation
-            float gain = value * value * inst->templ->gain_square + value * inst->templ->gain_multiplier + inst->templ->gain_offset;
-            gain = std::max(0.0f, gain);
-            gain = std::min(gain, 1.0f);
-            inst->setGain(gain);
-        }
-    }
-
-    for (int i = 0; i < free_pitches[mod]; i++)
-    {
-        SoundScriptInstance* inst = pitches[mod + i * SS_MAX_MOD];
-        if (inst && inst->truck_id == truck)
-        {
-            // this one requires modulation
-            float pitch = value * value * inst->templ->pitch_square + value * inst->templ->pitch_multiplier + inst->templ->pitch_offset;
-            pitch = std::max(0.0f, pitch);
-            inst->setPitch(pitch);
-        }
-    }
 }
 
 void SoundScriptManager::setCamera(Vector3 position, Vector3 direction, Vector3 up, Vector3 velocity)
@@ -350,58 +133,6 @@ void SoundScriptManager::clearNonBaseTemplates()
     {
         LOG("SoundScriptManager: removed " + TOSTRING(counter) + " non-base templates");
     }
-}
-
-SoundScriptInstance* SoundScriptManager::createInstance(Ogre::String templatename, int truck, Ogre::SceneNode* toAttach)
-{
-    //first, search template
-    SoundScriptTemplate* templ = NULL;
-
-    if (templates.find(templatename) == templates.end())
-    {
-        return NULL; // found no template with this name
-    }
-
-    templ = templates[templatename];
-
-    if (templ->trigger_source == SS_TRIG_NONE)
-    {
-        return NULL; // invalid template!
-    }
-
-    if (free_trigs[templ->trigger_source] >= MAX_INSTANCES_PER_GROUP
-        || (free_gains[templ->trigger_source] >= MAX_INSTANCES_PER_GROUP && templ->gain_source != SS_MOD_NONE)
-        || (free_pitches[templ->trigger_source] >= MAX_INSTANCES_PER_GROUP && templ->pitch_source != SS_MOD_NONE))
-    {
-        LOG("SoundScriptManager: Reached MAX_INSTANCES_PER_GROUP limit (" + TOSTRING(MAX_INSTANCES_PER_GROUP) + ")");
-        return NULL; // reached limit!
-    }
-
-    SoundScriptInstance* inst = new SoundScriptInstance(truck, templ, sound_manager, templ->file_name + "-" + TOSTRING(truck) + "-" + TOSTRING(instance_counter));
-    instance_counter++;
-
-    // register to lookup tables
-    trigs[templ->trigger_source + free_trigs[templ->trigger_source] * SS_MAX_TRIG] = inst;
-    free_trigs[templ->trigger_source]++;
-
-    if (templ->gain_source != SS_MOD_NONE)
-    {
-        gains[templ->gain_source + free_gains[templ->gain_source] * SS_MAX_MOD] = inst;
-        free_gains[templ->gain_source]++;
-    }
-    if (templ->pitch_source != SS_MOD_NONE)
-    {
-        pitches[templ->pitch_source + free_pitches[templ->pitch_source] * SS_MAX_MOD] = inst;
-        free_pitches[templ->pitch_source]++;
-    }
-
-    // SoundTrigger: SS_TRIG_ALWAYSON
-    if (templ->trigger_source == SS_TRIG_ALWAYSON)
-    {
-        inst->start();
-    }
-
-    return inst;
 }
 
 void SoundScriptManager::parseScript(DataStreamPtr& stream, const String& groupName)
@@ -485,6 +216,36 @@ void SoundScriptManager::setEnabled(bool state)
         sound_manager->resumeAllSounds();
     else
         sound_manager->pauseAllSounds();
+}
+
+SoundScriptTemplate* SoundScriptManager::GetSoundScriptTemplate(std::string name)
+{
+    auto search = templates.find(name);
+    if (search == templates.end())
+        return nullptr; // Not found
+
+    if (search->second->trigger_source == SS_TRIG_NONE)
+        return nullptr; // Invalid template!
+
+    return search->second;
+}
+
+void SoundScriptManager::PlayMusic(SoundTriggers trig)
+{
+    if (m_music != nullptr)
+    {
+        delete m_music;
+        m_music = nullptr;
+    }
+
+    switch (trig)
+    {
+    case SS_TRIG_MAIN_MENU:
+        m_music = new SoundScriptInstance(templates["tracks/main_menu_tune"], sound_manager, -1, -2);
+        m_music->start();
+        break;
+    default:;
+    }
 }
 
 //=====================================================================
@@ -1022,15 +783,15 @@ int SoundScriptTemplate::parseModulation(String str)
 
 //====================================================================
 
-SoundScriptInstance::SoundScriptInstance(int truck, SoundScriptTemplate* templ, SoundManager* sound_manager, String instancename) :
-    truck_id(truck)
-    , templ(templ)
-    , sound_manager(sound_manager)
+SoundScriptInstance::SoundScriptInstance(SoundScriptTemplate* templ, SoundManager* sound_manager, int node_id, int type) :
+      templ(templ)
     , start_sound(NULL)
     , start_sound_pitchgain(0.0f)
     , stop_sound(NULL)
     , stop_sound_pitchgain(0.0f)
     , lastgain(1.0f)
+    , m_node_id(node_id)
+    , m_type(type)
 {
     // create sounds
     if (templ->has_start_sound)
@@ -1050,8 +811,6 @@ SoundScriptInstance::SoundScriptInstance(int truck, SoundScriptTemplate* templ, 
 
     setPitch(0.0f);
     setGain(1.0f);
-
-    LOG("SoundScriptInstance: instance created: "+instancename);
 }
 
 void SoundScriptInstance::setPitch(float value)
@@ -1236,6 +995,21 @@ void SoundScriptInstance::setGain(float value)
     lastgain = value;
 }
 
+void SoundScriptInstance::ModulateGain(float value)
+{
+    float gain = value * value * templ->gain_square + value * templ->gain_multiplier + templ->gain_offset;
+    gain = std::max(0.0f, gain);
+    gain = std::min(gain, 1.0f);
+    this->setGain(gain);
+}
+
+void SoundScriptInstance::ModulatePitch(float value)
+{
+    float pitch = value * value * templ->pitch_square + value * templ->pitch_multiplier + templ->pitch_offset;
+    pitch = std::max(0.0f, pitch);
+    this->setPitch(pitch);
+}
+
 void SoundScriptInstance::setPosition(Vector3 pos, Vector3 velocity)
 {
     if (start_sound)
@@ -1365,6 +1139,364 @@ void SoundScriptInstance::setEnabled(bool e)
             sounds[i]->setEnabled(e);
         }
     }
+}
+
+// ============================================================================
+
+AudioActor::AudioActor(Beam* actor):
+    m_actor(actor),
+    m_aoa_active(false),
+    m_avi_chatter_trigger(SS_TRIG_NONE),
+    m_play_turn_signal_tick(false),
+    m_play_warn_signal_tick(false),
+    m_screetch_play_once(false),
+    m_break_play_once(false),
+    m_tirepressure_active(false)
+{}
+
+AudioActor::~AudioActor()
+{
+    for (auto& sound : m_sounds)
+    {
+        sound->stop();
+        sound->setEnabled(false);
+    }
+}
+
+void AudioActor::AddSound(int node_id, int mode, std::string soundscript_name)
+{
+    SoundScriptTemplate* templ = SoundScriptManager::getSingleton().GetSoundScriptTemplate(soundscript_name);
+    auto* instance = new SoundScriptInstance(templ, SoundScriptManager::getSingleton().GetSoundMgr(), node_id, mode);
+    m_sounds.push_back(instance);
+}
+
+/// Deduce aeroengine slot (0-7) from trigger/modulation
+#define AFTERBURNER_TRIG_SLOT(_TRIG_) (_TRIG_ - SS_TRIG_AFTERBURNER1)
+#define AEROENGINE_TRIG_SLOT(_TRIG_) (_TRIG_ - SS_TRIG_AEROENGINE1)
+#define AEROENGINE_MOD_SLOT(_MOD_) (_MOD_ - SS_MOD_AEROENGINE1)
+#define THROTTLE_MOD_SLOT(_MOD_) (_MOD_ - SS_MOD_THROTTLE1)
+#define GPWS_TRIG_VALUE(_TRIG_) (((_TRIG_ - SS_TRIG_GPWS_10) + 1) * 10)
+
+void AudioActor::UpdateSounds()
+{
+    for (SoundScriptInstance* sound : m_sounds)
+    {
+        float gain;
+        if (this->ResolveModulation(gain, sound->GetGainSource()))
+            sound->ModulateGain(gain);
+
+        float pitch;
+        if (this->ResolveModulation(pitch, sound->GetPitchSource()))
+            sound->ModulatePitch(gain);
+
+        Turbojet* turbojet = nullptr;
+        AeroEngine* aeroengine = nullptr;
+
+        const SoundTriggers trigger = sound->GetTrigger();
+        switch (trigger)
+        {
+        case SS_TRIG_ENGINE:
+            if (m_engine_forced_state != 0)
+                sound->SetActive(m_engine_forced_state == 1);
+            else
+                sound->SetActive(m_actor->engine->isRunning());
+            break;
+
+        case SS_TRIG_BRAKE:
+            sound->SetActive(m_actor->brake > (m_actor->brakeforce / 6.0f));
+            break;
+
+        case SS_TRIG_PUMP: // Hydraulic pump
+            sound->SetActive(m_hydropump_active);
+            break;
+
+        case SS_TRIG_STARTER:
+            sound->SetActive(m_actor->engine->IsStarterActive());
+            break;
+
+        case SS_TRIG_IGNITION:
+            sound->SetActive(m_actor->engine->hasContact());
+            break;
+
+        case SS_TRIG_TURBOBOV:
+            sound->SetActive(m_actor->engine->IsBovSoundActive());
+            break;
+
+        case SS_TRIG_TURBOWASTEGATE:
+            sound->SetActive(m_actor->engine->IsTurboFluttering());
+            break;
+
+        case SS_TRIG_TURBOBACKFIRE:
+            sound->SetActive(m_actor->engine->IsBackfireSoundActive());
+            break;
+
+        case SS_TRIG_AIR_PURGE:
+            if (m_actor->engine->AudioWasAirPurged())
+                sound->runOnce();
+            break;
+
+        case SS_TRIG_SHIFT:
+            sound->SetActive(m_actor->engine->AudioIsShifting());
+            if (m_actor->engine->AudioWasGearShifted())
+            {
+                sound->runOnce();
+                m_actor->engine->AudioResetGearShifted();
+            }
+            break;
+
+        case SS_TRIG_GEARSLIDE:
+            if (m_actor->engine->AudioDidGearsSlide())
+            {
+                sound->runOnce();
+                m_actor->engine->AudioResetGearSlide();
+            }
+            break;
+
+        case SS_TRIG_REVERSE_GEAR: // Reverse gear beeping
+            if (m_actor->state == NETWORKED)
+                sound->SetActive(m_actor->getReverseLightVisible());
+            else
+                sound->SetActive(m_actor->IsReverseBeepAudioActive());
+            break;
+
+        case SS_TRIG_ALB_ACTIVE:
+            sound->SetActive(m_actor->IsAntiLockBrakeActive());
+            break;
+
+        case SS_TRIG_TC_ACTIVE:
+            sound->SetActive(m_actor->IsTractionControlActive());
+            break;
+
+        case SS_TRIG_PARK:
+            sound->SetActive(m_actor->parkingbrake != 0);
+            break;
+
+        case SS_TRIG_TURN_SIGNAL_WARN_TICK:
+            if (m_play_warn_signal_tick)
+            {
+                sound->runOnce();
+                m_play_warn_signal_tick = false;
+            }
+            break;
+
+        case SS_TRIG_TURN_SIGNAL_TICK:
+            if (m_play_turn_signal_tick)
+            {
+                sound->runOnce();
+                m_play_turn_signal_tick = false;
+            }
+            break;
+
+        case SS_TRIG_TURN_SIGNAL:
+            sound->SetActive(m_actor->getBlinkType() != BLINK_NONE);
+            break;
+
+        case SS_TRIG_HORN:
+            sound->SetActive(m_actor->IsPoliceSirenActive() || m_actor->IsCarHornActive());
+            break;
+
+        case SS_TRIG_GPWS_10:
+        case SS_TRIG_GPWS_20:
+        case SS_TRIG_GPWS_30:
+        case SS_TRIG_GPWS_40:
+        case SS_TRIG_GPWS_50:
+            if (m_actor->autopilot->AudioGetGpwsTrigger() == GPWS_TRIG_VALUE(trigger))
+                sound->runOnce();
+            break;
+
+        case SS_TRIG_GPWS_100:
+            if (m_actor->autopilot->AudioGetGpwsTrigger() == 100)
+                sound->runOnce();
+            break;
+
+        case SS_TRIG_GPWS_PULLUP:
+            if (m_actor->autopilot->AudioShouldPlayPullup())
+                sound->runOnce();
+            break;
+
+        case SS_TRIG_GPWS_MINIMUMS:
+            if (m_actor->autopilot->AudioShouldPlayMinimums())
+                sound->runOnce();
+            break;
+
+        case SS_TRIG_GPWS_APDISCONNECT:
+            if (m_gpws_ap_disconnected)
+            {
+                m_gpws_ap_disconnected = false;
+                sound->runOnce();
+            }
+            break;
+
+        case SS_TRIG_AOA:
+            sound->SetActive(m_aoa_active);
+            break;
+
+        case SS_TRIG_SCREETCH:
+            if (m_screetch_play_once)
+            {
+                sound->runOnce();
+                m_screetch_play_once = false;
+            }
+            break;
+
+        case SS_TRIG_BREAK:
+            if (m_break_play_once)
+            {
+                sound->runOnce();
+                m_break_play_once = false;
+            }
+            break;
+
+        case SS_TRIG_AIR: // Tire pressurizing
+            sound->SetActive(m_tirepressure_active);
+            break;
+
+        case SS_TRIG_AFTERBURNER1:
+        case SS_TRIG_AFTERBURNER2:
+        case SS_TRIG_AFTERBURNER3:
+        case SS_TRIG_AFTERBURNER4:
+        case SS_TRIG_AFTERBURNER5:
+        case SS_TRIG_AFTERBURNER6:
+        case SS_TRIG_AFTERBURNER7:
+        case SS_TRIG_AFTERBURNER8:
+            turbojet = reinterpret_cast<Turbojet*>(m_actor->aeroengines[AFTERBURNER_TRIG_SLOT(trigger)]);
+            sound->transition(turbojet->getAfterburner(), turbojet->GetPrevAfterburner());
+            break;
+
+        case SS_TRIG_AEROENGINE1:
+        case SS_TRIG_AEROENGINE2:
+        case SS_TRIG_AEROENGINE3:
+        case SS_TRIG_AEROENGINE4:
+        case SS_TRIG_AEROENGINE5:
+        case SS_TRIG_AEROENGINE6:
+        case SS_TRIG_AEROENGINE7:
+        case SS_TRIG_AEROENGINE8:
+            aeroengine = m_actor->aeroengines[AEROENGINE_TRIG_SLOT(trigger)];
+            sound->SetActive(aeroengine->getIgnition() && !aeroengine->isFailed());
+            break;
+
+        case SS_TRIG_AVICHAT01:
+        case SS_TRIG_AVICHAT02:
+        case SS_TRIG_AVICHAT03:
+        case SS_TRIG_AVICHAT04:
+        case SS_TRIG_AVICHAT05:
+        case SS_TRIG_AVICHAT06:
+        case SS_TRIG_AVICHAT07:
+        case SS_TRIG_AVICHAT08:
+        case SS_TRIG_AVICHAT09:
+        case SS_TRIG_AVICHAT10:
+        case SS_TRIG_AVICHAT11:
+        case SS_TRIG_AVICHAT12:
+        case SS_TRIG_AVICHAT13:
+            if (m_avi_chatter_trigger == trigger)
+            {
+                sound->runOnce();
+                m_avi_chatter_trigger = SS_TRIG_NONE;
+            }
+            break;
+
+        default:;
+        }
+    }
+}
+
+bool AudioActor::ResolveModulation(float& out_value, const ModulationSources source)
+{
+    switch (source)
+    {
+    case SS_MOD_THROTTLE1:
+    case SS_MOD_THROTTLE2:
+    case SS_MOD_THROTTLE3:
+    case SS_MOD_THROTTLE4:
+    case SS_MOD_THROTTLE5:
+    case SS_MOD_THROTTLE6:
+    case SS_MOD_THROTTLE7:
+    case SS_MOD_THROTTLE8:
+        out_value = m_actor->aeroengines[THROTTLE_MOD_SLOT(source)]->getThrottle();
+        return true;
+
+    case SS_MOD_AEROENGINE1:
+    case SS_MOD_AEROENGINE2:
+    case SS_MOD_AEROENGINE3:
+    case SS_MOD_AEROENGINE4:
+    case SS_MOD_AEROENGINE5:
+    case SS_MOD_AEROENGINE6:
+    case SS_MOD_AEROENGINE7:
+    case SS_MOD_AEROENGINE8:
+        out_value = m_actor->aeroengines[AEROENGINE_MOD_SLOT(source)]->getRPM();
+        return true;
+
+    case SS_MOD_PUMP: // Hydraulic pump
+        out_value = m_hydropump_modulation;
+        return true;
+
+    case SS_MOD_AOA:
+        out_value = m_aoa_modulation;
+        return true;
+
+    case SS_MOD_INJECTOR:
+        out_value = m_actor->engine->GetInjectorAudioLevel();
+        return true;
+
+    case SS_MOD_SCREETCH:
+        out_value = m_screetch_modulation;
+        return true;
+
+    case SS_MOD_BREAK:
+        out_value = m_break_modulation;
+        return true;
+
+    case SS_MOD_ENGINE:
+        out_value = m_engine_modulation;
+        return true;
+
+    case SS_MOD_TURBO:
+        out_value = m_actor->engine->GetTurboRPM();
+        return true;
+
+    case SS_MOD_WHEELSPEED:
+        out_value = m_actor->WheelSpeed * 3.6; // TODO: Magic!
+        return true;
+
+    case SS_MOD_AIRSPEED:
+        out_value = m_actor->nodes[0].Velocity.length() * 1.9438; // TODO: Magic!
+        return true;
+
+    case SS_MOD_TORQUE:
+        out_value = m_actor->engine->GetClutchTorque();
+        return true;
+
+    case SS_MOD_GEARBOX:
+        out_value = m_actor->engine->GetWheelRevolutions();
+        return true;
+
+    default:
+        return false;
+    }
+}
+
+void AudioActor::SetHydropumpState(bool active, float modulation)
+{
+    m_hydropump_active = active;
+    m_hydropump_modulation = modulation;
+}
+
+void AudioActor::SetAoaState(bool active, float modulation)
+{
+    m_aoa_active = active;
+    m_aoa_modulation = modulation;
+}
+
+void AudioActor::PlayScreetchOnce(float modulation)
+{
+    m_screetch_play_once = true;
+    m_screetch_modulation = modulation;
+}
+
+void AudioActor::PlayBreakOnce(float modulation)
+{
+    m_break_play_once = true;
+    m_break_modulation = modulation;
 }
 
 #endif // USE_OPENAL

@@ -1128,29 +1128,23 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
                     {
                         if (m_pressure_pressed = curr_truck->addPressure(dt * -10.0))
                         {
+                            curr_truck->GetAudioActor().SetTirePressureActive(true);
                             if (RoR::App::GetOverlayWrapper())
                                 RoR::App::GetOverlayWrapper()->showPressureOverlay(true);
-#ifdef USE_OPENAL
-                            SoundScriptManager::getSingleton().trigStart(curr_truck, SS_TRIG_AIR);
-#endif // OPENAL
                         }
                     }
                     else if (RoR::App::GetInputEngine()->getEventBoolValue(EV_COMMON_PRESSURE_MORE))
                     {
                         if (m_pressure_pressed = curr_truck->addPressure(dt * 10.0))
                         {
+                            curr_truck->GetAudioActor().SetTirePressureActive(true);
                             if (RoR::App::GetOverlayWrapper())
                                 RoR::App::GetOverlayWrapper()->showPressureOverlay(true);
-#ifdef USE_OPENAL
-                            SoundScriptManager::getSingleton().trigStart(curr_truck, SS_TRIG_AIR);
-#endif // OPENAL
                         }
                     }
                     else if (m_pressure_pressed)
                     {
-#ifdef USE_OPENAL
-                        SoundScriptManager::getSingleton().trigStop(curr_truck, SS_TRIG_AIR);
-#endif // OPENAL
+                        curr_truck->GetAudioActor().SetTirePressureActive(true);
                         m_pressure_pressed = false;
                         if (RoR::App::GetOverlayWrapper())
                             RoR::App::GetOverlayWrapper()->showPressureOverlay(false);
@@ -1991,11 +1985,8 @@ void RoRFrameListener::ChangedCurrentVehicle(Beam* previous_vehicle, Beam* curre
         {
             RoR::App::GetOverlayWrapper()->showDashboardOverlays(false, previous_vehicle);
         }
-
-#ifdef USE_OPENAL
-        SoundScriptManager::getSingleton().trigStop(previous_vehicle, SS_TRIG_AIR);
-        SoundScriptManager::getSingleton().trigStop(previous_vehicle, SS_TRIG_PUMP);
-#endif // OPENAL
+        previous_vehicle->GetAudioActor().SetTirePressureActive(true);
+        previous_vehicle->GetAudioActor().SetHydropumpState(false, 0.f);
     }
 
     if (current_vehicle == nullptr)

@@ -601,35 +601,6 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
     antilockbrake = std::max(antilockbrake, (int)alb_active);
     tractioncontrol = std::max(tractioncontrol, (int)tc_active);
 
-    if (step == maxsteps)
-    {
-        if (!antilockbrake)
-        {
-#ifdef USE_OPENAL
-            SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_ALB_ACTIVE);
-#endif //USE_OPENAL
-        }
-        else
-        {
-#ifdef USE_OPENAL
-            SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_ALB_ACTIVE);
-#endif //USE_OPENAL
-        }
-
-        if (!tractioncontrol)
-        {
-#ifdef USE_OPENAL
-            SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_TC_ACTIVE);
-#endif //USE_OPENAL
-        }
-        else
-        {
-#ifdef USE_OPENAL
-            SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_TC_ACTIVE);
-#endif //USE_OPENAL
-        }
-    }
-
     for (int i = 0; i < free_wheel; i++)
     {
         wheels[i].lastSpeed = wheels[i].speed;
@@ -1140,21 +1111,16 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
             engine->setPrime(use_engine_priming);
         }
 
-        if (doUpdate && this == BeamFactory::getSingleton().getCurrentTruck())
+        if (audio_num_hydropumps != 0)
         {
-#ifdef USE_OPENAL
-            if (audio_num_hydropumps != 0)
-            {
-                SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_PUMP);
-                const float pump_rpm = 660.0f * (1.0f - (hydropump_work_audio / static_cast<float>(audio_num_hydropumps)) / 100.0f);
-                SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_PUMP, pump_rpm);
-            }
-            else
-            {
-                SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_PUMP);
-            }
-#endif //USE_OPENAL
+            const float pump_rpm = 660.0f * (1.0f - (hydropump_work_audio / static_cast<float>(audio_num_hydropumps)) / 100.0f);
+            m_audio.SetHydropumpState(true, pump_rpm);
         }
+        else
+        {
+            m_audio.SetHydropumpState(false, 0.f);
+        }
+
         // rotators
         for (int i = 0; i < free_rotator; i++)
         {
@@ -1450,12 +1416,9 @@ void Beam::calcBeams(int doUpdate, Ogre::Real dt, int step, int maxsteps)
                 // Test if the beam should break
                 if (len > beams[i].strength)
                 {
-                    // Sound effect.
-                    // Sound volume depends on springs stored energy
-#ifdef USE_OPENAL
-                    SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_BREAK, 0.5 * k * difftoBeamL * difftoBeamL);
-                    SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_BREAK);
-#endif //OPENAL
+                    // Sound effect -- volume depends on springs stored energy
+                    m_audio.PlayBreakOnce(0.5 * k * difftoBeamL * difftoBeamL);
+
                     increased_accuracy = true;
 
                     //Break the beam only when it is not connected to a node
@@ -1621,12 +1584,8 @@ void Beam::calcBeamsInterTruck(int doUpdate, Ogre::Real dt, int step, int maxste
                 // Test if the beam should break
                 if (len > interTruckBeams[i]->strength)
                 {
-                    // Sound effect.
-                    // Sound volume depends on springs stored energy
-#ifdef USE_OPENAL
-                    SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_BREAK, 0.5 * k * difftoBeamL * difftoBeamL);
-                    SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_BREAK);
-#endif //OPENAL
+                    // Sound effect -- volume depends on springs stored energy
+                    m_audio.PlayBreakOnce(0.5 * k * difftoBeamL * difftoBeamL);
 
                     //Break the beam only when it is not connected to a node
                     //which is a part of a collision triangle and has 2 "live" beams or less
@@ -1721,10 +1680,9 @@ void Beam::calcNodes(int doUpdate, Ogre::Real dt, int step, int maxsteps)
                             {
                                 if (dustp)
                                     dustp->allocSmoke(nodes[i].AbsPosition, nodes[i].Velocity);
-#ifdef USE_OPENAL
-                                SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_SCREETCH, (ns - thresold) / thresold);
-                                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_SCREETCH);
-#endif //USE_OPENAL
+
+                                m_audio.PlayScreetchOnce((ns - thresold) / thresold);
+
                                 //Shouldn't skidmarks be activated from here?
                                 if (useSkidmarks)
                                 {

@@ -943,9 +943,9 @@ void TerrainObjectManager::loadObject(const Ogre::String& name, const Ogre::Vect
             {
                 char tmp[255] = "";
                 sscanf(ptline, "sound %s", tmp);
-                SoundScriptInstance* sound = SoundScriptManager::getSingleton().createInstance(tmp, MAX_TRUCKS + 1, tenode);
-                sound->setPosition(tenode->getPosition(), Vector3::ZERO);
-                sound->start();
+                m_audio.AddSound(-1, -2, tmp);
+                m_audio.GetSounds().back()->setPosition(tenode->getPosition(), Vector3::ZERO);
+                m_audio.GetSounds().back()->start();
             }
 #endif //USE_OPENAL
             continue;

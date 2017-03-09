@@ -516,8 +516,6 @@ protected:
 
     Rail *CreateRail(std::vector<RigDef::Node::Range> & node_ranges);
 
-    static void AddSoundSource(Beam *vehicle, SoundScriptInstance *sound_script, int node_index, int type = -2);
-
     static void AddSoundSourceInstance(Beam *vehicle, Ogre::String const & sound_script_name, int node_index, int type = -2);
 
 /* -------------------------------------------------------------------------- */
@@ -614,20 +612,6 @@ protected:
     * @return True if there is space left.
     */
     bool CheckCameraRailLimit(unsigned int count);
-
-    /**
-    * Checks there is still space left in rig_t::soundsources array.
-    * @param count Required number of free slots.
-    * @return True if there is space left.
-    */
-    bool CheckSoundScriptLimit(unsigned int count);
-
-    /**
-    * Checks there is still space left in rig_t::soundsources array (static version).
-    * @param count Required number of free slots.
-    * @return True if there is space left.
-    */
-    static bool CheckSoundScriptLimit(rig_t *vehicle, unsigned int count);
 
     /**
     * Checks there is still space left in rig_t::soundsources array.

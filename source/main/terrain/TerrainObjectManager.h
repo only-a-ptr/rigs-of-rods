@@ -22,6 +22,7 @@
 #pragma once
 
 #include "RoRPrerequisites.h"
+#include "SoundScriptManager.h"
 
 #ifdef USE_PAGED
 #include "BatchPage.h"
@@ -73,7 +74,7 @@ public:
 
     bool update(float dt);
 
-protected:
+private:
 
     TerrainManager* terrainManager;
 
@@ -138,6 +139,8 @@ protected:
     std::map<std::string, loadedObject_t> loadedObjects;
 
     std::vector<object_t> objects;
+
+    RoR::AudioActor m_audio;
 
     void proceduralTests();
 };

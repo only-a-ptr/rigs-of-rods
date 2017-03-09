@@ -37,18 +37,18 @@ Turbojet::Turbojet(char* propname, int tnumber, int trucknum, node_t* nd, int tn
     number = tnumber;
     this->trucknum = trucknum;
 #ifdef USE_OPENAL
-    switch (number)
-    {
-    case 0:  mod_id = SS_MOD_AEROENGINE1;  src_id = SS_TRIG_AEROENGINE1;  thr_id = SS_MOD_THROTTLE1;  ab_id = SS_TRIG_AFTERBURNER1;  break;
-    case 1:  mod_id = SS_MOD_AEROENGINE2;  src_id = SS_TRIG_AEROENGINE2;  thr_id = SS_MOD_THROTTLE2;  ab_id = SS_TRIG_AFTERBURNER2;  break;
-    case 2:  mod_id = SS_MOD_AEROENGINE3;  src_id = SS_TRIG_AEROENGINE3;  thr_id = SS_MOD_THROTTLE3;  ab_id = SS_TRIG_AFTERBURNER3;  break;
-    case 3:  mod_id = SS_MOD_AEROENGINE4;  src_id = SS_TRIG_AEROENGINE4;  thr_id = SS_MOD_THROTTLE4;  ab_id = SS_TRIG_AFTERBURNER4;  break;
-    case 4:  mod_id = SS_MOD_AEROENGINE5;  src_id = SS_TRIG_AEROENGINE5;  thr_id = SS_MOD_THROTTLE5;  ab_id = SS_TRIG_AFTERBURNER5;  break;
-    case 5:  mod_id = SS_MOD_AEROENGINE6;  src_id = SS_TRIG_AEROENGINE6;  thr_id = SS_MOD_THROTTLE6;  ab_id = SS_TRIG_AFTERBURNER6;  break;
-    case 6:  mod_id = SS_MOD_AEROENGINE7;  src_id = SS_TRIG_AEROENGINE7;  thr_id = SS_MOD_THROTTLE7;  ab_id = SS_TRIG_AFTERBURNER7;  break;
-    case 7:  mod_id = SS_MOD_AEROENGINE8;  src_id = SS_TRIG_AEROENGINE8;  thr_id = SS_MOD_THROTTLE8;  ab_id = SS_TRIG_AFTERBURNER8;  break;
-    default: mod_id = SS_MOD_NONE;         src_id = SS_TRIG_NONE;         thr_id = SS_MOD_NONE;       ab_id = SS_TRIG_NONE;
-    }
+    //OBSOLETE switch (number)
+    //OBSOLETE {
+    //OBSOLETE case 0:  mod_id = SS_MOD_AEROENGINE1;  src_id = SS_TRIG_AEROENGINE1;  thr_id = SS_MOD_THROTTLE1;  ab_id = SS_TRIG_AFTERBURNER1;  break;
+    //OBSOLETE case 1:  mod_id = SS_MOD_AEROENGINE2;  src_id = SS_TRIG_AEROENGINE2;  thr_id = SS_MOD_THROTTLE2;  ab_id = SS_TRIG_AFTERBURNER2;  break;
+    //OBSOLETE case 2:  mod_id = SS_MOD_AEROENGINE3;  src_id = SS_TRIG_AEROENGINE3;  thr_id = SS_MOD_THROTTLE3;  ab_id = SS_TRIG_AFTERBURNER3;  break;
+    //OBSOLETE case 3:  mod_id = SS_MOD_AEROENGINE4;  src_id = SS_TRIG_AEROENGINE4;  thr_id = SS_MOD_THROTTLE4;  ab_id = SS_TRIG_AFTERBURNER4;  break;
+    //OBSOLETE case 4:  mod_id = SS_MOD_AEROENGINE5;  src_id = SS_TRIG_AEROENGINE5;  thr_id = SS_MOD_THROTTLE5;  ab_id = SS_TRIG_AFTERBURNER5;  break;
+    //OBSOLETE case 5:  mod_id = SS_MOD_AEROENGINE6;  src_id = SS_TRIG_AEROENGINE6;  thr_id = SS_MOD_THROTTLE6;  ab_id = SS_TRIG_AFTERBURNER6;  break;
+    //OBSOLETE case 6:  mod_id = SS_MOD_AEROENGINE7;  src_id = SS_TRIG_AEROENGINE7;  thr_id = SS_MOD_THROTTLE7;  ab_id = SS_TRIG_AFTERBURNER7;  break;
+    //OBSOLETE case 7:  mod_id = SS_MOD_AEROENGINE8;  src_id = SS_TRIG_AEROENGINE8;  thr_id = SS_MOD_THROTTLE8;  ab_id = SS_TRIG_AFTERBURNER8;  break;
+    //OBSOLETE default: mod_id = SS_MOD_NONE;         src_id = SS_TRIG_NONE;         thr_id = SS_MOD_NONE;       ab_id = SS_TRIG_NONE;
+    //OBSOLETE }
 #endif
     nodeback = tnodeback;
     nodefront = tnodefront;
@@ -58,6 +58,8 @@ Turbojet::Turbojet(char* propname, int tnumber, int trucknum, node_t* nd, int tn
     maxdrythrust = tmaxdrythrust;
     afterburnthrust = tafterburnthrust;
     afterburner = false;
+    ignition = false;
+    m_ignition_prev = false;
     timer = 0;
     warmuptime = 15.0;
     lastflip = 0;
@@ -135,10 +137,10 @@ Turbojet::~Turbojet()
 {
     //A fast work around 
     //
-    SoundScriptManager::getSingleton().modulate(trucknum, thr_id, 0);
-    SoundScriptManager::getSingleton().modulate(trucknum, mod_id, 0);
-    SoundScriptManager::getSingleton().trigStop(trucknum, ab_id);
-    SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
+    // DEPRECATED SoundScriptManager::getSingleton().modulate(trucknum, thr_id, 0);
+    // DEPRECATED SoundScriptManager::getSingleton().modulate(trucknum, mod_id, 0);
+    // DEPRECATED SoundScriptManager::getSingleton().trigStop(trucknum, ab_id);
+    // DEPRECATED SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
 
     if (flameMesh != nullptr)
     {
@@ -231,12 +233,14 @@ void Turbojet::updateVisuals()
 
 void Turbojet::updateForces(float dt, int doUpdate)
 {
+    m_ignition_prev = ignition;
+    m_afterburner_prev = afterburner;
     if (doUpdate)
     {
-#ifdef USE_OPENAL
-        //sound update
-        SoundScriptManager::getSingleton().modulate(trucknum, mod_id, rpm);
-#endif //OPENAL
+//DEPRECATED #ifdef USE_OPENAL
+//DEPRECATED         //sound update
+//DEPRECATED         SoundScriptManager::getSingleton().modulate(trucknum, mod_id, rpm);
+//DEPRECATED #endif //OPENAL
     }
     timer += dt;
     axis = nodes[nodefront].RelPosition - nodes[nodeback].RelPosition;
@@ -277,12 +281,12 @@ void Turbojet::updateForces(float dt, int doUpdate)
     }
     else
         afterburner = false;
-#ifdef USE_OPENAL
-    if (afterburner)
-        SoundScriptManager::getSingleton().trigStart(trucknum, ab_id);
-    else
-        SoundScriptManager::getSingleton().trigStop(trucknum, ab_id);
-#endif //OPENAL
+//DEPRECATED #ifdef USE_OPENAL
+//DEPRECATED     if (afterburner)
+//DEPRECATED         SoundScriptManager::getSingleton().trigStart(trucknum, ab_id);
+//DEPRECATED     else
+//DEPRECATED         SoundScriptManager::getSingleton().trigStop(trucknum, ab_id);
+//DEPRECATED #endif //OPENAL
 
     nodes[nodeback].Forces += (enginethrust * 1000.0) * axis;
     exhaust_velocity = enginethrust * 5.6 / area;
@@ -295,10 +299,10 @@ void Turbojet::setThrottle(float val)
     if (val < 0.0)
         val = 0.0;
     throtle = val;
-#ifdef USE_OPENAL
-    //sound update
-    SoundScriptManager::getSingleton().modulate(trucknum, thr_id, val);
-#endif //OPENAL
+//DEPRECATED #ifdef USE_OPENAL
+//DEPRECATED     //sound update
+//DEPRECATED     SoundScriptManager::getSingleton().modulate(trucknum, thr_id, val); // SS_MOD_THROTTLE
+//DEPRECATED #endif //OPENAL
 }
 
 float Turbojet::getThrottle()
@@ -338,15 +342,15 @@ void Turbojet::flipStart()
     {
         warmup = true;
         warmupstart = timer;
-#ifdef USE_OPENAL
-        SoundScriptManager::getSingleton().trigStart(trucknum, src_id);
-#endif //OPENAL
+//OBSOLETE #ifdef USE_OPENAL
+//OBSOLETE         SoundScriptManager::getSingleton().trigStart(trucknum, src_id);
+//OBSOLETE #endif //OPENAL
     }
     else
     {
-#ifdef USE_OPENAL
-        SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
-#endif //OPENAL
+//OBSOLETE #ifdef USE_OPENAL
+//OBSOLETE         SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
+//OBSOLETE #endif //OPENAL
     }
 
     lastflip = timer;

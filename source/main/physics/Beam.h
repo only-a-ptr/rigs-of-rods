@@ -26,6 +26,7 @@
 #include "RoRPrerequisites.h"
 #include "PerVehicleCameraContext.h"
 #include "RigDef_Prerequisites.h"
+#include "SoundScriptManager.h" // For AudioActor
 
 #include "BeamData.h"
 
@@ -42,10 +43,9 @@ class Beam :
     public ZeroedMemoryAllocator
 {
     friend class RigSpawner;
-    friend class RigInspector; // Debug utility class
 
 public:
-    Beam() {}; // for wrapper, DO NOT USE!
+    Beam():m_audio(this) {}; // for wrapper, DO NOT USE! // TODO: is this needed?? ~ only_a_ptr, 03/2017
     ~Beam();
 
 #ifdef USE_ANGELSCRIPT
@@ -542,8 +542,13 @@ public:
     bool isPreloadedWithTerrain() { return m_preloaded_with_terrain; };
 
     // Inline getters
-    inline Ogre::SceneNode*                 getSceneNode()            { return beamsRoot; }
-    inline RoR::PerVehicleCameraContext*    GetCameraContext()        { return &m_camera_context; }
+    inline Ogre::SceneNode*              getSceneNode()                  { return beamsRoot; }
+    inline RoR::PerVehicleCameraContext* GetCameraContext()              { return &m_camera_context; }
+    inline RoR::AudioActor&              GetAudioActor()                 { return m_audio; }
+    inline bool                          IsAntiLockBrakeActive() const   { return antilockbrake != 0; }
+    inline bool                          IsTractionControlActive() const { return tractioncontrol != 0; }
+    inline bool                          IsCarHornActive() const         { return m_is_carhorn_active; }
+    inline bool                          IsPoliceSirenActive() const     { return m_is_policesiren_active; }
 
     DashBoardManager *dash;
 
@@ -578,7 +583,11 @@ public:
 
     void UpdatePropAnimations(const float dt);
 
-protected:
+    bool IsReverseBeepAudioActive() const;
+    inline void SetCarHornActive(bool s) { m_is_carhorn_active = s; }
+    inline void TogglePoliceSirenActive() { m_is_policesiren_active = !m_is_policesiren_active; }
+
+private:
 
     /**
     * TIGHT LOOP; Physics & sound;
@@ -699,6 +708,8 @@ protected:
     int netcounter;
     Ogre::MovableText *netMT; //, *netDist;
     bool m_hide_own_net_label;
+    bool m_is_carhorn_active;
+    bool m_is_policesiren_active;
 
     // network properties
     Ogre::String networkUsername;
@@ -772,4 +783,6 @@ protected:
      * @return a pair containing the rail, and the distant to the SlideNode
      */
     std::pair<RailGroup*, Ogre::Real> getClosestRailOnTruck( Beam* truck, const SlideNode& node);
+
+    RoR::AudioActor m_audio;
 };

@@ -330,10 +330,7 @@ int main(int argc, char *argv[])
                 }
 
                 if (App::GetAudioMenuMusic())
-                {
-                    SoundScriptManager::getSingleton().createInstance("tracks/main_menu_tune", -1, nullptr);
-                    SoundScriptManager::getSingleton().trigStart(-1, SS_TRIG_MAIN_MENU);
-                }
+                    SoundScriptManager::getSingleton().PlayMusic(SS_TRIG_MAIN_MENU);
 
                 App::GetGuiManager()->ReflectGameState();
                 if (App::GetPendingMpState() == App::MP_STATE_CONNECTED || BSETTING("SkipMainMenu", false))

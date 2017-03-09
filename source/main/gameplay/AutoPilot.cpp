@@ -21,6 +21,7 @@
 #include "AutoPilot.h"
 
 #include "BeamData.h"
+#include "BeamFactory.h"
 #include "IHeightFinder.h"
 #include "SoundScriptManager.h"
 #include "TerrainManager.h"
@@ -28,12 +29,12 @@
 
 using namespace Ogre;
 
-Autopilot::Autopilot(int trucknum)
+Autopilot::Autopilot(Beam* airplane):
+    m_airplane(airplane),
+    ref_l(nullptr),
+    ref_r(nullptr),
+    ref_b(nullptr)
 {
-    this->trucknum = trucknum;
-    ref_l = nullptr;
-    ref_r = nullptr;
-    ref_b = nullptr;
     reset();
 }
 
@@ -57,6 +58,9 @@ void Autopilot::reset()
     lastradiorwh = 0;
     last_closest_hdist = 0;
     wantsdisconnect = false;
+    m_audio_play_pullup = false;
+    m_audio_play_minis = false;
+    m_gpws_audio_trigger = 0;
 }
 
 void Autopilot::disconnect()
@@ -67,9 +71,7 @@ void Autopilot::disconnect()
     wantsdisconnect = false;
     if (mode_gpws)
     {
-#ifdef USE_OPENAL
-        SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_APDISCONNECT);
-#endif //OPENAL
+        m_airplane->GetAudioActor().NotifyGpwsApDisconnect();
     }
 }
 
@@ -225,9 +227,7 @@ float Autopilot::getThrottle(float thrtl, float dt)
     {
         //tropospheric model valid up to 11.000m (33.000ft)
         float altitude = ref_l->AbsPosition.y;
-        //float sea_level_temperature=273.15+15.0; //in Kelvin
         float sea_level_pressure = 101325; //in Pa
-        //float airtemperature=sea_level_temperature-altitude*0.0065; //in Kelvin
         float airpressure = sea_level_pressure * pow(1.0 - 0.0065 * altitude / 288.15, 5.24947); //in Pa
         float airdensity = airpressure * 0.0000120896;//1.225 at sea level
 
@@ -325,20 +325,21 @@ void Autopilot::gpws_update(float spawnheight)
             groundalt = gEnv->terrainManager->getWater()->getHeight();
         float height = (ref_c->AbsPosition.y - groundalt - spawnheight) * 3.28083f; //in feet!
         //skip height warning sounds when the plane is slower then ~10 knots
+        m_gpws_audio_trigger = 0;
         if ((ref_c->Velocity.length() * 1.9685f) > 10.0f)
         {
             if (height < 10 && last_gpws_height > 10)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_10);
+                m_gpws_audio_trigger = 10;
             if (height < 20 && last_gpws_height > 20)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_20);
+                m_gpws_audio_trigger = 20;
             if (height < 30 && last_gpws_height > 30)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_30);
+                m_gpws_audio_trigger = 30;
             if (height < 40 && last_gpws_height > 40)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_40);
+                m_gpws_audio_trigger = 40;
             if (height < 50 && last_gpws_height > 50)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_50);
+                m_gpws_audio_trigger = 50;
             if (height < 100 && last_gpws_height > 100)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_100);
+                m_gpws_audio_trigger = 100;
         }
         last_gpws_height = height;
 
@@ -348,8 +349,7 @@ void Autopilot::gpws_update(float spawnheight)
         // get the y-velocity in meters/s
         float yVel = ref_c->Velocity.y * 1.9685f;
         // will trigger the pullup sound when vvi is high (avoid pullup warning when landing normal) and groundcontact will be in less then 10 seconds
-        if (yVel * 10.0f < -height && yVel < -10.0f)
-            SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_PULLUP);
+        m_audio_play_pullup = (yVel * 10.0f < -height && yVel < -10.0f);
     }
 #endif //OPENAL
 }
@@ -425,8 +425,8 @@ void Autopilot::getRadioFix(TerrainObjectManager::localizer_t* localizers, int f
     *hdev = closest_hangle;
     *vdev = closest_vangle;
 #ifdef USE_OPENAL
-    if (mode_heading == HEADING_NAV && mode_gpws && closest_hdist > 10.0 && closest_hdist < 350.0 && last_closest_hdist > 10.0 && last_closest_hdist > 350.0)
-        SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_GPWS_MINIMUMS);
+    m_audio_play_minis = (mode_heading == HEADING_NAV && mode_gpws && closest_hdist > 10.0 
+        && closest_hdist < 350.0 && last_closest_hdist > 10.0 && last_closest_hdist > 350.0);
 #endif //OPENAL
     last_closest_hdist = closest_hdist;
     if (mode_heading == HEADING_NAV && (closest_hdist < 20.0 || closest_vdist < 20.0))

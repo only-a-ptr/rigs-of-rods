@@ -53,7 +53,7 @@ public:
     int heading;
     bool wantsdisconnect;
 
-    Autopilot(int trucknum);
+    Autopilot(Beam* airplane);
     void reset();
     void disconnect();
     void setInertialReferences(node_t* refl, node_t* refr, node_t* refb, node_t* refc);
@@ -74,6 +74,10 @@ public:
     void gpws_update(float spawnheight);
 
     void getRadioFix(TerrainObjectManager::localizer_t* localizers, int free_localizer, float* vdev, float* hdev);
+
+    inline size_t AudioGetGpwsTrigger() const { return m_gpws_audio_trigger; }
+    inline bool   AudioShouldPlayPullup () const { return m_audio_play_pullup; }
+    inline bool   AudioShouldPlayMinimums () const { return m_audio_play_minis; } 
 
 private:
 
@@ -99,6 +103,9 @@ private:
     float lastradiorwh;
     float lastradiorwd;
     float last_closest_hdist;
+    size_t m_gpws_audio_trigger; // Height of notification: 10/20/30/40/50/100. 0 means no sound.
+    bool m_audio_play_pullup; ///< GPWS pullup alert
+    bool m_audio_play_minis; ///< GPWS minimums
 
-    int trucknum;
+    Beam* m_airplane;
 };

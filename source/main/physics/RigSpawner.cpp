@@ -185,8 +185,6 @@ void RigSpawner::InitializeRig()
     m_rig->free_cparticle = 0;
     m_rig->nodes_debug.clear();
     m_rig->beams_debug.clear();
-    memset(m_rig->soundsources, 0, sizeof(soundsource_t) * MAX_SOUNDSCRIPTS_PER_TRUCK);
-    m_rig->free_soundsource = 0;
     memset(m_rig->pressure_beams, 0, sizeof(int) * MAX_PRESSURE_BEAMS);
     m_rig->free_pressure_beam = 0;
     memset(m_rig->aeroengines, 0, sizeof(AeroEngine *) * MAX_AEROENGINES);
@@ -781,9 +779,9 @@ void RigSpawner::ProcessTurbojet(RigDef::Turbojet & def)
     SPAWNER_PROFILE_SCOPED();
 
     int front,back,ref;
-    front = GetNodeIndexOrThrow(def.front_node);//parse_node_number(c, args[0]);
-    back  = GetNodeIndexOrThrow(def.back_node);//parse_node_number(c, args[1]);
-    ref   = GetNodeIndexOrThrow(def.side_node);//parse_node_number(c, args[2]);
+    front = GetNodeIndexOrThrow(def.front_node);
+    back  = GetNodeIndexOrThrow(def.back_node);
+    ref   = GetNodeIndexOrThrow(def.side_node);
     
     char propname[256];
     sprintf(propname, "turbojet-%s-%i", m_rig->truckname, m_rig->free_aeroengine);
@@ -795,13 +793,13 @@ void RigSpawner::ProcessTurbojet(RigDef::Turbojet & def)
         front, 
         back, 
         ref, 
-        def.dry_thrust, //drthrust, 
-        def.is_reversable != 0, //rev!=0, 
-        def.wet_thrust > 0, //abthrust>0, 
-        def.wet_thrust, //abthrust, 
+        def.dry_thrust,
+        def.is_reversable != 0,
+        def.wet_thrust > 0,
+        def.wet_thrust,
         def.front_diameter,
-        def.back_diameter, //bdiam, 
-        def.nozzle_length, //len, 
+        def.back_diameter,
+        def.nozzle_length,
         m_rig->disable_smoke, 
         m_rig->heathaze, 
         m_rig->materialFunctionMapper, 
@@ -811,9 +809,8 @@ void RigSpawner::ProcessTurbojet(RigDef::Turbojet & def)
     m_rig->aeroengines[m_rig->free_aeroengine]=tj;
     m_rig->driveable=AIRPLANE;
     if (m_rig->autopilot == nullptr && m_rig->state != NETWORKED)
-        m_rig->autopilot=new Autopilot(m_rig->trucknum);
-    //if (audio) audio->setupAeroengines(TURBOJETS);
-    
+        m_rig->autopilot=new Autopilot(m_rig);
+
     m_rig->free_aeroengine++;
 }
 
@@ -904,7 +901,7 @@ void RigSpawner::BuildAerialEngine(
 
     Turboprop *turbo_prop = new Turboprop(
         propname,
-        m_rig->nodes, 
+        m_rig->nodes,
         ref_node_index,
         back_node_index,
         blade_1_node_index,
@@ -928,7 +925,7 @@ void RigSpawner::BuildAerialEngine(
     /* Autopilot */
     if (m_rig->autopilot == nullptr && m_rig->state != NETWORKED)
     {
-        m_rig->autopilot = new Autopilot(m_rig->trucknum);
+        m_rig->autopilot = new Autopilot(m_rig);
     }
 
     /* Visuals */
@@ -1348,51 +1345,21 @@ void RigSpawner::ProcessSoundSource2(RigDef::SoundSource2 & def)
     {
         return;
     }
-    AddSoundSource(
-            m_rig,
-            SoundScriptManager::getSingleton().createInstance(def.sound_script_name, m_rig->trucknum), 
-            node_index,
-            mode
-        );
+    m_rig->m_audio.AddSound(node_index, mode, def.sound_script_name);
 }
 
 void RigSpawner::AddSoundSourceInstance(Beam *vehicle, Ogre::String const & sound_script_name, int node_index, int type)
 {
     SPAWNER_PROFILE_SCOPED();
 
-    AddSoundSource(vehicle, SoundScriptManager::getSingleton().createInstance(sound_script_name, vehicle->trucknum, nullptr), node_index);
-}
-
-void RigSpawner::AddSoundSource(Beam *vehicle, SoundScriptInstance *sound_script, int node_index, int type)
-{
-    SPAWNER_PROFILE_SCOPED();
-
-    if (! CheckSoundScriptLimit(vehicle, 1))
-    {
-        return;
-    }
-
-    if (sound_script == nullptr)
-    {
-        return;
-    }
-
-    vehicle->soundsources[vehicle->free_soundsource].ssi=sound_script;
-    vehicle->soundsources[vehicle->free_soundsource].nodenum=node_index;
-    vehicle->soundsources[vehicle->free_soundsource].type=type;
-    vehicle->free_soundsource++;
+    vehicle->m_audio.AddSound(node_index, type, sound_script_name);
 }
 
 void RigSpawner::ProcessSoundSource(RigDef::SoundSource & def)
 {
     SPAWNER_PROFILE_SCOPED();
 
-    AddSoundSource(
-            m_rig,
-            SoundScriptManager::getSingleton().createInstance(def.sound_script_name, m_rig->trucknum), 
-            GetNodeIndexOrThrow(def.node),
-            -2
-        );
+    m_rig->m_audio.AddSound(static_cast<int>(GetNodeIndexOrThrow(def.node)), -2, def.sound_script_name);
 }
 
 void RigSpawner::ProcessCameraRail(RigDef::CameraRail & def)
@@ -6786,37 +6753,6 @@ bool RigSpawner::CheckTexcoordLimit(unsigned int count)
     return true;
 }
 
-/* Static version */
-bool RigSpawner::CheckSoundScriptLimit(Beam *vehicle, unsigned int count)
-{
-    SPAWNER_PROFILE_SCOPED();
-
-    //return CheckSoundScriptLimit(m_rig, count);
-    if ((vehicle->free_soundsource + count) > MAX_SOUNDSCRIPTS_PER_TRUCK)
-    {
-        std::stringstream msg;
-        msg << "SoundScript limit (" << MAX_SOUNDSCRIPTS_PER_TRUCK << ") exceeded";
-        LOG(msg.str());
-        return false;
-    }
-    return true;
-}
-
-bool RigSpawner::CheckSoundScriptLimit(unsigned int count)
-{
-    SPAWNER_PROFILE_SCOPED();
-
-    //return CheckSoundScriptLimit(m_rig, count);
-    if ((m_rig->free_soundsource + count) > MAX_SOUNDSCRIPTS_PER_TRUCK)
-    {
-        std::stringstream msg;
-        msg << "SoundScript limit (" << MAX_SOUNDSCRIPTS_PER_TRUCK << ") exceeded";
-        AddMessage(Message::TYPE_ERROR, msg.str());
-        return false;
-    }
-    return true;
-}
-
 bool RigSpawner::CheckCabLimit(unsigned int count)
 {
     SPAWNER_PROFILE_SCOPED();
@@ -7112,8 +7048,8 @@ void RigSpawner::SetupDefaultSoundSources(Beam *vehicle)
         else
             AddSoundSourceInstance(vehicle, "tracks/default_marine_small", smokeId);
         //no start/stop engine for boats, so set sound always on!
-        SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_ENGINE);
-        SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_ENGINE, 0.5);
+        vehicle->GetAudioActor().SetEngineForcedState(1); // forced on
+        vehicle->GetAudioActor().SetEngineModulation(0.5);
     }
     //airplane warnings
     if (vehicle->driveable==AIRPLANE)

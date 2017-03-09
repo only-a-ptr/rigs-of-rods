@@ -74,9 +74,6 @@ struct rig_t
 
     std::vector<debugtext_t>nodes_debug, beams_debug;
 
-    soundsource_t soundsources[MAX_SOUNDSCRIPTS_PER_TRUCK];
-    int free_soundsource;
-
     int pressure_beams[MAX_PRESSURE_BEAMS];
     int free_pressure_beam;
 

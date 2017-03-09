@@ -25,8 +25,6 @@
 
 class Turbojet: public AeroEngine, public ZeroedMemoryAllocator
 {
-    friend class RigInspector;
-
 public:
 
     Turbojet(char* propname, int tnumber, int trucknum, node_t* nd, int tnodefront, int tnodeback, int tnoderef, float tmaxdrythrust, bool treversable, bool tafterburnable, float tafterburnthrust, float diskdiam, float nozdiam, float nozlength, bool disable_smoke, bool heathaze, MaterialFunctionMapper* mfm, Skin* usedSkin, MaterialReplacer* mr);
@@ -53,6 +51,7 @@ public:
     float getpropwash() { return propwash; };
     int getNoderef() { return nodeback; };
     int getType() { return AEROENGINE_TYPE_TURBOJET; };
+    inline bool GetPrevAfterburner() { return m_afterburner_prev; }
 
     bool afterburnable;
 
@@ -66,6 +65,7 @@ private:
     Ogre::Entity* nozzleMesh;
     Ogre::Entity* flameMesh;
     bool afterburner;
+    bool m_afterburner_prev;
     bool failed;
     bool heathaze;
     bool ignition;
@@ -85,14 +85,10 @@ private:
     float timer;
     float warmupstart;
     float warmuptime;
-    int ab_id;
-    int mod_id;
     int nodeback;
     int nodefront;
     int noderef;
     int number;
-    int src_id;
-    int thr_id;
     int trucknum;
     node_t* nodes;
     Ogre::SceneNode* smokeNode;

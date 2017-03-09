@@ -33,72 +33,72 @@ enum {
     MAX_INSTANCES_PER_GROUP = 256
 };
 
-enum SoundTriggers {
+enum SoundTriggers {        // RESEARCH FOR DEFERRED SOUND PROCESSING ~ only_a_ptr, 03/2017
     SS_TRIG_NONE = -1,
-    SS_TRIG_ENGINE = 0,
-    SS_TRIG_AEROENGINE1,
-    SS_TRIG_AEROENGINE2,
-    SS_TRIG_AEROENGINE3,
-    SS_TRIG_AEROENGINE4,
-    SS_TRIG_HORN,
-    SS_TRIG_BRAKE,
-    SS_TRIG_PUMP,
-    SS_TRIG_STARTER,
-    SS_TRIG_TURBOBOV,
-    SS_TRIG_TURBOWASTEGATE,
-    SS_TRIG_TURBOBACKFIRE,
-    SS_TRIG_ALWAYSON,
-    SS_TRIG_REPAIR,
+    SS_TRIG_ENGINE = 0,     // DONE
+    SS_TRIG_AEROENGINE1,    // DONE
+    SS_TRIG_AEROENGINE2,    // ^
+    SS_TRIG_AEROENGINE3,    // ^
+    SS_TRIG_AEROENGINE4,    // ^
+    SS_TRIG_AEROENGINE5,    // ^
+    SS_TRIG_AEROENGINE6,    // ^
+    SS_TRIG_AEROENGINE7,    // ^
+    SS_TRIG_AEROENGINE8,    // ^
+    SS_TRIG_HORN,           // DONE
+    SS_TRIG_BRAKE,          // DONE
+    SS_TRIG_PUMP,           // DONE
+    SS_TRIG_STARTER,        // DONE
+    SS_TRIG_TURBOBOV,       // DONE
+    SS_TRIG_TURBOWASTEGATE, // DONE
+    SS_TRIG_TURBOBACKFIRE,  // DONE
+    SS_TRIG_ALWAYSON,       // DUMMY, never used in simulation.
+    SS_TRIG_REPAIR,         // trigOnce: DEV ?? invoked only from scripting interface
     SS_TRIG_AIR,
-    SS_TRIG_GPWS_APDISCONNECT,
-    SS_TRIG_GPWS_10,
-    SS_TRIG_GPWS_20,
-    SS_TRIG_GPWS_30,
-    SS_TRIG_GPWS_40,
-    SS_TRIG_GPWS_50,
-    SS_TRIG_GPWS_100,
-    SS_TRIG_GPWS_PULLUP,
-    SS_TRIG_GPWS_MINIMUMS,
-    SS_TRIG_AIR_PURGE,
-    SS_TRIG_SHIFT,
-    SS_TRIG_GEARSLIDE,
-    SS_TRIG_CREAK,
-    SS_TRIG_BREAK,
-    SS_TRIG_SCREETCH,
-    SS_TRIG_PARK,
-    SS_TRIG_AFTERBURNER1,
-    SS_TRIG_AFTERBURNER2,
-    SS_TRIG_AFTERBURNER3,
-    SS_TRIG_AFTERBURNER4,
-    SS_TRIG_AFTERBURNER5,
-    SS_TRIG_AFTERBURNER6,
-    SS_TRIG_AFTERBURNER7,
-    SS_TRIG_AFTERBURNER8,
-    SS_TRIG_AEROENGINE5,
-    SS_TRIG_AEROENGINE6,
-    SS_TRIG_AEROENGINE7,
-    SS_TRIG_AEROENGINE8,
-    SS_TRIG_AOA,
-    SS_TRIG_IGNITION,
-    SS_TRIG_REVERSE_GEAR,
-    SS_TRIG_TURN_SIGNAL,
-    SS_TRIG_TURN_SIGNAL_TICK,
-    SS_TRIG_TURN_SIGNAL_WARN_TICK,
-    SS_TRIG_ALB_ACTIVE,
-    SS_TRIG_TC_ACTIVE,
-    SS_TRIG_AVICHAT01,
-    SS_TRIG_AVICHAT02,
-    SS_TRIG_AVICHAT03,
-    SS_TRIG_AVICHAT04,
-    SS_TRIG_AVICHAT05,
-    SS_TRIG_AVICHAT06,
-    SS_TRIG_AVICHAT07,
-    SS_TRIG_AVICHAT08,
-    SS_TRIG_AVICHAT09,
-    SS_TRIG_AVICHAT10,
-    SS_TRIG_AVICHAT11,
-    SS_TRIG_AVICHAT12,
-    SS_TRIG_AVICHAT13,
+    SS_TRIG_GPWS_APDISCONNECT, // trigOnce: hint needed
+    SS_TRIG_GPWS_10,        // DONE
+    SS_TRIG_GPWS_20,        // DONE
+    SS_TRIG_GPWS_30,        // DONE
+    SS_TRIG_GPWS_40,        // DONE
+    SS_TRIG_GPWS_50,        // DONE
+    SS_TRIG_GPWS_100,       // DONE
+    SS_TRIG_GPWS_PULLUP,    // DONE
+    SS_TRIG_GPWS_MINIMUMS,  // DONE
+    SS_TRIG_AIR_PURGE,      // DONE
+    SS_TRIG_SHIFT,          // DONE
+    SS_TRIG_GEARSLIDE,      // DONE
+    SS_TRIG_CREAK,          // *** DEAD ***
+    SS_TRIG_BREAK,          // DONE
+    SS_TRIG_SCREETCH,       // DONE
+    SS_TRIG_PARK,           // DONE
+    SS_TRIG_AFTERBURNER1,   // DONE
+    SS_TRIG_AFTERBURNER2,   // ^
+    SS_TRIG_AFTERBURNER3,   // ^
+    SS_TRIG_AFTERBURNER4,   // ^
+    SS_TRIG_AFTERBURNER5,   // ^
+    SS_TRIG_AFTERBURNER6,   // ^
+    SS_TRIG_AFTERBURNER7,   // ^
+    SS_TRIG_AFTERBURNER8,   // ^
+    SS_TRIG_AOA,            // DONE
+    SS_TRIG_IGNITION,       // DONE
+    SS_TRIG_REVERSE_GEAR,   // DONE
+    SS_TRIG_TURN_SIGNAL,    // DONE
+    SS_TRIG_TURN_SIGNAL_TICK, // DONE
+    SS_TRIG_TURN_SIGNAL_WARN_TICK, // DONE
+    SS_TRIG_ALB_ACTIVE,     // DONE
+    SS_TRIG_TC_ACTIVE,      // DONE
+    SS_TRIG_AVICHAT01, //DONE
+    SS_TRIG_AVICHAT02, //DONE
+    SS_TRIG_AVICHAT03, //DONE
+    SS_TRIG_AVICHAT04, //DONE
+    SS_TRIG_AVICHAT05, //DONE
+    SS_TRIG_AVICHAT06, //DONE
+    SS_TRIG_AVICHAT07, //DONE
+    SS_TRIG_AVICHAT08, //DONE
+    SS_TRIG_AVICHAT09, //DONE
+    SS_TRIG_AVICHAT10, //DONE
+    SS_TRIG_AVICHAT11, //DONE
+    SS_TRIG_AVICHAT12, //DONE
+    SS_TRIG_AVICHAT13, //DONE
     SS_TRIG_LINKED_COMMAND,
     SS_TRIG_MAIN_MENU,
     SS_MAX_TRIG
@@ -106,34 +106,34 @@ enum SoundTriggers {
 
 enum ModulationSources {
     SS_MOD_NONE,
-    SS_MOD_ENGINE,
-    SS_MOD_TURBO,
-    SS_MOD_AEROENGINE1,
-    SS_MOD_AEROENGINE2,
-    SS_MOD_AEROENGINE3,
-    SS_MOD_AEROENGINE4,
-    SS_MOD_WHEELSPEED,
-    SS_MOD_INJECTOR,
-    SS_MOD_TORQUE,
-    SS_MOD_GEARBOX,
-    SS_MOD_CREAK,
-    SS_MOD_BREAK,
-    SS_MOD_SCREETCH,
-    SS_MOD_PUMP,
-    SS_MOD_THROTTLE1,
-    SS_MOD_THROTTLE2,
-    SS_MOD_THROTTLE3,
-    SS_MOD_THROTTLE4,
-    SS_MOD_THROTTLE5,
-    SS_MOD_THROTTLE6,
-    SS_MOD_THROTTLE7,
-    SS_MOD_THROTTLE8,
-    SS_MOD_AEROENGINE5,
-    SS_MOD_AEROENGINE6,
-    SS_MOD_AEROENGINE7,
-    SS_MOD_AEROENGINE8,
-    SS_MOD_AIRSPEED,
-    SS_MOD_AOA,
+    SS_MOD_ENGINE,      // DONE
+    SS_MOD_TURBO,       // DONE
+    SS_MOD_AEROENGINE1, // DONE
+    SS_MOD_AEROENGINE2, // ^
+    SS_MOD_AEROENGINE3, // ^
+    SS_MOD_AEROENGINE4, // ^
+    SS_MOD_AEROENGINE5, // ^
+    SS_MOD_AEROENGINE6, // ^
+    SS_MOD_AEROENGINE7, // ^
+    SS_MOD_AEROENGINE8, // ^
+    SS_MOD_WHEELSPEED,  // DONE
+    SS_MOD_INJECTOR,    // DONE
+    SS_MOD_TORQUE,      // DONE
+    SS_MOD_GEARBOX,     // DONE
+    SS_MOD_CREAK,       // *** DEAD ***
+    SS_MOD_BREAK,       // DONE
+    SS_MOD_SCREETCH,    // DONE
+    SS_MOD_PUMP,        // DONE
+    SS_MOD_THROTTLE1,   // DONE
+    SS_MOD_THROTTLE2,   // ^
+    SS_MOD_THROTTLE3,   // ^
+    SS_MOD_THROTTLE4,   // ^
+    SS_MOD_THROTTLE5,   // ^
+    SS_MOD_THROTTLE6,   // ^
+    SS_MOD_THROTTLE7,   // ^
+    SS_MOD_THROTTLE8,   // ^
+    SS_MOD_AIRSPEED,    // DONE
+    SS_MOD_AOA,         // DONE
     SS_MOD_LINKED_COMMANDRATE,
     SS_MOD_MUSIC_VOLUME,
     SS_MAX_MOD
@@ -192,7 +192,7 @@ class SoundScriptInstance : public ZeroedMemoryAllocator
 
 public:
 
-    SoundScriptInstance(int truck, SoundScriptTemplate* templ, SoundManager* sm, Ogre::String instancename);
+    SoundScriptInstance(SoundScriptTemplate* templ, SoundManager* sm, int node_id, int type);
     void runOnce();
     void setEnabled(bool e);
     void setPosition(Ogre::Vector3 pos, Ogre::Vector3 velocity);
@@ -200,18 +200,40 @@ public:
     void stop();
     void kill();
 
+    inline void transition(const bool cur_state, const bool prev_state)
+    {
+        if (cur_state && !prev_state)
+            this->start();
+        else if (!cur_state && prev_state)
+            this->stop();
+    }
+
+    inline void SetActive(bool active)
+    {
+        if(active)
+            this->start();
+        else
+            this->stop();
+    }
+
+    inline SoundTriggers      GetTrigger()      { return SoundTriggers(templ->trigger_source); }
+    inline ModulationSources  GetPitchSource()  { return ModulationSources(templ->pitch_source); }
+    inline ModulationSources  GetGainSource()   { return ModulationSources(templ->gain_source); }
+
+    void ModulateGain(float value);
+    void ModulatePitch(float value);
+
     static const float PITCHDOWN_FADE_FACTOR;
     static const float PITCHDOWN_CUTOFF_FACTOR;
 
 private:
 
-    void setGain(float value);  // Used by SSI::ctor(), SSM::modulate(), SSI::setPitch() 
-    void setPitch(float value); // Used by SSI::ctor(), SSM::modulate() 
+    void setGain(float value);
+    void setPitch(float value);
 
     float pitchgain_cutoff(float sourcepitch, float targetpitch);
 
     SoundScriptTemplate* templ;
-    SoundManager* sound_manager;
     Sound *start_sound;
     Sound *stop_sound;
     Sound *sounds[MAX_SOUNDS_PER_SCRIPT];
@@ -219,8 +241,8 @@ private:
     float stop_sound_pitchgain;
     float sounds_pitchgain[MAX_SOUNDS_PER_SCRIPT];
     float lastgain;
-
-    int truck_id;
+    int   m_node_id;
+    int   m_type; ///< -2 = global, -1: external cam. only, 0+: cinecam index
 };
 
 class SoundScriptManager : public Ogre::ScriptLoader, public RoRSingleton<SoundScriptManager>, public ZeroedMemoryAllocator
@@ -234,21 +256,7 @@ public:
     void parseScript(Ogre::DataStreamPtr& stream, const Ogre::String& groupName);
     Ogre::Real getLoadingOrder(void) const;
 
-    SoundScriptInstance* createInstance(Ogre::String templatename, int truck, Ogre::SceneNode *toAttach=NULL);
     void clearNonBaseTemplates();
-
-    // functions
-    void trigOnce    (int truck, int trig);
-    void trigOnce    (Beam *b,   int trig); // Called 1x
-    void trigStart   (int truck, int trig);
-    void trigStart   (Beam *b,   int trig);
-    void trigStop    (int truck, int trig);
-    void trigStop    (Beam *b,   int trig);
-    void trigToggle  (Beam *b,   int trig); // Called 1x (SS_TRIG_HORN)
-    void trigKill    (int truck, int trig); // Called 1x (SS_TRIG_MAIN_MENU)
-    bool getTrigState(int truck, int trig); // Called 1x (SS_TRIG_HORN)
-    void modulate    (int truck, int mod, float value);
-    void modulate    (Beam *b,   int mod, float value);
 
     void setEnabled(bool state);
 
@@ -257,12 +265,14 @@ public:
 
     bool isDisabled() { return disabled; }
 
+    SoundScriptTemplate* GetSoundScriptTemplate(std::string name);
+    void PlayMusic(SoundTriggers trig);
+    inline SoundManager* GetSoundMgr() { return sound_manager; }
+
 private:
 
     SoundScriptTemplate* createTemplate(Ogre::String name, Ogre::String groupname, Ogre::String filename);
     void skipToNextCloseBrace(Ogre::DataStreamPtr& chunk);
-    void trigToggle  (int truck, int trig);
-    bool getTrigState(Beam *b,   int trig);
     void skipToNextOpenBrace(Ogre::DataStreamPtr& chunk);
 
     bool disabled;
@@ -272,23 +282,62 @@ private:
     float rolloff_factor;
     int instance_counter;
     Ogre::StringVector script_patterns;
+    SoundScriptInstance* m_music;
 
     std::map <Ogre::String, SoundScriptTemplate*> templates;
 
-    // instances lookup tables
-    int free_trigs[SS_MAX_TRIG];
-    SoundScriptInstance *trigs[SS_MAX_TRIG * MAX_INSTANCES_PER_GROUP];
-
-    int free_pitches[SS_MAX_MOD];
-    SoundScriptInstance *pitches[SS_MAX_MOD * MAX_INSTANCES_PER_GROUP];
-    
-    int free_gains[SS_MAX_MOD];
-    SoundScriptInstance *gains[SS_MAX_MOD * MAX_INSTANCES_PER_GROUP];
-
-    // state map: [trucks][triggers]
-    std::map <int, std::map <int, bool > > state_map;
-
     SoundManager* sound_manager;
 };
+
+namespace RoR {
+
+/// Manages sounds for a single actor (instance of Beam)
+class AudioActor
+{
+public:
+    AudioActor(Beam* actor);
+    ~AudioActor();
+
+    void          AddSound               (int node_id, int mode, std::string soundscript_name);
+    void          UpdateSounds           ();
+    void          SetHydropumpState      (bool active, float modulation);
+    void          SetAoaState            (bool active, float modulation);
+    void          PlayScreetchOnce       (float modulation);
+    void          PlayBreakOnce          (float modulation);
+    inline void   TriggerAviChatter      (SoundTriggers trig) { m_avi_chatter_trigger = trig; }
+    inline void   PlayWarnTickOnce       ()                   { m_play_warn_signal_tick = true; }
+    inline void   PlayTurnTickOnce       ()                   { m_play_turn_signal_tick = true; }
+    inline void   SetEngineModulation    (float m)            { m_engine_modulation = m; }
+    inline void   SetEngineForcedState   (int s)              { m_engine_forced_state = s; }
+    inline bool   SetTirePressureActive  (bool s)             { m_tirepressure_active = s; }
+    inline void   NotifyGpwsApDisconnect ()                   { m_gpws_ap_disconnected = true; }
+    inline std::vector<SoundScriptInstance*>& GetSounds()     { return m_sounds; }
+
+private:
+    bool ResolveModulation(float& result, const ModulationSources src);
+
+    Beam* m_actor;
+    std::vector<SoundScriptInstance*> m_sounds;
+
+    // States - values
+    float m_hydropump_modulation;
+    float m_aoa_modulation;
+    SoundTriggers m_avi_chatter_trigger;
+    float m_screetch_modulation;
+    float m_break_modulation;
+    float m_engine_modulation;
+    int   m_engine_forced_state; // 0=none, -1 forced off, 1 = forced on
+    // States - bit flags
+    bool  m_aoa_active:1;
+    bool  m_hydropump_active:1;
+    bool  m_play_turn_signal_tick:1;
+    bool  m_play_warn_signal_tick:1;
+    bool  m_screetch_play_once:1;
+    bool  m_break_play_once:1;
+    bool  m_tirepressure_active:1;
+    bool  m_gpws_ap_disconnected:1;
+};
+
+} // namespace RoR
 
 #endif // USE_OPENAL

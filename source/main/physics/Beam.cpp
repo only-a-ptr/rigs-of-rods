@@ -112,15 +112,6 @@ Beam::~Beam()
         delete dash;
     dash = 0;
 
-    // stop all the Sounds
-#ifdef USE_OPENAL
-    for (int i = SS_TRIG_NONE + 1; i < SS_MAX_TRIG; i++)
-    {
-        SoundScriptManager::getSingleton().trigStop(this->trucknum, i);
-    }
-    StopAllSounds();
-#endif // USE_OPENAL
-
     // destruct and remove every tiny bit of stuff we created :-|
     if (engine)
         delete engine;
@@ -757,7 +748,7 @@ void Beam::calcNetwork()
 #ifdef USE_OPENAL
     if (engine)
     {
-        SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_ENGINE, engspeed);
+        m_audio.SetEngineModulation(engspeed);
     }
     if (free_aeroengine > 0)
     {
@@ -819,9 +810,19 @@ void Beam::calcNetwork()
 
 #ifdef USE_OPENAL
     if ((flagmask & NETMASK_HORN))
-        SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_HORN);
+    {
+        if (ispolice)
+            m_is_policesiren_active = true;
+        else
+            m_is_carhorn_active = true;
+    }
     else
-        SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_HORN);
+    {
+        if (ispolice)
+            m_is_policesiren_active = false;
+        else
+            m_is_carhorn_active = false;
+    }
 
     if (netReverseLight)
         SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_REVERSE_GEAR);
@@ -1950,10 +1951,8 @@ void Beam::sendStreamData()
         if (antilockbrake)
             send_oob->flagmask += NETMASK_ALB_ACTIVE;
 
-#ifdef USE_OPENAL
-        if (SoundScriptManager::getSingleton().getTrigState(trucknum, SS_TRIG_HORN))
+        if ((ispolice && m_is_policesiren_active) || (!ispolice && m_is_carhorn_active))
             send_oob->flagmask += NETMASK_HORN;
-#endif //OPENAL
     }
 
     // then process the contents
@@ -3324,7 +3323,7 @@ void Beam::updateFlares(float dt, bool isCurrent)
             left_blink_on = isvisible;
 #ifdef USE_OPENAL
             if (left_blink_on)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_TURN_SIGNAL_TICK);
+                m_audio.PlayTurnTickOnce();
 #endif //USE_OPENAL
             dash->setBool(DD_SIGNAL_TURNLEFT, isvisible);
         }
@@ -3333,7 +3332,7 @@ void Beam::updateFlares(float dt, bool isCurrent)
             right_blink_on = isvisible;
 #ifdef USE_OPENAL
             if (right_blink_on)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_TURN_SIGNAL_TICK);
+                m_audio.PlayTurnTickOnce();
 #endif //USE_OPENAL
             dash->setBool(DD_SIGNAL_TURNRIGHT, isvisible);
         }
@@ -3342,7 +3341,7 @@ void Beam::updateFlares(float dt, bool isCurrent)
             warn_blink_on = isvisible;
 #ifdef USE_OPENAL
             if (warn_blink_on)
-                SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_TURN_SIGNAL_WARN_TICK);
+                m_audio.PlayWarnTickOnce();
 #endif //USE_OPENAL
             dash->setBool(DD_SIGNAL_TURNRIGHT, isvisible);
             dash->setBool(DD_SIGNAL_TURNLEFT, isvisible);
@@ -3411,17 +3410,6 @@ void Beam::setBlinkType(blinktype blink)
     left_blink_on = false;
     right_blink_on = false;
     warn_blink_on = false;
-
-#ifdef USE_OPENAL
-    if (blink == BLINK_NONE)
-    {
-        SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_TURN_SIGNAL);
-    }
-    else
-    {
-        SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_TURN_SIGNAL);
-    }
-#endif //OPENAL
 }
 
 void Beam::autoBlinkReset()
@@ -3522,9 +3510,6 @@ void Beam::updateSoundSources()
     {
         soundsources[i].ssi->setPosition(nodes[soundsources[i].nodenum].AbsPosition, nodes[soundsources[i].nodenum].Velocity);
     }
-    //also this, so it is updated always, and for any vehicle
-    SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_AIRSPEED, nodes[0].Velocity.length() * 1.9438);
-    SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_WHEELSPEED, WheelSpeed * 3.6);
 #endif //OPENAL
     BES_GFX_STOP(BES_GFX_updateSoundSources);
 }
@@ -3638,7 +3623,8 @@ void Beam::updateVisual(float dt)
         avichatter_timer -= dt;
         if (avichatter_timer < 0)
         {
-            SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_AVICHAT01 + Math::RangeRandom(0, 12));
+            //OLD   SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_AVICHAT01 + Math::RangeRandom(0, 12));
+            m_audio.TriggerAviChatter(SS_TRIG_AVICHAT01 + Math::RangeRandom(0, 12));
             avichatter_timer = Math::RangeRandom(11, 30);
         }
     }
@@ -4616,13 +4602,6 @@ void Beam::hookToggle(int group, hook_states mode, int node_number)
 void Beam::parkingbrakeToggle()
 {
     parkingbrake = !parkingbrake;
-
-#ifdef USE_OPENAL
-    if (parkingbrake)
-        SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_PARK);
-    else
-        SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_PARK);
-#endif // USE_OPENAL
 
     //ScriptEvent - Parking Brake toggle
     TRIGGER_EVENT(SE_TRUCK_PARKINGBREAK_TOGGLE, trucknum);
@@ -5673,6 +5652,8 @@ Beam::Beam(
     , velocity(Ogre::Vector3::ZERO)
     , m_custom_camera_node(-1)
     , m_hide_own_net_label(BSETTING("HideOwnNetLabel", false))
+    , m_is_carhorn_active(false)
+    , m_is_policesiren_active(false)
     , m_is_cinecam_rotation_center(false)
     , m_is_videocamera_disabled(false)
     , m_preloaded_with_terrain(preloaded_with_terrain)
@@ -5721,6 +5702,7 @@ Beam::Beam(
     , totalmass(0)
     , watercontact(false)
     , watercontactold(false)
+    , m_audio(this)
 {
     high_res_wheelnode_collisions = BSETTING("HighResWheelNodeCollisions", false);
     useSkidmarks = RoR::App::GetGfxSkidmarksMode() == 1;
@@ -6789,4 +6771,9 @@ void Beam::UpdatePropAnimations(const float dt)
     }
 
     BES_STOP(BES_CORE_AnimatedProps);
+}
+
+bool Beam::IsReverseBeepAudioActive() const
+{
+    return (netReverseLight || ((engine->getGear() == -1) && engine->isRunning()));
 }

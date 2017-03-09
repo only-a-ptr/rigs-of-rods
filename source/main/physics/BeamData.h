@@ -219,13 +219,6 @@ struct collcab_rate_t
 
 #include "datatypes/beam_t.h"
 
-struct soundsource_t
-{
-    SoundScriptInstance* ssi;
-    int nodenum;
-    int type;
-};
-
 struct contacter_t
 {
     int nodeid;
