@@ -905,9 +905,10 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
     // commands
     if (hascommands)
     {
-        int active = 0;
-        int requested = 0;
-        float work = 0.0;
+        bool use_engine_priming = 0;
+        float hydropump_work = 0.f;
+        float hydropump_work_audio = 0.f;
+        size_t audio_num_hydropumps = 0;
 
         // canwork
         if (engine)
@@ -1073,30 +1074,6 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
                         if (v > 0.0f && beams[bbeam].commandEngineCoupling > 0.0f)
                             requestpower = true;
 
-#ifdef USE_OPENAL
-                        if (beams[bbeam].playsSound)
-                        {
-                            // command sounds
-                            if (vst == 1)
-                            {
-                                // just started
-                                SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_LINKED_COMMAND, SL_COMMAND, -i);
-                                SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_LINKED_COMMAND, SL_COMMAND, i);
-                                vst = 0;
-                            }
-                            else if (vst == -1)
-                            {
-                                // just stopped
-                                SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_LINKED_COMMAND, SL_COMMAND, i);
-                                vst = 0;
-                            }
-                            else if (vst == 0)
-                            {
-                                // already running, modulate
-                                SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_LINKED_COMMANDRATE, v, SL_COMMAND, i);
-                            }
-                        }
-#endif //USE_OPENAL
                         float cf = 1.0f;
 
                         if (beams[bbeam].commandEngineCoupling > 0)
@@ -1110,8 +1087,13 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
                         dl = fabs(dl - beams[bbeam].L);
                         if (requestpower)
                         {
-                            active++;
-                            work += fabs(beams[bbeam].stress) * dl * beams[bbeam].commandEngineCoupling;
+                            const float extra_work = fabs(beams[bbeam].stress) * dl * beams[bbeam].commandEngineCoupling;
+                            hydropump_work += extra_work;
+                            if (beams[bbeam].playsSound)
+                            {
+                                hydropump_work_audio += extra_work;
+                                audio_num_hydropumps++;
+                            }
                         }
                     }
                     else if (beams[bbeam].isOnePressMode > 0 && bbeam_dir * beams[bbeam].autoMovingMode > 0)
@@ -1148,23 +1130,23 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
                 else
                     rotators[rota].angle -= rotators[rota].rate * v * cf * dt;
             }
-            if (requestpower)
-                requested++;
+
+            use_engine_priming = (use_engine_priming || requestpower);
         }
 
         if (engine)
         {
-            engine->setHydroPumpWork(work);
-            engine->setPrime(requested);
+            engine->setHydroPumpWork(hydropump_work);
+            engine->setPrime(use_engine_priming);
         }
 
         if (doUpdate && this == BeamFactory::getSingleton().getCurrentTruck())
         {
 #ifdef USE_OPENAL
-            if (active > 0)
+            if (audio_num_hydropumps != 0)
             {
                 SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_PUMP);
-                float pump_rpm = 660.0f * (1.0f - (work / (float)active) / 100.0f);
+                const float pump_rpm = 660.0f * (1.0f - (hydropump_work_audio / static_cast<float>(audio_num_hydropumps)) / 100.0f);
                 SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_PUMP, pump_rpm);
             }
             else

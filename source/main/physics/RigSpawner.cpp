@@ -7177,13 +7177,6 @@ void RigSpawner::SetupDefaultSoundSources(Beam *vehicle)
         }
     }
 
-    // linked sounds
-    for (int i=0; i<vehicle->free_commands; i++)
-    {
-        AddSoundSource(vehicle, SoundScriptManager::getSingleton().createInstance(Ogre::String("tracks/linked/default_command/extend"), trucknum, NULL, SL_COMMAND, i), 0);
-        AddSoundSource(vehicle, SoundScriptManager::getSingleton().createInstance(Ogre::String("tracks/linked/default_command/retract"), trucknum, NULL, SL_COMMAND, -i), 0);
-    }
-
 #endif //OPENAL
 }
 

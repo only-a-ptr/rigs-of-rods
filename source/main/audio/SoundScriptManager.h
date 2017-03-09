@@ -139,24 +139,6 @@ enum ModulationSources {
     SS_MAX_MOD
 };
 
-enum SoundLinkTypes {
-    SL_DEFAULT,
-    SL_COMMAND, 
-    SL_HYDRO, 
-    SL_COLLISION, 
-    SL_SHOCKS, 
-    SL_BRAKES, 
-    SL_ROPES, 
-    SL_TIES, 
-    SL_PARTICLES, 
-    SL_AXLES, 
-    SL_FLARES, 
-    SL_FLEXBODIES, 
-    SL_EXHAUSTS, 
-    SL_VIDEOCAMERA, 
-    SL_MAX
-};
-
 class Sound;
 class SoundManager;
 
@@ -210,11 +192,9 @@ class SoundScriptInstance : public ZeroedMemoryAllocator
 
 public:
 
-    SoundScriptInstance(int truck, SoundScriptTemplate* templ, SoundManager* sm, Ogre::String instancename, int soundLinkType=SL_DEFAULT, int soundLinkItemId=-1);
+    SoundScriptInstance(int truck, SoundScriptTemplate* templ, SoundManager* sm, Ogre::String instancename);
     void runOnce();
     void setEnabled(bool e);
-    void setGain(float value);
-    void setPitch(float value);
     void setPosition(Ogre::Vector3 pos, Ogre::Vector3 velocity);
     void start();
     void stop();
@@ -224,6 +204,9 @@ public:
     static const float PITCHDOWN_CUTOFF_FACTOR;
 
 private:
+
+    void setGain(float value);  // Used by SSI::ctor(), SSM::modulate(), SSI::setPitch() 
+    void setPitch(float value); // Used by SSI::ctor(), SSM::modulate() 
 
     float pitchgain_cutoff(float sourcepitch, float targetpitch);
 
@@ -237,9 +220,7 @@ private:
     float sounds_pitchgain[MAX_SOUNDS_PER_SCRIPT];
     float lastgain;
 
-    int truck;              // holds the number of the truck this is for. important
-    int sound_link_type;    // holds the SL_ type this is bound to
-    int sound_link_item_id; // holds the item number this is for
+    int truck_id;
 };
 
 class SoundScriptManager : public Ogre::ScriptLoader, public RoRSingleton<SoundScriptManager>, public ZeroedMemoryAllocator
@@ -253,24 +234,21 @@ public:
     void parseScript(Ogre::DataStreamPtr& stream, const Ogre::String& groupName);
     Ogre::Real getLoadingOrder(void) const;
 
-    SoundScriptInstance* createInstance(Ogre::String templatename, int truck, Ogre::SceneNode *toAttach=NULL, int soundLinkType=SL_DEFAULT, int soundLinkItemId=-1);
+    SoundScriptInstance* createInstance(Ogre::String templatename, int truck, Ogre::SceneNode *toAttach=NULL);
     void clearNonBaseTemplates();
 
     // functions
-    void trigOnce    (int truck, int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigOnce    (Beam *b,   int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigStart   (int truck, int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigStart   (Beam *b,   int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigStop    (int truck, int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigStop    (Beam *b,   int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigToggle  (int truck, int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigToggle  (Beam *b,   int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void trigKill	 (int truck, int trig, int linkType = SL_DEFAULT, int linkItemID = -1);
-    void trigKill    (Beam *b,   int trig, int linkType = SL_DEFAULT, int linkItemID = -1);
-    bool getTrigState(int truck, int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    bool getTrigState(Beam *b,   int trig, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void modulate    (int truck, int mod, float value, int linkType = SL_DEFAULT, int linkItemID=-1);
-    void modulate    (Beam *b,   int mod, float value, int linkType = SL_DEFAULT, int linkItemID=-1);
+    void trigOnce    (int truck, int trig);
+    void trigOnce    (Beam *b,   int trig); // Called 1x
+    void trigStart   (int truck, int trig);
+    void trigStart   (Beam *b,   int trig);
+    void trigStop    (int truck, int trig);
+    void trigStop    (Beam *b,   int trig);
+    void trigToggle  (Beam *b,   int trig); // Called 1x (SS_TRIG_HORN)
+    void trigKill    (int truck, int trig); // Called 1x (SS_TRIG_MAIN_MENU)
+    bool getTrigState(int truck, int trig); // Called 1x (SS_TRIG_HORN)
+    void modulate    (int truck, int mod, float value);
+    void modulate    (Beam *b,   int mod, float value);
 
     void setEnabled(bool state);
 
@@ -283,6 +261,8 @@ private:
 
     SoundScriptTemplate* createTemplate(Ogre::String name, Ogre::String groupname, Ogre::String filename);
     void skipToNextCloseBrace(Ogre::DataStreamPtr& chunk);
+    void trigToggle  (int truck, int trig);
+    bool getTrigState(Beam *b,   int trig);
     void skipToNextOpenBrace(Ogre::DataStreamPtr& chunk);
 
     bool disabled;
@@ -305,9 +285,8 @@ private:
     int free_gains[SS_MAX_MOD];
     SoundScriptInstance *gains[SS_MAX_MOD * MAX_INSTANCES_PER_GROUP];
 
-    // state map
-    // soundLinks, soundItems, trucks, triggers
-    std::map <int, std::map <int, std::map <int, std::map <int, bool > > > > state_map;
+    // state map: [trucks][triggers]
+    std::map <int, std::map <int, bool > > state_map;
 
     SoundManager* sound_manager;
 };
