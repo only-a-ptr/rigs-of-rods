@@ -467,13 +467,13 @@ public:
     bool isEventAnalog(int eventID);
     bool getEventBoolValueBounce(int eventID, float time = 0.2f);
     float getEventBounceTime(int eventID);
-    // we need to use hwnd here, as we are also using this in the configurator
-    bool setup(Ogre::String hwnd, bool capture = false, bool capturemouse = false, bool captureKbd = true);
+    void SetupInputDevices();
+    void LoadInputMappings();
     Ogre::String getKeyForCommand(int eventID);
     bool isKeyDown(OIS::KeyCode mod);
     bool isKeyDownValueBounce(OIS::KeyCode mod, float time = 0.2f);
 
-    std::map<int, std::vector<event_trigger_t>>& getEvents() { return events; };
+    std::map<int, std::vector<event_trigger_t>>& getEvents() { return m_events; };
 
     Ogre::String getDeviceName(event_trigger_t evt);
     std::string getEventTypeName(int type);
@@ -489,7 +489,7 @@ public:
     void smoothValue(float& ref, float value, float rate);
     bool saveMapping(std::string outfile = CONFIGFILENAME, Ogre::String hwnd = 0, int joyNum = -10);
     bool appendLineToConfig(std::string line, std::string outfile = CONFIGFILENAME);
-    bool loadMapping(std::string outfile = CONFIGFILENAME, bool append = false, int deviceID = -1);
+    bool loadMapping(std::string filename, bool append = false, int deviceID = -1);
 
     void destroy();
 
@@ -498,13 +498,11 @@ public:
     static Ogre::String eventIDToName(int eventID);
     event_trigger_t* getEventBySUID(int suid);
 
-    void setupDefault(Ogre::String inputhwnd = "");
-
     bool isEventDefined(int eventID);
     void addEvent(int eventID, event_trigger_t t);
     void updateEvent(int eventID, event_trigger_t t);
     bool deleteEventBySUID(int suid);
-    bool getInputsChanged() { return inputsChanged; };
+    bool getInputsChanged() { return m_inputs_changed; };
     void prepareShutdown();
     OIS::MouseState getMouseState();
     // some custom methods
@@ -515,14 +513,13 @@ public:
 
     void grabMouse(bool enable);
     void hideMouse(bool visible);
-    void setMousePosition(int x, int y, bool padding = true);
 
     int getKeboardKeyForCommand(int eventID);
 
     void updateKeyBounces(float dt);
     void completeMissingEvents();
-    int getNumJoysticks() { return free_joysticks; };
-    OIS::ForceFeedback* getForceFeedbackDevice() { return mForceFeedback; };
+    int getNumJoysticks() { return m_num_joysticks; };
+    OIS::ForceFeedback* getForceFeedbackDevice() { return m_forcefeedback; };
 
     void SetKeyboardListener(OIS::KeyListener* keyboard_listener);
 
@@ -532,69 +529,60 @@ public:
 
     void RestoreKeyboardListener();
 
-    inline OIS::Keyboard* GetOisKeyboard() { return mKeyboard; }
-    inline OIS::Mouse*    GetOisMouse()    { return mMouse; }
+    inline OIS::Keyboard* GetOisKeyboard() { return m_keyboard; }
+    inline OIS::Mouse*    GetOisMouse()    { return m_mouse; }
 
     std::map<std::string, OIS::KeyCode> GetKeyMap()
     {
-        return allkeys;
+        return m_all_keys;
     }
 
-protected:
+private:
 
-    InputEngine& operator=(const InputEngine&);
+    // OIS::JoyStickListener
+    bool buttonPressed (const OIS::JoyStickEvent& arg, int button) override;
+    bool buttonReleased(const OIS::JoyStickEvent& arg, int button) override;
+    bool axisMoved     (const OIS::JoyStickEvent& arg, int axis  ) override;
+    bool sliderMoved   (const OIS::JoyStickEvent& arg, int slider) override;
+    bool povMoved      (const OIS::JoyStickEvent& arg, int pov   ) override;
 
-    //OIS Input devices
-    OIS::InputManager* mInputManager;
-    OIS::Mouse* mMouse;
-    OIS::Keyboard* mKeyboard;
-    OIS::JoyStick* mJoy[MAX_JOYSTICKS];
-    int free_joysticks;
-    OIS::ForceFeedback* mForceFeedback;
-    int uniqueCounter;
-
-    // JoyStickListener
-    bool buttonPressed(const OIS::JoyStickEvent& arg, int button);
-    bool buttonReleased(const OIS::JoyStickEvent& arg, int button);
-    bool axisMoved(const OIS::JoyStickEvent& arg, int axis);
-    bool sliderMoved(const OIS::JoyStickEvent&, int);
-    bool povMoved(const OIS::JoyStickEvent&, int);
-
-    // KeyListener
-    bool keyPressed(const OIS::KeyEvent& arg);
-    bool keyReleased(const OIS::KeyEvent& arg);
+    // OIS::KeyListener
+    bool keyPressed (const OIS::KeyEvent& arg) override;
+    bool keyReleased(const OIS::KeyEvent& arg) override;
 
     // MouseListener
-    bool mouseMoved(const OIS::MouseEvent& arg);
-    bool mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
-    bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
-
-    // this stores the key/button/axis values
-    std::map<int, bool> keyState;
-    OIS::JoyStickState joyState[MAX_JOYSTICKS];
-    OIS::MouseState mouseState;
-
-    // define event aliases
-    std::map<int, std::vector<event_trigger_t>> events;
-    std::map<int, float> event_times;
+    bool mouseMoved   (const OIS::MouseEvent& arg) override;
+    bool mousePressed (const OIS::MouseEvent& arg, OIS::MouseButtonID id) override;
+    bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id) override;
 
     bool processLine(char* line, int deviceID = -1);
-    bool captureMode;
-
-    //RoRFrameListener *mefl;
 
     void initAllKeys();
-    std::map<std::string, OIS::KeyCode> allkeys;
-    std::map<std::string, OIS::KeyCode>::iterator allit;
 
     float deadZone(float axis, float dz);
     float axisLinearity(float axisValue, float linearity);
 
-    float logval(float val);
     std::string getEventGroup(Ogre::String eventName);
-    bool mappingLoaded;
 
-    bool inputsChanged;
+    void HandleException(std::string action);
 
     event_trigger_t newEvent();
+
+    OIS::InputManager*  m_input_manager;
+    OIS::Mouse*         m_mouse;
+    OIS::MouseState     m_mouse_state;
+    OIS::Keyboard*      m_keyboard;
+    OIS::JoyStick*      m_joy[MAX_JOYSTICKS];
+    OIS::JoyStickState  m_joy_state[MAX_JOYSTICKS];
+    int                 m_num_joysticks;
+    OIS::ForceFeedback* m_forcefeedback;
+    int                 m_unique_counter;
+
+    std::map<int, bool> m_key_state; // this stores the key/button/axis values
+    bool                m_inputs_changed;
+
+    // define event aliases
+    std::map<int, std::vector<event_trigger_t>> m_events;
+    std::map<int, float> m_event_times;
+    std::map<std::string, OIS::KeyCode> m_all_keys;
 };

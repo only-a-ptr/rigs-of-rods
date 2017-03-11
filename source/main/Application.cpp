@@ -276,6 +276,8 @@ void CreateInputEngine()
 {
     assert(g_input_engine == nullptr);
     g_input_engine = new InputEngine();
+    g_input_engine->SetupInputDevices();
+    g_input_engine->LoadInputMappings();
 }
 
 void CreateCacheSystem()
