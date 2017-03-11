@@ -215,7 +215,6 @@ int main(int argc, char *argv[])
 #endif
 
         App::CreateInputEngine();
-        App::GetInputEngine()->setupDefault(App::GetOgreSubsystem()->GetMainHWND());
 
         // Initialize "managed materials"
         // These are base materials referenced by user content

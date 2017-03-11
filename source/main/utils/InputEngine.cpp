@@ -36,17 +36,12 @@
 #include <OgreStringConverter.h>
 #include <OgreException.h>
 
-#ifndef NOOGRE
-
 #include "GUIManager.h"
 #include "Language.h"
-#else
-#define _L(x) x
-#endif
 
-const char* mOISDeviceType[6] = {"Unknown Device", "Keyboard", "Mouse", "JoyStick", "Tablet", "Other Device"};
+const char* OIS_DEVICE_TYPE[6] = {"Unknown Device", "Keyboard", "Mouse", "JoyStick", "Tablet", "Other Device"};
 
-// LOOOONG list of possible events. see the struct type for the structure ;)
+// LOOOONG list of possible m_events. see the struct type for the structure ;)
 eventInfo_t eventInfo[] = {
     {
         "AIRPLANE_STEER_RIGHT",
@@ -1800,273 +1795,203 @@ eventInfo_t eventInfo[] = {
 //#include <linux/LinuxMouse.h>
 #endif
 
-#ifndef NOOGRE
-
-#endif
-
 using namespace std;
 using namespace Ogre;
-using namespace OIS;
 
 // Constructor takes a RenderWindow because it uses that to determine input context
 InputEngine::InputEngine() :
-    captureMode(false)
-    , free_joysticks(0)
-    , inputsChanged(true)
-    , mForceFeedback(0)
-    , mInputManager(0)
-    , mKeyboard(0)
-    , mMouse(0)
-    , mappingLoaded(false)
-    , uniqueCounter(0)
+      m_num_joysticks(0)
+    , m_inputs_changed(true)
+    , m_forcefeedback(nullptr)
+    , m_input_manager(nullptr)
+    , m_keyboard(nullptr)
+    , m_mouse(nullptr)
+    , m_unique_counter(0)
 {
-    for (int i = 0; i < MAX_JOYSTICKS; i++)
-        mJoy[i] = 0;
-#ifndef NOOGRE
+    memset(m_joy, 0, sizeof(m_joy));
     LOG("*** Loading OIS ***");
-#endif
     initAllKeys();
 }
 
 InputEngine::~InputEngine()
 {
-#ifndef NOOGRE
-    LOG("*** Terminating destructor ***");
-#endif
+    LOG("[RoR|Input] *** Terminating destructor ***");
     destroy();
 }
 
 void InputEngine::destroy()
 {
-    if (mInputManager)
+    if (m_input_manager)
     {
-#ifndef NOOGRE
-        LOG("*** Terminating OIS ***");
-#endif
-        if (mMouse)
+        LOG("[RoR|Input] *** Terminating OIS ***");
+        if (m_mouse)
         {
-            mInputManager->destroyInputObject(mMouse);
-            mMouse = 0;
+            m_input_manager->destroyInputObject(m_mouse);
+            m_mouse = 0;
         }
-        if (mKeyboard)
+        if (m_keyboard)
         {
-            mInputManager->destroyInputObject(mKeyboard);
-            mKeyboard = 0;
+            m_input_manager->destroyInputObject(m_keyboard);
+            m_keyboard = 0;
         }
-        if (mJoy)
+        if (m_joy)
         {
             for (int i = 0; i < MAX_JOYSTICKS; i++)
             {
-                if (!mJoy[i])
+                if (!m_joy[i])
                     continue;
-                mInputManager->destroyInputObject(mJoy[i]);
-                mJoy[i] = 0;
+                m_input_manager->destroyInputObject(m_joy[i]);
+                m_joy[i] = 0;
             }
         }
 
-        OIS::InputManager::destroyInputSystem(mInputManager);
-        mInputManager = 0;
+        OIS::InputManager::destroyInputSystem(m_input_manager);
+        m_input_manager = 0;
     }
 }
 
-bool InputEngine::setup(String hwnd, bool capture, bool capturemouse, bool captureKbd)
+void InputEngine::SetupInputDevices()
 {
-#ifndef NOOGRE
-    LOG("*** Initializing OIS ***");
-#endif
-    //try to delete old ones first (linux can only handle one at a time)
-    destroy();
-    captureMode = capture;
-    if (captureMode)
+    LOG("[RoR|Input] *** Initializing OIS ***");
+
+    size_t hwnd_raw;
+    RoR::App::GetOgreSubsystem()->GetRenderWindow()->getCustomAttribute("WINDOW", &hwnd_raw);
+    std::string hwnd = TOSTRING(hwnd_raw);
+    OIS::ParamList pl;
+
+    pl.insert(OIS::ParamList::value_type("WINDOW", hwnd));
+    if (RoR::App::GetIoInputGrabMode() != RoR::App::INPUT_GRAB_ALL)
     {
-        //size_t hWnd = 0;
-        //win->getCustomAttribute("WINDOW", &hWnd);
-        ParamList pl;
-
-#if 0 //OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-        // we get the ogre way of defining the handle, extract the window HWND only
-        int screen=0,app=0,windowhandle=0;
-        sscanf(hwnd.c_str(), "%d:%d:%d", &screen, &app, &windowhandle);
-        hwnd = TOSTRING(windowhandle);
-        printf("OIS windowhandle = %s\n", hwnd.c_str());
-#endif // LINUX
-
-        pl.insert(OIS::ParamList::value_type("WINDOW", hwnd));
-        if (RoR::App::GetIoInputGrabMode() != RoR::App::INPUT_GRAB_ALL)
-        {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-            pl.insert(OIS::ParamList::value_type("x11_mouse_hide", "false"));
-            pl.insert(OIS::ParamList::value_type("XAutoRepeatOn", "false"));
-            pl.insert(OIS::ParamList::value_type("x11_mouse_grab", "false"));
-            pl.insert(OIS::ParamList::value_type("x11_keyboard_grab", "false"));
+        pl.insert(OIS::ParamList::value_type("x11_mouse_hide", "false"));
+        pl.insert(OIS::ParamList::value_type("XAutoRepeatOn", "false"));
+        pl.insert(OIS::ParamList::value_type("x11_mouse_grab", "false"));
+        pl.insert(OIS::ParamList::value_type("x11_keyboard_grab", "false"));
 #else
-            pl.insert(OIS::ParamList::value_type("w32_mouse", "DISCL_FOREGROUND"));
-            pl.insert(OIS::ParamList::value_type("w32_mouse", "DISCL_NONEXCLUSIVE"));
-            pl.insert(OIS::ParamList::value_type("w32_keyboard", "DISCL_FOREGROUND"));
-            pl.insert(OIS::ParamList::value_type("w32_keyboard", "DISCL_NONEXCLUSIVE"));
+        pl.insert(OIS::ParamList::value_type("w32_mouse", "DISCL_FOREGROUND"));
+        pl.insert(OIS::ParamList::value_type("w32_mouse", "DISCL_NONEXCLUSIVE"));
+        pl.insert(OIS::ParamList::value_type("w32_keyboard", "DISCL_FOREGROUND"));
+        pl.insert(OIS::ParamList::value_type("w32_keyboard", "DISCL_NONEXCLUSIVE"));
 #endif // LINUX
-        }
+    }
 
-#ifndef NOOGRE
-        LOG("*** OIS WINDOW: "+hwnd);
-#endif //NOOGRE
+    LOG("[RoR|Input] *** OIS window handle: " + hwnd);
 
-        mInputManager = OIS::InputManager::createInputSystem(pl);
+    m_input_manager = OIS::InputManager::createInputSystem(pl);
 
-#ifndef NOOGRE
-        //Print debugging information
-        unsigned int v = mInputManager->getVersionNumber();
-        LOG("OIS Version: " + TOSTRING(v>>16) + String(".") + TOSTRING((v>>8) & 0x000000FF) + String(".") + TOSTRING(v & 0x000000FF));
-        LOG("+ Release Name: " + mInputManager->getVersionName());
-        LOG("+ Manager: " + mInputManager->inputSystemName());
-        LOG("+ Total Keyboards: " + TOSTRING(mInputManager->getNumberOfDevices(OISKeyboard)));
-        LOG("+ Total Mice: " + TOSTRING(mInputManager->getNumberOfDevices(OISMouse)));
-        LOG("+ Total JoySticks: " + TOSTRING(mInputManager->getNumberOfDevices(OISJoyStick)));
+    //Print debugging information
+    unsigned int v = m_input_manager->getVersionNumber();
+    LOG("[RoR|Input] OIS Version: " + TOSTRING(v>>16) + String(".") + TOSTRING((v>>8) & 0x000000FF) + String(".") + TOSTRING(v & 0x000000FF));
+    LOG("[RoR|Input] >  Release Name: "    + m_input_manager->getVersionName());
+    LOG("[RoR|Input] >  Total Keyboards: " + TOSTRING(m_input_manager->getNumberOfDevices(OIS::OISKeyboard)));
+    LOG("[RoR|Input] >  Total Mice: "      + TOSTRING(m_input_manager->getNumberOfDevices(OIS::OISMouse)));
+    LOG("[RoR|Input] >  Total JoySticks: " + TOSTRING(m_input_manager->getNumberOfDevices(OIS::OISJoyStick)));
 
-        //List all devices
-        OIS::DeviceList deviceList = mInputManager->listFreeDevices();
-        for (OIS::DeviceList::iterator i = deviceList.begin(); i != deviceList.end(); ++i)
-        LOG("* Device: " + String(mOISDeviceType[i->first]) + String(" Vendor: ") + i->second);
-#endif //NOOGRE
+    LOG("[RoR|Input] Listing all devices...");
+    OIS::DeviceList deviceList = m_input_manager->listFreeDevices();
+    for (OIS::DeviceList::iterator i = deviceList.begin(); i != deviceList.end(); ++i)
+    {
+        LOG("[RoR|Input] >  Device: " + String(OIS_DEVICE_TYPE[i->first]) + String(" Vendor: ") + i->second);
+    }
 
-        //Create all devices (We only catch joystick exceptions here, as, most people have Key/Mouse)
-        mKeyboard = 0;
-        if (captureKbd)
-        {
-            try
-            {
-                mKeyboard = static_cast<Keyboard*>(mInputManager->createInputObject(OISKeyboard, true));
-                mKeyboard->setTextTranslation(OIS::Keyboard::Unicode);
-            }
-            catch (OIS::Exception& ex)
-            {
-                LOG(String("Exception raised on keyboard creation: ") + String(ex.eText));
-            }
-        }
+    //Create all devices (We only catch joystick exceptions here, as, most people have Key/Mouse)
+    try
+    {
+        m_keyboard = static_cast<OIS::Keyboard*>(m_input_manager->createInputObject(OIS::OISKeyboard, true));
+        m_keyboard->setTextTranslation(OIS::Keyboard::Unicode);
+        m_keyboard->setEventCallback(this);
+    }
+    catch (...)
+    {
+        this->HandleException("creating keyboard");
+    }
 
+    //This demo uses at most 10 joysticks - use old way to create (i.e. disregard vendor)
+    int numSticks = std::min(m_input_manager->getNumberOfDevices(OIS::OISJoyStick), 10);
+    m_num_joysticks = 0;
+    for (int i = 0; i < numSticks; ++i)
+    {
         try
         {
-            //This demo uses at most 10 joysticks - use old way to create (i.e. disregard vendor)
-            int numSticks = std::min(mInputManager->getNumberOfDevices(OISJoyStick), 10);
-            free_joysticks = 0;
-            for (int i = 0; i < numSticks; ++i)
+            m_joy[i] = (OIS::JoyStick*)m_input_manager->createInputObject(OIS::OISJoyStick, true);
+            m_joy[i]->setEventCallback(this);
+            m_joy_state[i] = m_joy[i]->getJoyStickState();
+            m_num_joysticks++;
+            //create force feedback too
+            //here, we take the first device we can get, but we could take a device index
+            if (!m_forcefeedback)
             {
-                mJoy[i] = (JoyStick*)mInputManager->createInputObject(OISJoyStick, true);
-                mJoy[i]->setEventCallback(this);
-                free_joysticks++;
-                //create force feedback too
-                //here, we take the first device we can get, but we could take a device index
-                if (!mForceFeedback)
-                    mForceFeedback = (OIS::ForceFeedback*)mJoy[i]->queryInterface(OIS::Interface::ForceFeedback);
-
-#ifndef NOOGRE
-                LOG("Creating Joystick " + TOSTRING(i + 1) + " (" + mJoy[i]->vendor() + ")");
-                LOG("* Axes: " + TOSTRING(mJoy[i]->getNumberOfComponents(OIS_Axis)));
-                LOG("* Sliders: " + TOSTRING(mJoy[i]->getNumberOfComponents(OIS_Slider)));
-                LOG("* POV/HATs: " + TOSTRING(mJoy[i]->getNumberOfComponents(OIS_POV)));
-                LOG("* Buttons: " + TOSTRING(mJoy[i]->getNumberOfComponents(OIS_Button)));
-                LOG("* Vector3: " + TOSTRING(mJoy[i]->getNumberOfComponents(OIS_Vector3)));
-#endif //NOOGRE
+                m_forcefeedback = (OIS::ForceFeedback*)m_joy[i]->queryInterface(OIS::Interface::ForceFeedback);
             }
-        }
-#ifndef NOOGRE
-        catch (OIS::Exception& ex)
-        {
-            LOG(String("Exception raised on joystick creation: ") + String(ex.eText));
-        }
-#else  //NOOGRE
-        catch(...)
-        {
-        }
-#endif //NOOGRE
 
-        if (capturemouse)
-        {
-            try
-            {
-                mMouse = static_cast<Mouse*>(mInputManager->createInputObject(OISMouse, true));
-            }
-            catch (OIS::Exception& ex)
-            {
-                LOG(String("Exception raised on mouse creation: ") + String(ex.eText));
-            }
+            LOG("[RoR|Input] Created device [" + TOSTRING(i + 1) + "] \"" + m_joy[i]->vendor() + "\"");
+            LOG("[RoR|Input] >  Axes: "     + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Axis)));
+            LOG("[RoR|Input] >  Sliders: "  + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Slider)));
+            LOG("[RoR|Input] >  POV/HATs: " + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_POV)));
+            LOG("[RoR|Input] >  Buttons: "  + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Button)));
+            LOG("[RoR|Input] >  Vector3: "  + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Vector3)));
         }
-
-        //Set initial mouse clipping size
-        //windowResized(win);
-
-        // set Callbacks
-        if (mKeyboard)
-            mKeyboard->setEventCallback(this);
-        if (capturemouse && mMouse)
+        catch (...)
         {
-            mMouse->setEventCallback(this);
-
-            // init states (not required for keyboard)
-            mouseState = mMouse->getMouseState();
+            this->HandleException("creating device ["+TOSTRING(i)+"]");
         }
-        if (free_joysticks)
-        {
-            for (int i = 0; i < free_joysticks; i++)
-                joyState[i] = mJoy[i]->getJoyStickState();
-        }
-
-        // set the mouse to the middle of the screen, hackish!
-#if _WIN32
-        // under linux, this will not work and the cursor will never reach (0,0)
-        if (mMouse && RoR::App::GetOgreSubsystem()->GetRenderWindow())
-        {
-            OIS::MouseState& mutableMouseState = const_cast<OIS::MouseState &>(mMouse->getMouseState());
-            mutableMouseState.X.abs = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getWidth() * 0.5f;
-            mutableMouseState.Y.abs = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getHeight() * 0.5f;
-        }
-#endif // _WIN32
     }
-    //this becomes more and more convoluted!
-#ifdef NOOGRE
-    // we will load the mapping manually
-#else //NOOGRE
-    if (!mappingLoaded)
+
+    try
     {
-        // load default one
-        loadMapping(CONFIGFILENAME);
-
-#ifndef NOOGRE
-        // then load device specific ones
-        for (int i = 0; i < free_joysticks; ++i)
-        {
-            String deviceStr = mJoy[i]->vendor();
-
-            // care about unsuitable chars
-            String repl = "\\/ #@?!$%^&*()+=-><.:'|\";";
-            for (unsigned int c = 0; c < repl.size(); c++)
-            {
-                deviceStr = StringUtil::replaceAll(deviceStr, repl.substr(c, 1), "_");
-            }
-            deviceStr += ".map";
-
-            loadMapping(deviceStr, true, i);
-        }
-#endif //NOOGRE
-        mappingLoaded = true;
-        completeMissingEvents();
-
-        return false;
+        m_mouse = static_cast<OIS::Mouse*>(m_input_manager->createInputObject(OIS::OISMouse, true));
+        m_mouse->setEventCallback(this);
+        m_mouse_state = m_mouse->getMouseState(); // init states (not required for keyboard)
     }
-#endif //NOOGRE
-    return true;
+    catch (...)
+    {
+        this->HandleException("creating mouse");
+    }
+
+    // set the mouse to the middle of the screen, hackish!
+#if _WIN32
+    // under linux, this will not work and the cursor will never reach (0,0)
+    if (m_mouse && RoR::App::GetOgreSubsystem()->GetRenderWindow())
+    {
+        OIS::MouseState& mutableMouseState = const_cast<OIS::MouseState &>(m_mouse->getMouseState());
+        mutableMouseState.X.abs = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getWidth() * 0.5f;
+        mutableMouseState.Y.abs = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getHeight() * 0.5f;
+    }
+#endif // _WIN32
+}
+
+void InputEngine::LoadInputMappings()
+{
+    // load default one
+    this->loadMapping(CONFIGFILENAME);
+
+    // then load device specific ones
+    for (int i = 0; i < m_num_joysticks; ++i)
+    {
+        String deviceStr = m_joy[i]->vendor();
+
+        // care about unsuitable chars
+        String repl = "\\/ #@?!$%^&*()+=-><.:'|\";";
+        for (unsigned int c = 0; c < repl.size(); c++)
+        {
+            deviceStr = StringUtil::replaceAll(deviceStr, repl.substr(c, 1), "_");
+        }
+        deviceStr += ".map";
+
+        this->loadMapping(deviceStr, true, i);
+    }
+    this->completeMissingEvents();
 }
 
 void InputEngine::grabMouse(bool enable)
 {
     static int lastmode = -1;
-    if (!mMouse)
+    if (!m_mouse)
         return;
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     if ((enable && lastmode == 0) || (!enable && lastmode == 1) || (lastmode == -1))
     {
-        LOG("*** mouse grab: " + TOSTRING(enable));
-    //((LinuxMouse *)mMouse)->grab(enable);
+        LOG("[RoR|Input] *** mouse grab: " + TOSTRING(enable));
         lastmode = enable?1:0;
     }
 #endif
@@ -2075,24 +2000,13 @@ void InputEngine::grabMouse(bool enable)
 void InputEngine::hideMouse(bool visible)
 {
     static int mode = -1;
-    if (!mMouse)
+    if (!m_mouse)
         return;
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
     if ((visible && mode == 0) || (!visible && mode == 1) || mode == -1)
     {
-    //((LinuxMouse *)mMouse)->hide(visible);
         mode = visible?1:0;
     }
-#endif
-}
-
-void InputEngine::setMousePosition(int x, int y, bool padding)
-{
-    if (!mMouse)
-        return;
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-    // padding ensures that the mouse has a safety area at the window's borders
-    //	((LinuxMouse *)mMouse)->setMousePosition(x, y, padding);
 #endif
 }
 
@@ -2102,25 +2016,20 @@ OIS::MouseState InputEngine::getMouseState()
     static int mode = -1;
     if (mode == -1)
     {
-#ifndef NOOGRE
         // try to find the correct location!
         mX = FSETTING("MouseSensX", 1);
         mY = FSETTING("MouseSensY", 1);
-        LOG("Mouse X sens: " + TOSTRING((Real)mX));
-        LOG("Mouse Y sens: " + TOSTRING((Real)mY));
+        LOG("[RoR|Input] Mouse X sens: " + TOSTRING((Real)mX));
+        LOG("[RoR|Input] Mouse Y sens: " + TOSTRING((Real)mY));
         mode = 1;
         if (mX == 0 || mY == 0)
             mode = 2;
-#else
-        // no scaling without ogre
-        mode = 2;
-#endif
     }
 
     OIS::MouseState m;
-    if (mMouse)
+    if (m_mouse)
     {
-        m = mMouse->getMouseState();
+        m = m_mouse->getMouseState();
         if (mode == 1)
         {
             m.X.rel = (int)((float)m.X.rel * mX);
@@ -2132,13 +2041,13 @@ OIS::MouseState InputEngine::getMouseState()
 
 String InputEngine::getKeyNameForKeyCode(OIS::KeyCode keycode)
 {
-    if (keycode == KC_LSHIFT || keycode == KC_RSHIFT)
+    if (keycode == OIS::KC_LSHIFT || keycode == OIS::KC_RSHIFT)
         return "SHIFT";
-    if (keycode == KC_LCONTROL || keycode == KC_RCONTROL)
+    if (keycode == OIS::KC_LCONTROL || keycode == OIS::KC_RCONTROL)
         return "CTRL";
-    if (keycode == KC_LMENU || keycode == KC_RMENU)
+    if (keycode == OIS::KC_LMENU || keycode == OIS::KC_RMENU)
         return "ALT";
-    for (allit = allkeys.begin(); allit != allkeys.end(); allit++)
+    for (auto allit = m_all_keys.begin(); allit != m_all_keys.end(); allit++)
     {
         if (allit->second == keycode)
             return allit->first;
@@ -2148,34 +2057,34 @@ String InputEngine::getKeyNameForKeyCode(OIS::KeyCode keycode)
 
 void InputEngine::Capture()
 {
-    if (mKeyboard)
+    if (m_keyboard)
     {
-        mKeyboard->capture();
+        m_keyboard->capture();
     }
 
-    if (mMouse)
+    if (m_mouse)
     {
-        mMouse->capture();
+        m_mouse->capture();
     }
 
-    for (int i = 0; i < free_joysticks; i++)
+    for (int i = 0; i < m_num_joysticks; i++)
     {
-        if (mJoy[i])
+        if (m_joy[i])
         {
-            mJoy[i]->capture();
+            m_joy[i]->capture();
         }
     }
 }
 
 void InputEngine::windowResized(Ogre::RenderWindow* rw)
 {
-    if (!mMouse)
+    if (!m_mouse)
         return;
     //update mouse area
     unsigned int width, height, depth;
     int left, top;
     rw->getMetrics(width, height, depth, left, top);
-    const OIS::MouseState& ms = mMouse->getMouseState();
+    const OIS::MouseState& ms = m_mouse->getMouseState();
     ms.width = width;
     ms.height = height;
     RoR::App::GetGuiManager()->windowResized(rw);
@@ -2183,25 +2092,25 @@ void InputEngine::windowResized(Ogre::RenderWindow* rw)
 
 void InputEngine::SetKeyboardListener(OIS::KeyListener* keyboard_listener)
 {
-    assert (mKeyboard != nullptr);
-    mKeyboard->setEventCallback(keyboard_listener);
+    assert (m_keyboard != nullptr);
+    m_keyboard->setEventCallback(keyboard_listener);
 }
 
 OIS::MouseState InputEngine::SetMouseListener(OIS::MouseListener* mouse_listener)
 {
-    assert (mMouse != nullptr);
-    mMouse->setEventCallback(mouse_listener);
-    return mMouse->getMouseState();
+    assert (m_mouse != nullptr);
+    m_mouse->setEventCallback(mouse_listener);
+    return m_mouse->getMouseState();
 }
 
 void InputEngine::RestoreMouseListener()
 {
-    if (mMouse)
+    if (m_mouse)
     {
-        mMouse->setEventCallback(this);
+        m_mouse->setEventCallback(this);
 
         // init states (not required for keyboard)
-        mouseState = mMouse->getMouseState();
+        m_mouse_state = m_mouse->getMouseState();
     }
 }
 
@@ -2213,56 +2122,51 @@ void InputEngine::RestoreKeyboardListener()
 /* --- Joystik Events ------------------------------------------ */
 bool InputEngine::buttonPressed(const OIS::JoyStickEvent& arg, int button)
 {
-    inputsChanged = true;
-    //LOG("*** buttonPressed " + TOSTRING(button));
+    m_inputs_changed = true;
     int i = arg.device->getID();
     if (i < 0 || i >= MAX_JOYSTICKS)
         i = 0;
-    joyState[i] = arg.state;
+    m_joy_state[i] = arg.state;
     return true;
 }
 
 bool InputEngine::buttonReleased(const OIS::JoyStickEvent& arg, int button)
 {
-    inputsChanged = true;
-    //LOG("*** buttonReleased " + TOSTRING(button));
+    m_inputs_changed = true;
     int i = arg.device->getID();
     if (i < 0 || i >= MAX_JOYSTICKS)
         i = 0;
-    joyState[i] = arg.state;
+    m_joy_state[i] = arg.state;
     return true;
 }
 
 bool InputEngine::axisMoved(const OIS::JoyStickEvent& arg, int axis)
 {
-    inputsChanged = true;
-    //LOG("*** axisMoved " + TOSTRING(axis) + " / " + TOSTRING((int)(arg.state.mAxes[axis].abs / (float)(mJoy->MAX_AXIS/100))));
+    m_inputs_changed = true;
     int i = arg.device->getID();
     if (i < 0 || i >= MAX_JOYSTICKS)
         i = 0;
-    joyState[i] = arg.state;
+    m_joy_state[i] = arg.state;
     return true;
 }
 
 bool InputEngine::sliderMoved(const OIS::JoyStickEvent& arg, int)
 {
-    inputsChanged = true;
-    //LOG("*** sliderMoved");
+    m_inputs_changed = true;
     int i = arg.device->getID();
     if (i < 0 || i >= MAX_JOYSTICKS)
         i = 0;
-    joyState[i] = arg.state;
+    m_joy_state[i] = arg.state;
     return true;
 }
 
 bool InputEngine::povMoved(const OIS::JoyStickEvent& arg, int)
 {
-    inputsChanged = true;
-    //LOG("*** povMoved");
+    m_inputs_changed = true;
     int i = arg.device->getID();
     if (i < 0 || i >= MAX_JOYSTICKS)
         i = 0;
-    joyState[i] = arg.state;
+    m_joy_state[i] = arg.state;
     return true;
 }
 
@@ -2272,10 +2176,9 @@ bool InputEngine::keyPressed(const OIS::KeyEvent& arg)
     if (RoR::App::GetGuiManager()->keyPressed(arg))
         return true;
 
-    //LOG("*** keyPressed");
-    if (keyState[arg.key] != 1)
-        inputsChanged = true;
-    keyState[arg.key] = 1;
+    if (m_key_state[arg.key] != 1)
+        m_inputs_changed = true;
+    m_key_state[arg.key] = 1;
 
     return true;
 }
@@ -2284,10 +2187,9 @@ bool InputEngine::keyReleased(const OIS::KeyEvent& arg)
 {
     if (RoR::App::GetGuiManager()->keyReleased(arg))
         return true;
-    //LOG("*** keyReleased");
-    if (keyState[arg.key] != 0)
-        inputsChanged = true;
-    keyState[arg.key] = 0;
+    if (m_key_state[arg.key] != 0)
+        m_inputs_changed = true;
+    m_key_state[arg.key] = 0;
     return true;
 }
 
@@ -2296,9 +2198,8 @@ bool InputEngine::mouseMoved(const OIS::MouseEvent& arg)
 {
     if (RoR::App::GetGuiManager()->mouseMoved(arg))
         return true;
-    //LOG("*** mouseMoved");
-    inputsChanged = true;
-    mouseState = arg.state;
+    m_inputs_changed = true;
+    m_mouse_state = arg.state;
     return true;
 }
 
@@ -2306,9 +2207,8 @@ bool InputEngine::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id
 {
     if (RoR::App::GetGuiManager()->mousePressed(arg, id))
         return true;
-    //LOG("*** mousePressed");
-    inputsChanged = true;
-    mouseState = arg.state;
+    m_inputs_changed = true;
+    m_mouse_state = arg.state;
     return true;
 }
 
@@ -2316,24 +2216,21 @@ bool InputEngine::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID i
 {
     if (RoR::App::GetGuiManager()->mouseReleased(arg, id))
         return true;
-    //LOG("*** mouseReleased");
-    inputsChanged = true;
-    mouseState = arg.state;
+    m_inputs_changed = true;
+    m_mouse_state = arg.state;
     return true;
 }
 
 /* --- Custom Methods ------------------------------------------ */
 void InputEngine::prepareShutdown()
 {
-#ifndef NOOGRE
-    LOG("*** Inputsystem prepare for shutdown ***");
-#endif
+    LOG("[RoR|Input] *** Inputsystem prepare for shutdown ***");
     destroy();
 }
 
 void InputEngine::resetKeys()
 {
-    for (std::map<int, bool>::iterator iter = keyState.begin(); iter != keyState.end(); ++iter)
+    for (std::map<int, bool>::iterator iter = m_key_state.begin(); iter != m_key_state.end(); ++iter)
     {
         iter->second = false;
     }
@@ -2346,30 +2243,28 @@ bool InputEngine::getEventBoolValue(int eventID)
 
 bool InputEngine::getEventBoolValueBounce(int eventID, float time)
 {
-    if (event_times[eventID] > 0)
+    if (m_event_times[eventID] > 0)
         return false;
     else
     {
         bool res = getEventBoolValue(eventID);
         if (res)
-            event_times[eventID] = time;
+            m_event_times[eventID] = time;
         return res;
     }
 }
 
 float InputEngine::getEventBounceTime(int eventID)
 {
-    return event_times[eventID];
+    return m_event_times[eventID];
 }
 
 void InputEngine::updateKeyBounces(float dt)
 {
-    for (std::map<int, float>::iterator it = event_times.begin(); it != event_times.end(); it++)
+    for (std::map<int, float>::iterator it = m_event_times.begin(); it != m_event_times.end(); it++)
     {
         if (it->second > 0)
             it->second -= dt;
-        //else
-        // erase element?
     }
 }
 
@@ -2393,15 +2288,6 @@ float InputEngine::axisLinearity(float axisValue, float linearity)
     return (axisValue * linearity);
 }
 
-float InputEngine::logval(float val)
-{
-    if (val > 0)
-        return log10(1.0 / (1.1 - val)) / 1.0;
-    if (val == 0)
-        return 0;
-    return -log10(1.0 / (1.1 + val)) / 1.0;
-}
-
 void InputEngine::smoothValue(float& ref, float value, float rate)
 {
     if (value < -1)
@@ -2421,7 +2307,7 @@ void InputEngine::smoothValue(float& ref, float value, float rate)
 
 String InputEngine::getEventCommand(int eventID)
 {
-    std::vector<event_trigger_t> t_vec = events[eventID];
+    std::vector<event_trigger_t> t_vec = m_events[eventID];
     if (t_vec.size() > 0)
         return String(t_vec[0].configline);
     return "";
@@ -2431,7 +2317,7 @@ event_trigger_t* InputEngine::getEventBySUID(int suid)
 {
     std::map<int, std::vector<event_trigger_t>>::iterator a;
     std::vector<event_trigger_t>::iterator b;
-    for (a = events.begin(); a != events.end(); a++)
+    for (a = m_events.begin(); a != m_events.end(); a++)
     {
         for (b = a->second.begin(); b != a->second.end(); b++)
         {
@@ -2446,7 +2332,7 @@ bool InputEngine::deleteEventBySUID(int suid)
 {
     std::map<int, std::vector<event_trigger_t>>::iterator a;
     std::vector<event_trigger_t>::iterator b;
-    for (a = events.begin(); a != events.end(); a++)
+    for (a = m_events.begin(); a != m_events.end(); a++)
     {
         for (b = a->second.begin(); b != a->second.end(); b++)
         {
@@ -2462,7 +2348,7 @@ bool InputEngine::deleteEventBySUID(int suid)
 
 bool InputEngine::isEventDefined(int eventID)
 {
-    std::vector<event_trigger_t> t_vec = events[eventID];
+    std::vector<event_trigger_t> t_vec = m_events[eventID];
     if (t_vec.size() > 0)
     {
         if (t_vec[0].eventtype != ET_NONE)
@@ -2473,7 +2359,7 @@ bool InputEngine::isEventDefined(int eventID)
 
 int InputEngine::getKeboardKeyForCommand(int eventID)
 {
-    std::vector<event_trigger_t> t_vec = events[eventID];
+    std::vector<event_trigger_t> t_vec = m_events[eventID];
     for (std::vector<event_trigger_t>::iterator i = t_vec.begin(); i != t_vec.end(); i++)
     {
         event_trigger_t t = *i;
@@ -2485,7 +2371,7 @@ int InputEngine::getKeboardKeyForCommand(int eventID)
 
 bool InputEngine::isEventAnalog(int eventID)
 {
-    std::vector<event_trigger_t> t_vec = events[eventID];
+    std::vector<event_trigger_t> t_vec = m_events[eventID];
     if (t_vec.size() > 0)
     {
         //loop through all eventtypes, because we want to find a analog device wether it is the first device or not
@@ -2500,7 +2386,7 @@ bool InputEngine::isEventAnalog(int eventID)
                     || t_vec[i].eventtype == ET_JoystickSliderX
                     || t_vec[i].eventtype == ET_JoystickSliderY)
                 //check if value comes from analog device
-                //this way, only valid events (e.g. joystick mapped, but unplugged) are recognized as analog events
+                //this way, only valid m_events (e.g. joystick mapped, but unplugged) are recognized as analog m_events
                 && getEventValue(eventID, true, 2) != 0.0)
             {
                 return true;
@@ -2508,30 +2394,12 @@ bool InputEngine::isEventAnalog(int eventID)
         }
     }
     return false;
-#if 0
-    // XXX : TODO fix this problem properly
-    std::vector<event_trigger_t> t_vec = events[eventID];
-    for (std::vector<event_trigger_t>::iterator i = t_vec.begin(); i != t_vec.end(); i++)
-    {
-        event_trigger_t t = *i;
-        if (i->eventtype == ET_MouseAxisX \
-            || i->eventtype == ET_MouseAxisX \
-            || i->eventtype == ET_MouseAxisY \
-            || i->eventtype == ET_MouseAxisZ \
-            || i->eventtype == ET_JoystickAxisAbs \
-            || i->eventtype == ET_JoystickAxisRel \
-            || i->eventtype == ET_JoystickSliderX \
-            || i->eventtype == ET_JoystickSliderY)
-            return true;
-    }
-    return false;
-#endif //0
 }
 
 float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
 {
     float returnValue = 0;
-    std::vector<event_trigger_t> t_vec = events[eventID];
+    std::vector<event_trigger_t> t_vec = m_events[eventID];
     float value = 0;
     for (std::vector<event_trigger_t>::iterator i = t_vec.begin(); i != t_vec.end(); i++)
     {
@@ -2544,70 +2412,66 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
             case ET_NONE:
                 break;
             case ET_Keyboard:
-                if (!keyState[t.keyCode])
+                if (!m_key_state[t.keyCode])
                     break;
 
                 // only use explicite mapping, if two keys with different modifiers exist, i.e. F1 and SHIFT+F1.
                 // check for modificators
                 if (t.explicite)
                 {
-                    if (t.ctrl != (keyState[KC_LCONTROL] || keyState[KC_RCONTROL]))
+                    if (t.ctrl != (m_key_state[OIS::KC_LCONTROL] || m_key_state[OIS::KC_RCONTROL]))
                         break;
-                    if (t.shift != (keyState[KC_LSHIFT] || keyState[KC_RSHIFT]))
+                    if (t.shift != (m_key_state[OIS::KC_LSHIFT] || m_key_state[OIS::KC_RSHIFT]))
                         break;
-                    if (t.alt != (keyState[KC_LMENU] || keyState[KC_RMENU]))
+                    if (t.alt != (m_key_state[OIS::KC_LMENU] || m_key_state[OIS::KC_RMENU]))
                         break;
                 }
                 else
                 {
-                    if (t.ctrl && !(keyState[KC_LCONTROL] || keyState[KC_RCONTROL]))
+                    if (t.ctrl && !(m_key_state[OIS::KC_LCONTROL] || m_key_state[OIS::KC_RCONTROL]))
                         break;
-                    if (t.shift && !(keyState[KC_LSHIFT] || keyState[KC_RSHIFT]))
+                    if (t.shift && !(m_key_state[OIS::KC_LSHIFT] || m_key_state[OIS::KC_RSHIFT]))
                         break;
-                    if (t.alt && !(keyState[KC_LMENU] || keyState[KC_RMENU]))
+                    if (t.alt && !(m_key_state[OIS::KC_LMENU] || m_key_state[OIS::KC_RMENU]))
                         break;
                 }
                 value = 1;
                 break;
             case ET_MouseButton:
-                //if (t.mouseButtonNumber == 0)
-                // TODO: FIXME
-                value = mouseState.buttonDown(MB_Left);
+                value = m_mouse_state.buttonDown(OIS::MB_Left);
                 break;
             case ET_JoystickButton:
                 {
-                    if (t.joystickNumber > free_joysticks || !mJoy[t.joystickNumber])
+                    if (t.joystickNumber > m_num_joysticks || !m_joy[t.joystickNumber])
                     {
                         value = 0;
                         continue;
                     }
-                    if (t.joystickButtonNumber >= (int)mJoy[t.joystickNumber]->getNumberOfComponents(OIS_Button))
+                    if (t.joystickButtonNumber >= (int)m_joy[t.joystickNumber]->getNumberOfComponents(OIS::OIS_Button))
                     {
-#ifndef NOOGRE
-                        LOG("*** Joystick has not enough buttons for mapping: need button "+TOSTRING(t.joystickButtonNumber) + ", availabe buttons: "+TOSTRING(mJoy[t.joystickNumber]->getNumberOfComponents(OIS_Button)));
-#endif
+                        LOG("*** Joystick has not enough buttons for mapping: need button "+TOSTRING(t.joystickButtonNumber) 
+                            + ", availabe buttons: "+TOSTRING(m_joy[t.joystickNumber]->getNumberOfComponents(OIS::OIS_Button)));
                         value = 0;
                         continue;
                     }
-                    value = joyState[t.joystickNumber].mButtons[t.joystickButtonNumber];
+                    value = m_joy_state[t.joystickNumber].mButtons[t.joystickButtonNumber];
                 }
                 break;
             case ET_JoystickPov:
                 {
-                    if (t.joystickNumber > free_joysticks || !mJoy[t.joystickNumber])
+                    if (t.joystickNumber > m_num_joysticks || !m_joy[t.joystickNumber])
                     {
                         value = 0;
                         continue;
                     }
-                    if (t.joystickPovNumber >= (int)mJoy[t.joystickNumber]->getNumberOfComponents(OIS_POV))
+                    if (t.joystickPovNumber >= (int)m_joy[t.joystickNumber]->getNumberOfComponents(OIS::OIS_POV))
                     {
-#ifndef NOOGRE
-                        LOG("*** Joystick has not enough POVs for mapping: need POV "+TOSTRING(t.joystickPovNumber) + ", availabe POVs: "+TOSTRING(mJoy[t.joystickNumber]->getNumberOfComponents(OIS_POV)));
-#endif
+                        LOG("*** Joystick has not enough POVs for mapping: need POV "+TOSTRING(t.joystickPovNumber) 
+                            + ", availabe POVs: "+TOSTRING(m_joy[t.joystickNumber]->getNumberOfComponents(OIS::OIS_POV)));
                         value = 0;
                         continue;
                     }
-                    if (joyState[t.joystickNumber].mPOV[t.joystickPovNumber].direction & t.joystickPovDirection)
+                    if (m_joy_state[t.joystickNumber].mPOV[t.joystickPovNumber].direction & t.joystickPovDirection)
                         value = 1;
                     else
                         value = 0;
@@ -2620,40 +2484,39 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
             switch (t.eventtype)
             {
             case ET_MouseAxisX:
-                value = mouseState.X.abs / 32767;
+                value = m_mouse_state.X.abs / 32767;
                 break;
             case ET_MouseAxisY:
-                value = mouseState.Y.abs / 32767;
+                value = m_mouse_state.Y.abs / 32767;
                 break;
             case ET_MouseAxisZ:
-                value = mouseState.Z.abs / 32767;
+                value = m_mouse_state.Z.abs / 32767;
                 break;
 
             case ET_JoystickAxisRel:
             case ET_JoystickAxisAbs:
                 {
-                    if (t.joystickNumber > free_joysticks || !mJoy[t.joystickNumber])
+                    if (t.joystickNumber > m_num_joysticks || !m_joy[t.joystickNumber])
                     {
                         value = 0;
                         continue;
                     }
-                    if (t.joystickAxisNumber >= (int)joyState[t.joystickNumber].mAxes.size())
+                    if (t.joystickAxisNumber >= (int)m_joy_state[t.joystickNumber].mAxes.size())
                     {
-#ifndef NOOGRE
-                        LOG("*** Joystick has not enough axis for mapping: need axe "+TOSTRING(t.joystickAxisNumber) + ", availabe axis: "+TOSTRING(joyState[t.joystickNumber].mAxes.size()));
-#endif
+                        LOG("*** Joystick has not enough axis for mapping: need axe "
+                            +TOSTRING(t.joystickAxisNumber) + ", availabe axis: "+TOSTRING(m_joy_state[t.joystickNumber].mAxes.size()));
                         value = 0;
                         continue;
                     }
-                    Axis axe = joyState[t.joystickNumber].mAxes[t.joystickAxisNumber];
+                    OIS::Axis axe = m_joy_state[t.joystickNumber].mAxes[t.joystickAxisNumber];
 
                     if (t.eventtype == ET_JoystickAxisRel)
                     {
-                        value = (float)axe.rel / (float)mJoy[t.joystickNumber]->MAX_AXIS;
+                        value = (float)axe.rel / (float)m_joy[t.joystickNumber]->MAX_AXIS;
                     }
                     else
                     {
-                        value = (float)axe.abs / (float)mJoy[t.joystickNumber]->MAX_AXIS;
+                        value = (float)axe.abs / (float)m_joy[t.joystickNumber]->MAX_AXIS;
                         switch (t.joystickAxisRegion)
                         {
                         case 0:
@@ -2676,10 +2539,6 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
 
                         if (t.joystickAxisHalf)
                         {
-                            // XXX: TODO: write this
-                            //float a = (double)((value+1.0)/2.0);
-                            //float b = (double)(1.0-(value+1.0)/2.0);
-                            //LOG("half: "+TOSTRING(value)+" / "+TOSTRING(a)+" / "+TOSTRING(b));
                             //no dead zone in half axis
                             value = (1.0 + value) / 2.0;
                             if (t.joystickAxisReverse)
@@ -2689,7 +2548,6 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
                         }
                         else
                         {
-                            //LOG("not half: "+TOSTRING(value)+" / "+TOSTRING(deadZone(value, t.joystickAxisDeadzone)) +" / "+TOSTRING(t.joystickAxisDeadzone) );
                             if (t.joystickAxisReverse)
                                 value = 1 - value;
                             if (!pure)
@@ -2710,15 +2568,15 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
             case ET_JoystickSliderX:
             case ET_JoystickSliderY:
                 {
-                    if (t.joystickNumber > free_joysticks || !mJoy[t.joystickNumber])
+                    if (t.joystickNumber > m_num_joysticks || !m_joy[t.joystickNumber])
                     {
                         value = 0;
                         continue;
                     }
                     if (t.eventtype == ET_JoystickSliderX)
-                        value = (float)joyState[t.joystickNumber].mSliders[t.joystickSliderNumber].abX / (float)mJoy[t.joystickNumber]->MAX_AXIS;
+                        value = (float)m_joy_state[t.joystickNumber].mSliders[t.joystickSliderNumber].abX / (float)m_joy[t.joystickNumber]->MAX_AXIS;
                     else if (t.eventtype == ET_JoystickSliderY)
-                        value = (float)joyState[t.joystickNumber].mSliders[t.joystickSliderNumber].abY / (float)mJoy[t.joystickNumber]->MAX_AXIS;
+                        value = (float)m_joy_state[t.joystickNumber].mSliders[t.joystickSliderNumber].abY / (float)m_joy[t.joystickNumber]->MAX_AXIS;
                     value = (value + 1) / 2; // full axis
                     if (t.joystickSliderReverse)
                         value = 1.0 - value; // reversed
@@ -2735,20 +2593,20 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
 
 bool InputEngine::isKeyDown(OIS::KeyCode key)
 {
-    if (!mKeyboard)
+    if (!m_keyboard)
         return false;
-    return this->mKeyboard->isKeyDown(key);
+    return this->m_keyboard->isKeyDown(key);
 }
 
 bool InputEngine::isKeyDownValueBounce(OIS::KeyCode mod, float time)
 {
-    if (event_times[-mod] > 0)
+    if (m_event_times[-mod] > 0)
         return false;
     else
     {
         bool res = isKeyDown(mod);
         if (res)
-            event_times[-mod] = time;
+            m_event_times[-mod] = time;
         return res;
     }
 }
@@ -2799,18 +2657,18 @@ String InputEngine::getEventTypeName(int type)
 
 void InputEngine::addEvent(int eventID, event_trigger_t t)
 {
-    uniqueCounter++;
-    t.suid = uniqueCounter;
+    m_unique_counter++;
+    t.suid = m_unique_counter;
 
     if (eventID == -1)
     //unknown event, discard
         return;
-    if (events.find(eventID) == events.end())
+    if (m_events.find(eventID) == m_events.end())
     {
-        events[eventID] = std::vector<event_trigger_t>();
-        events[eventID].clear();
+        m_events[eventID] = std::vector<event_trigger_t>();
+        m_events[eventID].clear();
     }
-    events[eventID].push_back(t);
+    m_events[eventID].push_back(t);
 }
 
 void InputEngine::updateEvent(int eventID, event_trigger_t t)
@@ -2818,12 +2676,12 @@ void InputEngine::updateEvent(int eventID, event_trigger_t t)
     if (eventID == -1)
     //unknown event, discard
         return;
-    if (events.find(eventID) == events.end())
+    if (m_events.find(eventID) == m_events.end())
     {
-        events[eventID] = std::vector<event_trigger_t>();
-        events[eventID].clear();
+        m_events[eventID] = std::vector<event_trigger_t>();
+        m_events[eventID].clear();
     }
-    events[eventID].push_back(t);
+    m_events[eventID].push_back(t);
 }
 
 bool InputEngine::processLine(char* line, int deviceID)
@@ -2886,11 +2744,10 @@ bool InputEngine::processLine(char* line, int deviceID)
             char keycodes[256] = {};
             char keycodes_work[256] = {};
 
-            OIS::KeyCode key = KC_UNASSIGNED;
+            OIS::KeyCode key = OIS::KC_UNASSIGNED;
 
             sscanf(line, "%s %s %s", eventName, evtype, keycodes);
             // separate all keys and construct the key combination
-            //LOG("try to add key: " + String(eventName)+","+ String(evtype)+","+String(keycodes));
             strncpy(keycodes_work, keycodes, 255);
             keycodes_work[255] = '\0';
             char* token = strtok(keycodes_work, delimiters);
@@ -2909,13 +2766,11 @@ bool InputEngine::processLine(char* line, int deviceID)
                 token = strtok(NULL, delimiters);
             }
 
-            allit = allkeys.find(keycode);
-            if (allit == allkeys.end())
+            auto allit = m_all_keys.find(keycode);
+            if (allit == m_all_keys.end())
             {
-#ifndef NOOGRE
-                LOG("unknown key: " + string(keycodes));
-#endif
-                key = KC_UNASSIGNED;
+                LOG("[RoR|Input] unknown key: " + string(keycodes));
+                key = OIS::KC_UNASSIGNED;
             }
             else
             {
@@ -2925,7 +2780,7 @@ bool InputEngine::processLine(char* line, int deviceID)
             int eventID = resolveEventName(String(eventName));
             if (eventID == -1)
             {
-                LOG("Error while processing input config: Unknown Event: "+String(eventName));
+                LOG("[RoR|Input] Error while processing input config: Unknown Event: "+String(eventName));
                 return false;
             }
             event_trigger_t t_key = newEvent();
@@ -3022,7 +2877,6 @@ bool InputEngine::processLine(char* line, int deviceID)
                     char tmp2[256] = {};
                     strcpy(tmp2, token + 9);
                     deadzone = atof(tmp2);
-                    //LOG("got deadzone: " + TOSTRING(deadzone)+", "+String(tmp2));
                 }
                 else if (strncmp(token, "LINEARITY", 9) == 0 && strnlen(token, 250) > 10)
                 {
@@ -3037,7 +2891,6 @@ bool InputEngine::processLine(char* line, int deviceID)
                 eventtype = ET_JoystickAxisRel;
 
             event_trigger_t t_joy = newEvent();
-            //memset(&t_joy, 0, sizeof(event_trigger_t));
             t_joy.eventtype = eventtype;
             t_joy.joystickAxisRegion = jAxisRegion;
             t_joy.joystickAxisUseDigital = usedigital;
@@ -3053,7 +2906,6 @@ bool InputEngine::processLine(char* line, int deviceID)
             strncpy(t_joy.comments, cur_comment.c_str(), 1024);
             cur_comment = "";
             addEvent(eventID, t_joy);
-            //LOG("added axis: " + TOSTRING(axisNo));
             return true;
         }
     case ET_NONE:
@@ -3063,7 +2915,6 @@ bool InputEngine::processLine(char* line, int deviceID)
                 return false;
             event_trigger_t t_none = newEvent();
             t_none.eventtype = eventtype;
-            //t_none.configline = "";
             strncpy(t_none.group, getEventGroup(eventName).c_str(), 128);
             strncpy(t_none.tmp_eventname, eventName, 128);
             strncpy(t_none.comments, cur_comment.c_str(), 1024);
@@ -3115,7 +2966,6 @@ bool InputEngine::processLine(char* line, int deviceID)
             strncpy(t_pov.comments, cur_comment.c_str(), 1024);
             cur_comment = "";
             addEvent(eventID, t_pov);
-            //LOG("added axis: " + TOSTRING(axisNo));
             return true;
         }
     case ET_JoystickSliderX:
@@ -3161,7 +3011,6 @@ bool InputEngine::processLine(char* line, int deviceID)
             strncpy(t_slider.comments, cur_comment.c_str(), 1024);
             cur_comment = "";
             addEvent(eventID, t_slider);
-            //LOG("added axis: " + TOSTRING(axisNo));
             return true;
         }
     default:
@@ -3171,11 +3020,11 @@ bool InputEngine::processLine(char* line, int deviceID)
 
 int InputEngine::getCurrentJoyButton(int& joystickNumber, int& button)
 {
-    for (int j = 0; j < free_joysticks; j++)
+    for (int j = 0; j < m_num_joysticks; j++)
     {
-        for (int i = 0; i < (int)joyState[j].mButtons.size(); i++)
+        for (int i = 0; i < (int)m_joy_state[j].mButtons.size(); i++)
         {
-            if (joyState[j].mButtons[i])
+            if (m_joy_state[j].mButtons[i])
             {
                 joystickNumber = j;
                 button = i;
@@ -3188,15 +3037,15 @@ int InputEngine::getCurrentJoyButton(int& joystickNumber, int& button)
 
 int InputEngine::getCurrentPovValue(int& joystickNumber, int& pov, int& povdir)
 {
-    for (int j = 0; j < free_joysticks; j++)
+    for (int j = 0; j < m_num_joysticks; j++)
     {
         for (int i = 0; i < MAX_JOYSTICK_POVS; i++)
         {
-            if (joyState[j].mPOV[i].direction != Pov::Centered)
+            if (m_joy_state[j].mPOV[i].direction != OIS::Pov::Centered)
             {
                 joystickNumber = j;
                 pov = i;
-                povdir = joyState[j].mPOV[i].direction;
+                povdir = m_joy_state[j].mPOV[i].direction;
                 return 1;
             }
         }
@@ -3213,23 +3062,23 @@ event_trigger_t InputEngine::newEvent()
 
 int InputEngine::getJoyComponentCount(OIS::ComponentType type, int joystickNumber)
 {
-    if (joystickNumber > free_joysticks || !mJoy[joystickNumber])
+    if (joystickNumber > m_num_joysticks || !m_joy[joystickNumber])
         return 0;
-    return mJoy[joystickNumber]->getNumberOfComponents(type);
+    return m_joy[joystickNumber]->getNumberOfComponents(type);
 }
 
 std::string InputEngine::getJoyVendor(int joystickNumber)
 {
-    if (joystickNumber > free_joysticks || !mJoy[joystickNumber])
+    if (joystickNumber > m_num_joysticks || !m_joy[joystickNumber])
         return "unknown";
-    return mJoy[joystickNumber]->vendor();
+    return m_joy[joystickNumber]->vendor();
 }
 
-JoyStickState* InputEngine::getCurrentJoyState(int joystickNumber)
+OIS::JoyStickState* InputEngine::getCurrentJoyState(int joystickNumber)
 {
-    if (joystickNumber > free_joysticks)
+    if (joystickNumber > m_num_joysticks)
         return 0;
-    return &joyState[joystickNumber];
+    return &m_joy_state[joystickNumber];
 }
 
 int InputEngine::getCurrentKeyCombo(String* combo)
@@ -3239,11 +3088,11 @@ int InputEngine::getCurrentKeyCombo(String* combo)
     int modCounter = 0;
 
     // list all modificators first
-    for (i = keyState.begin(); i != keyState.end(); i++)
+    for (i = m_key_state.begin(); i != m_key_state.end(); i++)
     {
         if (i->second)
         {
-            if (i->first != KC_LSHIFT && i->first != KC_RSHIFT && i->first != KC_LCONTROL && i->first != KC_RCONTROL && i->first != KC_LMENU && i->first != KC_RMENU)
+            if (i->first != OIS::KC_LSHIFT && i->first != OIS::KC_RSHIFT && i->first != OIS::KC_LCONTROL && i->first != OIS::KC_RCONTROL && i->first != OIS::KC_LMENU && i->first != OIS::KC_RMENU)
                 continue;
             modCounter++;
             String keyName = getKeyNameForKeyCode((OIS::KeyCode)i->first);
@@ -3255,11 +3104,11 @@ int InputEngine::getCurrentKeyCombo(String* combo)
     }
 
     // now list all keys
-    for (i = keyState.begin(); i != keyState.end(); i++)
+    for (i = m_key_state.begin(); i != m_key_state.end(); i++)
     {
         if (i->second)
         {
-            if (i->first == KC_LSHIFT || i->first == KC_RSHIFT || i->first == KC_LCONTROL || i->first == KC_RCONTROL || i->first == KC_LMENU || i->first == KC_RMENU)
+            if (i->first == OIS::KC_LSHIFT || i->first == OIS::KC_RSHIFT || i->first == OIS::KC_LCONTROL || i->first == OIS::KC_RCONTROL || i->first == OIS::KC_LMENU || i->first == OIS::KC_RMENU)
                 continue;
             String keyName = getKeyNameForKeyCode((OIS::KeyCode)i->first);
             if (*combo == "")
@@ -3309,7 +3158,7 @@ bool InputEngine::appendLineToConfig(std::string line, std::string outfile)
 
 bool InputEngine::reloadConfig(std::string outfile)
 {
-    events.clear();
+    m_events.clear();
     loadMapping(outfile);
     return true;
 }
@@ -3393,13 +3242,6 @@ bool InputEngine::saveMapping(String outfile, String hwnd, int joyNum)
         return false;
 
     bool created = false;
-
-    if (!mInputManager && !hwnd.empty())
-    {
-        destroy();
-        setup(hwnd, false, false);
-        created = true;
-    }
 
     int counter = 0;
     char curGroup[128] = "";
@@ -3493,12 +3335,9 @@ bool InputEngine::saveMapping(String outfile, String hwnd, int joyNum)
 
 void InputEngine::completeMissingEvents()
 {
-    if (!mappingLoaded)
-        return;
-
     for (int i = 0; i < EV_MODE_LAST; i++)
     {
-        if (events.find(eventInfo[i].eventID) == events.end())
+        if (m_events.find(eventInfo[i].eventID) == m_events.end())
         {
             if (eventInfo[i].defaultKey.empty())
                 continue;
@@ -3508,33 +3347,29 @@ void InputEngine::completeMissingEvents()
             // not existing, insert default
             char tmp[256] = "";
             sprintf(tmp, "%s %s", eventInfo[i].name.c_str(), eventInfo[i].defaultKey.c_str());
-#ifndef NOOGRE
-            //LOG("event mapping not existing, using default: '" + String(tmp) + "'");
-#endif
             processLine(tmp);
         }
     }
 }
 
-bool InputEngine::loadMapping(String outfile, bool append, int deviceID)
+bool InputEngine::loadMapping(std::string filename, bool append, int deviceID)
 {
     char line[1025] = "";
-    int oldState = uniqueCounter;
+    int oldState = m_unique_counter;
 
     if (!append)
     {
         // clear everything
         resetKeys();
-        events.clear();
+        m_events.clear();
     }
 
-#ifndef NOOGRE
-    LOG(" * Loading input mapping " + outfile);
+    LOG("[RoR|Input]  * Loading input mapping: " + filename);
     {
         DataStreamPtr ds;
         try
         {
-            ds = ResourceGroupManager::getSingleton().openResource(outfile, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+            ds = ResourceGroupManager::getSingleton().openResource(filename, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         }
         catch (...)
         {
@@ -3552,23 +3387,9 @@ bool InputEngine::loadMapping(String outfile, bool append, int deviceID)
                 processLine(line, deviceID);
         }
     }
-#else
-    FILE *f = fopen(outfile.c_str(), "r");
-    if (!f)
-        return false;
-    while(fgets(line, 1024, f)!=NULL)
-    {
-        if (strnlen(line, 1024) > 5)
-            processLine(line);
-    }
-    fclose(f);
 
-#endif
-
-    int newEvents = uniqueCounter - oldState;
-#ifndef NOOGRE
-    LOG(" * Input map successfully loaded: " + TOSTRING(newEvents) + " entries");
-#endif
+    int newEvents = m_unique_counter - oldState;
+    LOG("[RoR|Input]  * Input map successfully loaded: " + TOSTRING(newEvents) + " entries");
     return true;
 }
 
@@ -3581,9 +3402,7 @@ int InputEngine::resolveEventName(String eventName)
             return eventInfo[i].eventID;
         i++;
     }
-#ifndef NOOGRE
-    LOG("unknown event (ignored): " + eventName);
-#endif
+    LOG("[RoR|Input] unknown event (ignored): " + eventName);
     return -1;
 }
 
@@ -3601,171 +3420,181 @@ String InputEngine::eventIDToName(int eventID)
 
 void InputEngine::initAllKeys()
 {
-    allkeys["0"] = KC_0;
-    allkeys["1"] = KC_1;
-    allkeys["2"] = KC_2;
-    allkeys["3"] = KC_3;
-    allkeys["4"] = KC_4;
-    allkeys["5"] = KC_5;
-    allkeys["6"] = KC_6;
-    allkeys["7"] = KC_7;
-    allkeys["8"] = KC_8;
-    allkeys["9"] = KC_9;
-    allkeys["A"] = KC_A;
-    allkeys["ABNT_C1"] = KC_ABNT_C1;
-    allkeys["ABNT_C2"] = KC_ABNT_C2;
-    allkeys["ADD"] = KC_ADD;
-    allkeys["APOSTROPHE"] = KC_APOSTROPHE;
-    allkeys["APPS"] = KC_APPS;
-    allkeys["AT"] = KC_AT;
-    allkeys["AX"] = KC_AX;
-    allkeys["B"] = KC_B;
-    allkeys["BACK"] = KC_BACK;
-    allkeys["BACKSLASH"] = KC_BACKSLASH;
-    allkeys["C"] = KC_C;
-    allkeys["CALCULATOR"] = KC_CALCULATOR;
-    allkeys["CAPITAL"] = KC_CAPITAL;
-    allkeys["COLON"] = KC_COLON;
-    allkeys["COMMA"] = KC_COMMA;
-    allkeys["CONVERT"] = KC_CONVERT;
-    allkeys["D"] = KC_D;
-    allkeys["DECIMAL"] = KC_DECIMAL;
-    allkeys["DELETE"] = KC_DELETE;
-    allkeys["DIVIDE"] = KC_DIVIDE;
-    allkeys["DOWN"] = KC_DOWN;
-    allkeys["E"] = KC_E;
-    allkeys["END"] = KC_END;
-    allkeys["EQUALS"] = KC_EQUALS;
-    allkeys["ESCAPE"] = KC_ESCAPE;
-    allkeys["F"] = KC_F;
-    allkeys["F1"] = KC_F1;
-    allkeys["F10"] = KC_F10;
-    allkeys["F11"] = KC_F11;
-    allkeys["F12"] = KC_F12;
-    allkeys["F13"] = KC_F13;
-    allkeys["F14"] = KC_F14;
-    allkeys["F15"] = KC_F15;
-    allkeys["F2"] = KC_F2;
-    allkeys["F3"] = KC_F3;
-    allkeys["F4"] = KC_F4;
-    allkeys["F5"] = KC_F5;
-    allkeys["F6"] = KC_F6;
-    allkeys["F7"] = KC_F7;
-    allkeys["F8"] = KC_F8;
-    allkeys["F9"] = KC_F9;
-    allkeys["G"] = KC_G;
-    allkeys["GRAVE"] = KC_GRAVE;
-    allkeys["H"] = KC_H;
-    allkeys["HOME"] = KC_HOME;
-    allkeys["I"] = KC_I;
-    allkeys["INSERT"] = KC_INSERT;
-    allkeys["J"] = KC_J;
-    allkeys["K"] = KC_K;
-    allkeys["KANA"] = KC_KANA;
-    allkeys["KANJI"] = KC_KANJI;
-    allkeys["L"] = KC_L;
-    allkeys["LBRACKET"] = KC_LBRACKET;
-    allkeys["LCONTROL"] = KC_LCONTROL;
-    allkeys["LEFT"] = KC_LEFT;
-    allkeys["LMENU"] = KC_LMENU;
-    allkeys["LSHIFT"] = KC_LSHIFT;
-    allkeys["LWIN"] = KC_LWIN;
-    allkeys["M"] = KC_M;
-    allkeys["MAIL"] = KC_MAIL;
-    allkeys["MEDIASELECT"] = KC_MEDIASELECT;
-    allkeys["MEDIASTOP"] = KC_MEDIASTOP;
-    allkeys["MINUS"] = KC_MINUS;
-    allkeys["MULTIPLY"] = KC_MULTIPLY;
-    allkeys["MUTE"] = KC_MUTE;
-    allkeys["MYCOMPUTER"] = KC_MYCOMPUTER;
-    allkeys["N"] = KC_N;
-    allkeys["NEXTTRACK"] = KC_NEXTTRACK;
-    allkeys["NOCONVERT"] = KC_NOCONVERT;
-    allkeys["NUMLOCK"] = KC_NUMLOCK;
-    allkeys["NUMPAD0"] = KC_NUMPAD0;
-    allkeys["NUMPAD1"] = KC_NUMPAD1;
-    allkeys["NUMPAD2"] = KC_NUMPAD2;
-    allkeys["NUMPAD3"] = KC_NUMPAD3;
-    allkeys["NUMPAD4"] = KC_NUMPAD4;
-    allkeys["NUMPAD5"] = KC_NUMPAD5;
-    allkeys["NUMPAD6"] = KC_NUMPAD6;
-    allkeys["NUMPAD7"] = KC_NUMPAD7;
-    allkeys["NUMPAD8"] = KC_NUMPAD8;
-    allkeys["NUMPAD9"] = KC_NUMPAD9;
-    allkeys["NUMPADCOMMA"] = KC_NUMPADCOMMA;
-    allkeys["NUMPADENTER"] = KC_NUMPADENTER;
-    allkeys["NUMPADEQUALS"] = KC_NUMPADEQUALS;
-    allkeys["O"] = KC_O;
-    allkeys["OEM_102"] = KC_OEM_102;
-    allkeys["P"] = KC_P;
-    allkeys["PAUSE"] = KC_PAUSE;
-    allkeys["PERIOD"] = KC_PERIOD;
-    allkeys["PGDOWN"] = KC_PGDOWN;
-    allkeys["PGUP"] = KC_PGUP;
-    allkeys["PLAYPAUSE"] = KC_PLAYPAUSE;
-    allkeys["POWER"] = KC_POWER;
-    allkeys["PREVTRACK"] = KC_PREVTRACK;
-    allkeys["Q"] = KC_Q;
-    allkeys["R"] = KC_R;
-    allkeys["RBRACKET"] = KC_RBRACKET;
-    allkeys["RCONTROL"] = KC_RCONTROL;
-    allkeys["RETURN"] = KC_RETURN;
-    allkeys["RIGHT"] = KC_RIGHT;
-    allkeys["RMENU"] = KC_RMENU;
-    allkeys["RSHIFT"] = KC_RSHIFT;
-    allkeys["RWIN"] = KC_RWIN;
-    allkeys["S"] = KC_S;
-    allkeys["SCROLL"] = KC_SCROLL;
-    allkeys["SEMICOLON"] = KC_SEMICOLON;
-    allkeys["SLASH"] = KC_SLASH;
-    allkeys["SLEEP"] = KC_SLEEP;
-    allkeys["SPACE"] = KC_SPACE;
-    allkeys["STOP"] = KC_STOP;
-    allkeys["SUBTRACT"] = KC_SUBTRACT;
-    allkeys["SYSRQ"] = KC_SYSRQ;
-    allkeys["T"] = KC_T;
-    allkeys["TAB"] = KC_TAB;
-    allkeys["U"] = KC_U;
-    //allkeys["UNASSIGNED"] = KC_UNASSIGNED;
-    allkeys["UNDERLINE"] = KC_UNDERLINE;
-    allkeys["UNLABELED"] = KC_UNLABELED;
-    allkeys["UP"] = KC_UP;
-    allkeys["V"] = KC_V;
-    allkeys["VOLUMEDOWN"] = KC_VOLUMEDOWN;
-    allkeys["VOLUMEUP"] = KC_VOLUMEUP;
-    allkeys["W"] = KC_W;
-    allkeys["WAKE"] = KC_WAKE;
-    allkeys["WEBBACK"] = KC_WEBBACK;
-    allkeys["WEBFAVORITES"] = KC_WEBFAVORITES;
-    allkeys["WEBFORWARD"] = KC_WEBFORWARD;
-    allkeys["WEBHOME"] = KC_WEBHOME;
-    allkeys["WEBREFRESH"] = KC_WEBREFRESH;
-    allkeys["WEBSEARCH"] = KC_WEBSEARCH;
-    allkeys["WEBSTOP"] = KC_WEBSTOP;
-    allkeys["X"] = KC_X;
-    allkeys["Y"] = KC_Y;
-    allkeys["YEN"] = KC_YEN;
-    allkeys["Z"] = KC_Z;
-}
-
-void InputEngine::setupDefault(Ogre::String inputhwnd /* = "" */)
-{
-    // start input engine
-    size_t hWnd = 0;
-    RoR::App::GetOgreSubsystem()->GetRenderWindow()->getCustomAttribute("WINDOW", &hWnd);
-
-    this->setup(TOSTRING(hWnd), true, true);
+    m_all_keys["0"]            = OIS::KC_0;
+    m_all_keys["1"]            = OIS::KC_1;
+    m_all_keys["2"]            = OIS::KC_2;
+    m_all_keys["3"]            = OIS::KC_3;
+    m_all_keys["4"]            = OIS::KC_4;
+    m_all_keys["5"]            = OIS::KC_5;
+    m_all_keys["6"]            = OIS::KC_6;
+    m_all_keys["7"]            = OIS::KC_7;
+    m_all_keys["8"]            = OIS::KC_8;
+    m_all_keys["9"]            = OIS::KC_9;
+    m_all_keys["A"]            = OIS::KC_A;
+    m_all_keys["ABNT_C1"]      = OIS::KC_ABNT_C1;
+    m_all_keys["ABNT_C2"]      = OIS::KC_ABNT_C2;
+    m_all_keys["ADD"]          = OIS::KC_ADD;
+    m_all_keys["APOSTROPHE"]   = OIS::KC_APOSTROPHE;
+    m_all_keys["APPS"]         = OIS::KC_APPS;
+    m_all_keys["AT"]           = OIS::KC_AT;
+    m_all_keys["AX"]           = OIS::KC_AX;
+    m_all_keys["B"]            = OIS::KC_B;
+    m_all_keys["BACK"]         = OIS::KC_BACK;
+    m_all_keys["BACKSLASH"]    = OIS::KC_BACKSLASH;
+    m_all_keys["C"]            = OIS::KC_C;
+    m_all_keys["CALCULATOR"]   = OIS::KC_CALCULATOR;
+    m_all_keys["CAPITAL"]      = OIS::KC_CAPITAL;
+    m_all_keys["COLON"]        = OIS::KC_COLON;
+    m_all_keys["COMMA"]        = OIS::KC_COMMA;
+    m_all_keys["CONVERT"]      = OIS::KC_CONVERT;
+    m_all_keys["D"]            = OIS::KC_D;
+    m_all_keys["DECIMAL"]      = OIS::KC_DECIMAL;
+    m_all_keys["DELETE"]       = OIS::KC_DELETE;
+    m_all_keys["DIVIDE"]       = OIS::KC_DIVIDE;
+    m_all_keys["DOWN"]         = OIS::KC_DOWN;
+    m_all_keys["E"]            = OIS::KC_E;
+    m_all_keys["END"]          = OIS::KC_END;
+    m_all_keys["EQUALS"]       = OIS::KC_EQUALS;
+    m_all_keys["ESCAPE"]       = OIS::KC_ESCAPE;
+    m_all_keys["F"]            = OIS::KC_F;
+    m_all_keys["F1"]           = OIS::KC_F1;
+    m_all_keys["F10"]          = OIS::KC_F10;
+    m_all_keys["F11"]          = OIS::KC_F11;
+    m_all_keys["F12"]          = OIS::KC_F12;
+    m_all_keys["F13"]          = OIS::KC_F13;
+    m_all_keys["F14"]          = OIS::KC_F14;
+    m_all_keys["F15"]          = OIS::KC_F15;
+    m_all_keys["F2"]           = OIS::KC_F2;
+    m_all_keys["F3"]           = OIS::KC_F3;
+    m_all_keys["F4"]           = OIS::KC_F4;
+    m_all_keys["F5"]           = OIS::KC_F5;
+    m_all_keys["F6"]           = OIS::KC_F6;
+    m_all_keys["F7"]           = OIS::KC_F7;
+    m_all_keys["F8"]           = OIS::KC_F8;
+    m_all_keys["F9"]           = OIS::KC_F9;
+    m_all_keys["G"]            = OIS::KC_G;
+    m_all_keys["GRAVE"]        = OIS::KC_GRAVE;
+    m_all_keys["H"]            = OIS::KC_H;
+    m_all_keys["HOME"]         = OIS::KC_HOME;
+    m_all_keys["I"]            = OIS::KC_I;
+    m_all_keys["INSERT"]       = OIS::KC_INSERT;
+    m_all_keys["J"]            = OIS::KC_J;
+    m_all_keys["K"]            = OIS::KC_K;
+    m_all_keys["KANA"]         = OIS::KC_KANA;
+    m_all_keys["KANJI"]        = OIS::KC_KANJI;
+    m_all_keys["L"]            = OIS::KC_L;
+    m_all_keys["LBRACKET"]     = OIS::KC_LBRACKET;
+    m_all_keys["LCONTROL"]     = OIS::KC_LCONTROL;
+    m_all_keys["LEFT"]         = OIS::KC_LEFT;
+    m_all_keys["LMENU"]        = OIS::KC_LMENU;
+    m_all_keys["LSHIFT"]       = OIS::KC_LSHIFT;
+    m_all_keys["LWIN"]         = OIS::KC_LWIN;
+    m_all_keys["M"]            = OIS::KC_M;
+    m_all_keys["MAIL"]         = OIS::KC_MAIL;
+    m_all_keys["MEDIASELECT"]  = OIS::KC_MEDIASELECT;
+    m_all_keys["MEDIASTOP"]    = OIS::KC_MEDIASTOP;
+    m_all_keys["MINUS"]        = OIS::KC_MINUS;
+    m_all_keys["MULTIPLY"]     = OIS::KC_MULTIPLY;
+    m_all_keys["MUTE"]         = OIS::KC_MUTE;
+    m_all_keys["MYCOMPUTER"]   = OIS::KC_MYCOMPUTER;
+    m_all_keys["N"]            = OIS::KC_N;
+    m_all_keys["NEXTTRACK"]    = OIS::KC_NEXTTRACK;
+    m_all_keys["NOCONVERT"]    = OIS::KC_NOCONVERT;
+    m_all_keys["NUMLOCK"]      = OIS::KC_NUMLOCK;
+    m_all_keys["NUMPAD0"]      = OIS::KC_NUMPAD0;
+    m_all_keys["NUMPAD1"]      = OIS::KC_NUMPAD1;
+    m_all_keys["NUMPAD2"]      = OIS::KC_NUMPAD2;
+    m_all_keys["NUMPAD3"]      = OIS::KC_NUMPAD3;
+    m_all_keys["NUMPAD4"]      = OIS::KC_NUMPAD4;
+    m_all_keys["NUMPAD5"]      = OIS::KC_NUMPAD5;
+    m_all_keys["NUMPAD6"]      = OIS::KC_NUMPAD6;
+    m_all_keys["NUMPAD7"]      = OIS::KC_NUMPAD7;
+    m_all_keys["NUMPAD8"]      = OIS::KC_NUMPAD8;
+    m_all_keys["NUMPAD9"]      = OIS::KC_NUMPAD9;
+    m_all_keys["NUMPADCOMMA"]  = OIS::KC_NUMPADCOMMA;
+    m_all_keys["NUMPADENTER"]  = OIS::KC_NUMPADENTER;
+    m_all_keys["NUMPADEQUALS"] = OIS::KC_NUMPADEQUALS;
+    m_all_keys["O"]            = OIS::KC_O;
+    m_all_keys["OEM_102"]      = OIS::KC_OEM_102;
+    m_all_keys["P"]            = OIS::KC_P;
+    m_all_keys["PAUSE"]        = OIS::KC_PAUSE;
+    m_all_keys["PERIOD"]       = OIS::KC_PERIOD;
+    m_all_keys["PGDOWN"]       = OIS::KC_PGDOWN;
+    m_all_keys["PGUP"]         = OIS::KC_PGUP;
+    m_all_keys["PLAYPAUSE"]    = OIS::KC_PLAYPAUSE;
+    m_all_keys["POWER"]        = OIS::KC_POWER;
+    m_all_keys["PREVTRACK"]    = OIS::KC_PREVTRACK;
+    m_all_keys["Q"]            = OIS::KC_Q;
+    m_all_keys["R"]            = OIS::KC_R;
+    m_all_keys["RBRACKET"]     = OIS::KC_RBRACKET;
+    m_all_keys["RCONTROL"]     = OIS::KC_RCONTROL;
+    m_all_keys["RETURN"]       = OIS::KC_RETURN;
+    m_all_keys["RIGHT"]        = OIS::KC_RIGHT;
+    m_all_keys["RMENU"]        = OIS::KC_RMENU;
+    m_all_keys["RSHIFT"]       = OIS::KC_RSHIFT;
+    m_all_keys["RWIN"]         = OIS::KC_RWIN;
+    m_all_keys["S"]            = OIS::KC_S;
+    m_all_keys["SCROLL"]       = OIS::KC_SCROLL;
+    m_all_keys["SEMICOLON"]    = OIS::KC_SEMICOLON;
+    m_all_keys["SLASH"]        = OIS::KC_SLASH;
+    m_all_keys["SLEEP"]        = OIS::KC_SLEEP;
+    m_all_keys["SPACE"]        = OIS::KC_SPACE;
+    m_all_keys["STOP"]         = OIS::KC_STOP;
+    m_all_keys["SUBTRACT"]     = OIS::KC_SUBTRACT;
+    m_all_keys["SYSRQ"]        = OIS::KC_SYSRQ;
+    m_all_keys["T"]            = OIS::KC_T;
+    m_all_keys["TAB"]          = OIS::KC_TAB;
+    m_all_keys["U"]            = OIS::KC_U;
+    m_all_keys["UNDERLINE"]    = OIS::KC_UNDERLINE;
+    m_all_keys["UNLABELED"]    = OIS::KC_UNLABELED;
+    m_all_keys["UP"]           = OIS::KC_UP;
+    m_all_keys["V"]            = OIS::KC_V;
+    m_all_keys["VOLUMEDOWN"]   = OIS::KC_VOLUMEDOWN;
+    m_all_keys["VOLUMEUP"]     = OIS::KC_VOLUMEUP;
+    m_all_keys["W"]            = OIS::KC_W;
+    m_all_keys["WAKE"]         = OIS::KC_WAKE;
+    m_all_keys["WEBBACK"]      = OIS::KC_WEBBACK;
+    m_all_keys["WEBFAVORITES"] = OIS::KC_WEBFAVORITES;
+    m_all_keys["WEBFORWARD"]   = OIS::KC_WEBFORWARD;
+    m_all_keys["WEBHOME"]      = OIS::KC_WEBHOME;
+    m_all_keys["WEBREFRESH"]   = OIS::KC_WEBREFRESH;
+    m_all_keys["WEBSEARCH"]    = OIS::KC_WEBSEARCH;
+    m_all_keys["WEBSTOP"]      = OIS::KC_WEBSTOP;
+    m_all_keys["X"]            = OIS::KC_X;
+    m_all_keys["Y"]            = OIS::KC_Y;
+    m_all_keys["YEN"]          = OIS::KC_YEN;
+    m_all_keys["Z"]            = OIS::KC_Z;
 }
 
 String InputEngine::getKeyForCommand(int eventID)
 {
-    std::map<int, std::vector<event_trigger_t>>::iterator it = events.find(eventID);
+    std::map<int, std::vector<event_trigger_t>>::iterator it = m_events.find(eventID);
 
-    if (it == events.end())
+    if (it == m_events.end())
         return String();
     if (it->second.empty())
         return String();
 
     std::vector<event_trigger_t>::iterator it2 = it->second.begin();
     return getKeyNameForKeyCode((OIS::KeyCode)it2->keyCode);
+}
+
+void InputEngine::HandleException(std::string action)
+{
+    try
+    {
+        throw; // rethrow
+    }
+    catch (OIS::Exception& ex)
+    {
+        LOG("[RoR|Input] Error during "+action+", type: 'OIS::Exception', message: " + ex.eText);
+    }
+    catch (Ogre::Exception& oex)
+    {
+        LOG("[RoR|Input] Error during "+action+", type: 'OGRE::Exception', message: " + oex.getFullDescription());
+    }
+    catch (std::exception& stdex)
+    {
+        LOG("[RoR|Input] Error during "+action+", type: 'std::exception', message: " + stdex.what());
+    }
 }
