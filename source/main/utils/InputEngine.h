@@ -28,7 +28,6 @@
 
 #include "RoRPrerequisites.h"
 #include "RoRWindowEventUtilities.h"
-#include "Win32DirectInput.h"
 
 #include <OgreUTFString.h>
 #include "OISEvents.h"
@@ -581,9 +580,6 @@ private:
 
     event_trigger_t newEvent();
 
-#ifdef _WIN32
-    Win32DirectInput    m_win32_dinput;
-#endif
     OIS::InputManager*  m_input_manager;
     OIS::Mouse*         m_mouse;
     OIS::MouseState     m_mouse_state;

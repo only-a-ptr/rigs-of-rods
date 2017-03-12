@@ -34,15 +34,11 @@
 #include <assert.h>
 #include "resource.h"
 
+namespace Win32DI
+{
 
-//-----------------------------------------------------------------------------
-// Function-prototypes
-//-----------------------------------------------------------------------------
-INT_PTR CALLBACK MainDlgProc( HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam );
 BOOL CALLBACK    EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext );
 BOOL CALLBACK    EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance, VOID* pContext );
-bool InitDirectInput( HWND hDlg );
-VOID FreeDirectInput();
 
 struct DI_ENUM_CONTEXT
 {
@@ -50,42 +46,26 @@ struct DI_ENUM_CONTEXT
     bool bPreferredJoyCfgValid;
 };
 
-//-----------------------------------------------------------------------------
-// Defines, constants, and global variables
-//-----------------------------------------------------------------------------
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
 
-LPDIRECTINPUT8          g_pDI = nullptr; // TODO: make this a class member
-LPDIRECTINPUTDEVICE8    g_pJoystick = nullptr; // TODO: make this a class member
+static HWND                    s_hwnd;
+static JoyState                s_joy_state;
+static LPDIRECTINPUT8          s_dinput = nullptr;
+static LPDIRECTINPUTDEVICE8    s_joy = nullptr;
 
-bool Win32DirectInput::Init(const char* hwnd_str)
+bool Init(const char* hwnd_str)
 {
     // Get number as 64 bit and then convert. Handles the case of 32 or 64 bit HWND
     // This snippet is from OIS sources
-    m_w_handle = _strtoui64(hwnd_str, 0, 10);
-
-    return InitDirectInput((HWND)m_w_handle);
-}
-
-void Win32DirectInput::Shutdown()
-{
-    FreeDirectInput();
-}
-
-
-//-----------------------------------------------------------------------------
-// Name: InitDirectInput()
-// Desc: Initialize the DirectInput variables.
-//-----------------------------------------------------------------------------
-bool InitDirectInput( HWND hDlg )
-{
-    HRESULT hr;
+    unsigned __int64 hwnd_u64 = _strtoui64(hwnd_str, 0, 10);
+    s_hwnd = (HWND) hwnd_u64;
 
     // Register with the DirectInput subsystem and get a pointer
     // to a IDirectInput interface we can use.
     // Create a DInput object
+    HRESULT hr;
     if( FAILED( hr = DirectInput8Create( GetModuleHandle( nullptr ), DIRECTINPUT_VERSION,
-                                         IID_IDirectInput8, ( VOID** )&g_pDI, nullptr ) ) )
+                                         IID_IDirectInput8, ( VOID** )&s_dinput, nullptr ) ) )
     {
         return false;
     }
@@ -96,7 +76,7 @@ bool InitDirectInput( HWND hDlg )
     enumContext.bPreferredJoyCfgValid = false;
 
     IDirectInputJoyConfig8* pJoyConfig = nullptr;
-    if( FAILED( hr = g_pDI->QueryInterface( IID_IDirectInputJoyConfig8, ( void** )&pJoyConfig ) ) )
+    if( FAILED( hr = s_dinput->QueryInterface( IID_IDirectInputJoyConfig8, ( void** )&pJoyConfig ) ) )
     {
         return false;
     }
@@ -107,7 +87,7 @@ bool InitDirectInput( HWND hDlg )
     SAFE_RELEASE( pJoyConfig );
 
     // Look for a simple joystick we can use for this sample program.
-    if( FAILED( hr = g_pDI->EnumDevices( DI8DEVCLASS_GAMECTRL,
+    if( FAILED( hr = s_dinput->EnumDevices( DI8DEVCLASS_GAMECTRL,
                                          EnumJoysticksCallback,
                                          &enumContext, DIEDFL_ATTACHEDONLY ) ) )
     {
@@ -115,7 +95,7 @@ bool InitDirectInput( HWND hDlg )
     }
 
     // Make sure we got a joystick
-    if( !g_pJoystick )
+    if( !s_joy )
     {
         return false;
     }
@@ -125,21 +105,38 @@ bool InitDirectInput( HWND hDlg )
     // A data format specifies which controls on a device we are interested in,
     // and how they should be reported. This tells DInput that we will be
     // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
-    if( FAILED( hr = g_pJoystick->SetDataFormat( &c_dfDIJoystick2 ) ) )
+    if( FAILED( hr = s_joy->SetDataFormat( &c_dfDIJoystick2 ) ) )
         return false;
 
     // Set the cooperative level to let DInput know how this device should
     // interact with the system and with other DInput applications.
-    if( FAILED( hr = g_pJoystick->SetCooperativeLevel( hDlg, DISCL_EXCLUSIVE | DISCL_FOREGROUND ) ) )
+    if( FAILED( hr = s_joy->SetCooperativeLevel( s_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND ) ) )
         return false;
 
     // Enumerate the joystick objects. The callback function enabled user
     // interface elements for objects that are found, and sets the min/max
     // values property for discovered axes.
-    if( FAILED( hr = g_pJoystick->EnumObjects( EnumObjectsCallback, ( VOID* )hDlg, DIDFT_ALL ) ) )
+    if( FAILED( hr = s_joy->EnumObjects( EnumObjectsCallback, ( VOID* )s_hwnd, DIDFT_ALL ) ) )
         return false;
 
     return true;
+}
+
+void Shutdown()
+{
+    // Unacquire the device one last time just in case 
+    // the app tried to exit while the device is still acquired.
+    if( s_joy )
+        s_joy->Unacquire();
+
+    // Release any DirectInput objects.
+    SAFE_RELEASE( s_joy );
+    SAFE_RELEASE( s_dinput );
+}
+
+JoyState* GetJoyState()
+{
+    return &s_joy_state;
 }
 
 //-----------------------------------------------------------------------------
@@ -160,7 +157,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
         return DIENUM_CONTINUE;
 
     // Obtain an interface to the enumerated joystick.
-    hr = g_pDI->CreateDevice( pdidInstance->guidInstance, &g_pJoystick, nullptr );
+    hr = s_dinput->CreateDevice( pdidInstance->guidInstance, &s_joy, nullptr );
 
     // If it failed, then we can't use this joystick. (Maybe the user unplugged
     // it while we were in the middle of enumerating it.)
@@ -202,7 +199,7 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
         diprg.lMax = +1000;
 
         // Set the range for the axis
-        if( FAILED( g_pJoystick->SetProperty( DIPROP_RANGE, &diprg.diph ) ) )
+        if( FAILED( s_joy->SetProperty( DIPROP_RANGE, &diprg.diph ) ) )
             return DIENUM_STOP;
 
     }
@@ -210,33 +207,30 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
     return DIENUM_CONTINUE;
 }
 
-
-
-
 //-----------------------------------------------------------------------------
 // Name: UpdateInputState()
 // Desc: Get the input device's state and display it.
 //-----------------------------------------------------------------------------
-bool Win32DirectInput::Update()
+bool Update()
 {
     HRESULT hr;
     TCHAR strText[512] = {0}; // Device state text
     DIJOYSTATE2 js;           // DInput joystick state 
 
-    if( !g_pJoystick )
+    if( !s_joy )
         return false;
 
     // Poll the device to read the current state
-    hr = g_pJoystick->Poll();
+    hr = s_joy->Poll();
     if( FAILED( hr ) )
     {
         // DInput is telling us that the input stream has been
         // interrupted. We aren't tracking any state between polls, so
         // we don't have any special reset that needs to be done. We
         // just re-acquire and try again.
-        hr = g_pJoystick->Acquire();
+        hr = s_joy->Acquire();
         while( hr == DIERR_INPUTLOST )
-            hr = g_pJoystick->Acquire();
+            hr = s_joy->Acquire();
 
         // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
         // may occur when the app is minimized or in the process of 
@@ -245,38 +239,24 @@ bool Win32DirectInput::Update()
     }
 
     // Get the input's device state
-    if( FAILED( hr = g_pJoystick->GetDeviceState( sizeof( DIJOYSTATE2 ), &js ) ) )
+    if( FAILED( hr = s_joy->GetDeviceState( sizeof( DIJOYSTATE2 ), &js ) ) )
         return false; // The device should have been acquired during the Poll()
 
     // Display joystick state to dialog
 
     // Axes
-    m_joy_state.pos_x = js.lX;
-    m_joy_state.pos_y = js.lY;
-    m_joy_state.pos_z = js.lZ;
+    s_joy_state.pos_x = js.lX;
+    s_joy_state.pos_y = js.lY;
+    s_joy_state.pos_z = js.lZ;
 
-    m_joy_state.rot_x = js.lRx;
-    m_joy_state.rot_y = js.lRy;
-    m_joy_state.rot_z = js.lRz;
+    s_joy_state.rot_x = js.lRx;
+    s_joy_state.rot_y = js.lRy;
+    s_joy_state.rot_z = js.lRz;
 
     return true;
 }
 
-//-----------------------------------------------------------------------------
-// Name: FreeDirectInput()
-// Desc: Initialize the DirectInput variables.
-//-----------------------------------------------------------------------------
-VOID FreeDirectInput()
-{
-    // Unacquire the device one last time just in case 
-    // the app tried to exit while the device is still acquired.
-    if( g_pJoystick )
-        g_pJoystick->Unacquire();
-
-    // Release any DirectInput objects.
-    SAFE_RELEASE( g_pJoystick );
-    SAFE_RELEASE( g_pDI );
-}
+} // namespace Win32DI
 
 #endif // #ifdef _WIN32
 
