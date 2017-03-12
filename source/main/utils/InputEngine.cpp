@@ -31,6 +31,9 @@
 #include "OgreSubsystem.h"
 #include "RoRWindowEventUtilities.h"
 #include "Settings.h"
+#ifdef _WIN32
+#include "Win32DirectInput.h"
+#endif
 
 #include <Ogre.h>
 #include <OgreStringConverter.h>
@@ -1964,7 +1967,7 @@ void InputEngine::SetupInputDevices()
         mutableMouseState.Y.abs = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getHeight() * 0.5f;
     }
 
-    m_win32_dinput.Init(hwnd.c_str());
+    Win32DI::Init(hwnd.c_str());
 #endif // _WIN32
 }
 
@@ -2084,7 +2087,7 @@ void InputEngine::Capture()
     }
 
 #ifdef _WIN32
-    m_win32_dinput.Update();
+    Win32DI::Update();
 #endif // _WIN32
 }
 
@@ -2621,22 +2624,22 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
 
 #ifdef _WIN32
             case ET_JoyDIStatePosX:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().pos_x);
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->pos_x);
                 break;
             case ET_JoyDIStatePosY:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().pos_y);
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->pos_y);
                 break;
             case ET_JoyDIStatePosZ:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().pos_z);
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->pos_z);
                 break;
             case ET_JoyDIStateRotX:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().rot_x);
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->rot_x);
                 break;
             case ET_JoyDIStateRotY:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().rot_y);
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->rot_y);
                 break;
             case ET_JoyDIStateRotZ:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().rot_z);
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->rot_z);
                 break;
 #endif // _WIN32
 
