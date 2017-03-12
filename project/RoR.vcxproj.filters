@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\source\main\Application.cpp">
@@ -574,6 +574,9 @@
     <ClCompile Include="..\tools\windows\pch\Precompiled.cpp" />
     <ClCompile Include="..\source\main\physics\MotionPlatform.cpp">
       <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\Win32DirectInput.cpp">
+      <Filter>Source Files\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1275,6 +1278,9 @@
     </ClInclude>
     <ClInclude Include="..\source\main\physics\MotionPlatform.h">
       <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\Win32DirectInput.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

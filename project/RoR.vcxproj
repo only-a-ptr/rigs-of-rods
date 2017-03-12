@@ -202,6 +202,7 @@
     <ClCompile Include="..\source\main\scripting\as_addon\scriptstdstring.cpp" />
     <ClCompile Include="..\source\main\scripting\as_addon\scriptstdstring_utils.cpp" />
     <ClCompile Include="..\source\main\scripting\LocalStorage.cpp" />
+    <ClCompile Include="..\source\main\utils\Win32DirectInput.cpp" />
     <ClCompile Include="..\tools\windows\pch\Precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(SolutionDir)..\tools\windows\pch\Precompiled.h</PrecompiledHeaderFile>
@@ -431,6 +432,7 @@
     <ClInclude Include="..\source\main\utils\Singleton.h" />
     <ClInclude Include="..\source\main\utils\Timer.h" />
     <ClInclude Include="..\source\main\utils\Utils.h" />
+    <ClInclude Include="..\source\main\utils\Win32DirectInput.h" />
     <ClInclude Include="..\source\main\utils\WriteTextToTexture.h" />
     <ClInclude Include="..\source\main\utils\ZeroedMemoryAllocator.h" />
     <ClInclude Include="..\source\main\utils\profiler\Profiler.h" />

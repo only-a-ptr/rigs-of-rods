@@ -28,6 +28,7 @@
 
 #include "RoRPrerequisites.h"
 #include "RoRWindowEventUtilities.h"
+#include "Win32DirectInput.h"
 
 #include <OgreUTFString.h>
 #include "OISEvents.h"
@@ -57,7 +58,15 @@ enum eventtypes
     ET_JoystickAxisRel,
     ET_JoystickPov,
     ET_JoystickSliderX,
-    ET_JoystickSliderY
+    ET_JoystickSliderY,
+#ifdef _WIN32
+    ET_JoyDIStatePosX,
+    ET_JoyDIStatePosY,
+    ET_JoyDIStatePosZ,
+    ET_JoyDIStateRotX,
+    ET_JoyDIStateRotY,
+    ET_JoyDIStateRotZ,
+#endif // _WIN32
 };
 
 enum events
@@ -422,6 +431,8 @@ struct event_trigger_t
     bool joystickAxisReverse;
     bool joystickAxisHalf;
     bool joystickAxisUseDigital;
+    int joystickDIRangeBase;
+    int joystickDIRangeExtent;
 
     // POVs
     int joystickPovNumber;
@@ -568,6 +579,9 @@ private:
 
     event_trigger_t newEvent();
 
+#ifdef _WIN32
+    Win32DirectInput    m_win32_dinput;
+#endif
     OIS::InputManager*  m_input_manager;
     OIS::Mouse*         m_mouse;
     OIS::MouseState     m_mouse_state;

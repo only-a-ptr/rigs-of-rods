@@ -228,6 +228,7 @@ set(SOURCE_FILES
         utils/Singleton.h
         utils/Timer.h
         utils/Utils.{h,cpp}
+        utils/Win32DirectInput.{h,cpp}        
         utils/WriteTextToTexture.{h,cpp}
         utils/ZeroedMemoryAllocator.h
         utils/profiler/Profiler.{h,cpp}
