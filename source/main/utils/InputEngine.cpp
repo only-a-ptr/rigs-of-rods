@@ -1957,6 +1957,8 @@ void InputEngine::SetupInputDevices()
         mutableMouseState.X.abs = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getWidth() * 0.5f;
         mutableMouseState.Y.abs = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getHeight() * 0.5f;
     }
+
+    m_win32_dinput.Init(hwnd.c_str());
 #endif // _WIN32
 }
 
@@ -2074,6 +2076,10 @@ void InputEngine::Capture()
             m_joy[i]->capture();
         }
     }
+
+#ifdef _WIN32
+    m_win32_dinput.Update();
+#endif // _WIN32
 }
 
 void InputEngine::windowResized(Ogre::RenderWindow* rw)
@@ -2396,8 +2402,32 @@ bool InputEngine::isEventAnalog(int eventID)
     return false;
 }
 
+#ifdef _WIN32
+float DIAxisToValue(int base, int extent, int axis)
+{
+    if (base < extent)
+    {
+        // Positive-oriented axis
+        if (axis < base || axis > extent)
+            return 0.f;
+
+        return static_cast<float>(axis - base)/static_cast<float>(extent - base);
+    }
+    else
+    {
+        // Negative oriented axis
+        if (axis > base || axis < extent)
+            return 0.f;
+
+        return static_cast<float>((-axis) - (-base))/static_cast<float>((-extent) - (-base));
+    }
+}
+#endif
+
 float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
 {
+    // valueSource: ET_ANY(0), ET_DIGITAL(1), ET_ANALOG(2)
+
     float returnValue = 0;
     std::vector<event_trigger_t> t_vec = m_events[eventID];
     float value = 0;
@@ -2405,7 +2435,7 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
     {
         event_trigger_t t = *i;
 
-        if (valueSource == 0 || valueSource == 1)
+        if (valueSource == 0 || valueSource == 1) // valueSource: ET_ANY(0), ET_DIGITAL(1)
         {
             switch (t.eventtype)
             {
@@ -2479,7 +2509,7 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
                 break;
             }
         }
-        if (valueSource == 0 || valueSource == 2)
+        if (valueSource == 0 || valueSource == 2) // valueSource: ET_ANY(0), ET_ANALOG(2)
         {
             switch (t.eventtype)
             {
@@ -2582,6 +2612,28 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
                         value = 1.0 - value; // reversed
                 }
                 break;
+
+#ifdef _WIN32
+            case ET_JoyDIStatePosX:
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().pos_x);
+                break;
+            case ET_JoyDIStatePosY:
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().pos_y);
+                break;
+            case ET_JoyDIStatePosZ:
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().pos_z);
+                break;
+            case ET_JoyDIStateRotX:
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().rot_x);
+                break;
+            case ET_JoyDIStateRotY:
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().rot_y);
+                break;
+            case ET_JoyDIStateRotZ:
+                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, m_win32_dinput.GetJoyState().rot_z);
+                break;
+#endif // _WIN32
+
             }
         }
         // only return if grater zero, otherwise check all other bombinations
@@ -2651,6 +2703,12 @@ String InputEngine::getEventTypeName(int type)
     case ET_JoystickPov: return "JoystickPov";
     case ET_JoystickSliderX: return "JoystickSliderX";
     case ET_JoystickSliderY: return "JoystickSliderY";
+    case ET_JoyDIStatePosX: return "JoyDIStatePosX";
+    case ET_JoyDIStatePosY: return "JoyDIStatePosY";
+    case ET_JoyDIStatePosZ: return "JoyDIStatePosZ";
+    case ET_JoyDIStateRotX: return "JoyDIStateRotX";
+    case ET_JoyDIStateRotY: return "JoyDIStateRotY";
+    case ET_JoyDIStateRotZ: return "JoyDIStateRotZ";
     }
     return "unknown";
 }
@@ -2730,6 +2788,19 @@ bool InputEngine::processLine(char* line, int deviceID)
         eventtype = ET_JoystickSliderY;
     else if (!strncmp(evtype, "None", 4))
         eventtype = ET_NONE;
+    // Extensions for Elsaco hardware
+    else if (!strncmp(evtype, "JoyDIStatePosX", 14))
+        eventtype = ET_JoyDIStatePosX;
+    else if (!strncmp(evtype, "JoyDIStatePosy", 14))
+        eventtype = ET_JoyDIStatePosY;
+    else if (!strncmp(evtype, "JoyDIStatePosZ", 14))
+        eventtype = ET_JoyDIStatePosZ;
+    else if (!strncmp(evtype, "JoyDIStateRotX", 14))
+        eventtype = ET_JoyDIStateRotX;
+    else if (!strncmp(evtype, "JoyDIStateRoty", 14))
+        eventtype = ET_JoyDIStateRotY;
+    else if (!strncmp(evtype, "JoyDIStateRotZ", 14))
+        eventtype = ET_JoyDIStateRotZ;
 
     switch (eventtype)
     {
@@ -2906,6 +2977,22 @@ bool InputEngine::processLine(char* line, int deviceID)
             strncpy(t_joy.comments, cur_comment.c_str(), 1024);
             cur_comment = "";
             addEvent(eventID, t_joy);
+            return true;
+        }
+    case ET_JoyDIStatePosX:
+    case ET_JoyDIStatePosY:
+    case ET_JoyDIStatePosZ:
+    case ET_JoyDIStateRotX:
+    case ET_JoyDIStateRotY:
+    case ET_JoyDIStateRotZ:
+        {
+            event_trigger_t trig = newEvent();
+            trig.joystickDIRangeBase = 0;
+            trig.joystickDIRangeExtent = std::numeric_limits<short>().max();
+            trig.eventtype = eventtype;
+            sscanf(line, "%s %s %d %d", eventName, evtype, &trig.joystickDIRangeBase, &trig.joystickDIRangeExtent);
+            int eventID = resolveEventName(eventName);
+            this->addEvent(eventID, trig);
             return true;
         }
     case ET_NONE:
