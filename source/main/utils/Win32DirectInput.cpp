@@ -34,6 +34,9 @@
 #include <assert.h>
 #include "resource.h"
 
+#include <vector>
+#include <string>
+
 namespace Win32DI
 {
 
@@ -46,12 +49,19 @@ struct DI_ENUM_CONTEXT
     bool bPreferredJoyCfgValid;
 };
 
+struct Controller
+{
+    DIJOYSTATE2 state;
+    LPDIRECTINPUTDEVICE8 device;
+    std::string name;
+};
+
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
 
 static HWND                    s_hwnd;
-static JoyState                s_joy_state;
 static LPDIRECTINPUT8          s_dinput = nullptr;
-static LPDIRECTINPUTDEVICE8    s_joy = nullptr;
+static std::vector<Controller> s_controllers;
+static std::vector<std::string> s_device_list;
 
 bool Init(const char* hwnd_str)
 {
@@ -94,30 +104,34 @@ bool Init(const char* hwnd_str)
         return false;
     }
 
-    // Make sure we got a joystick
-    if( !s_joy )
+    if( s_controllers.empty() )
     {
         return false;
     }
 
-    // Set the data format to "simple joystick" - a predefined data format 
-    //
-    // A data format specifies which controls on a device we are interested in,
-    // and how they should be reported. This tells DInput that we will be
-    // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
-    if( FAILED( hr = s_joy->SetDataFormat( &c_dfDIJoystick2 ) ) )
-        return false;
+    for (auto& con: s_controllers)
+    {
 
-    // Set the cooperative level to let DInput know how this device should
-    // interact with the system and with other DInput applications.
-    if( FAILED( hr = s_joy->SetCooperativeLevel( s_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND ) ) )
-        return false;
+        // Set the data format to "simple joystick" - a predefined data format 
+        //
+        // A data format specifies which controls on a device we are interested in,
+        // and how they should be reported. This tells DInput that we will be
+        // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
+        if( FAILED( hr = con.device->SetDataFormat( &c_dfDIJoystick2 ) ) )
+            return false;
 
-    // Enumerate the joystick objects. The callback function enabled user
-    // interface elements for objects that are found, and sets the min/max
-    // values property for discovered axes.
-    if( FAILED( hr = s_joy->EnumObjects( EnumObjectsCallback, ( VOID* )s_hwnd, DIDFT_ALL ) ) )
-        return false;
+        // Set the cooperative level to let DInput know how this device should
+        // interact with the system and with other DInput applications.
+        if( FAILED( hr = con.device->SetCooperativeLevel( s_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND ) ) )
+            return false;
+
+        // Enumerate the joystick objects. The callback function enabled user
+        // interface elements for objects that are found, and sets the min/max
+        // values property for discovered axes.
+        if( FAILED( hr = con.device->EnumObjects( EnumObjectsCallback, ( VOID* )&con, DIDFT_ALL ) ) )
+            return false;
+
+    }
 
     return true;
 }
@@ -126,17 +140,54 @@ void Shutdown()
 {
     // Unacquire the device one last time just in case 
     // the app tried to exit while the device is still acquired.
-    if( s_joy )
-        s_joy->Unacquire();
+    for (auto& con: s_controllers)
+    {
+        con.device->Unacquire();
+        SAFE_RELEASE( con.device );
+    }
+    s_controllers.clear();
 
-    // Release any DirectInput objects.
-    SAFE_RELEASE( s_joy );
     SAFE_RELEASE( s_dinput );
 }
 
-JoyState* GetJoyState()
+JoyState GetState(size_t index)
 {
-    return &s_joy_state;
+    auto& src = s_controllers.at(index).state;
+    JoyState dst;
+    dst.pos_x = src.lX;
+    dst.pos_y = src.lY;
+    dst.pos_z = src.lZ;
+    dst.rot_x = src.lRx;
+    dst.rot_y = src.lRy;
+    dst.rot_z = src.lRz;
+    dst.slider_pos[0] = static_cast<int>(src.rglSlider[0]);
+    dst.slider_pos[1] = static_cast<int>(src.rglSlider[1]);
+    return dst;
+}
+
+std::string GetName(size_t index)
+{
+    return s_controllers.at(index).name;
+}
+
+size_t GetNumControllers()
+{
+    return s_controllers.size();
+}
+
+void EnlistDevice(std::string name)
+{
+    s_device_list.push_back(name);
+}
+
+bool IsEnlisted(std::string name)
+{
+    for (auto& entry: s_device_list)
+    {
+        if (entry == name)
+            return true;
+    }
+    return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -150,6 +201,10 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
     auto pEnumContext = reinterpret_cast<DI_ENUM_CONTEXT*>( pContext );
     HRESULT hr;
 
+    // Skip blacklisted
+    if (!IsEnlisted(pdidInstance->tszInstanceName))
+        return DIENUM_CONTINUE;
+
     // Skip anything other than the perferred joystick device as defined by the control panel.  
     // Instead you could store all the enumerated joysticks and let the user pick.
     if( pEnumContext->bPreferredJoyCfgValid &&
@@ -157,20 +212,19 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
         return DIENUM_CONTINUE;
 
     // Obtain an interface to the enumerated joystick.
-    hr = s_dinput->CreateDevice( pdidInstance->guidInstance, &s_joy, nullptr );
+    Controller con;
+    hr = s_dinput->CreateDevice( pdidInstance->guidInstance, &con.device, nullptr );
 
     // If it failed, then we can't use this joystick. (Maybe the user unplugged
     // it while we were in the middle of enumerating it.)
     if( FAILED( hr ) )
         return DIENUM_CONTINUE;
 
-    // Stop enumeration. Note: we're just taking the first joystick we get. You
-    // could store all the enumerated joysticks and let the user pick.
-    return DIENUM_STOP;
+    con.name = pdidInstance->tszInstanceName; // Inspired by OIS
+    s_controllers.push_back(con);
+
+    return DIENUM_CONTINUE;
 }
-
-
-
 
 //-----------------------------------------------------------------------------
 // Name: EnumObjectsCallback()
@@ -181,7 +235,7 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
 BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
                                    VOID* pContext )
 {
-    HWND hDlg = ( HWND )pContext;
+    Controller* con = static_cast<Controller*>(pContext);
 
     static int nSliderCount = 0;  // Number of returned slider controls
     static int nPOVCount = 0;     // Number of returned POV controls
@@ -199,7 +253,7 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
         diprg.lMax = +1000;
 
         // Set the range for the axis
-        if( FAILED( s_joy->SetProperty( DIPROP_RANGE, &diprg.diph ) ) )
+        if( FAILED( con->device->SetProperty( DIPROP_RANGE, &diprg.diph ) ) )
             return DIENUM_STOP;
 
     }
@@ -207,51 +261,33 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
     return DIENUM_CONTINUE;
 }
 
-//-----------------------------------------------------------------------------
-// Name: UpdateInputState()
-// Desc: Get the input device's state and display it.
-//-----------------------------------------------------------------------------
 bool Update()
 {
-    HRESULT hr;
-    TCHAR strText[512] = {0}; // Device state text
-    DIJOYSTATE2 js;           // DInput joystick state 
-
-    if( !s_joy )
-        return false;
-
-    // Poll the device to read the current state
-    hr = s_joy->Poll();
-    if( FAILED( hr ) )
+    for (auto& con: s_controllers)
     {
-        // DInput is telling us that the input stream has been
-        // interrupted. We aren't tracking any state between polls, so
-        // we don't have any special reset that needs to be done. We
-        // just re-acquire and try again.
-        hr = s_joy->Acquire();
-        while( hr == DIERR_INPUTLOST )
-            hr = s_joy->Acquire();
 
-        // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
-        // may occur when the app is minimized or in the process of 
-        // switching, so just try again later 
-        return S_OK;
+        // Poll the device to read the current state
+        HRESULT hr;
+        hr = con.device->Poll();
+        if( FAILED( hr ) )
+        {
+            // DInput is telling us that the input stream has been
+            // interrupted. We aren't tracking any state between polls, so
+            // we don't have any special reset that needs to be done. We
+            // just re-acquire and try again.
+            hr = con.device->Acquire();
+            while( hr == DIERR_INPUTLOST )
+                hr = con.device->Acquire();
+
+            // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
+            // may occur when the app is minimized or in the process of 
+            // switching, so just try again later 
+            continue;
+        }
+
+        // Get the input's device state
+        con.device->GetDeviceState( sizeof( DIJOYSTATE2 ), &con.state );
     }
-
-    // Get the input's device state
-    if( FAILED( hr = s_joy->GetDeviceState( sizeof( DIJOYSTATE2 ), &js ) ) )
-        return false; // The device should have been acquired during the Poll()
-
-    // Display joystick state to dialog
-
-    // Axes
-    s_joy_state.pos_x = js.lX;
-    s_joy_state.pos_y = js.lY;
-    s_joy_state.pos_z = js.lZ;
-
-    s_joy_state.rot_x = js.lRx;
-    s_joy_state.rot_y = js.lRy;
-    s_joy_state.rot_z = js.lRz;
 
     return true;
 }

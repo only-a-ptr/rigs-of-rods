@@ -1863,6 +1863,28 @@ void InputEngine::SetupInputDevices()
 {
     LOG("[RoR|Input] *** Initializing OIS ***");
 
+#if _WIN32
+    auto dinput_devices = Ogre::StringUtil::split(SSETTING("Win32DirectInputDevices", ""), ",");
+    LOG("[RoR|Win32DirectInput] Listing devices from config file...");
+    size_t num_entries = 0;
+    for (auto& entry: dinput_devices)
+    {
+        Ogre::StringUtil::trim(entry); // Trim whitespace on both ends.
+        if (entry[0]=='"' && *entry.rbegin() == '"')
+        {
+            std::string name = entry.substr(1, entry.length() - 2);
+            LOG("[RoR|Win32DirectInput] >   Added device: \"" + name + "\"");
+            Win32DI::EnlistDevice(name);
+        }
+        else
+        {
+            LOG("[RoR|Win32DirectInput] >   Invalid entry: \"" + entry + "\"");
+        }
+        ++num_entries;
+    }
+    LOG("[RoR|Win32DirectInput] Processed " + TOSTRING(num_entries) + " entries");
+#endif
+
     size_t hwnd_raw;
     RoR::App::GetOgreSubsystem()->GetRenderWindow()->getCustomAttribute("WINDOW", &hwnd_raw);
     std::string hwnd = TOSTRING(hwnd_raw);
@@ -1915,34 +1937,40 @@ void InputEngine::SetupInputDevices()
         this->HandleException("creating keyboard");
     }
 
-    //This demo uses at most 10 joysticks - use old way to create (i.e. disregard vendor)
-    int numSticks = std::min(m_input_manager->getNumberOfDevices(OIS::OISJoyStick), 10);
     m_num_joysticks = 0;
-    for (int i = 0; i < numSticks; ++i)
+    for (auto& free_device: m_input_manager->listFreeDevices())
     {
+        if (free_device.first != OIS::OISJoyStick)
+            continue;
+#if _WIN32
+        if (Win32DI::IsEnlisted(free_device.second))
+            continue;
+#endif
         try
         {
-            m_joy[i] = (OIS::JoyStick*)m_input_manager->createInputObject(OIS::OISJoyStick, true);
-            m_joy[i]->setEventCallback(this);
-            m_joy_state[i] = m_joy[i]->getJoyStickState();
-            m_num_joysticks++;
+            OIS::JoyStick* joy = (OIS::JoyStick*)m_input_manager->createInputObject(OIS::OISJoyStick, true, free_device.second);
+            joy->setEventCallback(this);
+
             //create force feedback too
             //here, we take the first device we can get, but we could take a device index
             if (!m_forcefeedback)
             {
-                m_forcefeedback = (OIS::ForceFeedback*)m_joy[i]->queryInterface(OIS::Interface::ForceFeedback);
+                m_forcefeedback = (OIS::ForceFeedback*)joy->queryInterface(OIS::Interface::ForceFeedback);
             }
 
-            LOG("[RoR|Input] Created device [" + TOSTRING(i + 1) + "] \"" + m_joy[i]->vendor() + "\"");
-            LOG("[RoR|Input] >  Axes: "     + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Axis)));
-            LOG("[RoR|Input] >  Sliders: "  + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Slider)));
-            LOG("[RoR|Input] >  POV/HATs: " + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_POV)));
-            LOG("[RoR|Input] >  Buttons: "  + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Button)));
-            LOG("[RoR|Input] >  Vector3: "  + TOSTRING(m_joy[i]->getNumberOfComponents(OIS::OIS_Vector3)));
+            LOG("[RoR|Input] Created device [" + free_device.second + "]");
+            LOG("[RoR|Input] >  Axes: "     + TOSTRING(joy->getNumberOfComponents(OIS::OIS_Axis)));
+            LOG("[RoR|Input] >  Sliders: "  + TOSTRING(joy->getNumberOfComponents(OIS::OIS_Slider)));
+            LOG("[RoR|Input] >  POV/HATs: " + TOSTRING(joy->getNumberOfComponents(OIS::OIS_POV)));
+            LOG("[RoR|Input] >  Buttons: "  + TOSTRING(joy->getNumberOfComponents(OIS::OIS_Button)));
+            LOG("[RoR|Input] >  Vector3: "  + TOSTRING(joy->getNumberOfComponents(OIS::OIS_Vector3)));
+            m_joy[m_num_joysticks] = joy;
+            m_joy_state[m_num_joysticks] = joy->getJoyStickState();
+            m_num_joysticks++;
         }
         catch (...)
         {
-            this->HandleException("creating device ["+TOSTRING(i)+"]");
+            this->HandleException("creating controller ["+free_device.second+"]");
         }
     }
 
@@ -1971,6 +1999,17 @@ void InputEngine::SetupInputDevices()
 #endif // _WIN32
 }
 
+std::string DeviceNameToMapFilename(std::string const & name)
+{
+    std::string res = name;
+    std::string repl = "\\/ #@?!$%^&*()+=-><.:'|\";";
+    for (unsigned int c = 0; c < repl.size(); c++)
+    {
+        res = StringUtil::replaceAll(res, repl.substr(c, 1), "_");
+    }
+    return res + ".map";
+}
+
 void InputEngine::LoadInputMappings()
 {
     // load default one
@@ -1979,18 +2018,17 @@ void InputEngine::LoadInputMappings()
     // then load device specific ones
     for (int i = 0; i < m_num_joysticks; ++i)
     {
-        String deviceStr = m_joy[i]->vendor();
-
-        // care about unsuitable chars
-        String repl = "\\/ #@?!$%^&*()+=-><.:'|\";";
-        for (unsigned int c = 0; c < repl.size(); c++)
-        {
-            deviceStr = StringUtil::replaceAll(deviceStr, repl.substr(c, 1), "_");
-        }
-        deviceStr += ".map";
-
-        this->loadMapping(deviceStr, true, i);
+        this->loadMapping(DeviceNameToMapFilename(m_joy[i]->vendor()), true, i);
     }
+
+#ifdef _WIN32
+    for (size_t i = 0; i < Win32DI::GetNumControllers(); ++i)
+    {
+        int joystick_id = static_cast<int>(i)+m_num_joysticks;
+        this->loadMapping(DeviceNameToMapFilename(Win32DI::GetName(i)), true, joystick_id);
+    }
+#endif
+
     this->completeMissingEvents();
 }
 
@@ -2412,24 +2450,15 @@ bool InputEngine::isEventAnalog(int eventID)
 }
 
 #ifdef _WIN32
-float DIAxisToValue(int base, int extent, int axis)
+float DIAxisToValue(event_trigger_t& trig, int axis)
 {
-    if (base < extent)
-    {
-        // Positive-oriented axis
-        if (axis < base || axis > extent)
-            return 0.f;
-
-        return static_cast<float>(axis - base)/static_cast<float>(extent - base);
-    }
+    const float axis_pos = static_cast<float>(axis - trig.joystickDIRangeBase);
+    const float axis_len = static_cast<float>(trig.joystickDIRangeExtent - trig.joystickDIRangeBase);
+    const float value = axis_pos / axis_len;
+    if (value < 0.f)
+        return 0.f;
     else
-    {
-        // Negative oriented axis
-        if (axis > base || axis < extent)
-            return 0.f;
-
-        return static_cast<float>((-axis) - (-base))/static_cast<float>((-extent) - (-base));
-    }
+        return std::min(value, 1.f);
 }
 #endif
 
@@ -2623,23 +2652,30 @@ float InputEngine::getEventValue(int eventID, bool pure, int valueSource)
                 break;
 
 #ifdef _WIN32
-            case ET_JoyDIStatePosX:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->pos_x);
+            // DirectInput events
+            case ET_JoyDIAxisPosX:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).pos_x);
                 break;
-            case ET_JoyDIStatePosY:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->pos_y);
+            case ET_JoyDIAxisPosY:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).pos_y);
                 break;
-            case ET_JoyDIStatePosZ:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->pos_z);
+            case ET_JoyDIAxisPosZ:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).pos_z);
                 break;
-            case ET_JoyDIStateRotX:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->rot_x);
+            case ET_JoyDIAxisRotX:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).rot_x);
                 break;
-            case ET_JoyDIStateRotY:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->rot_y);
+            case ET_JoyDIAxisRotY:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).rot_y);
                 break;
-            case ET_JoyDIStateRotZ:
-                value = DIAxisToValue(t.joystickDIRangeBase, t.joystickDIRangeExtent, Win32DI::GetJoyState()->rot_z);
+            case ET_JoyDIAxisRotZ:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).rot_z);
+                break;
+            case ET_JoyDISlider1Pos:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).slider_pos[0]);
+                break;
+            case ET_JoyDISlider2Pos:
+                value = DIAxisToValue(t, Win32DI::GetState(static_cast<size_t>(t.joystickNumber - m_num_joysticks)).slider_pos[1]);
                 break;
 #endif // _WIN32
 
@@ -2712,12 +2748,12 @@ String InputEngine::getEventTypeName(int type)
     case ET_JoystickPov: return "JoystickPov";
     case ET_JoystickSliderX: return "JoystickSliderX";
     case ET_JoystickSliderY: return "JoystickSliderY";
-    case ET_JoyDIStatePosX: return "JoyDIStatePosX";
-    case ET_JoyDIStatePosY: return "JoyDIStatePosY";
-    case ET_JoyDIStatePosZ: return "JoyDIStatePosZ";
-    case ET_JoyDIStateRotX: return "JoyDIStateRotX";
-    case ET_JoyDIStateRotY: return "JoyDIStateRotY";
-    case ET_JoyDIStateRotZ: return "JoyDIStateRotZ";
+    case ET_JoyDIAxisPosX: return "JoyDIAxisPosX";
+    case ET_JoyDIAxisPosY: return "JoyDIAxisPosY";
+    case ET_JoyDIAxisPosZ: return "JoyDIAxisPosZ";
+    case ET_JoyDIAxisRotX: return "JoyDIAxisRotX";
+    case ET_JoyDIAxisRotY: return "JoyDIAxisRotY";
+    case ET_JoyDIAxisRotZ: return "JoyDIAxisRotZ";
     }
     return "unknown";
 }
@@ -2797,19 +2833,25 @@ bool InputEngine::processLine(char* line, int deviceID)
         eventtype = ET_JoystickSliderY;
     else if (!strncmp(evtype, "None", 4))
         eventtype = ET_NONE;
-    // Extensions for Elsaco hardware
-    else if (!strncmp(evtype, "JoyDIStatePosX", 14))
-        eventtype = ET_JoyDIStatePosX;
-    else if (!strncmp(evtype, "JoyDIStatePosy", 14))
-        eventtype = ET_JoyDIStatePosY;
-    else if (!strncmp(evtype, "JoyDIStatePosZ", 14))
-        eventtype = ET_JoyDIStatePosZ;
-    else if (!strncmp(evtype, "JoyDIStateRotX", 14))
-        eventtype = ET_JoyDIStateRotX;
-    else if (!strncmp(evtype, "JoyDIStateRoty", 14))
-        eventtype = ET_JoyDIStateRotY;
-    else if (!strncmp(evtype, "JoyDIStateRotZ", 14))
-        eventtype = ET_JoyDIStateRotZ;
+#if _WIN32
+    // Extensions for Win32 DirectInput
+    else if (!strncmp(evtype, "JoyDIAxisPosX", 14))
+        eventtype = ET_JoyDIAxisPosX;
+    else if (!strncmp(evtype, "JoyDIAxisPosY", 14))
+        eventtype = ET_JoyDIAxisPosY;
+    else if (!strncmp(evtype, "JoyDIAxisPosZ", 14))
+        eventtype = ET_JoyDIAxisPosZ;
+    else if (!strncmp(evtype, "JoyDIAxisRotX", 14))
+        eventtype = ET_JoyDIAxisRotX;
+    else if (!strncmp(evtype, "JoyDIAxisRotY", 14))
+        eventtype = ET_JoyDIAxisRotY;
+    else if (!strncmp(evtype, "JoyDIAxisRotZ", 14))
+        eventtype = ET_JoyDIAxisRotZ;
+    else if (!strncmp(evtype, "JoyDISlider1Pos", 15))
+        eventtype = ET_JoyDISlider1Pos;
+    else if (!strncmp(evtype, "JoyDISlider2Pos", 15))
+        eventtype = ET_JoyDISlider1Pos;
+#endif
 
     switch (eventtype)
     {
@@ -2988,14 +3030,18 @@ bool InputEngine::processLine(char* line, int deviceID)
             addEvent(eventID, t_joy);
             return true;
         }
-    case ET_JoyDIStatePosX:
-    case ET_JoyDIStatePosY:
-    case ET_JoyDIStatePosZ:
-    case ET_JoyDIStateRotX:
-    case ET_JoyDIStateRotY:
-    case ET_JoyDIStateRotZ:
+#if _WIN32
+    case ET_JoyDIAxisPosX:
+    case ET_JoyDIAxisPosY:
+    case ET_JoyDIAxisPosZ:
+    case ET_JoyDIAxisRotX:
+    case ET_JoyDIAxisRotY:
+    case ET_JoyDIAxisRotZ:
+    case ET_JoyDISlider1Pos:
+    case ET_JoyDISlider2Pos:
         {
             event_trigger_t trig = newEvent();
+            trig.joystickNumber = deviceID;
             trig.joystickDIRangeBase = 0;
             trig.joystickDIRangeExtent = std::numeric_limits<short>().max();
             trig.eventtype = eventtype;
@@ -3004,6 +3050,7 @@ bool InputEngine::processLine(char* line, int deviceID)
             this->addEvent(eventID, trig);
             return true;
         }
+#endif
     case ET_NONE:
         {
             int eventID = resolveEventName(String(eventName));
