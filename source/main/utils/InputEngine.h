@@ -59,12 +59,14 @@ enum eventtypes
     ET_JoystickSliderX,
     ET_JoystickSliderY,
 #ifdef _WIN32
-    ET_JoyDIStatePosX,
-    ET_JoyDIStatePosY,
-    ET_JoyDIStatePosZ,
-    ET_JoyDIStateRotX,
-    ET_JoyDIStateRotY,
-    ET_JoyDIStateRotZ,
+    ET_JoyDIAxisPosX,
+    ET_JoyDIAxisPosY,
+    ET_JoyDIAxisPosZ,
+    ET_JoyDIAxisRotX,
+    ET_JoyDIAxisRotY,
+    ET_JoyDIAxisRotZ,
+    ET_JoyDISlider1Pos,
+    ET_JoyDISlider2Pos,
 #endif // _WIN32
 };
 
