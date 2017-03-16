@@ -17,6 +17,8 @@
 
 #include "Win32DirectInput.h"
 
+#include "RoRPrerequisites.h"
+
 #define STRICT
 #define DIRECTINPUT_VERSION 0x0800
 #define _CRT_SECURE_NO_DEPRECATE
@@ -56,6 +58,7 @@ struct Controller
     std::string name;
 };
 
+#define LOGSTREAM Ogre::LogManager::getSingleton().stream() << "[RoR|Win32DirectInput] "
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
 
 static HWND                    s_hwnd;
@@ -77,6 +80,7 @@ bool Init(const char* hwnd_str)
     if( FAILED( hr = DirectInput8Create( GetModuleHandle( nullptr ), DIRECTINPUT_VERSION,
                                          IID_IDirectInput8, ( VOID** )&s_dinput, nullptr ) ) )
     {
+        LOGSTREAM << "ERROR: Failed to create DirectInput device; HRESULT: " << hr;
         return false;
     }
 
@@ -88,6 +92,7 @@ bool Init(const char* hwnd_str)
     IDirectInputJoyConfig8* pJoyConfig = nullptr;
     if( FAILED( hr = s_dinput->QueryInterface( IID_IDirectInputJoyConfig8, ( void** )&pJoyConfig ) ) )
     {
+        LOGSTREAM << "ERROR: Failed to create DirectInput device; HRESULT: " << hr;
         return false;
     }
 
@@ -96,13 +101,16 @@ bool Init(const char* hwnd_str)
         enumContext.bPreferredJoyCfgValid = true;
     SAFE_RELEASE( pJoyConfig );
 
-    // Look for a simple joystick we can use for this sample program.
+    LOGSTREAM << "Enumerating devices from system...";
     if( FAILED( hr = s_dinput->EnumDevices( DI8DEVCLASS_GAMECTRL,
                                          EnumJoysticksCallback,
                                          &enumContext, DIEDFL_ATTACHEDONLY ) ) )
     {
+        LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Failed to enumerate devices; HRESULT: " << hr;
         return false;
     }
+
+    LOGSTREAM << "Done; enumerated " << s_controllers.size() << " devices.";
 
     if( s_controllers.empty() )
     {
@@ -118,18 +126,27 @@ bool Init(const char* hwnd_str)
         // and how they should be reported. This tells DInput that we will be
         // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
         if( FAILED( hr = con.device->SetDataFormat( &c_dfDIJoystick2 ) ) )
-            return false;
+        {
+            LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Device \"" << con.name <<"\", failed to `SetDataFormat()`; HRESULT: " << hr;
+            continue;
+        }
 
         // Set the cooperative level to let DInput know how this device should
         // interact with the system and with other DInput applications.
         if( FAILED( hr = con.device->SetCooperativeLevel( s_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND ) ) )
+        {
+            LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Device \"" << con.name <<"\", failed to `SetCooperativeLevel()`; HRESULT: " << hr;
             return false;
+        }
 
         // Enumerate the joystick objects. The callback function enabled user
         // interface elements for objects that are found, and sets the min/max
         // values property for discovered axes.
         if( FAILED( hr = con.device->EnumObjects( EnumObjectsCallback, ( VOID* )&con, DIDFT_ALL ) ) )
+        {
+            LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Device \"" << con.name <<"\", failed to `EnumObjects()`; HRESULT: " << hr;
             return false;
+        }
 
     }
 
@@ -201,15 +218,12 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
     auto pEnumContext = reinterpret_cast<DI_ENUM_CONTEXT*>( pContext );
     HRESULT hr;
 
-    // Skip blacklisted
+    // Filter enlisted
     if (!IsEnlisted(pdidInstance->tszInstanceName))
+    {
+        LOGSTREAM << ">   Found device \"" << pdidInstance->tszInstanceName << "\"; not enlisted, skipping";
         return DIENUM_CONTINUE;
-
-    // Skip anything other than the perferred joystick device as defined by the control panel.  
-    // Instead you could store all the enumerated joysticks and let the user pick.
-    if( pEnumContext->bPreferredJoyCfgValid &&
-        !IsEqualGUID( pdidInstance->guidInstance, pEnumContext->pPreferredJoyCfg->guidInstance ) )
-        return DIENUM_CONTINUE;
+    }
 
     // Obtain an interface to the enumerated joystick.
     Controller con;
@@ -218,7 +232,12 @@ BOOL CALLBACK EnumJoysticksCallback( const DIDEVICEINSTANCE* pdidInstance,
     // If it failed, then we can't use this joystick. (Maybe the user unplugged
     // it while we were in the middle of enumerating it.)
     if( FAILED( hr ) )
+    {
+        LOGSTREAM << ">   Found device \"" << pdidInstance->tszInstanceName << "\"; ailed to create instance, skipping";
         return DIENUM_CONTINUE;
+    }
+
+    LOGSTREAM << ">   Found device \"" << pdidInstance->tszInstanceName << "\"; works OK";
 
     con.name = pdidInstance->tszInstanceName; // Inspired by OIS
     s_controllers.push_back(con);
@@ -253,8 +272,12 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
         diprg.lMax = +1000;
 
         // Set the range for the axis
-        if( FAILED( con->device->SetProperty( DIPROP_RANGE, &diprg.diph ) ) )
+        HRESULT hr = con->device->SetProperty( DIPROP_RANGE, &diprg.diph );
+        if( FAILED( hr ) )
+        {
+            LOGSTREAM << "[RoR|Win32DirectInput] INTERNAL ERROR: `SetProperty()` failed. HRESULT: " << hr;
             return DIENUM_STOP;
+        }
 
     }
 
