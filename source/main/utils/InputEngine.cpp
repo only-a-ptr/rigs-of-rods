@@ -1812,7 +1812,6 @@ InputEngine::InputEngine() :
     , m_unique_counter(0)
 {
     memset(m_joy, 0, sizeof(m_joy));
-    LOG("*** Loading OIS ***");
     initAllKeys();
 }
 
@@ -1855,8 +1854,6 @@ void InputEngine::destroy()
 
 void InputEngine::SetupInputDevices()
 {
-    LOG("[RoR|Input] *** Initializing OIS ***");
-
 #if _WIN32
     auto dinput_devices = Ogre::StringUtil::split(SSETTING("Win32DirectInputDevices", ""), ",");
     LOG("[RoR|Win32DirectInput] Listing devices from config file...");
@@ -1900,24 +1897,7 @@ void InputEngine::SetupInputDevices()
 #endif // LINUX
     }
 
-    LOG("[RoR|Input] *** OIS window handle: " + hwnd);
-
     m_input_manager = OIS::InputManager::createInputSystem(pl);
-
-    //Print debugging information
-    unsigned int v = m_input_manager->getVersionNumber();
-    LOG("[RoR|Input] OIS Version: " + TOSTRING(v>>16) + String(".") + TOSTRING((v>>8) & 0x000000FF) + String(".") + TOSTRING(v & 0x000000FF));
-    LOG("[RoR|Input] >  Release Name: "    + m_input_manager->getVersionName());
-    LOG("[RoR|Input] >  Total Keyboards: " + TOSTRING(m_input_manager->getNumberOfDevices(OIS::OISKeyboard)));
-    LOG("[RoR|Input] >  Total Mice: "      + TOSTRING(m_input_manager->getNumberOfDevices(OIS::OISMouse)));
-    LOG("[RoR|Input] >  Total JoySticks: " + TOSTRING(m_input_manager->getNumberOfDevices(OIS::OISJoyStick)));
-
-    LOG("[RoR|Input] Listing all devices...");
-    OIS::DeviceList deviceList = m_input_manager->listFreeDevices();
-    for (OIS::DeviceList::iterator i = deviceList.begin(); i != deviceList.end(); ++i)
-    {
-        LOG("[RoR|Input] >  Device: " + String(OIS_DEVICE_TYPE[i->first]) + String(" Vendor: ") + i->second);
-    }
 
     //Create all devices (We only catch joystick exceptions here, as, most people have Key/Mouse)
     try
@@ -1928,9 +1908,18 @@ void InputEngine::SetupInputDevices()
     }
     catch (...)
     {
-        this->HandleException("creating keyboard");
+        this->HandleException("creating OIS keyboard");
     }
 
+    auto num_joy = m_input_manager->listFreeDevices().size();
+    if (num_joy > 0)
+    {
+        LOG("[RoR|Input] Creating OIS joysticks...");
+    }
+    else
+    {
+        LOG("[RoR|Input] No OIS joysticks detected.");
+    }
     m_num_joysticks = 0;
     for (auto& free_device: m_input_manager->listFreeDevices())
     {
@@ -1938,7 +1927,10 @@ void InputEngine::SetupInputDevices()
             continue;
 #if _WIN32
         if (Win32DI::IsEnlisted(free_device.second))
+        {
+            LOG("[RoR|Input] Skipping device \"" + free_device.second + "\" enlisted for Win32DirectInput");
             continue;
+        }
 #endif
         try
         {
@@ -1952,7 +1944,7 @@ void InputEngine::SetupInputDevices()
                 m_forcefeedback = (OIS::ForceFeedback*)joy->queryInterface(OIS::Interface::ForceFeedback);
             }
 
-            LOG("[RoR|Input] Created device [" + free_device.second + "]");
+            LOG("[RoR|Input] Created device \"" + free_device.second + "\"");
             LOG("[RoR|Input] >  Axes: "     + TOSTRING(joy->getNumberOfComponents(OIS::OIS_Axis)));
             LOG("[RoR|Input] >  Sliders: "  + TOSTRING(joy->getNumberOfComponents(OIS::OIS_Slider)));
             LOG("[RoR|Input] >  POV/HATs: " + TOSTRING(joy->getNumberOfComponents(OIS::OIS_POV)));
@@ -1964,8 +1956,13 @@ void InputEngine::SetupInputDevices()
         }
         catch (...)
         {
-            this->HandleException("creating controller ["+free_device.second+"]");
+            this->HandleException("creating OIS controller ["+free_device.second+"]");
         }
+    }
+
+    if (num_joy > 0)
+    {
+        LOG("[RoR|Input] Created " + TOSTRING(m_num_joysticks) + " OIS joysticks...");
     }
 
     try
@@ -1976,7 +1973,7 @@ void InputEngine::SetupInputDevices()
     }
     catch (...)
     {
-        this->HandleException("creating mouse");
+        this->HandleException("creating OIS mouse");
     }
 
     // set the mouse to the middle of the screen, hackish!
