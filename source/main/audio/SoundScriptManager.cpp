@@ -437,9 +437,8 @@ bool SoundScriptTemplate::setParameter(Ogre::StringVector vec)
             trigger_source = SS_TRIG_GEARSLIDE;
             return true;
         };
-        if (vec[1] == String("creak") && App::GetAudioEnableCreak())
+        if (vec[1] == String("creak") && App::GetAudioEnableCreak()) // Obsolete
         {
-            trigger_source = SS_TRIG_CREAK;
             return true;
         };
         if (vec[1] == String("break"))
@@ -602,9 +601,8 @@ bool SoundScriptTemplate::setParameter(Ogre::StringVector vec)
             trigger_source = SS_TRIG_TURN_SIGNAL_WARN_TICK;
             return true;
         };
-        if (vec[1] == String("linked_command"))
+        if (vec[1] == String("linked_command")) // Obsolete
         {
-            trigger_source = SS_TRIG_LINKED_COMMAND;
             return true;
         };
         if (vec[1] == String("main_menu"))
@@ -746,8 +744,6 @@ int SoundScriptTemplate::parseModulation(String str)
         return SS_MOD_TORQUE;
     if (str == String("gearbox_rpm"))
         return SS_MOD_GEARBOX;
-    if (str == String("creak"))
-        return SS_MOD_CREAK;
     if (str == String("break"))
         return SS_MOD_BREAK;
     if (str == String("screetch"))
