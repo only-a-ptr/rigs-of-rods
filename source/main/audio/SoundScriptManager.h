@@ -2,6 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
+    Copyright 2016-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -25,11 +26,10 @@
 #include "RoRPrerequisites.h"
 
 #include "Singleton.h"
-
-#include <OgreScriptLoader.h>
+#include "SoundscriptFileformat.h"
 
 enum {
-    MAX_SOUNDS_PER_SCRIPT = 16
+    MAX_SOUNDS_PER_SCRIPT = 30, // TODO: make unlimited; temporarily just setting very high. ~ only_a_ptr 03/2017
 };
 
 enum SoundTriggers {
@@ -139,57 +139,13 @@ enum ModulationSources {
 class Sound;
 class SoundManager;
 
-class SoundScriptTemplate : public ZeroedMemoryAllocator
-{
-    friend class SoundScriptManager;
-    friend class SoundScriptInstance;
-
-public:
-
-    SoundScriptTemplate(Ogre::String name, Ogre::String groupname, Ogre::String filename, bool baseTemplate);
-    
-private:
-
-    int parseModulation(Ogre::String str);
-    bool setParameter(Ogre::StringVector vec);
-
-    Ogre::String name;
-    Ogre::String file_name;
-
-    bool         base_template;
-    bool         has_start_sound;
-    bool         has_stop_sound;
-    bool         unpitchable;
-
-    float        gain_multiplier;
-    float        gain_offset;
-    float        gain_square;
-    int          gain_source;
-
-    float        pitch_multiplier;
-    float        pitch_offset;
-    float        pitch_square;
-    int          pitch_source;
-
-    Ogre::String sound_names[MAX_SOUNDS_PER_SCRIPT];
-    float        sound_pitches[MAX_SOUNDS_PER_SCRIPT];
-    Ogre::String start_sound_name;
-    float        start_sound_pitch;
-    Ogre::String stop_sound_name;
-    float        stop_sound_pitch;
-
-    int          trigger_source;
-    int          free_sound;
-};
-
 class SoundScriptInstance : public ZeroedMemoryAllocator
 {
     friend class SoundScriptManager;
-    friend class RigInspector;
 
 public:
 
-    SoundScriptInstance(SoundScriptTemplate* templ, SoundManager* sm, int node_id, int type);
+    SoundScriptInstance(RoR::SoundScriptDef* def, SoundManager* sm, int node_id, int type);
     void runOnce();
     void setEnabled(bool e);
     void setPosition(Ogre::Vector3 pos, Ogre::Vector3 velocity);
@@ -213,9 +169,9 @@ public:
             this->stop();
     }
 
-    inline SoundTriggers      GetTrigger()     const { return SoundTriggers(templ->trigger_source); }
-    inline ModulationSources  GetPitchSource() const { return ModulationSources(templ->pitch_source); }
-    inline ModulationSources  GetGainSource()  const { return ModulationSources(templ->gain_source); }
+    inline SoundTriggers      GetTrigger()     const { return m_trigger; }
+    inline ModulationSources  GetPitchSource() const { return m_pitch_source; }
+    inline ModulationSources  GetGainSource()  const { return m_gain_source; }
     inline int                GetNodeId()      const { return m_node_id; }
     inline int                GetType()        const { return m_type; }
 
@@ -232,7 +188,23 @@ private:
 
     float pitchgain_cutoff(float sourcepitch, float targetpitch);
 
-    SoundScriptTemplate* templ;
+    struct Def
+    {
+        float start_sound_pitch;
+        float stop_sound_pitch;
+        float pitches[MAX_SOUNDS_PER_SCRIPT];
+        size_t num_sounds;
+        float gain_square;
+        float gain_mul;
+        float gain_offset;
+        float pitch_square;
+        float pitch_mul;
+        float pitch_offset;
+    } m_def;
+
+    SoundTriggers      m_trigger;
+    ModulationSources  m_gain_source;
+    ModulationSources  m_pitch_source;
     Sound *start_sound;
     Sound *stop_sound;
     Sound *sounds[MAX_SOUNDS_PER_SCRIPT];
@@ -263,16 +235,11 @@ public:
     void setLoadingBaseSounds(bool value) { loading_base = value; };
 
     bool isDisabled() { return disabled; }
-
-    SoundScriptTemplate* GetSoundScriptTemplate(std::string name);
+    RoR::SoundScriptDef* GetSoundScriptDef(std::string name);
     void PlayMusic(SoundTriggers trig); ///< Use SS_TRIG_NONE to stop music!
     inline SoundManager* GetSoundMgr() { return sound_manager; }
 
 private:
-
-    SoundScriptTemplate* createTemplate(Ogre::String name, Ogre::String groupname, Ogre::String filename);
-    void skipToNextCloseBrace(Ogre::DataStreamPtr& chunk);
-    void skipToNextOpenBrace(Ogre::DataStreamPtr& chunk);
 
     bool disabled;
     bool loading_base;
@@ -283,7 +250,7 @@ private:
     Ogre::StringVector script_patterns;
     SoundScriptInstance* m_music;
 
-    std::map <Ogre::String, SoundScriptTemplate*> templates;
+    std::unordered_map <std::string, RoR::SoundScriptDef> m_defs;
 
     SoundManager* sound_manager;
 };

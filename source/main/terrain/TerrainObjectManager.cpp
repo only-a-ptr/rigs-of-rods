@@ -1421,8 +1421,10 @@ bool TerrainObjectManager::update(float dt)
 
 void TerrainObjectManager::AddSound(std::string soundscript_name, Ogre::Vector3 pos, bool start)
 {
-    SoundScriptTemplate* templ = SoundScriptManager::getSingleton().GetSoundScriptTemplate(soundscript_name);
-    auto* instance = new SoundScriptInstance(templ, SoundScriptManager::getSingleton().GetSoundMgr(), -1, -2); // -1 ~ no node, -2 = global, plays with any camera
+    RoR::SoundScriptDef* def = SoundScriptManager::getSingleton().GetSoundScriptDef(soundscript_name);
+    // Node ID -1 = no node
+    // Camera type -2 = any
+    auto* instance = new SoundScriptInstance(def, SoundScriptManager::getSingleton().GetSoundMgr(), -1, -2);
     m_sounds.push_back(instance);
 
     if (start)

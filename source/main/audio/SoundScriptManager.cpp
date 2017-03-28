@@ -2,6 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
+    Copyright 2016-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -95,119 +96,127 @@ Real SoundScriptManager::getLoadingOrder(void) const
     return 1000.0f;
 }
 
-SoundScriptTemplate* SoundScriptManager::createTemplate(String name, String groupname, String filename)
-{
-    // first, search if there is a template name collision
-    if (templates.find(name) != templates.end())
-    {
-        LOG("SoundScriptManager::createTemplate(): SoundScript with name [" + name + "] already exists, skipping...");
-        return nullptr;
-    }
-
-    SoundScriptTemplate* ssi = new SoundScriptTemplate(name, groupname, filename, loading_base);
-    templates[name] = ssi;
-    return ssi;
-}
-
 void SoundScriptManager::clearNonBaseTemplates()
 {
     int counter = 0;
 
-    for (std::map<Ogre::String, SoundScriptTemplate*>::iterator it = templates.begin(); it != templates.end();)
+    auto itor = m_defs.begin();
+    while (itor != m_defs.end())
     {
-        if (it->second && !it->second->base_template)
+        if (!itor->second.is_base)
         {
-            //delete(it->second);
-            it->second = 0;
-            counter++;
-
-            STL_ERASE(templates, it);
+            itor = m_defs.erase(itor);
         }
         else
         {
-            ++it;
+            ++itor;
         }
     }
 
     if (counter > 0)
     {
-        LOG("SoundScriptManager: removed " + TOSTRING(counter) + " non-base templates");
+        LOG("[RoR|Audio] Removed " + TOSTRING(counter) + " non-base soundscripts");
     }
 }
 
-void SoundScriptManager::parseScript(DataStreamPtr& stream, const String& groupName)
+// Internal helper
+// NOTE: This is a temporary solution to integrate new parser <-> old SoundScriptManager ~ only_a_ptr, 03/2017
+SoundTriggers ResolveSoundTrigger(RoR::SoundTriggerDef def)
 {
-    SoundScriptTemplate* sst = 0;
-    String line = "";
-    std::vector<String> vecparams;
-
-    LOG("SoundScriptManager: Parsing script "+stream->getName());
-
-    while (!stream->eof())
+    switch (def.source)
     {
-        line = RoR::Utils::SanitizeUtf8String(stream->getLine());
-        // ignore comments & blanks
-        if (!(line.length() == 0 || line.substr(0, 2) == "//"))
+    case RoR::SoundTriggerDef::SND_TRIG_NONE             : return SS_TRIG_NONE;
+    case RoR::SoundTriggerDef::SND_TRIG_ENGINE           : return SS_TRIG_ENGINE;
+    case RoR::SoundTriggerDef::SND_TRIG_AEROENGINE_RPM   : return SoundTriggers(SS_TRIG_AEROENGINE1 + def.source_param);
+    case RoR::SoundTriggerDef::SND_TRIG_HORN             : return SS_TRIG_HORN;
+    case RoR::SoundTriggerDef::SND_TRIG_BRAKE            : return SS_TRIG_BRAKE;
+    case RoR::SoundTriggerDef::SND_TRIG_PUMP             : return SS_TRIG_PUMP;
+    case RoR::SoundTriggerDef::SND_TRIG_STARTER          : return SS_TRIG_STARTER;
+    case RoR::SoundTriggerDef::SND_TRIG_TURBO_BOV        : return SS_TRIG_TURBOBOV;
+    case RoR::SoundTriggerDef::SND_TRIG_TURBO_WASTEGATE  : return SS_TRIG_TURBOWASTEGATE;
+    case RoR::SoundTriggerDef::SND_TRIG_TURBO_BACKFIRE   : return SS_TRIG_TURBOBACKFIRE;
+    case RoR::SoundTriggerDef::SND_TRIG_ALWAYS_ON        : return SS_TRIG_ALWAYSON;
+    case RoR::SoundTriggerDef::SND_TRIG_REPAIR           : return SS_TRIG_REPAIR;
+    case RoR::SoundTriggerDef::SND_TRIG_AIR              : return SS_TRIG_AIR;
+    case RoR::SoundTriggerDef::SND_TRIG_GPWS_APDISCONNECT: return SS_TRIG_GPWS_APDISCONNECT;
+    case RoR::SoundTriggerDef::SND_TRIG_GPWS_VALUE:  ///< Param = value; replaces "GPWS[10|20|30|40|50|100]"
+        switch (def.source_param)
         {
-            if (sst == 0)
-            {
-                // no current SoundScript
-                // so first valid data should be a SoundScript name
-                LOG("SoundScriptManager: creating template "+line);
-                sst = createTemplate(line, groupName, stream->getName());
-                if (!sst)
-                {
-                    // there is a name collision for this Sound Script
-                    LOG("SoundScriptManager: Error, this sound script is already defined: "+line);
-                    skipToNextOpenBrace(stream);
-                    skipToNextCloseBrace(stream);
-                    continue;
-                }
-                // skip to and over next {
-                skipToNextOpenBrace(stream);
-            }
-            else
-            {
-                // already in a ss
-                if (line == "}")
-                {
-                    // finished ss
-                    sst = 0;
-                }
-                else
-                {
-                    // attribute
-                    // split params on space
-                    Ogre::StringVector veclineparams = StringUtil::split(line, "\t ", 0);
-
-                    if (!sst->setParameter(veclineparams))
-                    {
-                        LOG("Bad SoundScript attribute line: '" + line + "' in " + stream->getName());
-                    }
-                }
-            }
+        case  10: return SS_TRIG_GPWS_10;
+        case  20: return SS_TRIG_GPWS_20;
+        case  30: return SS_TRIG_GPWS_30;
+        case  40: return SS_TRIG_GPWS_40;
+        case  50: return SS_TRIG_GPWS_50;
+        case 100: return SS_TRIG_GPWS_100;
+        default: return SS_TRIG_NONE;
         }
+    case RoR::SoundTriggerDef::SND_TRIG_GPWS_PULLUP      : return SS_TRIG_GPWS_PULLUP;
+    case RoR::SoundTriggerDef::SND_TRIG_GPWS_MINIMUMS    : return SS_TRIG_GPWS_MINIMUMS;
+    case RoR::SoundTriggerDef::SND_TRIG_AIR_PURGE        : return SS_TRIG_AIR_PURGE;
+    case RoR::SoundTriggerDef::SND_TRIG_SHIFT            : return SS_TRIG_SHIFT;
+    case RoR::SoundTriggerDef::SND_TRIG_GEARSLIDE        : return SS_TRIG_GEARSLIDE;
+    case RoR::SoundTriggerDef::SND_TRIG_BREAK            : return SS_TRIG_BREAK;
+    case RoR::SoundTriggerDef::SND_TRIG_SCREETCH         : return SS_TRIG_SCREETCH;
+    case RoR::SoundTriggerDef::SND_TRIG_PARK             : return SS_TRIG_PARK;
+    case RoR::SoundTriggerDef::SND_TRIG_AFTERBURNER      : return SoundTriggers(SS_TRIG_AFTERBURNER1 + def.source_param);
+    case RoR::SoundTriggerDef::SND_TRIG_AOA              : return SS_TRIG_AOA;
+    case RoR::SoundTriggerDef::SND_TRIG_IGNITION         : return SS_TRIG_IGNITION;
+    case RoR::SoundTriggerDef::SND_TRIG_REVERSE_GEAR     : return SS_TRIG_REVERSE_GEAR;
+    case RoR::SoundTriggerDef::SND_TRIG_TURN_SIGNAL      : return SS_TRIG_TURN_SIGNAL;
+    case RoR::SoundTriggerDef::SND_TRIG_TURN_SIGNAL_TICK : return SS_TRIG_TURN_SIGNAL_TICK;
+    case RoR::SoundTriggerDef::SND_TRIG_TURN_SIGNAL_WARN_TICK:return SS_TRIG_TURN_SIGNAL_WARN_TICK;
+    case RoR::SoundTriggerDef::SND_TRIG_ALB_ACTIVE       : return SS_TRIG_ALB_ACTIVE;
+    case RoR::SoundTriggerDef::SND_TRIG_TC_ACTIVE        : return SS_TRIG_TC_ACTIVE;
+    case RoR::SoundTriggerDef::SND_TRIG_AVIONIC_CHAT     : return SoundTriggers(SS_TRIG_AVICHAT01 + def.source_param);
+    case RoR::SoundTriggerDef::SND_TRIG_MAIN_MENU        : return SS_TRIG_MAIN_MENU;
+    default: return SS_TRIG_NONE;
+    }
+}
+// Internal helper
+// NOTE: This is a temporary solution to integrate new parser <-> old SoundScriptManager ~ only_a_ptr, 03/2017
+ModulationSources ResolveModSource(RoR::SoundModulationDef def)
+{
+    switch (def.source)
+    {
+    case RoR::SoundModulationDef::SND_MOD_NONE               : return SS_MOD_NONE;
+    case RoR::SoundModulationDef::SND_MOD_ENGINE             : return SS_MOD_ENGINE;
+    case RoR::SoundModulationDef::SND_MOD_TURBO              : return SS_MOD_TURBO;
+    case RoR::SoundModulationDef::SND_MOD_AEROENGINE_RPM     : return ModulationSources(SS_MOD_AEROENGINE1 + def.source_param);
+    case RoR::SoundModulationDef::SND_MOD_WHEELSPEED         : return SS_MOD_WHEELSPEED;
+    case RoR::SoundModulationDef::SND_MOD_INJECTOR           : return SS_MOD_INJECTOR;
+    case RoR::SoundModulationDef::SND_MOD_TORQUE             : return SS_MOD_TORQUE;
+    case RoR::SoundModulationDef::SND_MOD_GEARBOX            : return SS_MOD_GEARBOX;
+    case RoR::SoundModulationDef::SND_MOD_BREAK              : return SS_MOD_BREAK;
+    case RoR::SoundModulationDef::SND_MOD_SCREETCH           : return SS_MOD_SCREETCH;
+    case RoR::SoundModulationDef::SND_MOD_PUMP               : return SS_MOD_PUMP;
+    case RoR::SoundModulationDef::SND_MOD_AEROENGINE_THROTTLE: return ModulationSources(SS_MOD_THROTTLE1 + def.source_param);
+    case RoR::SoundModulationDef::SND_MOD_AIRSPEED           : return SS_MOD_AIRSPEED;
+    case RoR::SoundModulationDef::SND_MOD_AOA                : return SS_MOD_AOA;
+    case RoR::SoundModulationDef::SND_MOD_LINKED_COMMANDRATE : return SS_MOD_LINKED_COMMANDRATE;
+    case RoR::SoundModulationDef::SND_MOD_MUSIC_VOLUME       : return SS_MOD_MUSIC_VOLUME;
+    default: return SS_MOD_NONE;
     }
 }
 
-void SoundScriptManager::skipToNextCloseBrace(DataStreamPtr& stream)
+void SoundScriptManager::parseScript(DataStreamPtr& stream, const String& group_name)
 {
-    String line = "";
+    RoR::SoundScriptParser parser(m_defs);
+    parser.ProcessOgreDataStream(stream, group_name, loading_base);
 
-    while (!stream->eof() && line != "}")
+    if (parser.GetMessages().empty())
     {
-        line = stream->getLine();
+        LOG("[RoR|Audio] Loaded soundscript: " + stream->getName());
+        return;
     }
-}
 
-void SoundScriptManager::skipToNextOpenBrace(DataStreamPtr& stream)
-{
-    String line = "";
-
-    while (!stream->eof() && line != "{")
+    std::stringstream log_buf;
+    log_buf << "[RoR|Audio] Loaded soundscript '" << stream->getName()
+            << "' (" << parser.GetMessages().size() << " messages)" << std::endl;
+    for (auto& msg: parser.GetMessages())
     {
-        line = stream->getLine();
+        log_buf << "\t" << msg << std::endl;
     }
+    LOG(log_buf.str());
 }
 
 void SoundScriptManager::setEnabled(bool state)
@@ -216,18 +225,6 @@ void SoundScriptManager::setEnabled(bool state)
         sound_manager->resumeAllSounds();
     else
         sound_manager->pauseAllSounds();
-}
-
-SoundScriptTemplate* SoundScriptManager::GetSoundScriptTemplate(std::string name)
-{
-    auto search = templates.find(name);
-    if (search == templates.end())
-        return nullptr; // Not found
-
-    if (search->second->trigger_source == SS_TRIG_NONE)
-        return nullptr; // Invalid template!
-
-    return search->second;
 }
 
 void SoundScriptManager::PlayMusic(SoundTriggers trig)
@@ -242,594 +239,92 @@ void SoundScriptManager::PlayMusic(SoundTriggers trig)
     switch (trig)
     {
     case SS_TRIG_MAIN_MENU:
-        m_music = new SoundScriptInstance(templates["tracks/main_menu_tune"], sound_manager, -1, -2);
+        m_music = new SoundScriptInstance(&(m_defs.find("tracks/main_menu_tune")->second), sound_manager, -1, -2);
         m_music->start();
         break;
     default:;
     }
 }
 
-//=====================================================================
-
-SoundScriptTemplate::SoundScriptTemplate(String name, String groupname, String filename, bool baseTemplate) :
-    base_template(baseTemplate)
-    , file_name(filename)
-    , free_sound(0)
-    , gain_multiplier(1.0f)
-    , gain_offset(0.0f)
-    , gain_source(SS_MOD_NONE)
-    , gain_square(0.0f)
-    , has_start_sound(false)
-    , has_stop_sound(false)
-    , name(name)
-    , pitch_multiplier(1.0f)
-    , pitch_offset(0.0f)
-    , pitch_source(SS_MOD_NONE)
-    , pitch_square(0.0f)
-    , start_sound_pitch(0.0f)
-    , stop_sound_pitch(0.0f)
-    , trigger_source(SS_TRIG_NONE)
-    , unpitchable(false)
+RoR::SoundScriptDef* SoundScriptManager::GetSoundScriptDef(std::string name)
 {
-}
-
-bool SoundScriptTemplate::setParameter(Ogre::StringVector vec)
-{
-    if (vec.empty())
-        return false;
-
-    if (vec[0] == String("trigger_source"))
-    {
-        if (vec.size() < 2)
-            return false;
-        if (vec[1] == String("engine"))
-        {
-            trigger_source = SS_TRIG_ENGINE;
-            return true;
-        };
-        if (vec[1] == String("aeroengine1"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE1;
-            return true;
-        };
-        if (vec[1] == String("aeroengine2"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE2;
-            return true;
-        };
-        if (vec[1] == String("aeroengine3"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE3;
-            return true;
-        };
-        if (vec[1] == String("aeroengine4"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE4;
-            return true;
-        };
-        if (vec[1] == String("aeroengine5"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE5;
-            return true;
-        };
-        if (vec[1] == String("aeroengine6"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE6;
-            return true;
-        };
-        if (vec[1] == String("aeroengine7"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE7;
-            return true;
-        };
-        if (vec[1] == String("aeroengine8"))
-        {
-            trigger_source = SS_TRIG_AEROENGINE8;
-            return true;
-        };
-        if (vec[1] == String("horn"))
-        {
-            trigger_source = SS_TRIG_HORN;
-            return true;
-        };
-        if (vec[1] == String("brake"))
-        {
-            trigger_source = SS_TRIG_BRAKE;
-            return true;
-        };
-        if (vec[1] == String("pump"))
-        {
-            trigger_source = SS_TRIG_PUMP;
-            return true;
-        };
-        if (vec[1] == String("starter"))
-        {
-            trigger_source = SS_TRIG_STARTER;
-            return true;
-        };
-        if (vec[1] == String("turbo_BOV"))
-        {
-            trigger_source = SS_TRIG_TURBOBOV;
-            return true;
-        };
-        if (vec[1] == String("turbo_waste_gate"))
-        {
-            trigger_source = SS_TRIG_TURBOWASTEGATE;
-            return true;
-        };
-        if (vec[1] == String("turbo_back_fire"))
-        {
-            trigger_source = SS_TRIG_TURBOBACKFIRE;
-            return true;
-        };
-        if (vec[1] == String("always_on"))
-        {
-            trigger_source = SS_TRIG_ALWAYSON;
-            return true;
-        };
-        if (vec[1] == String("repair"))
-        {
-            trigger_source = SS_TRIG_REPAIR;
-            return true;
-        };
-        if (vec[1] == String("air"))
-        {
-            trigger_source = SS_TRIG_AIR;
-            return true;
-        };
-        if (vec[1] == String("gpws_ap_disconnect"))
-        {
-            trigger_source = SS_TRIG_GPWS_APDISCONNECT;
-            return true;
-        };
-        if (vec[1] == String("gpws_10"))
-        {
-            trigger_source = SS_TRIG_GPWS_10;
-            return true;
-        };
-        if (vec[1] == String("gpws_20"))
-        {
-            trigger_source = SS_TRIG_GPWS_20;
-            return true;
-        };
-        if (vec[1] == String("gpws_30"))
-        {
-            trigger_source = SS_TRIG_GPWS_30;
-            return true;
-        };
-        if (vec[1] == String("gpws_40"))
-        {
-            trigger_source = SS_TRIG_GPWS_40;
-            return true;
-        };
-        if (vec[1] == String("gpws_50"))
-        {
-            trigger_source = SS_TRIG_GPWS_50;
-            return true;
-        };
-        if (vec[1] == String("gpws_100"))
-        {
-            trigger_source = SS_TRIG_GPWS_100;
-            return true;
-        };
-        if (vec[1] == String("gpws_pull_up"))
-        {
-            trigger_source = SS_TRIG_GPWS_PULLUP;
-            return true;
-        };
-        if (vec[1] == String("gpws_minimums"))
-        {
-            trigger_source = SS_TRIG_GPWS_MINIMUMS;
-            return true;
-        };
-        if (vec[1] == String("air_purge"))
-        {
-            trigger_source = SS_TRIG_AIR_PURGE;
-            return true;
-        };
-        if (vec[1] == String("shift"))
-        {
-            trigger_source = SS_TRIG_SHIFT;
-            return true;
-        };
-        if (vec[1] == String("gear_slide"))
-        {
-            trigger_source = SS_TRIG_GEARSLIDE;
-            return true;
-        };
-        if (vec[1] == String("creak") && App::GetAudioEnableCreak()) // Obsolete
-        {
-            return true;
-        };
-        if (vec[1] == String("break"))
-        {
-            trigger_source = SS_TRIG_BREAK;
-            return true;
-        };
-        if (vec[1] == String("screetch"))
-        {
-            trigger_source = SS_TRIG_SCREETCH;
-            return true;
-        };
-        if (vec[1] == String("parking_brake"))
-        {
-            trigger_source = SS_TRIG_PARK;
-            return true;
-        };
-        if (vec[1] == String("antilock"))
-        {
-            trigger_source = SS_TRIG_ALB_ACTIVE;
-            return true;
-        };
-        if (vec[1] == String("tractioncontrol"))
-        {
-            trigger_source = SS_TRIG_TC_ACTIVE;
-            return true;
-        };
-        if (vec[1] == String("afterburner1"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER1;
-            return true;
-        };
-        if (vec[1] == String("afterburner2"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER2;
-            return true;
-        };
-        if (vec[1] == String("afterburner3"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER3;
-            return true;
-        };
-        if (vec[1] == String("afterburner4"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER4;
-            return true;
-        };
-        if (vec[1] == String("afterburner5"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER5;
-            return true;
-        };
-        if (vec[1] == String("afterburner6"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER6;
-            return true;
-        };
-        if (vec[1] == String("afterburner7"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER7;
-            return true;
-        };
-        if (vec[1] == String("afterburner8"))
-        {
-            trigger_source = SS_TRIG_AFTERBURNER8;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_01"))
-        {
-            trigger_source = SS_TRIG_AVICHAT01;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_02"))
-        {
-            trigger_source = SS_TRIG_AVICHAT02;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_03"))
-        {
-            trigger_source = SS_TRIG_AVICHAT03;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_04"))
-        {
-            trigger_source = SS_TRIG_AVICHAT04;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_05"))
-        {
-            trigger_source = SS_TRIG_AVICHAT05;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_06"))
-        {
-            trigger_source = SS_TRIG_AVICHAT06;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_07"))
-        {
-            trigger_source = SS_TRIG_AVICHAT07;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_08"))
-        {
-            trigger_source = SS_TRIG_AVICHAT08;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_09"))
-        {
-            trigger_source = SS_TRIG_AVICHAT09;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_10"))
-        {
-            trigger_source = SS_TRIG_AVICHAT10;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_11"))
-        {
-            trigger_source = SS_TRIG_AVICHAT11;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_12"))
-        {
-            trigger_source = SS_TRIG_AVICHAT12;
-            return true;
-        };
-        if (vec[1] == String("avionic_chat_13"))
-        {
-            trigger_source = SS_TRIG_AVICHAT13;
-            return true;
-        };
-        if (vec[1] == String("aoa_horn"))
-        {
-            trigger_source = SS_TRIG_AOA;
-            return true;
-        };
-        if (vec[1] == String("ignition"))
-        {
-            trigger_source = SS_TRIG_IGNITION;
-            return true;
-        };
-        if (vec[1] == String("reverse_gear"))
-        {
-            trigger_source = SS_TRIG_REVERSE_GEAR;
-            return true;
-        };
-        if (vec[1] == String("turn_signal"))
-        {
-            trigger_source = SS_TRIG_TURN_SIGNAL;
-            return true;
-        };
-        if (vec[1] == String("turn_signal_tick"))
-        {
-            trigger_source = SS_TRIG_TURN_SIGNAL_TICK;
-            return true;
-        };
-        if (vec[1] == String("turn_signal_warn_tick"))
-        {
-            trigger_source = SS_TRIG_TURN_SIGNAL_WARN_TICK;
-            return true;
-        };
-        if (vec[1] == String("linked_command")) // Obsolete
-        {
-            return true;
-        };
-        if (vec[1] == String("main_menu"))
-        {
-            trigger_source = SS_TRIG_MAIN_MENU;
-            return true;
-        };
-
-        return false;
-    }
-
-    if (vec[0] == String("pitch_source"))
-    {
-        if (vec.size() < 2)
-            return false;
-        int mod = parseModulation(vec[1]);
-        if (mod >= 0)
-        {
-            pitch_source = mod;
-            return true;
-        }
-        return false;
-    }
-
-    if (vec[0] == String("pitch_factors"))
-    {
-        if (vec.size() < 3)
-            return false;
-        pitch_offset = StringConverter::parseReal(vec[1]);
-        pitch_multiplier = StringConverter::parseReal(vec[2]);
-        if (vec.size() == 4)
-        {
-            pitch_square = StringConverter::parseReal(vec[3]);
-        }
-        return true;
-    }
-
-    if (vec[0] == String("gain_source"))
-    {
-        if (vec.size() < 2)
-            return false;
-        int mod = parseModulation(vec[1]);
-        if (mod >= 0)
-        {
-            gain_source = mod;
-            return true;
-        }
-        return false;
-    }
-
-    if (vec[0] == String("gain_factors"))
-    {
-        if (vec.size() < 3)
-            return false;
-        gain_offset = StringConverter::parseReal(vec[1]);
-        gain_multiplier = StringConverter::parseReal(vec[2]);
-        if (vec.size() == 4)
-        {
-            gain_square = StringConverter::parseReal(vec[3]);
-        }
-        return true;
-    }
-
-    if (vec[0] == String("start_sound"))
-    {
-        if (vec.size() < 3)
-            return false;
-        start_sound_pitch = StringConverter::parseReal(vec[1]); // unparsable (e.g. "unpitched") will result in value 0.0
-        start_sound_name = vec[2];
-        has_start_sound = true;
-        return true;
-    }
-
-    if (vec[0] == String("stop_sound"))
-    {
-        if (vec.size() < 3)
-            return false;
-        stop_sound_pitch = StringConverter::parseReal(vec[1]); // unparsable (e.g. "unpitched") will result in value 0.0
-        stop_sound_name = vec[2];
-        has_stop_sound = true;
-        return true;
-    }
-
-    if (vec[0] == String("sound"))
-    {
-        if (vec.size() < 3)
-            return false;
-        if (free_sound >= MAX_SOUNDS_PER_SCRIPT)
-        {
-            LOG("SoundScriptManager: Reached MAX_SOUNDS_PER_SCRIPT limit (" + TOSTRING(MAX_SOUNDS_PER_SCRIPT) + ")");
-            return false;
-        }
-        sound_pitches[free_sound] = StringConverter::parseReal(vec[1]); // unparsable (e.g. "unpitched") will result in value 0.0
-        if (sound_pitches[free_sound] == 0)
-        {
-            unpitchable = true;
-        }
-        if (free_sound > 0 && !unpitchable && sound_pitches[free_sound] <= sound_pitches[free_sound - 1])
-        {
-            return false;
-        }
-        sound_names[free_sound] = vec[2];
-        free_sound++;
-        return true;
-    }
-
-    return false;
-}
-
-int SoundScriptTemplate::parseModulation(String str)
-{
-    if (str == String("none"))
-        return SS_MOD_NONE;
-    if (str == String("engine_rpm"))
-        return SS_MOD_ENGINE;
-    if (str == String("turbo_rpm"))
-        return SS_MOD_TURBO;
-    if (str == String("aeroengine1_rpm"))
-        return SS_MOD_AEROENGINE1;
-    if (str == String("aeroengine2_rpm"))
-        return SS_MOD_AEROENGINE2;
-    if (str == String("aeroengine3_rpm"))
-        return SS_MOD_AEROENGINE3;
-    if (str == String("aeroengine4_rpm"))
-        return SS_MOD_AEROENGINE4;
-    if (str == String("aeroengine5_rpm"))
-        return SS_MOD_AEROENGINE5;
-    if (str == String("aeroengine6_rpm"))
-        return SS_MOD_AEROENGINE6;
-    if (str == String("aeroengine7_rpm"))
-        return SS_MOD_AEROENGINE7;
-    if (str == String("aeroengine8_rpm"))
-        return SS_MOD_AEROENGINE8;
-    if (str == String("wheel_speed_kmph"))
-        return SS_MOD_WHEELSPEED;
-    if (str == String("injector_ratio"))
-        return SS_MOD_INJECTOR;
-    if (str == String("torque_nm"))
-        return SS_MOD_TORQUE;
-    if (str == String("gearbox_rpm"))
-        return SS_MOD_GEARBOX;
-    if (str == String("break"))
-        return SS_MOD_BREAK;
-    if (str == String("screetch"))
-        return SS_MOD_SCREETCH;
-    if (str == String("pump_rpm"))
-        return SS_MOD_PUMP;
-    if (str == String("aeroengine1_throttle"))
-        return SS_MOD_THROTTLE1;
-    if (str == String("aeroengine2_throttle"))
-        return SS_MOD_THROTTLE2;
-    if (str == String("aeroengine3_throttle"))
-        return SS_MOD_THROTTLE3;
-    if (str == String("aeroengine4_throttle"))
-        return SS_MOD_THROTTLE4;
-    if (str == String("aeroengine5_throttle"))
-        return SS_MOD_THROTTLE5;
-    if (str == String("aeroengine6_throttle"))
-        return SS_MOD_THROTTLE6;
-    if (str == String("aeroengine7_throttle"))
-        return SS_MOD_THROTTLE7;
-    if (str == String("aeroengine8_throttle"))
-        return SS_MOD_THROTTLE8;
-    if (str == String("air_speed_knots"))
-        return SS_MOD_AIRSPEED;
-    if (str == String("angle_of_attack_degree"))
-        return SS_MOD_AOA;
-    if (str == String("linked_command_rate"))
-        return SS_MOD_LINKED_COMMANDRATE;
-    if (str == String("music_volume"))
-        return SS_MOD_MUSIC_VOLUME;
-
-    return -1;
+    auto res = m_defs.find(name);
+    if (res != m_defs.end())
+        return &res->second;
+    else
+        return nullptr;
 }
 
 //====================================================================
 
-SoundScriptInstance::SoundScriptInstance(SoundScriptTemplate* templ, SoundManager* sound_manager, int node_id, int type) :
-      templ(templ)
-    , start_sound(NULL)
+SoundScriptInstance::SoundScriptInstance(RoR::SoundScriptDef* def, SoundManager* sound_manager, int node_id, int type)
+    : m_trigger(ResolveSoundTrigger(def->trigger))
+    , m_gain_source(ResolveModSource(def->gain))
+    , m_pitch_source(ResolveModSource(def->pitch))
+    , start_sound(nullptr)
     , start_sound_pitchgain(0.0f)
-    , stop_sound(NULL)
+    , stop_sound(nullptr)
     , stop_sound_pitchgain(0.0f)
     , lastgain(1.0f)
     , m_node_id(node_id)
     , m_type(type)
 {
+    memset(&m_def, 0, sizeof(Def));
+
     // create sounds
-    if (templ->has_start_sound)
+    if (!def->file_start.filename.empty())
     {
-        start_sound = sound_manager->createSound(templ->start_sound_name);
+        start_sound = sound_manager->createSound(def->file_start.filename);
+        m_def.start_sound_pitch = def->file_start.pitch;
     }
 
-    if (templ->has_stop_sound)
+    if (!def->file_stop.filename.empty())
     {
-        stop_sound = sound_manager->createSound(templ->stop_sound_name);
+        stop_sound = sound_manager->createSound(def->file_stop.filename);
+        m_def.stop_sound_pitch = def->file_stop.pitch;
     }
 
-    for (int i = 0; i < templ->free_sound; i++)
+    int index = 0;
+    for (SoundFileDef& file_def: def->files)
     {
-        sounds[i] = sound_manager->createSound(templ->sound_names[i]);
+        sounds[index] = sound_manager->createSound(file_def.filename);
+        m_def.pitches[index] = file_def.pitch;
+        ++index;
     }
+    m_def.num_sounds = def->files.size();
 
-    setPitch(0.0f);
-    setGain(1.0f);
+    m_def.pitch_mul    = def->pitch.multiplier;
+    m_def.pitch_offset = def->pitch.offset;
+    m_def.pitch_square = def->pitch.square;
+    this->setPitch(0.0f);
+    m_def.gain_mul    = def->gain.multiplier;
+    m_def.gain_offset = def->gain.offset;
+    m_def.gain_square = def->gain.square;
+    this->setGain(1.0f);
+
+    LOG("[RoR|Audio] Created instance of soundscript: " + def->name);
 }
 
 void SoundScriptInstance::setPitch(float value)
 {
     if (start_sound)
     {
-        start_sound_pitchgain = pitchgain_cutoff(templ->start_sound_pitch, value);
+        start_sound_pitchgain = pitchgain_cutoff(m_def.start_sound_pitch, value);
 
-        if (start_sound_pitchgain != 0.0f && templ->start_sound_pitch != 0.0f)
+        if (start_sound_pitchgain != 0.0f && m_def.start_sound_pitch != 0.0f)
         {
-            start_sound->setPitch(value / templ->start_sound_pitch);
+            start_sound->setPitch(value / m_def.start_sound_pitch);
         }
     }
 
-    if (templ->free_sound)
+    if (m_def.num_sounds)
     {
         // searching the interval
-        int up = 0;
+        size_t up = 0;
 
-        for (up = 0; up < templ->free_sound; up++)
+        for (up = 0; up < m_def.num_sounds; up++)
         {
-            if (templ->sound_pitches[up] > value)
+            if (m_def.pitches[up] > value)
             {
                 break;
             }
@@ -838,16 +333,16 @@ void SoundScriptInstance::setPitch(float value)
         if (up == 0)
         {
             // low sound case
-            sounds_pitchgain[0] = pitchgain_cutoff(templ->sound_pitches[0], value);
+            sounds_pitchgain[0] = pitchgain_cutoff(m_def.pitches[0], value);
 
-            if (sounds_pitchgain[0] != 0.0f && templ->sound_pitches[0] != 0.0f && sounds[0])
+            if (sounds_pitchgain[0] != 0.0f && m_def.pitches[0] != 0.0f && sounds[0])
             {
-                sounds[0]->setPitch(value / templ->sound_pitches[0]);
+                sounds[0]->setPitch(value / m_def.pitches[0]);
             }
 
-            for (int i = 1; i < templ->free_sound; i++)
+            for (size_t i = 1; i < m_def.num_sounds; i++)
             {
-                if (templ->sound_pitches[i] != 0.0f)
+                if (m_def.pitches[i] != 0.0f)
                 {
                     sounds_pitchgain[i] = 0.0f;
                     // pause?
@@ -858,12 +353,12 @@ void SoundScriptInstance::setPitch(float value)
                 }
             }
         }
-        else if (up == templ->free_sound)
+        else if (up == m_def.num_sounds)
         {
             // high sound case
-            for (int i = 0; i < templ->free_sound - 1; i++)
+            for (size_t i = 0; i < m_def.num_sounds - 1; i++)
             {
-                if (templ->sound_pitches[i] != 0.0f)
+                if (m_def.pitches[i] != 0.0f)
                 {
                     sounds_pitchgain[i] = 0.0f;
                     // pause?
@@ -874,11 +369,11 @@ void SoundScriptInstance::setPitch(float value)
                 }
             }
 
-            sounds_pitchgain[templ->free_sound - 1] = 1.0f;
+            sounds_pitchgain[m_def.num_sounds - 1] = 1.0f;
 
-            if (templ->sound_pitches[templ->free_sound - 1] != 0.0f && sounds[templ->free_sound - 1])
+            if (m_def.pitches[m_def.num_sounds - 1] != 0.0f && sounds[m_def.num_sounds - 1])
             {
-                sounds[templ->free_sound - 1]->setPitch(value / templ->sound_pitches[templ->free_sound - 1]);
+                sounds[m_def.num_sounds - 1]->setPitch(value / m_def.pitches[m_def.num_sounds - 1]);
             }
         }
         else
@@ -888,7 +383,7 @@ void SoundScriptInstance::setPitch(float value)
 
             for (int i = 0; i < low; i++)
             {
-                if (templ->sound_pitches[i] != 0.0f)
+                if (m_def.pitches[i] != 0.0f)
                 {
                     sounds_pitchgain[i] = 0.0f;
                     // pause?
@@ -899,29 +394,29 @@ void SoundScriptInstance::setPitch(float value)
                 }
             }
 
-            if (templ->sound_pitches[low] != 0.0f && sounds[low])
+            if (m_def.pitches[low] != 0.0f && sounds[low])
             {
-                sounds_pitchgain[low] = (templ->sound_pitches[up] - value) / (templ->sound_pitches[up] - templ->sound_pitches[low]);
-                sounds[low]->setPitch(value / templ->sound_pitches[low]);
+                sounds_pitchgain[low] = (m_def.pitches[up] - value) / (m_def.pitches[up] - m_def.pitches[low]);
+                sounds[low]->setPitch(value / m_def.pitches[low]);
             }
             else
             {
                 sounds_pitchgain[low] = 1.0f; // unpitched
             }
 
-            if (templ->sound_pitches[up] != 0.0f && sounds[up])
+            if (m_def.pitches[up] != 0.0f && sounds[up])
             {
-                sounds_pitchgain[up] = (value - templ->sound_pitches[low]) / (templ->sound_pitches[up] - templ->sound_pitches[low]);
-                sounds[up]->setPitch(value / templ->sound_pitches[up]);
+                sounds_pitchgain[up] = (value - m_def.pitches[low]) / (m_def.pitches[up] - m_def.pitches[low]);
+                sounds[up]->setPitch(value / m_def.pitches[up]);
             }
             else
             {
                 sounds_pitchgain[up] = 1.0f; // unpitched
             }
 
-            for (int i = up + 1; i < templ->free_sound; i++)
+            for (size_t i = up + 1; i < m_def.num_sounds; i++)
             {
-                if (templ->sound_pitches[i] != 0.0f)
+                if (m_def.pitches[i] != 0.0f)
                 {
                     sounds_pitchgain[i] = 0.0f;
                     // pause?
@@ -936,11 +431,11 @@ void SoundScriptInstance::setPitch(float value)
 
     if (stop_sound)
     {
-        stop_sound_pitchgain = pitchgain_cutoff(templ->stop_sound_pitch, value);
+        stop_sound_pitchgain = pitchgain_cutoff(m_def.stop_sound_pitch, value);
 
-        if (stop_sound_pitchgain != 0.0f && templ->stop_sound_pitch != 0.0f)
+        if (stop_sound_pitchgain != 0.0f && m_def.stop_sound_pitch != 0.0f)
         {
-            stop_sound->setPitch(value / templ->stop_sound_pitch);
+            stop_sound->setPitch(value / m_def.stop_sound_pitch);
         }
     }
 
@@ -976,7 +471,7 @@ void SoundScriptInstance::setGain(float value)
         start_sound->setGain(value * start_sound_pitchgain);
     }
 
-    for (int i = 0; i < templ->free_sound; i++)
+    for (size_t i = 0; i < m_def.num_sounds; i++)
     {
         if (sounds[i])
         {
@@ -994,7 +489,7 @@ void SoundScriptInstance::setGain(float value)
 
 void SoundScriptInstance::ModulateGain(float value)
 {
-    float gain = value * value * templ->gain_square + value * templ->gain_multiplier + templ->gain_offset;
+    float gain = value * value * m_def.gain_square + value * m_def.gain_mul + m_def.gain_offset;
     gain = std::max(0.0f, gain);
     gain = std::min(gain, 1.0f);
     this->setGain(gain);
@@ -1002,7 +497,7 @@ void SoundScriptInstance::ModulateGain(float value)
 
 void SoundScriptInstance::ModulatePitch(float value)
 {
-    float pitch = value * value * templ->pitch_square + value * templ->pitch_multiplier + templ->pitch_offset;
+    float pitch = value * value * m_def.pitch_square + value * m_def.pitch_mul + m_def.pitch_offset;
     pitch = std::max(0.0f, pitch);
     this->setPitch(pitch);
 }
@@ -1015,7 +510,7 @@ void SoundScriptInstance::setPosition(Vector3 pos, Vector3 velocity)
         start_sound->setVelocity(velocity);
     }
 
-    for (int i = 0; i < templ->free_sound; i++)
+    for (size_t i = 0; i < m_def.num_sounds; i++)
     {
         if (sounds[i])
         {
@@ -1042,7 +537,7 @@ void SoundScriptInstance::runOnce()
         start_sound->play();
     }
 
-    for (int i = 0; i < templ->free_sound; i++)
+    for (size_t i = 0; i < m_def.num_sounds; i++)
     {
         if (sounds[i])
         {
@@ -1074,7 +569,7 @@ void SoundScriptInstance::start()
         start_sound->play();
     }
 
-    for (int i = 0; i < templ->free_sound; i++)
+    for (size_t i = 0; i < m_def.num_sounds; i++)
     {
         if (sounds[i])
         {
@@ -1086,7 +581,7 @@ void SoundScriptInstance::start()
 
 void SoundScriptInstance::stop()
 {
-    for (int i = 0; i < templ->free_sound; i++)
+    for (size_t i = 0; i < m_def.num_sounds; i++)
     {
         if (sounds[i])
             sounds[i]->stop();
@@ -1101,7 +596,7 @@ void SoundScriptInstance::stop()
 
 void SoundScriptInstance::kill()
 {
-    for (int i = 0; i < templ->free_sound; i++)
+    for (size_t i = 0; i < m_def.num_sounds; i++)
     {
         if (sounds[i])
             sounds[i]->stop();
@@ -1129,7 +624,7 @@ void SoundScriptInstance::setEnabled(bool e)
         stop_sound->setEnabled(e);
     }
 
-    for (int i = 0; i < templ->free_sound; i++)
+    for (size_t i = 0; i < m_def.num_sounds; i++)
     {
         if (sounds[i])
         {
@@ -1164,8 +659,8 @@ AudioActor::~AudioActor()
 
 void AudioActor::AddSound(int node_id, int mode, std::string soundscript_name)
 {
-    SoundScriptTemplate* templ = SoundScriptManager::getSingleton().GetSoundScriptTemplate(soundscript_name);
-    auto* instance = new SoundScriptInstance(templ, SoundScriptManager::getSingleton().GetSoundMgr(), node_id, mode);
+    SoundScriptDef* def = SoundScriptManager::getSingleton().GetSoundScriptDef(soundscript_name);
+    auto* instance = new SoundScriptInstance(def, SoundScriptManager::getSingleton().GetSoundMgr(), node_id, mode);
     m_sounds.push_back(instance);
 }
 
