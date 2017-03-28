@@ -2381,7 +2381,7 @@ bool RoRFrameListener::SetupGameplayLoop()
 
     if (App::GetAudioMenuMusic())
     {
-        SoundScriptManager::getSingleton().trigKill(-1, SS_TRIG_MAIN_MENU);
+        SoundScriptManager::getSingleton().PlayMusic(SS_TRIG_NONE); // Stop music
     }
 
     App::CreateSceneMouse();

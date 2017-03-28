@@ -943,9 +943,7 @@ void TerrainObjectManager::loadObject(const Ogre::String& name, const Ogre::Vect
             {
                 char tmp[255] = "";
                 sscanf(ptline, "sound %s", tmp);
-                m_audio.AddSound(-1, -2, tmp);
-                m_audio.GetSounds().back()->setPosition(tenode->getPosition(), Vector3::ZERO);
-                m_audio.GetSounds().back()->start();
+                this->AddSound(tmp, tenode->getPosition(), true);
             }
 #endif //USE_OPENAL
             continue;
@@ -1419,4 +1417,14 @@ bool TerrainObjectManager::update(float dt)
     updateAnimatedObjects(dt);
 
     return true;
+}
+
+void TerrainObjectManager::AddSound(std::string soundscript_name, Ogre::Vector3 pos, bool start)
+{
+    SoundScriptTemplate* templ = SoundScriptManager::getSingleton().GetSoundScriptTemplate(soundscript_name);
+    auto* instance = new SoundScriptInstance(templ, SoundScriptManager::getSingleton().GetSoundMgr(), -1, -2); // -1 ~ no node, -2 = global, plays with any camera
+    m_sounds.push_back(instance);
+
+    if (start)
+        instance->start();
 }

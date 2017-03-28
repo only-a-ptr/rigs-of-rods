@@ -736,14 +736,12 @@ void BeamFactory::repairTruck(Collisions* collisions, const Ogre::String& inst, 
     int rtruck = this->FindTruckInsideBox(collisions, inst, box);
     if (rtruck >= 0)
     {
-        // take a position reference
-#ifdef USE_OPENAL
-        SoundScriptManager::getSingleton().trigOnce(rtruck, SS_TRIG_REPAIR);
-#endif // USE_OPENAL
-        Vector3 ipos = m_trucks[rtruck]->nodes[0].AbsPosition;
-        m_trucks[rtruck]->reset();
-        m_trucks[rtruck]->resetPosition(ipos.x, ipos.z, false, 0);
-        m_trucks[rtruck]->updateVisual();
+        Beam* truck = m_trucks[rtruck];
+        Ogre::Vector3 ipos = truck->nodes[0].AbsPosition;
+        truck->GetAudioActor().PlayRepairSoundOnce();
+        truck->reset();
+        truck->resetPosition(ipos.x, ipos.z, false, 0);
+        truck->updateVisual();
     }
 }
 

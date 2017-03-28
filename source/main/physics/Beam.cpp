@@ -745,19 +745,17 @@ void Beam::calcNetwork()
     int gear = oob1->engine_gear;
     unsigned int flagmask = oob1->flagmask;
 
-#ifdef USE_OPENAL
     if (engine)
     {
         m_audio.SetEngineModulation(engspeed);
     }
-    if (free_aeroengine > 0)
+    else
     {
-        SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_AEROENGINE1, engspeed);
-        SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_AEROENGINE2, engspeed);
-        SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_AEROENGINE3, engspeed);
-        SoundScriptManager::getSingleton().modulate(trucknum, SS_MOD_AEROENGINE4, engspeed);
+        for (int i = 0; i < free_aeroengine; ++i)
+        {
+            aeroengines[i]->setRPM(engspeed); // Needed for sound.
+        }
     }
-#endif //OPENAL
 
     brake = netbrake;
 
@@ -808,7 +806,6 @@ void Beam::calcNetwork()
     netBrakeLight = ((flagmask & NETMASK_BRAKES) != 0);
     netReverseLight = ((flagmask & NETMASK_REVERSE) != 0);
 
-#ifdef USE_OPENAL
     if ((flagmask & NETMASK_HORN))
     {
         if (ispolice)
@@ -823,12 +820,6 @@ void Beam::calcNetwork()
         else
             m_is_carhorn_active = false;
     }
-
-    if (netReverseLight)
-        SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_REVERSE_GEAR);
-    else
-        SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_REVERSE_GEAR);
-#endif //OPENAL
 
     updateDashBoards(tratio);
 
@@ -3502,16 +3493,8 @@ void Beam::toggleCustomParticles()
 
 void Beam::updateSoundSources()
 {
-    BES_GFX_START(BES_GFX_updateSoundSources);
-#ifdef USE_OPENAL
-    if (SoundScriptManager::getSingleton().isDisabled())
-        return;
-    for (int i = 0; i < free_soundsource; i++)
-    {
-        soundsources[i].ssi->setPosition(nodes[soundsources[i].nodenum].AbsPosition, nodes[soundsources[i].nodenum].Velocity);
-    }
-#endif //OPENAL
-    BES_GFX_STOP(BES_GFX_updateSoundSources);
+    if (!SoundScriptManager::getSingleton().isDisabled())
+        m_audio.UpdateSounds();
 }
 
 void Beam::updateLabels(float dt)
@@ -3623,8 +3606,9 @@ void Beam::updateVisual(float dt)
         avichatter_timer -= dt;
         if (avichatter_timer < 0)
         {
-            //OLD   SoundScriptManager::getSingleton().trigOnce(trucknum, SS_TRIG_AVICHAT01 + Math::RangeRandom(0, 12));
-            m_audio.TriggerAviChatter(SS_TRIG_AVICHAT01 + Math::RangeRandom(0, 12));
+            size_t random_avichat_num
+                = static_cast<size_t>(SS_TRIG_AVICHAT01) + static_cast<size_t>(Math::RangeRandom(0, 12));
+            m_audio.TriggerAviChatter(SoundTriggers(random_avichat_num));
             avichatter_timer = Math::RangeRandom(11, 30);
         }
     }
@@ -4983,36 +4967,17 @@ bool Beam::getReverseLightVisible()
 
 void Beam::StopAllSounds()
 {
-    for (int i = 0; i < free_soundsource; i++)
-    {
-        if (soundsources[i].ssi)
-            soundsources[i].ssi->setEnabled(false);
-    }
+    m_audio.SetMuteAllSounds(true);
 }
 
 void Beam::UnmuteAllSounds()
 {
-    for (int i = 0; i < free_soundsource; i++)
-    {
-        bool enabled = (soundsources[i].type == -2 || soundsources[i].type == currentcamera);
-        soundsources[i].ssi->setEnabled(enabled);
-    }
+    m_audio.SetMuteAllSounds(false);
 }
 
 void Beam::changedCamera()
 {
-    // change sound setup
-#ifdef USE_OPENAL
-    for (int i = 0; i < free_soundsource; i++)
-    {
-        bool enabled = (soundsources[i].type == -2 || soundsources[i].type == currentcamera);
-        soundsources[i].ssi->setEnabled(enabled);
-    }
-#endif // USE_OPENAL
-
-    // change video camera mode needs for-loop through all video(mirror)cams, check camera mode against currentcamera and then send the right bool
-    // bool state = true;
-    // VideoCamera *v = VideoCamera::setActive(state);
+    m_audio.NotifyChangedCamera(currentcamera);
 
     // look for props
     for (int i = 0; i < free_prop; i++)

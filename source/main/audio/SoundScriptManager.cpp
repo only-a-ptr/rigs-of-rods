@@ -234,6 +234,7 @@ void SoundScriptManager::PlayMusic(SoundTriggers trig)
 {
     if (m_music != nullptr)
     {
+        m_music->kill();
         delete m_music;
         m_music = nullptr;
     }
@@ -1149,9 +1150,11 @@ AudioActor::AudioActor(Beam* actor):
     m_avi_chatter_trigger(SS_TRIG_NONE),
     m_play_turn_signal_tick(false),
     m_play_warn_signal_tick(false),
+    m_repair_play_once(false),
     m_screetch_play_once(false),
     m_break_play_once(false),
-    m_tirepressure_active(false)
+    m_tirepressure_active(false),
+    m_stabilizers_active(false)
 {}
 
 AudioActor::~AudioActor()
@@ -1181,6 +1184,9 @@ void AudioActor::UpdateSounds()
 {
     for (SoundScriptInstance* sound : m_sounds)
     {
+        node_t& sound_source = m_actor->nodes[sound->GetNodeId()];
+        sound->setPosition(sound_source.AbsPosition, sound_source.Velocity);
+
         float gain;
         if (this->ResolveModulation(gain, sound->GetGainSource()))
             sound->ModulateGain(gain);
@@ -1347,8 +1353,16 @@ void AudioActor::UpdateSounds()
             }
             break;
 
-        case SS_TRIG_AIR: // Tire pressurizing
-            sound->SetActive(m_tirepressure_active);
+        case SS_TRIG_REPAIR:
+            if (m_repair_play_once)
+            {
+                sound->runOnce();
+                m_repair_play_once = false;
+            }
+            break;
+
+        case SS_TRIG_AIR:
+            sound->SetActive(m_tirepressure_active || m_stabilizers_active);
             break;
 
         case SS_TRIG_AFTERBURNER1:
@@ -1360,7 +1374,7 @@ void AudioActor::UpdateSounds()
         case SS_TRIG_AFTERBURNER7:
         case SS_TRIG_AFTERBURNER8:
             turbojet = reinterpret_cast<Turbojet*>(m_actor->aeroengines[AFTERBURNER_TRIG_SLOT(trigger)]);
-            sound->transition(turbojet->getAfterburner(), turbojet->GetPrevAfterburner());
+            sound->SetActive(turbojet->IsAfterburnerActive());
             break;
 
         case SS_TRIG_AEROENGINE1:
@@ -1497,6 +1511,20 @@ void AudioActor::PlayBreakOnce(float modulation)
 {
     m_break_play_once = true;
     m_break_modulation = modulation;
+}
+
+void AudioActor::SetMuteAllSounds(bool mute)
+{
+    for (auto& sound: m_sounds)
+        sound->setEnabled(!mute);
+}
+
+void AudioActor::NotifyChangedCamera(int cam_type)
+{
+    for (auto& sound: m_sounds)
+    {
+        sound->setEnabled((sound->GetType() == -2) || (sound->GetType() == cam_type));
+    }
 }
 
 #endif // USE_OPENAL

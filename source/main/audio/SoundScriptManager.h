@@ -29,8 +29,7 @@
 #include <OgreScriptLoader.h>
 
 enum {
-    MAX_SOUNDS_PER_SCRIPT = 16,
-    MAX_INSTANCES_PER_GROUP = 256
+    MAX_SOUNDS_PER_SCRIPT = 16
 };
 
 enum SoundTriggers {        // RESEARCH FOR DEFERRED SOUND PROCESSING ~ only_a_ptr, 03/2017
@@ -52,7 +51,7 @@ enum SoundTriggers {        // RESEARCH FOR DEFERRED SOUND PROCESSING ~ only_a_p
     SS_TRIG_TURBOWASTEGATE, // DONE
     SS_TRIG_TURBOBACKFIRE,  // DONE
     SS_TRIG_ALWAYSON,       // DUMMY, never used in simulation.
-    SS_TRIG_REPAIR,         // trigOnce: DEV ?? invoked only from scripting interface
+    SS_TRIG_REPAIR,         // DONE
     SS_TRIG_AIR,
     SS_TRIG_GPWS_APDISCONNECT, // trigOnce: hint needed
     SS_TRIG_GPWS_10,        // DONE
@@ -216,9 +215,11 @@ public:
             this->stop();
     }
 
-    inline SoundTriggers      GetTrigger()      { return SoundTriggers(templ->trigger_source); }
-    inline ModulationSources  GetPitchSource()  { return ModulationSources(templ->pitch_source); }
-    inline ModulationSources  GetGainSource()   { return ModulationSources(templ->gain_source); }
+    inline SoundTriggers      GetTrigger()     const { return SoundTriggers(templ->trigger_source); }
+    inline ModulationSources  GetPitchSource() const { return ModulationSources(templ->pitch_source); }
+    inline ModulationSources  GetGainSource()  const { return ModulationSources(templ->gain_source); }
+    inline int                GetNodeId()      const { return m_node_id; }
+    inline int                GetType()        const { return m_type; }
 
     void ModulateGain(float value);
     void ModulatePitch(float value);
@@ -266,7 +267,7 @@ public:
     bool isDisabled() { return disabled; }
 
     SoundScriptTemplate* GetSoundScriptTemplate(std::string name);
-    void PlayMusic(SoundTriggers trig);
+    void PlayMusic(SoundTriggers trig); ///< Use SS_TRIG_NONE to stop music!
     inline SoundManager* GetSoundMgr() { return sound_manager; }
 
 private:
@@ -304,14 +305,17 @@ public:
     void          SetAoaState            (bool active, float modulation);
     void          PlayScreetchOnce       (float modulation);
     void          PlayBreakOnce          (float modulation);
+    void          SetMuteAllSounds       (bool mute);
+    void          NotifyChangedCamera    (int cam_type);
     inline void   TriggerAviChatter      (SoundTriggers trig) { m_avi_chatter_trigger = trig; }
     inline void   PlayWarnTickOnce       ()                   { m_play_warn_signal_tick = true; }
     inline void   PlayTurnTickOnce       ()                   { m_play_turn_signal_tick = true; }
+    inline void   PlayRepairSoundOnce    ()                   { m_repair_play_once = true; }
     inline void   SetEngineModulation    (float m)            { m_engine_modulation = m; }
     inline void   SetEngineForcedState   (int s)              { m_engine_forced_state = s; }
-    inline bool   SetTirePressureActive  (bool s)             { m_tirepressure_active = s; }
+    inline void   SetTirePressureActive  (bool s)             { m_tirepressure_active = s; }
+    inline void   SetStabilizersActive   (bool s)             { m_stabilizers_active = s; }
     inline void   NotifyGpwsApDisconnect ()                   { m_gpws_ap_disconnected = true; }
-    inline std::vector<SoundScriptInstance*>& GetSounds()     { return m_sounds; }
 
 private:
     bool ResolveModulation(float& result, const ModulationSources src);
@@ -332,9 +336,11 @@ private:
     bool  m_hydropump_active:1;
     bool  m_play_turn_signal_tick:1;
     bool  m_play_warn_signal_tick:1;
+    bool  m_repair_play_once:1;
     bool  m_screetch_play_once:1;
     bool  m_break_play_once:1;
     bool  m_tirepressure_active:1;
+    bool  m_stabilizers_active:1;
     bool  m_gpws_ap_disconnected:1;
 };
 

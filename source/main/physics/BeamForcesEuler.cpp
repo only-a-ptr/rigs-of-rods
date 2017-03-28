@@ -678,12 +678,7 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
             stabcommand = 0;
         }
 
-#ifdef USE_OPENAL
-        if (stabcommand && fabs(stabratio) < 0.1)
-            SoundScriptManager::getSingleton().trigStart(trucknum, SS_TRIG_AIR);
-        else
-            SoundScriptManager::getSingleton().trigStop(trucknum, SS_TRIG_AIR);
-#endif //OPENAL
+        m_audio.SetStabilizersActive(stabcommand && fabs(stabratio) < 0.1);
     }
 
     BES_STOP(BES_CORE_Shocks);

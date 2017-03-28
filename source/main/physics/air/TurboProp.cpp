@@ -2,6 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
+    Copyright 2016-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -54,20 +55,6 @@ Turboprop::Turboprop(
     heathaze = _heathaze;
     number = mnumber;
     this->trucknum = trucknum;
-#ifdef USE_OPENAL
-    switch (number)
-    {
-    case 0:  mod_id = SS_MOD_AEROENGINE1;  src_id = SS_TRIG_AEROENGINE1;  thr_id = SS_MOD_THROTTLE1;  break;
-    case 1:  mod_id = SS_MOD_AEROENGINE2;  src_id = SS_TRIG_AEROENGINE2;  thr_id = SS_MOD_THROTTLE2;  break;
-    case 2:  mod_id = SS_MOD_AEROENGINE3;  src_id = SS_TRIG_AEROENGINE3;  thr_id = SS_MOD_THROTTLE3;  break;
-    case 3:  mod_id = SS_MOD_AEROENGINE4;  src_id = SS_TRIG_AEROENGINE4;  thr_id = SS_MOD_THROTTLE4;  break;
-    case 4:  mod_id = SS_MOD_AEROENGINE5;  src_id = SS_TRIG_AEROENGINE5;  thr_id = SS_MOD_THROTTLE5;  break;
-    case 5:  mod_id = SS_MOD_AEROENGINE6;  src_id = SS_TRIG_AEROENGINE6;  thr_id = SS_MOD_THROTTLE6;  break;
-    case 6:  mod_id = SS_MOD_AEROENGINE7;  src_id = SS_TRIG_AEROENGINE7;  thr_id = SS_MOD_THROTTLE7;  break;
-    case 7:  mod_id = SS_MOD_AEROENGINE8;  src_id = SS_TRIG_AEROENGINE8;  thr_id = SS_MOD_THROTTLE8;  break;
-    default: mod_id = SS_MOD_NONE;         src_id = SS_TRIG_NONE;         thr_id = SS_MOD_NONE;
-    }
-#endif //OPENAL
     is_piston = ispiston;
     fixed_pitch = fpitch;
     torquenode = tqn;
@@ -155,12 +142,6 @@ Turboprop::Turboprop(
 
 Turboprop::~Turboprop()
 {
-    //A fast work around 
-    //
-    SoundScriptManager::getSingleton().modulate(trucknum, thr_id, 0);
-    SoundScriptManager::getSingleton().modulate(trucknum, mod_id, 0);
-    SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
-
     if (airfoil != nullptr)
         delete airfoil;
 }
@@ -255,10 +236,6 @@ void Turboprop::updateForces(float dt, int doUpdate)
         //float airtemperature=sea_level_temperature-altitude*0.0065; //in Kelvin
         float airpressure = sea_level_pressure * pow(1.0 - 0.0065 * altitude / 288.15, 5.24947); //in Pa
         airdensity = airpressure * 0.0000120896;//1.225 at sea level
-#ifdef USE_OPENAL
-        //sound update
-        SoundScriptManager::getSingleton().modulate(trucknum, mod_id, rpm);
-#endif //OPENAL
     }
 
     timer += dt;
@@ -447,7 +424,6 @@ void Turboprop::updateForces(float dt, int doUpdate)
     }
     //compute the next energy level
     rotenergy += (double)tottorque * dt * rpm / RAD_PER_SEC_TO_RPM;
-    //	sprintf(debug, "pitch %i thrust %i totenergy=%i apparentenergy=%i", (int)pitch, (int)totthrust, (int)rotenergy, (int)estrotenergy);
     //prop wash
     float speed = nodes[noderef].Velocity.length();
     float thrsign = 1.0;
@@ -471,10 +447,6 @@ void Turboprop::setThrottle(float val)
     if (val < 0.0)
         val = 0.0;
     throtle = val;
-#ifdef USE_OPENAL
-    //sound update
-    SoundScriptManager::getSingleton().modulate(trucknum, thr_id, val);
-#endif //OPENAL
 }
 
 float Turboprop::getThrottle()
@@ -509,21 +481,14 @@ void Turboprop::flipStart()
 {
     if (timer - lastflip < 0.3)
         return;
+
     ignition = !ignition;
     if (ignition && !failed)
     {
         warmup = true;
         warmupstart = timer;
-#ifdef USE_OPENAL
-        SoundScriptManager::getSingleton().trigStart(trucknum, src_id);
-#endif //OPENAL
     }
-    else
-    {
-#ifdef USE_OPENAL
-        SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
-#endif //OPENAL
-    }
+
     lastflip = timer;
 }
 

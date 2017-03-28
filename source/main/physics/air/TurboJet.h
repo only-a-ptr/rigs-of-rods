@@ -43,7 +43,6 @@ public:
     bool getIgnition() { return ignition; };
     bool getWarmup() { return warmup; };
     bool isFailed() { return failed; };
-    float getAfterburner() { return (float)afterburner; };
     float getRPM() { return rpm; };
     float getRPMpc() { return rpm; };
     float getRadius() { return radius; };
@@ -51,7 +50,7 @@ public:
     float getpropwash() { return propwash; };
     int getNoderef() { return nodeback; };
     int getType() { return AEROENGINE_TYPE_TURBOJET; };
-    inline bool GetPrevAfterburner() { return m_afterburner_prev; }
+    inline bool IsAfterburnerActive() const { return m_afterburner_active; }
 
     bool afterburnable;
 
@@ -64,8 +63,7 @@ private:
     Ogre::Vector3 axis;
     Ogre::Entity* nozzleMesh;
     Ogre::Entity* flameMesh;
-    bool afterburner;
-    bool m_afterburner_prev;
+    bool m_afterburner_active;
     bool failed;
     bool heathaze;
     bool ignition;

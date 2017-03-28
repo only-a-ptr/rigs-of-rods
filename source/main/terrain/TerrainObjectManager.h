@@ -76,6 +76,9 @@ public:
 
 private:
 
+    void proceduralTests();
+    void AddSound(std::string soundscript_name, Ogre::Vector3 pos, bool start);
+
     TerrainManager* terrainManager;
 
     typedef struct
@@ -140,8 +143,6 @@ private:
 
     std::vector<object_t> objects;
 
-    RoR::AudioActor m_audio;
-
-    void proceduralTests();
+    std::vector<SoundScriptInstance*> m_sounds;
 };
 

@@ -611,7 +611,6 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
         return false;
     bool res = false;
     const OIS::MouseState ms = _arg.state;
-    //Beam **trucks = BeamFactory::getSingleton().getTrucks();
     Beam* curr_truck = BeamFactory::getSingleton().getCurrentTruck();
 
     if (!curr_truck)
@@ -646,7 +645,6 @@ bool OverlayWrapper::mouseMoved(const OIS::MouseEvent& _arg)
             res = true;
             char name[256];
             strcpy(name, element2->getName().c_str());
-            //LogManager::getSingleton().logMessage("element "+element2->getName());
             if (!strncmp(name, "tracks/engstart1", 16))
                 curr_truck->aeroengines[0]->flipStart();
             if (!strncmp(name, "tracks/engstart2", 16) && curr_truck->free_aeroengine > 1)
@@ -1135,7 +1133,7 @@ void OverlayWrapper::UpdateAerialHUD(Beam* vehicle)
         absangle = -absangle;
 
 #ifdef USE_OPENAL
-    vehicle->GetAudioActor().SetAoaActive((absangle > 18.0), absangle); // TODO: magicccc
+    vehicle->GetAudioActor().SetAoaState((absangle > 18.0), absangle); // TODO: magicccc
 #endif // OPENAL
 
     if (angle > 25.0)

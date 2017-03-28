@@ -30,26 +30,13 @@
 
 using namespace Ogre;
 
-Turbojet::Turbojet(char* propname, int tnumber, int trucknum, node_t* nd, int tnodefront, int tnodeback, int tnoderef, float tmaxdrythrust, bool treversable, bool tafterburnable, float tafterburnthrust, float diskdiam, float nozdiam, float nozlength, bool disable_smoke, bool _heathaze, MaterialFunctionMapper* mfm, Skin* usedSkin, MaterialReplacer* mr)
+Turbojet::Turbojet(char* propname, int tnumber, int trucknum, node_t* nd, int tnodefront, int tnodeback, int tnoderef, float tmaxdrythrust, bool treversable, bool tafterburnable, float tafterburnthrust, float diskdiam, float nozdiam, float nozlength, bool disable_smoke, bool _heathaze, MaterialFunctionMapper* mfm, Skin* usedSkin, MaterialReplacer* mr):
+    m_afterburner_active(false)
 {
     heathaze = _heathaze;
     nodes = nd;
     number = tnumber;
     this->trucknum = trucknum;
-#ifdef USE_OPENAL
-    //OBSOLETE switch (number)
-    //OBSOLETE {
-    //OBSOLETE case 0:  mod_id = SS_MOD_AEROENGINE1;  src_id = SS_TRIG_AEROENGINE1;  thr_id = SS_MOD_THROTTLE1;  ab_id = SS_TRIG_AFTERBURNER1;  break;
-    //OBSOLETE case 1:  mod_id = SS_MOD_AEROENGINE2;  src_id = SS_TRIG_AEROENGINE2;  thr_id = SS_MOD_THROTTLE2;  ab_id = SS_TRIG_AFTERBURNER2;  break;
-    //OBSOLETE case 2:  mod_id = SS_MOD_AEROENGINE3;  src_id = SS_TRIG_AEROENGINE3;  thr_id = SS_MOD_THROTTLE3;  ab_id = SS_TRIG_AFTERBURNER3;  break;
-    //OBSOLETE case 3:  mod_id = SS_MOD_AEROENGINE4;  src_id = SS_TRIG_AEROENGINE4;  thr_id = SS_MOD_THROTTLE4;  ab_id = SS_TRIG_AFTERBURNER4;  break;
-    //OBSOLETE case 4:  mod_id = SS_MOD_AEROENGINE5;  src_id = SS_TRIG_AEROENGINE5;  thr_id = SS_MOD_THROTTLE5;  ab_id = SS_TRIG_AFTERBURNER5;  break;
-    //OBSOLETE case 5:  mod_id = SS_MOD_AEROENGINE6;  src_id = SS_TRIG_AEROENGINE6;  thr_id = SS_MOD_THROTTLE6;  ab_id = SS_TRIG_AFTERBURNER6;  break;
-    //OBSOLETE case 6:  mod_id = SS_MOD_AEROENGINE7;  src_id = SS_TRIG_AEROENGINE7;  thr_id = SS_MOD_THROTTLE7;  ab_id = SS_TRIG_AFTERBURNER7;  break;
-    //OBSOLETE case 7:  mod_id = SS_MOD_AEROENGINE8;  src_id = SS_TRIG_AEROENGINE8;  thr_id = SS_MOD_THROTTLE8;  ab_id = SS_TRIG_AFTERBURNER8;  break;
-    //OBSOLETE default: mod_id = SS_MOD_NONE;         src_id = SS_TRIG_NONE;         thr_id = SS_MOD_NONE;       ab_id = SS_TRIG_NONE;
-    //OBSOLETE }
-#endif
     nodeback = tnodeback;
     nodefront = tnodefront;
     noderef = tnoderef;
@@ -57,9 +44,7 @@ Turbojet::Turbojet(char* propname, int tnumber, int trucknum, node_t* nd, int tn
     reversable = treversable;
     maxdrythrust = tmaxdrythrust;
     afterburnthrust = tafterburnthrust;
-    afterburner = false;
     ignition = false;
-    m_ignition_prev = false;
     timer = 0;
     warmuptime = 15.0;
     lastflip = 0;
@@ -135,13 +120,6 @@ Turbojet::Turbojet(char* propname, int tnumber, int trucknum, node_t* nd, int tn
 
 Turbojet::~Turbojet()
 {
-    //A fast work around 
-    //
-    // DEPRECATED SoundScriptManager::getSingleton().modulate(trucknum, thr_id, 0);
-    // DEPRECATED SoundScriptManager::getSingleton().modulate(trucknum, mod_id, 0);
-    // DEPRECATED SoundScriptManager::getSingleton().trigStop(trucknum, ab_id);
-    // DEPRECATED SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
-
     if (flameMesh != nullptr)
     {
         flameMesh->setVisible(false);
@@ -166,7 +144,7 @@ void Turbojet::updateVisuals()
     Quaternion dir = Quaternion(laxis, paxis, taxis);
     nzsnode->setOrientation(dir);
     //afterburner
-    if (afterburner)
+    if (m_afterburner_active)
     {
         absnode->setVisible(true);
         float flamelength = (afterburnthrust / 15.0) * (rpm / 100.0);
@@ -233,15 +211,6 @@ void Turbojet::updateVisuals()
 
 void Turbojet::updateForces(float dt, int doUpdate)
 {
-    m_ignition_prev = ignition;
-    m_afterburner_prev = afterburner;
-    if (doUpdate)
-    {
-//DEPRECATED #ifdef USE_OPENAL
-//DEPRECATED         //sound update
-//DEPRECATED         SoundScriptManager::getSingleton().modulate(trucknum, mod_id, rpm);
-//DEPRECATED #endif //OPENAL
-    }
     timer += dt;
     axis = nodes[nodefront].RelPosition - nodes[nodeback].RelPosition;
     float axlen = axis.length();
@@ -275,18 +244,14 @@ void Turbojet::updateForces(float dt, int doUpdate)
     if (!failed && ignition)
     {
         enginethrust = maxdrythrust * rpm / 100.0;
-        afterburner = (afterburnable && throtle > 0.95 && rpm > 80);
-        if (afterburner)
+        m_afterburner_active = (afterburnable && throtle > 0.95 && rpm > 80);
+        if (m_afterburner_active)
             enginethrust += (afterburnthrust - maxdrythrust);
     }
     else
-        afterburner = false;
-//DEPRECATED #ifdef USE_OPENAL
-//DEPRECATED     if (afterburner)
-//DEPRECATED         SoundScriptManager::getSingleton().trigStart(trucknum, ab_id);
-//DEPRECATED     else
-//DEPRECATED         SoundScriptManager::getSingleton().trigStop(trucknum, ab_id);
-//DEPRECATED #endif //OPENAL
+    {
+        m_afterburner_active = false;
+    }
 
     nodes[nodeback].Forces += (enginethrust * 1000.0) * axis;
     exhaust_velocity = enginethrust * 5.6 / area;
@@ -299,10 +264,6 @@ void Turbojet::setThrottle(float val)
     if (val < 0.0)
         val = 0.0;
     throtle = val;
-//DEPRECATED #ifdef USE_OPENAL
-//DEPRECATED     //sound update
-//DEPRECATED     SoundScriptManager::getSingleton().modulate(trucknum, thr_id, val); // SS_MOD_THROTTLE
-//DEPRECATED #endif //OPENAL
 }
 
 float Turbojet::getThrottle()
@@ -329,6 +290,7 @@ void Turbojet::toggleReverse()
 {
     if (!reversable)
         return;
+
     throtle = 0;
     reverse = !reverse;
 }
@@ -337,20 +299,12 @@ void Turbojet::flipStart()
 {
     if (timer - lastflip < 0.3)
         return;
+
     ignition = !ignition;
     if (ignition && !failed)
     {
         warmup = true;
         warmupstart = timer;
-//OBSOLETE #ifdef USE_OPENAL
-//OBSOLETE         SoundScriptManager::getSingleton().trigStart(trucknum, src_id);
-//OBSOLETE #endif //OPENAL
-    }
-    else
-    {
-//OBSOLETE #ifdef USE_OPENAL
-//OBSOLETE         SoundScriptManager::getSingleton().trigStop(trucknum, src_id);
-//OBSOLETE #endif //OPENAL
     }
 
     lastflip = timer;
