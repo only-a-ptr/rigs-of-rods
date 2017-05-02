@@ -40,4 +40,9 @@
             <Code hide="1104"/>
         </Codes>
     </Resource>
+    
+  <Resource type="ResourceTrueTypeFont" name="VeraMonoSmall">
+    <Property value="VeraMono.ttf" key="Source"/>
+    <Property value="9" key="Size"/>
+  </Resource>    
 </MyGUI>

@@ -40,6 +40,7 @@
 #include "EnvironmentMap.h"
 #include "ForceFeedback.h"
 #include "GUI_LoadingWindow.h"
+#include "GUI_MotionPlatformWindow.h"
 #include "GUI_TeleportWindow.h"
 #include "GUI_TopMenubar.h"
 #include "GUIManager.h"
@@ -1791,6 +1792,13 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
             m_beam_factory.update(dt);
             m_beam_factory.updateFlexbodiesFinal(); // Updates the harware buffers 
         }
+
+#ifdef USE_MPLATFORM
+        if (App::GetGuiManager()->IsVisible_MotionPlatformWindow())
+        {
+            App::GetGuiManager()->GetMotionPlatform()->UpdateOrientationDisplay(m_motion_platform.MPlatformGetLastOrientMatrix());
+        }
+#endif
 
         if (simRUNNING(s) && (App::GetPendingSimState() == App::SIM_STATE_PAUSED))
         {

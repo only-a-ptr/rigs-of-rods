@@ -128,7 +128,7 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
     Ogre::Matrix3 orient_mtx;
     orient_mtx.FromAxes(pitch_axis, yaw_axis, roll_axis);
     Ogre::Radian yaw, pitch, roll;
-    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch);
+    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch); // NOTE: This is probably swapped... Function args are(Y, P, R)
     datagram.orient.x = pitch.valueRadians();
     datagram.orient.y = roll.valueRadians();
     datagram.orient.z = yaw.valueRadians();
@@ -155,10 +155,11 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
     }
 
     // Remember values
-    m_last_update_time  = m_elapsed_time;
-    m_last_cinecam_pos  = cinecam_pos;
-    m_last_orient_euler = datagram.orient;
-    m_last_velocity     = ogre_velocity;
+    m_last_update_time   = m_elapsed_time;
+    m_last_cinecam_pos   = cinecam_pos;
+    m_last_orient_euler  = datagram.orient;
+    m_last_velocity      = ogre_velocity;
+    m_last_orient_matrix = orient_mtx;
 }
 
 #endif // USE_MPLATFORM

@@ -35,6 +35,15 @@ protected:
 	ATTRIBUTE_FIELD_WIDGET_NAME(MotionPlatformWindowLayout, m_text_panel, "text_panel");
 	MyGUI::EditBox* m_text_panel;
 
+	ATTRIBUTE_FIELD_WIDGET_NAME(MotionPlatformWindowLayout, m_yaw_icon, "yaw_icon");
+	MyGUI::ImageBox* m_yaw_icon;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(MotionPlatformWindowLayout, m_pitch_icon, "pitch_icon");
+	MyGUI::ImageBox* m_pitch_icon;
+
+	ATTRIBUTE_FIELD_WIDGET_NAME(MotionPlatformWindowLayout, m_roll_icon, "roll_icon");
+	MyGUI::ImageBox* m_roll_icon;
+
 	//%LE Widget_Declaration list end
 };
 

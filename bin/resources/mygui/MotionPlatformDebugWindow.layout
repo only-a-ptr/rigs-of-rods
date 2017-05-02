@@ -1,17 +1,21 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
-    <Widget type="Window" skin="WindowCX" position="0 0 270 525" layer="Main" name="window">
+    <Widget type="Window" skin="WindowCX" position="0 0 285 525" layer="Main" name="window">
         <Property key="Caption" value="MotionPlatform debug"/>
-        <Widget type="EditBox" skin="EditBoxStretch" position="0 0 260 490" name="text_panel">
+        <Widget type="EditBox" skin="EditBoxStretch" position="0 150 275 340" name="text_panel">
             <Property key="MultiLine" value="true"/>
             <Property key="ReadOnly" value="true"/>
             <Property key="Static" value="true"/>
+            <Property key="FontName" value="VeraMonoSmall"/>
         </Widget>
+        <Widget type="ImageBox" skin="RotatingSkin" position="5 5 80 80" name="yaw_icon"/>
+        <Widget type="ImageBox" skin="RotatingSkin" position="95 5 80 80" name="pitch_icon"/>
+        <Widget type="ImageBox" skin="RotatingSkin" position="185 5 80 80" name="roll_icon"/>
     </Widget>
     <CodeGeneratorSettings>
-        <Property key="IncludeDirectory" value="C:\git\rigs-of-rods-MonsterMotion\source\main\gui\panels"/>
+        <Property key="IncludeDirectory" value="C:\git\rigs-of-rods-C\source\main\gui\panels"/>
         <Property key="PanelName" value="MotionPlatformWindowLayout"/>
         <Property key="PanelNamespace" value="FOO"/>
-        <Property key="SourceDirectory" value="C:\git\rigs-of-rods-MonsterMotion\source\main\gui\panels"/>
+        <Property key="SourceDirectory" value="C:\git\rigs-of-rods-C\source\main\gui\panels"/>
     </CodeGeneratorSettings>
 </MyGUI>

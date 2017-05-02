@@ -26,13 +26,21 @@
 /// by Elsaco s.r.o, Czech Republic (http://motion-sim.cz/new)
 ///
 ///     THEORY
-/// In both physics world and 3d engine, distance of 1.0 means "1 meter".
 /// RoR's vehicles are entirely soft-body structures; there is no definite
 /// 'front' or 'up', everything can and will deform. See also
 /// http://docs.rigsofrods.org/vehicle-creation/vehicle-concepts/
 /// To acquire orientation in space, each vehicle has 1 node marked "center"
 /// and 2 other marked "left" and "back". This mechanism is known as "camera":
 /// http://docs.rigsofrods.org/vehicle-creation/fileformat-truck/#cameras
+///
+///     CONVENTIONS
+/// In both physics world and 3d engine, distance of 1.0 means "1 meter".
+/// OGRE engine uses OpenGL-like RHS coordinates: Y is up, X is right, -Z is forward
+/// All readings and GUI visualizations are in RHS coordinates: Z is up, X is right, Y is forward
+/// Therefore orientation vector (separate Yaw/Pitch/Roll) will be:
+///    Yaw: Z, Pitch: X, Roll: Y
+/// RoR's vehicles are defined in the following coordinates (used by Editorizer tool):
+///    Forward: -X, Right: +Z, Up: +Y
 ///
 ///     RETRIEVING MOTION DATA
 /// There are several possibilities:
@@ -66,7 +74,7 @@ struct UdpElsaco1
     int32_t       position_y;   ///< World position (meters/10000)
     int32_t       position_z;   ///< World position (meters/10000)
     Ogre::Vector3 velocity;     ///< World velocity m.s-1
-    Ogre::Vector3 _unused;      
+    Ogre::Vector3 _unused;
     Ogre::Vector3 accel;        ///< World acceleration, m.s-2
     Ogre::Vector3 orient;       ///< orientation vector (x=pitch, y=roll, z=yaw), radians
     int32_t       game;         ///< 4 letter game identification, e.g. "GAME" would be 0x71657769
@@ -80,10 +88,14 @@ class MotionPlatform
 public:
     MotionPlatform();
 
-    bool  MPlatformConnect     ();
-    void  MPlatformDisconnect  ();
-    void  MPlatformSetActive   (bool active);
-    void  MPlatformUpdate      (Beam* vehicle);
+    bool MPlatformConnect     ();
+    void MPlatformDisconnect  ();
+    void MPlatformSetActive   (bool active);
+    void MPlatformUpdate      (Beam* vehicle);
+
+    // Inlines
+    inline Ogre::Vector3 const &  MPlatformGetLastEuler() const         { return m_last_orient_euler; }
+    inline Ogre::Matrix3 const &  MPlatformGetLastOrientMatrix() const  { return m_last_orient_matrix; }
 
 private:
     void  DeleteSocket  ();
@@ -96,6 +108,7 @@ private:
     Ogre::Vector3 m_last_cinecam_pos;
     Ogre::Vector3 m_last_velocity;
     Ogre::Vector3 m_last_orient_euler;
+    Ogre::Matrix3 m_last_orient_matrix;
 };
 
 } // namespace RoR

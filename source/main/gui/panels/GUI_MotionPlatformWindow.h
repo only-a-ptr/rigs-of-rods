@@ -39,8 +39,15 @@ public:
 
     void SetDisplayText(const char* text);
 
+    /// Input in OGRE coordinates
+    void UpdateOrientationDisplay(Ogre::Matrix3 const & orient_matrix);
+
 private:
     void OnWindowButtonClick(MyGUI::WidgetPtr _sender, const std::string& _name);
+
+    MyGUI::RotatingSkin* m_rot_yaw;
+    MyGUI::RotatingSkin* m_rot_pitch;
+    MyGUI::RotatingSkin* m_rot_roll;
 };
 
 } // namespace GUI

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="yaw_pitch_roll_icons.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.1988318"
+     inkscape:cx="562.51793"
+     inkscape:cy="747.90735"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="ColorBalls"
+     style="display:inline">
+    <circle
+       style="fill:#e1405a;fill-opacity:1;stroke:none;stroke-width:20.9941597;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle4184"
+       cx="800.65918"
+       cy="172.00507"
+       r="138.86485"
+       inkscape:export-filename="C:\Git\rigs-of-rods-C\bin\resources\mygui\motion-roll.png"
+       inkscape:export-xdpi="24.304209"
+       inkscape:export-ydpi="24.304209" />
+    <circle
+       r="138.86485"
+       cy="172.00507"
+       cx="495.31958"
+       id="circle4151"
+       style="fill:#14d64b;fill-opacity:1;stroke:none;stroke-width:20.9941597;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="C:\Git\rigs-of-rods-C\bin\resources\mygui\motion-yaw.png"
+       inkscape:export-xdpi="24.304209"
+       inkscape:export-ydpi="24.304209" />
+    <circle
+       style="fill:#16b8ff;fill-opacity:1;stroke:none;stroke-width:20.9941597;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4136"
+       cx="189.64285"
+       cy="172.00507"
+       r="138.86485"
+       inkscape:export-filename="C:\Git\rigs-of-rods-C\bin\resources\mygui\motion-pitch.png"
+       inkscape:export-xdpi="24.304209"
+       inkscape:export-ydpi="24.304209" />
+  </g>
+  <g
+     inkscape:label="Pictures"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#456f95;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 94.178496,201.49514 206.415934,-4.53587 -4.91467,-31.75101 -50.12958,-15.11952 -34.40266,-42.33468 -62.9077,-3.0239 -26.5392,46.87054 -43.24905,-9.07173 z"
+       id="path4178"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\Git\rigs-of-rods-C\bin\resources\mygui\motion-pitch.png"
+       inkscape:export-xdpi="24.304209"
+       inkscape:export-ydpi="24.304209" />
+    <ellipse
+       style="fill:#1347c5;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4180"
+       cx="132.73727"
+       cy="203.61476"
+       rx="17.857143"
+       ry="27.467951"
+       inkscape:export-filename="C:\Git\rigs-of-rods-C\bin\resources\mygui\motion-pitch.png"
+       inkscape:export-xdpi="24.304209"
+       inkscape:export-ydpi="24.304209" />
+    <ellipse
+       cy="203.61476"
+       cx="258.45157"
+       id="circle4182"
+       style="fill:#1347c5;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       rx="17.857143"
+       ry="27.467951"
+       inkscape:export-filename="C:\Git\rigs-of-rods-C\bin\resources\mygui\motion-pitch.png"
+       inkscape:export-xdpi="24.304209"
+       inkscape:export-ydpi="24.304209" />
+    <path
+       style="fill:#4f9569;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 387.87761,125.61078 51.92555,3.1777 56.93043,0.23039 54.42798,0 50.25727,8.25405 4.17072,13.33045 0,21.5845 0,21.58451 -6.67316,16.13475 -47.75483,5.44975 -54.42798,0 -54.42799,0 -53.59385,2.87582 -0.83414,-24.46032 8.34145,-21.58451 -8.34145,-21.5845 z"
+       id="rect4198"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccccccccccccc" />
+    <g
+       id="g4237"
+       transform="translate(0,0.10119343)">
+      <rect
+         y="113.11449"
+         x="546.36523"
+         height="20.448477"
+         width="37.536541"
+         id="rect4200"
+         style="fill:#007816;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         style="fill:#007816;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4202"
+         width="37.536541"
+         height="20.448477"
+         x="417.90683"
+         y="113.11449" />
+      <rect
+         style="fill:#007816;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4204"
+         width="37.536541"
+         height="20.448477"
+         x="546.36523"
+         y="210.24478" />
+      <rect
+         y="210.24478"
+         x="417.90683"
+         height="20.448477"
+         width="37.536541"
+         id="rect4206"
+         style="fill:#007816;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <rect
+       style="fill:#7e0000;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4217"
+       width="24.190216"
+       height="48.380432"
+       x="730.71143"
+       y="171.92174" />
+    <rect
+       y="171.92174"
+       x="845.82349"
+       height="48.380432"
+       width="24.190216"
+       id="rect4219"
+       style="fill:#7e0000;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       style="fill:#ab3636;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 766.84548,119.78766 65.70498,0 19.94616,36.7024 -106.77061,0 z"
+       id="rect4222"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:#ab3636;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 743.22348,159.55675 113.44379,-0.56427 0,38.37069 -114.27793,0 z"
+       id="rect4212"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="MidLines"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4176"
+       width="260"
+       height="10"
+       x="59.642853"
+       y="167.00507" />
+    <rect
+       y="167.00507"
+       x="365.31958"
+       height="10"
+       width="260"
+       id="rect4190"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="167.00507"
+       x="670.65918"
+       height="10"
+       width="260"
+       id="rect4192"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:6.58099985;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>
