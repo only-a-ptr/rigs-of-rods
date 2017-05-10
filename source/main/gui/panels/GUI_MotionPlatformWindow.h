@@ -25,6 +25,7 @@
 
 #include "ForwardDeclarations.h"
 #include "GUI_MotionPlatformWindowLayout.h"
+#include "MotionPlatform.h"
 
 namespace RoR {
 namespace GUI {
@@ -39,8 +40,8 @@ public:
 
     void SetDisplayText(const char* text);
 
-    /// Input in OGRE coordinates
-    void UpdateOrientationDisplay(Ogre::Matrix3 const & orient_matrix);
+    void UpdateMPlatformGui();
+    void SetMPlatformController(RoR::MotionPlatform* obj) { m_motion_platform = obj; }
 
 private:
     void OnWindowButtonClick(MyGUI::WidgetPtr _sender, const std::string& _name);
@@ -48,6 +49,8 @@ private:
     MyGUI::RotatingSkin* m_rot_yaw;
     MyGUI::RotatingSkin* m_rot_pitch;
     MyGUI::RotatingSkin* m_rot_roll;
+
+    RoR::MotionPlatform* m_motion_platform;
 };
 
 } // namespace GUI

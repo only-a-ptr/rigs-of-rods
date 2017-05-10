@@ -1793,13 +1793,6 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
             m_beam_factory.updateFlexbodiesFinal(); // Updates the harware buffers 
         }
 
-#ifdef USE_MPLATFORM
-        if (App::GetGuiManager()->IsVisible_MotionPlatformWindow())
-        {
-            App::GetGuiManager()->GetMotionPlatform()->UpdateOrientationDisplay(m_motion_platform.MPlatformGetLastOrientMatrix());
-        }
-#endif
-
         if (simRUNNING(s) && (App::GetPendingSimState() == App::SIM_STATE_PAUSED))
         {
             App::GetGuiManager()->SetVisible_GamePauseMenu(true);
@@ -2432,6 +2425,8 @@ bool RoRFrameListener::SetupGameplayLoop()
     App::CreateSceneMouse();
 
     gEnv->sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.3f, 0.3f));
+
+    RoR::App::GetGuiManager()->GetMotionPlatform()->SetMPlatformController(&m_motion_platform);
 
     return true;
 }

@@ -33,6 +33,7 @@
 #include "Collisions.h"
 #include "DynamicCollisions.h"
 #include "GUIManager.h"
+#include "GUI_MotionPlatformWindow.h"
 #include "GUI_TopMenubar.h"
 #include "Language.h"
 #include "MainMenu.h"
@@ -1036,6 +1037,13 @@ void BeamFactory::update(float dt)
     gEnv->mrTime += dt;
 
     this->SyncWithSimThread();
+
+#ifdef USE_MPLATFORM // TODO: Shouldn't really be here, but needs to run while sim is halted.
+    if (RoR::App::GetGuiManager()->IsVisible_MotionPlatformWindow())
+    {
+        RoR::App::GetGuiManager()->GetMotionPlatform()->UpdateMPlatformGui();
+    }
+#endif
 
     this->UpdateSleepingState(dt);
 

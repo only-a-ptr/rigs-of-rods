@@ -68,12 +68,12 @@ void MotionPlatformWindow::OnWindowButtonClick(MyGUI::WidgetPtr _sender, const s
 
 bool MotionPlatformWindow::IsVisible() { return MAIN_WIDGET->getVisible(); }
 
-void MotionPlatformWindow::UpdateOrientationDisplay(Ogre::Matrix3 const & orient_matrix)
+void MotionPlatformWindow::UpdateMPlatformGui()
 {
     // Input:   (x=pitch, y=yaw, z=roll)
     // Display: (x=pitch, y=roll, z=yaw)
 
-    Ogre::Euler euler(orient_matrix);
+    Ogre::Euler euler(m_motion_platform->MPlatformGetLastOrientMatrix());
     m_rot_yaw  ->setAngle(euler.GetYaw().valueRadians());
     m_rot_pitch->setAngle(euler.GetPitch().valueRadians());
     m_rot_roll ->setAngle(euler.GetRoll().valueRadians() * -1);
