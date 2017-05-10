@@ -43,18 +43,17 @@
 ///    Forward: -X, Right: +Z, Up: +Y
 ///
 ///     RETRIEVING MOTION DATA
-/// There are several possibilities:
-/// 1. Cinecam - RoR's 'cockpit camera' - a single node tied to 8 other; see
-///    http://docs.rigsofrods.org/vehicle-creation/fileformat-truck/#cinecam
-///    It's position is paired with data from "camera" mechanism, see above.
-///    Advantage: single source of image+motion data.
-///    Caveat: The camera may slightly swing against the vehicle.
-/// 2. Cinecam base nodes - same as above except the position is interpolated
-///    from binding nodes rather than the camera node.
-///    Caveat: camera swings -> slight mismatch between motion and image.
-/// 3. Cinecam + DriverSeat-prop - Read motion data from a "prop" (static 3d
-///    mesh attached to the softbody), specifically the "driver seat" prop
-///    (http://docs.rigsofrods.org/vehicle-creation/fileformat-truck/#props)
+///  Method in place:
+///  Cinecam - RoR's 'cockpit camera' - a single node tied to 8 other; see
+///  http://docs.rigsofrods.org/vehicle-creation/fileformat-truck/#cinecam
+///  It's position is paired with data from "camera" mechanism, see above.
+///
+///     JITTER ANALYSIS
+///  A simple algorithm is used to evaluate stability of outgoing data:
+///  The assumption is that a few subsequent readings (3-9) should form a roughly linear sequence.
+///  For a 3-tuple of values (START, MID, END), MID is compared to an average
+///  between START/END and difference is reported in % - 0 is full match,
+///  100 means MID matches START or END.
 
 #pragma once
 
@@ -66,6 +65,31 @@
 #include <stdint.h>
 
 namespace RoR {
+
+struct JitterStatV3
+{
+    Ogre::Vector3 stat2;
+    Ogre::Vector3 stat4;
+    Ogre::Vector3 stat8;
+    Ogre::Vector3 last_udp;
+};
+
+struct JitterCacheV3
+{
+    static const size_t NUM_RESULTS = 60; // We send 60 packets/sec
+
+    JitterCacheV3() { memset(this, 0, sizeof(JitterCacheV3)); }
+
+    Ogre::Vector3 readings[8];
+    Ogre::Vector3 results2[NUM_RESULTS];
+    Ogre::Vector3 results4[NUM_RESULTS];
+    Ogre::Vector3 results8[NUM_RESULTS];
+    size_t        results_caret;
+    Ogre::Vector3 last_udp_value;
+
+    void AddReading(Ogre::Vector3 val);
+    JitterStatV3 ProduceStats();
+};
 
 struct UdpElsaco1
 {
@@ -96,6 +120,10 @@ public:
     // Inlines
     inline Ogre::Vector3 const &  MPlatformGetLastEuler() const         { return m_last_orient_euler; }
     inline Ogre::Matrix3 const &  MPlatformGetLastOrientMatrix() const  { return m_last_orient_matrix; }
+    inline JitterCacheV3 &        MPlatformGetJitterPos()   { return m_pos_jitter;  }
+    inline JitterCacheV3 &        MPlatformGetJitterVelo()  { return m_velo_jitter; }
+    inline JitterCacheV3 &        MPlatformGetJitterAcc()   { return m_acc_jitter;  }
+    inline JitterCacheV3 &        MPlatformGetJitterEuler() { return m_acc_jitter;  }
 
 private:
     void  DeleteSocket  ();
@@ -109,6 +137,10 @@ private:
     Ogre::Vector3 m_last_velocity;
     Ogre::Vector3 m_last_orient_euler;
     Ogre::Matrix3 m_last_orient_matrix;
+    JitterCacheV3 m_pos_jitter;
+    JitterCacheV3 m_velo_jitter;
+    JitterCacheV3 m_acc_jitter;
+    JitterCacheV3 m_euler_jitter;
 };
 
 } // namespace RoR

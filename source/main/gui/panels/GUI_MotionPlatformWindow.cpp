@@ -70,18 +70,61 @@ bool MotionPlatformWindow::IsVisible() { return MAIN_WIDGET->getVisible(); }
 
 void MotionPlatformWindow::UpdateMPlatformGui()
 {
-    // Input:   (x=pitch, y=yaw, z=roll)
-    // Display: (x=pitch, y=roll, z=yaw)
 
     Ogre::Euler euler(m_motion_platform->MPlatformGetLastOrientMatrix());
     m_rot_yaw  ->setAngle(euler.GetYaw().valueRadians());
     m_rot_pitch->setAngle(euler.GetPitch().valueRadians());
     m_rot_roll ->setAngle(euler.GetRoll().valueRadians() * -1);
 
-    // Just output font test...
-    std::stringstream msg;
-    msg << "yaw  : " << euler.GetYaw().valueRadians() << std::endl;
-    msg << "pitch: " << euler.GetPitch().valueRadians() << std::endl;
-    msg << "roll : " << euler.GetRoll().valueRadians() << std::endl;
-    m_text_panel->setCaption(msg.str());
+    JitterStatV3 cine_stat = m_motion_platform->MPlatformGetJitterPos().ProduceStats();
+    JitterStatV3 velo_stat = m_motion_platform->MPlatformGetJitterVelo().ProduceStats();
+    JitterStatV3 accl_stat = m_motion_platform->MPlatformGetJitterAcc().ProduceStats();
+    JitterStatV3 eurl_stat = m_motion_platform->MPlatformGetJitterAcc().ProduceStats();
+
+    const size_t BUF_LEN = 4000;
+    char buf[BUF_LEN];
+    snprintf(buf, BUF_LEN,
+        "Pos(cinecam):\n"
+        " Cur | %10.5f | %10.5f | %10.5f\n"
+        " j~3 | %10.5f | %10.5f | %10.5f\n"
+        " j~5 | %10.5f | %10.5f | %10.5f\n"
+        " j~9 | %10.5f | %10.5f | %10.5f\n"
+        "\nVelo:\n"
+        " Cur | %10.5f | %10.5f | %10.5f\n"
+        " j~3 | %10.5f | %10.5f | %10.5f\n"
+        " j~5 | %10.5f | %10.5f | %10.5f\n"
+        " j~9 | %10.5f | %10.5f | %10.5f\n"
+        "\nAcc:\n"
+        " Cur | %10.5f | %10.5f | %10.5f\n"
+        " j~3 | %10.5f | %10.5f | %10.5f\n"
+        " j~5 | %10.5f | %10.5f | %10.5f\n"
+        " j~9 | %10.5f | %10.5f | %10.5f\n"
+        "\nEuler:\n"
+        " YPR | %10.5f | %10.5f | %10.5f\n"
+        " j~3 | %10.5f | %10.5f | %10.5f\n"
+        " j~5 | %10.5f | %10.5f | %10.5f\n"
+        " j~9 | %10.5f | %10.5f | %10.5f\n",
+        // Pos
+        cine_stat.last_udp.x, cine_stat.last_udp.y, cine_stat.last_udp.z,
+           cine_stat.stat2.x,    cine_stat.stat2.y,    cine_stat.stat2.z,
+           cine_stat.stat4.x,    cine_stat.stat4.y,    cine_stat.stat4.z,
+           cine_stat.stat8.x,    cine_stat.stat8.y,    cine_stat.stat8.z,
+        // velo
+        velo_stat.last_udp.x, velo_stat.last_udp.y, velo_stat.last_udp.z,
+           velo_stat.stat2.x,    velo_stat.stat2.y,    velo_stat.stat2.z,
+           velo_stat.stat4.x,    velo_stat.stat4.y,    velo_stat.stat4.z,
+           velo_stat.stat8.x,    velo_stat.stat8.y,    velo_stat.stat8.z,
+        // Acc
+        accl_stat.last_udp.x, accl_stat.last_udp.y, accl_stat.last_udp.z,
+           accl_stat.stat2.x,    accl_stat.stat2.y,    accl_stat.stat2.z,
+           accl_stat.stat4.x,    accl_stat.stat4.y,    accl_stat.stat4.z,
+           accl_stat.stat8.x,    accl_stat.stat8.y,    accl_stat.stat8.z,
+        // Euler
+        eurl_stat.last_udp.x, eurl_stat.last_udp.y, eurl_stat.last_udp.z,
+           eurl_stat.stat2.x,    eurl_stat.stat2.y,    eurl_stat.stat2.z,
+           eurl_stat.stat4.x,    eurl_stat.stat4.y,    eurl_stat.stat4.z,
+           eurl_stat.stat8.x,    eurl_stat.stat8.y,    eurl_stat.stat8.z
+        );
+
+    m_text_panel->setCaption(buf);
 }

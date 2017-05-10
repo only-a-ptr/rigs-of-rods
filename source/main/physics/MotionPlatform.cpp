@@ -25,6 +25,7 @@
 #include "Beam.h"
 #include "GUIManager.h"
 #include "GUI_MotionPlatformWindow.h"
+#include "Euler.h"
 
 #include <math.h>
 
@@ -99,6 +100,7 @@ void MotionPlatform::MPlatformDisconnect()
 
 void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (2000hz)
 {
+
     m_elapsed_time += 500;
     if ((m_elapsed_time - m_last_update_time) < SEND_INTERVAL_MICROSEC)
     {
@@ -160,6 +162,96 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
     m_last_orient_euler  = datagram.orient;
     m_last_velocity      = ogre_velocity;
     m_last_orient_matrix = orient_mtx;
+
+    // Update stats
+    m_velo_jitter.AddReading(ogre_velocity);
+    m_pos_jitter.AddReading(cinecam_pos);
+    m_acc_jitter.AddReading(ogre_accel);
+
+    Ogre::Euler euler(orient_mtx);
+    m_euler_jitter.AddReading(
+        Ogre::Vector3(
+            euler.GetYaw().valueRadians(),
+            euler.GetPitch().valueRadians(),
+            euler.GetRoll().valueRadians())
+        );
+}
+
+float CalcJitter(float start, float mid, float end)
+{
+    float low, high;
+    
+    if (start > end)
+    {
+        high = start;
+        low = end;
+    }
+    else
+    {
+        high = end;
+        low = start;
+    }
+
+    if (high == low)
+    {
+        return 0.f; // cannot compute percentage - div by zero.
+    }
+
+    if (low < 0.f)
+    {
+        float drop = fabsf(low);
+        high += drop;
+        low += drop;
+    }
+
+    float diff = (high - low);
+    float optim_mid = (diff/2.f) + low;
+
+    return (fabsf(mid - optim_mid) / (diff/2)) * 100.f; // percentual error
+}
+
+void JitterCacheV3::AddReading(Ogre::Vector3 val)
+{
+    // Keep the last value
+    last_udp_value = val;
+
+    // Compute jitter
+    results2[results_caret].x = CalcJitter(val.x, readings[0].x, readings[1].x); // Sequence of readings: START, MID, END
+    results2[results_caret].y = CalcJitter(val.y, readings[0].y, readings[1].y);
+    results2[results_caret].z = CalcJitter(val.z, readings[0].z, readings[1].z);
+
+    results4[results_caret].x = CalcJitter(val.x, readings[1].x, readings[3].x); // START, n, MID, n, END
+    results4[results_caret].y = CalcJitter(val.y, readings[1].y, readings[3].y);
+    results4[results_caret].z = CalcJitter(val.z, readings[1].z, readings[3].z);
+
+    results8[results_caret].x = CalcJitter(val.x, readings[3].x, readings[7].x); // START, n, n, n, MID, n, n, n, END
+    results8[results_caret].y = CalcJitter(val.y, readings[3].y, readings[7].y);
+    results8[results_caret].z = CalcJitter(val.z, readings[3].z, readings[7].z);
+
+    // Move caret
+    results_caret = ((results_caret + 1) % NUM_RESULTS);
+
+    // Shove the old readings and insert new
+    memmove((readings + 1), readings, 7 * sizeof(Ogre::Vector3));
+    readings[0] = val;
+}
+
+JitterStatV3 JitterCacheV3::ProduceStats()
+{
+    Ogre::Vector3 total2, total4, total8;
+    for (size_t i = 0; i < NUM_RESULTS; ++i)
+    {
+        total2 += results2[i];
+        total4 += results4[i];
+        total8 += results8[i];
+    }
+
+    JitterStatV3 stat;
+    stat.stat2 = total2 / static_cast<float>(NUM_RESULTS);
+    stat.stat4 = total4 / static_cast<float>(NUM_RESULTS);
+    stat.stat8 = total8 / static_cast<float>(NUM_RESULTS);
+    stat.last_udp = last_udp_value;
+    return stat;
 }
 
 #endif // USE_MPLATFORM
