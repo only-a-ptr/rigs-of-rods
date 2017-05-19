@@ -74,6 +74,8 @@ void RoR::GUI::GamePauseMenu::Draw() // TODO: Copypaste of 'GameMainMenu' -- cle
 
         const char* exit_title = (m_kb_focus_index == 2) ? "--> Exit game <--" : "Exit game";
         if (ImGui::Button(exit_title, btn_size) || (m_kb_enter_index == 3))
+    this->Hide();
+    App::SetPendingAppState(App::APP_STATE_RIG_EDITOR);
         {
             App::app_state.SetPending(RoR::AppState::SHUTDOWN);
         }
