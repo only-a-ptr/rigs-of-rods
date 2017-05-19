@@ -344,6 +344,11 @@ void GUIManager::SetGuiHidden(bool hidden)
 {
     m_hide_gui = hidden;
     App::GetOverlayWrapper()->showDashboardOverlays(!hidden, App::GetGameContext()->GetPlayerActor());
+void GUIManager::SetSceneManager(Ogre::SceneManager* scene_manager)
+{
+    m_impl->mygui_platform->getRenderManagerPtr()->setSceneManager(scene_manager);
+}
+
     if (hidden)
     {
         m_impl->panel_SimPerfStats.SetVisible(false);

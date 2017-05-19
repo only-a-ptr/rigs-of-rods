@@ -99,6 +99,7 @@ enum class AppState
     BOOTSTRAP,          //!< Initial state
     MAIN_MENU,
     SIMULATION,
+    RIG_EDITOR,
     SHUTDOWN,
     PRINT_HELP_EXIT,
     PRINT_VERSION_EXIT,
