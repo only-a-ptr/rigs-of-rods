@@ -44,6 +44,8 @@
 #include "OutGauge.h"
 #include "OverlayWrapper.h"
 #include "PlatformUtils.h"
+#include "RigEditor_Config.h"
+#include "RigEditor_Main.h"
 #include "RoRVersion.h"
 #include "ScriptEngine.h"
 #include "Skidmark.h"
@@ -728,6 +730,20 @@ int main(int argc, char *argv[])
                     App::GetGameContext()->GetRecoveryMode().UpdateInputEvents(dt);
                     App::GetGameContext()->GetActorManager()->UpdateInputEvents(dt);
                 }
+            }
+            else if (App::app_state.GetPending() == AppState::RIG_EDITOR)
+            {
+                // Prepare
+                menu_wallpaper_widget->setVisible(false);
+                App::GetOgreSubsystem()->GetRenderWindow()->removeAllViewports();
+                App::GetOgreSubsystem()->GetOgreRoot()->removeFrameListener(App::GetGuiManager()); // Stop GUIManager updates
+                rig_editor->BringUp();
+                App::app_state.ApplyPending();
+                // Enter
+                rig_editor->EnterEditorLoop();
+                // Suspend
+                rig_editor->PutOff();
+                menu_wallpaper_widget->setVisible(true);
             }
 
             // Update OutGauge device

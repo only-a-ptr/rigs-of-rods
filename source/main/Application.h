@@ -99,7 +99,7 @@ enum class AppState
     BOOTSTRAP,          //!< Initial state
     MAIN_MENU,
     SIMULATION,
-    RIG_EDITOR,
+    RIG_EDITOR,         ///< Enter rig editor without simulation (can be started later)
     SHUTDOWN,
     PRINT_HELP_EXIT,
     PRINT_VERSION_EXIT,
@@ -117,7 +117,9 @@ enum class SimState
     OFF,
     RUNNING,
     PAUSED,
-    EDITOR_MODE //!< Hacky, but whatever... added by Ulteq, 2016
+    SELECTING,  ///< The selector GUI window is displayed.
+    RIG_EDITOR, ///< Suspend simulation and enter editor.
+    MAP_EDITOR,
 };
 
 enum class SimGearboxMode

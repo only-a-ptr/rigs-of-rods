@@ -150,7 +150,6 @@ public:
     void WakeUpGUI();
 
     void UpdateInputEvents(float dt);
-
 private:
     void SetupImGui();
 

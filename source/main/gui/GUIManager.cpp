@@ -344,11 +344,6 @@ void GUIManager::SetGuiHidden(bool hidden)
 {
     m_hide_gui = hidden;
     App::GetOverlayWrapper()->showDashboardOverlays(!hidden, App::GetGameContext()->GetPlayerActor());
-void GUIManager::SetSceneManager(Ogre::SceneManager* scene_manager)
-{
-    m_impl->mygui_platform->getRenderManagerPtr()->setSceneManager(scene_manager);
-}
-
     if (hidden)
     {
         m_impl->panel_SimPerfStats.SetVisible(false);
@@ -386,7 +381,7 @@ void GUIManager::UpdateMouseCursorVisibility()
 
 void GUIManager::ReflectGameState()
 {
-    if (App::app_state->GetEnum<AppState>() == AppState::MAIN_MENU)
+    if (App::app_state.GetActive() == AppState::MAIN_MENU)
     {
         m_impl->overlay_Wallpaper       ->show();
         m_impl->panel_GameMainMenu       .SetVisible(!m_impl->panel_MainSelector.IsVisible());
@@ -399,11 +394,30 @@ void GUIManager::ReflectGameState()
         m_impl->panel_SimActorStats      .SetVisible(false);
         m_impl->panel_SimPerfStats       .SetVisible(false);
         m_impl->panel_DirectionArrow     .SetVisible(false);
+        m_impl->panel_MpClientList       .SetVisible(App::mp_state.GetActive() == MpState::CONNECTED);
     }
-    else if (App::app_state->GetEnum<AppState>() == AppState::SIMULATION)
+    if (App::app_state.GetActive() == AppState::SIMULATION)
     {
         m_impl->panel_GameMainMenu       .SetVisible(false);
         m_impl->overlay_Wallpaper       ->hide();
+        if (App::sim_state.GetActive() == SimState::RIG_EDITOR)
+        {
+            m_impl->panel_SimUtils           .SetBaseVisible(false);
+            m_impl->panel_ChatBox            .SetVisible(false);
+            m_impl->panel_DebugOptions       .SetVisible(false);
+            m_impl->panel_FrictionSettings   .SetVisible(false);
+            m_impl->panel_GamePauseMenu      .SetVisible(false);
+            m_impl->panel_TextureToolWindow  .SetVisible(false);
+            m_impl->panel_TeleportWindow     .SetVisible(false);
+            m_impl->panel_VehicleDescription .SetVisible(false);
+            m_impl->panel_SpawnerReport      .SetVisible(false);
+            m_impl->panel_MpClientList       .SetVisible(false);
+        }
+        else
+        {
+            m_impl->panel_SimUtils           .SetBaseVisible(true);
+            m_impl->panel_MpClientList       .SetVisible(App::mp_state.GetActive() == MpState::CONNECTED);
+        }
     }
 }
 
