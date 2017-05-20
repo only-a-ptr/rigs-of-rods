@@ -2532,7 +2532,7 @@ Actor* SimController::SpawnActorDirectly(RoR::ActorSpawnRequest rq)
                 _LC("Sim", "ModCache is corrupted. Please open Settings and press [Update cache]"));
 
             App::GetCacheSystem()->ClearCache();
-            App::app_state.SetPending(AppState::MAIN_MENU);
+            App::app_state->SetPendingVal((int)AppState::MAIN_MENU);
 
             return nullptr;
         }
