@@ -275,6 +275,8 @@ private:
 
     void _ParseNodeOptions(unsigned int & options, const std::string & options_str);
 
+    void ProcessCommentLine();
+
     void ParseOptionalInertia(Inertia& inertia, int index);
 
 // --------------------------------------------------------------------------
