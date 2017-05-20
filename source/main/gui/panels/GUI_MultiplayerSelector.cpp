@@ -9,7 +9,7 @@
 #include <rapidjson/document.h>
 #include <vector>
 
-// TODO: delete file
+// TODO: Remake this GUI
 #if defined(_MSC_VER) && defined(GetObject) // This MS Windows macro from <wingdi.h> (Windows Kit 8.1) clashes with RapidJSON
 #   undef GetObject
 #endif
