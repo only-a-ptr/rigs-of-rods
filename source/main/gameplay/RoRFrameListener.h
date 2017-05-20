@@ -22,6 +22,7 @@
 #pragma once
 
 #include "RoRPrerequisites.h"
+#include "RigEditor_ForwardDeclarations.h"
 
 #include "BeamData.h" // RoR::ActorSpawnRequest
 #include "BeamFactory.h"

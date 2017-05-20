@@ -141,7 +141,6 @@ public:
     inline OgreImGui& GetImGui() { return m_imgui; }
     inline GuiTheme&  GetTheme() { return m_theme; }
 
-
 private:
     void SetupImGui();
 

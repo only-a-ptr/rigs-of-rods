@@ -32,6 +32,8 @@
 #include "MumbleIntegration.h"
 #include "OgreSubsystem.h"
 #include "PlatformUtils.h"
+#include "RigEditor_Config.h"
+#include "RigEditor_Main.h"
 #include "RoRFrameListener.h"
 #include "RoRVersion.h"
 #include "Scripting.h"
@@ -348,6 +350,20 @@ int main(int argc, char *argv[])
                 } // Enclosing scope for SimController
                 gEnv->sceneManager->clearScene(); // Wipe the scene after SimController was destroyed
             }
+            else if (App::app_state.GetPending() == AppState::RIG_EDITOR)
+            {
+                // Prepare
+                menu_wallpaper_widget->setVisible(false);
+                App::GetOgreSubsystem()->GetRenderWindow()->removeAllViewports();
+                App::GetOgreSubsystem()->GetOgreRoot()->removeFrameListener(App::GetGuiManager()); // Stop GUIManager updates
+                rig_editor->BringUp();
+                App::app_state.ApplyPending();
+                // Enter
+                rig_editor->EnterEditorLoop();
+                // Suspend
+                rig_editor->PutOff();
+                menu_wallpaper_widget->setVisible(true);
+            }
             prev_app_state = App::app_state.GetActive();
 
 
@@ -356,6 +372,9 @@ int main(int argc, char *argv[])
         // ========================================================================
         // Cleanup
         // ========================================================================
+
+        delete rig_editor;
+        rig_editor = nullptr;
 
         Settings::getSingleton().SaveSettings(); // Save RoR.cfg
 
