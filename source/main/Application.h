@@ -709,6 +709,7 @@ extern GVarStr_A<300>          sys_logs_dir;
 extern GVarStr_A<300>          sys_resources_dir;
 extern GVarStr_A<300>          sys_profiler_dir;
 extern GVarStr_A<300>          sys_screenshot_dir;
+extern GVarStr<300>            sys_rig_projects_dir;
 
 // Input - Output
 extern GVarPod_A<bool>         io_ffb_enabled;

@@ -23,6 +23,8 @@
 /// @author Petr Ohlidal
 /// @date   12/2013
 
+#pragma once
+
 namespace Ogre
 {
     class DataStream;
@@ -33,49 +35,77 @@ namespace RigDef {
 // File structures declarations
 // TODO: Complete list
 
-struct AeroAnimator;
+struct CameraSettings;
+struct NodeDefaults;
+struct BeamDefaultsScale;
+struct BeamDefaults;
+struct Inertia;
+struct ManagedMaterialsOptions;
+struct ShadowOptions;
+struct Globals;
+struct GuiSettings;
 struct Airbrake;
 struct Animation;
-struct AntiLockBrakes;
 struct Axle;
 struct Beam;
-struct BeamDefaults;
-struct BeamDefaultsScale;
-struct Brakes;
-struct Cab;
-struct CameraRail;
-struct CameraSettings;
+struct Camera;
 struct Cinecam;
 struct CollisionBox;
-struct Command2;
 struct CruiseControl;
+struct Author;
+struct Fileinfo;
 struct Engine;
 struct Engoption;
 struct Engturbo;
+struct Exhaust;
 struct ExtCamera;
-struct File;
-struct Flare;
+struct Brakes;
+struct AntiLockBrakes;
+struct TractionControl;
+struct SlopeBrake;
+struct WheelDetacher;
+struct Wheel;
+struct Wheel2;
+struct MeshWheel;
 struct Flare2;
 struct Flexbody;
 struct FlexBodyWheel;
 struct Fusedrag;
-struct Globals;
-struct GuiSettings;
 struct Hook;
+struct Shock;
+struct Shock2;
+struct SkeletonSettings;
 struct Hydro;
-struct Inertia;
+struct AeroAnimator;
+struct Animator;
+struct Command2;
+struct Rotator;
+struct Rotator2;
+struct Trigger;
 struct Lockgroup;
-struct ManagedMaterialsOptions;
+struct ManagedMaterial;
 struct MeshWheel;
-struct Node;
-struct NodeDefaults;
 struct Particle;
 struct Pistonprop;
 struct Prop;
 struct RailGroup;
 struct Ropable;
-struct ShadowOptions;
+struct Rope;
+struct Screwprop;
+struct SlideNode;
+struct SoundSource;
+struct SoundSource2;
+struct SpeedLimiter;
+struct Cab;
+struct Texcoord;
+struct Submesh;
+struct Tie;
+struct TorqueCurve;
+struct Turbojet;
+struct Turboprop2;
 struct VideoCamera;
+struct Wing;
+struct File;
 
 // Parser classes
 
