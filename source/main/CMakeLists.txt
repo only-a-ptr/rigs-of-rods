@@ -469,6 +469,9 @@ else (USE_PACKAGE_MANAGER)
             $<$<PLATFORM_ID:WINDOWS>:MYGUI_STATIC>
             )
 
+    find_package( RapidJSON REQUIRED )
+    target_include_directories( ${BINNAME} PRIVATE ${RapidJSON_INCLUDE_DIRS} ) # It's a header-only library
+
     if (MoFileReader_FOUND)
         target_link_libraries(${BINNAME} PRIVATE MoFileReader::MoFileReader)
         target_compile_definitions(${BINNAME} PRIVATE USE_MOFILEREADER)
