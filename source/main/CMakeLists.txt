@@ -525,6 +525,11 @@ else ()
             )
 endif ()
 
+# --- Rapid JSON ---
+find_package( RapidJSON REQUIRED )
+target_include_directories( ${BINNAME} PRIVATE ${RapidJSON_INCLUDE_DIRS} ) # It's a header-only library
+
+
 #  OPTIONAL DEPENDENCIES
 # -----------------------
 
