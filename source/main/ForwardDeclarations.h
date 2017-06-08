@@ -187,6 +187,7 @@ class SkyManager;
 class SkyXManager;
 class SlideNode;
 class Sound;
+class Sound;
 class SoundManager;
 class SoundScriptInstance;
 class SoundScriptManager;

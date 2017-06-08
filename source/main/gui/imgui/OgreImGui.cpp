@@ -498,8 +498,6 @@ void OgreImGui::ImGUIRenderable::initImGUIRenderable(void)
     offset += Ogre::VertexElement::getTypeSize( Ogre::VET_FLOAT2 );
     decl->addElement(0,offset,Ogre::VET_COLOUR,Ogre::VES_DIFFUSE);
 
-        
-        // set basic white material
     this->setMaterial( "imgui/material" );
 }
 
