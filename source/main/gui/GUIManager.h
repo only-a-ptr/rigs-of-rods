@@ -35,7 +35,7 @@
 namespace RoR {
 
 // Forward
-namespace GUI { class SimUtils; class TopMenubar; class TeleportWindow; }
+namespace GUI { class SimUtils; class TopMenubar; class TeleportWindow; class GameMainMenu; }
 
 class GUIManager :
     public GUIInputManager
@@ -85,6 +85,7 @@ public:
     // GUI GetInstance*()
     Console* GetConsole();
     GUI::MainSelector* GetMainSelector();
+    GUI::GameMainMenu* GetMainMenu();
     GUI::LoadingWindow* GetLoadingWindow();
     GUI::MpClientList* GetMpClientList();
     GUI::MultiplayerSelector* GetMpSelector();
@@ -102,11 +103,11 @@ public:
     void HideNotification();
     void CenterSpawnerReportWindow();
     void AdjustPauseMenuPosition();
-    void AdjustMainMenuPosition();
 
     void UpdateSimUtils(float dt, Beam* truck);
     void FrameStepGui(float dt);
     void NewImGuiFrame(float dt);
+    void DrawMainMenuGui();
 
     int getMessageBoxResult(); //TODO
 
