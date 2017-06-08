@@ -678,7 +678,7 @@ bool Settings::ParseGlobalVarSetting(std::string const & k, std::string const & 
     if (k == CONF_MP_PASSWORD     ) { App::mp_server_password  .SetActive(S(v)); return true; }
     if (k == CONF_MP_PORTAL_URL   ) { App::mp_portal_url       .SetActive(S(v)); return true; }
     // Sim
-    if (k == CONF_SIM_GEARBOX     ) { App__SetSimGearboxMode             (S(v)); return true; }
+    if (k == CONF_SIM_GEARBOX     ) { App__SetSimGearboxMode             ( (v)); return true; }
     if (k == CONF_SIM_MULTITHREAD ) { App::app_multithread     .SetActive(B(v)); return true; }
     // Input&Output
     if (k == CONF_FF_ENABLED      ) { App::io_ffb_enabled      .SetActive(B(v)); return true; }
@@ -686,7 +686,7 @@ bool Settings::ParseGlobalVarSetting(std::string const & k, std::string const & 
     if (k == CONF_FF_CENTERING    ) { App::io_ffb_center_gain  .SetActive(F(v)); return true; }
     if (k == CONF_FF_GAIN         ) { App::io_ffb_master_gain  .SetActive(F(v)); return true; }
     if (k == CONF_FF_STRESS       ) { App::io_ffb_stress_gain  .SetActive(F(v)); return true; }
-    if (k == CONF_INPUT_GRAB      ) { App__SetIoInputGrabMode            (S(v)); return true; }
+    if (k == CONF_INPUT_GRAB      ) { App__SetIoInputGrabMode            ( (v)); return true; }
     if (k == CONF_ARCADE_CONTROL  ) { App::io_arcade_controls  .SetActive(B(v)); return true; }
     if (k == CONF_OUTGAUGE_MODE   ) { App::io_outgauge_mode    .SetActive(I(v)); return true; }
     if (k == CONF_OUTGAUGE_IP     ) { App::io_outgauge_ip      .SetActive(S(v)); return true; }
@@ -694,10 +694,10 @@ bool Settings::ParseGlobalVarSetting(std::string const & k, std::string const & 
     if (k == CONF_OUTGAUGE_DELAY  ) { App::io_outgauge_delay   .SetActive(F(v)); return true; }
     if (k == CONF_OUTGAUGE_ID     ) { App::io_outgauge_id      .SetActive(I(v)); return true; }
     // Gfx
-    if (k == CONF_GFX_SHADOWS     ) { App__SetShadowTech                 (S(v)); return true; }
-    if (k == CONF_GFX_EXTCAM      ) { App__SetExtcamMode                 (S(v)); return true; }
-    if (k == CONF_GFX_TEX_FILTER  ) { App__SetTexFiltering               (S(v)); return true; }
-    if (k == CONF_GFX_VEGETATION  ) { App__SetVegetationMode             (S(v)); return true; }
+    if (k == CONF_GFX_SHADOWS     ) { App__SetShadowTech                 ( (v)); return true; }
+    if (k == CONF_GFX_EXTCAM      ) { App__SetExtcamMode                 ( (v)); return true; }
+    if (k == CONF_GFX_TEX_FILTER  ) { App__SetTexFiltering               ( (v)); return true; }
+    if (k == CONF_GFX_VEGETATION  ) { App__SetVegetationMode             ( (v)); return true; }
     if (k == CONF_GFX_SUNBURN     ) { App::gfx_enable_sunburn  .SetActive(B(v)); return true; }
     if (k == CONF_GFX_WAVES       ) { App::gfx_water_waves     .SetActive(B(v)); return true; }
     if (k == CONF_MINIMAP_OFF     ) { App::gfx_minimap_disabled.SetActive(B(v)); return true; }
@@ -707,15 +707,15 @@ bool Settings::ParseGlobalVarSetting(std::string const & k, std::string const & 
     if (k == CONF_GFX_HEATHAZE    ) { App::gfx_enable_heathaze .SetActive(B(v)); return true; }
     if (k == CONF_GFX_VIDEOCAMS   ) { App::gfx_enable_videocams.SetActive(B(v)); return true; }
     if (k == CONF_GFX_SKIDMARKS   ) { App::gfx_skidmarks_mode  .SetActive(M(v)); return true; }
-    if (k == CONF_ENVMAP_RATE     ) { App__SetGfxEnvmapRate              (S(v)); return true; }
+    if (k == CONF_ENVMAP_RATE     ) { App__SetGfxEnvmapRate              ( (v)); return true; }
     if (k == CONF_ENVMAP_ENABLED  ) { App::gfx_envmap_enabled  .SetActive(B(v)); return true; }
-    if (k == CONF_GFX_LIGHTS      ) { App__SetGfxFlaresMode              (S(v)); return true; }
-    if (k == CONF_GFX_WATER_MODE  ) { App__SetGfxWaterMode               (S(v)); return true; }
+    if (k == CONF_GFX_LIGHTS      ) { App__SetGfxFlaresMode              ( (v)); return true; }
+    if (k == CONF_GFX_WATER_MODE  ) { App__SetGfxWaterMode               ( (v)); return true; }
     if (k == CONF_GFX_SIGHT_RANGE ) { App::gfx_sight_range     .SetActive(F(v)); return true; }
     if (k == CONF_GFX_FOV_EXTERN  ) { this->SetGfxFovExternal            (F(v)); return true; }
     if (k == CONF_GFX_FOV_INTERN  ) { this->SetGfxFovInternal            (F(v)); return true; }
     if (k == CONF_GFX_FPS_LIMIT   ) { App::gfx_fps_limit       .SetActive(I(v)); return true; }
-    if (k == CONF_GFX_SKY_EFFECTS ) { App__SetGfxSkyMode                 (S(v)); return true; }
+    if (k == CONF_GFX_SKY_EFFECTS ) { App__SetGfxSkyMode                 ( (v)); return true; }
     // Audio
     if (k == CONF_SOUND_VOLUME    ) { App::audio_master_volume .SetActive(F(v)); return true; }
     if (k == CONF_SOUND_CREAK     ) { App::audio_enable_creak  .SetActive(B(v)); return true; }
@@ -765,7 +765,7 @@ void Settings::LoadRoRCfg()
         cfg.load(Ogre::String(path), "=:\t", false);
 
         // load all settings into a map!
-        ConfigFile::SettingsIterator i = cfg.getSettingsIterator();
+        Ogre::ConfigFile::SettingsIterator i = cfg.getSettingsIterator();
         String s_value, s_name;
         while (i.hasMoreElements())
         {
@@ -784,7 +784,7 @@ void Settings::LoadRoRCfg()
             settings[s_name] = s_value;
         }
     }
-    catch (Ogre::FileNotFoundException e) {} // Just continue with defaults...
+    catch (Ogre::FileNotFoundException&) {} // Just continue with defaults...
 
     // generate hash of the token
     String usertoken = SSETTING("User Token", "");
@@ -873,7 +873,7 @@ inline const char* SimGearboxToStr(SimGearboxMode v)
 
 inline const char* GfxFlaresToStr(GfxFlaresMode v)
 {
-    switch(v)
+    switch (v)
     {
     case GfxFlaresMode::NONE                   : return CONF_FLARES_NONE;
     case GfxFlaresMode::NO_LIGHTSOURCES        : return CONF_FLARES_NO_LIGHT;
@@ -886,7 +886,7 @@ inline const char* GfxFlaresToStr(GfxFlaresMode v)
 
 inline const char* GfxWaterToStr(GfxWaterMode v)
 {
-    switch(v)
+    switch (v)
     {
     case GfxWaterMode::BASIC    : return CONF_WATER_BASIC;
     case GfxWaterMode::REFLECT  : return CONF_WATER_REFLECT;
@@ -899,7 +899,7 @@ inline const char* GfxWaterToStr(GfxWaterMode v)
 
 inline const char* GfxSkyToStr(GfxSkyMode v)
 {
-    switch(v)
+    switch (v)
     {
     case GfxSkyMode::CAELUM   : return CONF_SKY_CAELUM;
     case GfxSkyMode::SKYX     : return CONF_SKY_SKYX;

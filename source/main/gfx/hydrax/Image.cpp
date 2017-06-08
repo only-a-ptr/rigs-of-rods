@@ -202,7 +202,7 @@ namespace Hydrax
 		}
 #endif
 
-		switch(mChannels)
+		switch (mChannels)
 		{
 		    case 1:
 			{

@@ -162,7 +162,7 @@ bool ExtractZipFiles(const wxString& aZipFile, const wxString& aTargetDir)
                 zip.Read(file);
             }
         }
-    } while(false);
+    } while (false);
     return ret;
 }
 

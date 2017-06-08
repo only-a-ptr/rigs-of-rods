@@ -24,8 +24,8 @@
 #pragma once
 
 
-#define CONSOLE_PUTMESSAGE(a,b,c,d,e,f) while(0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c,d,e,f); }
-#define CONSOLE_PUTMESSAGE_SHORT(a,b,c) while(0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c); }
+#define CONSOLE_PUTMESSAGE(a,b,c,d,e,f) while (0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c,d,e,f); }
+#define CONSOLE_PUTMESSAGE_SHORT(a,b,c) while (0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c); }
 
 #include "RoRPrerequisites.h"
 #include "InterThreadStoreVector.h"

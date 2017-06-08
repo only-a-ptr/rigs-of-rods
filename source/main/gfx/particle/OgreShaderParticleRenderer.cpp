@@ -365,7 +365,7 @@ bool ShaderParticleRenderer::allocateBuffers(size_t iNumParticles)
         if (mVertexFormatTotalTTL) iNumTimes++;
         if (mVertexFormatTimeFragment) iNumTimes++;
         if (mVertexFormatTimeFragmentInv) iNumTimes++;
-        switch(iNumTimes) {
+        switch (iNumTimes) {
             case 1:
                 ofs += pDecl->addElement(0, ofs, VET_FLOAT1, VES_TEXTURE_COORDINATES, ix++).getSize();
                 break;

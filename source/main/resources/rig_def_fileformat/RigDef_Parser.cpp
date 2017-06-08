@@ -1409,7 +1409,7 @@ void Parser::_ParseNodeOptions(unsigned int & options, const std::string & optio
     for (unsigned int i = 0; i < options_str.length(); i++)
     {
         const char c = options_str.at(i);
-        switch(c)
+        switch (c)
         {
             case 'l':
                 BITMASK_SET_1(options, Node::OPTION_l_LOAD_WEIGHT);
@@ -2505,7 +2505,7 @@ void Parser::ParseAxles()
             std::string options_str = results[6].str();
             for (unsigned int i = 0; i < options_str.length(); i++)
             {
-                switch(options_str.at(i))
+                switch (options_str.at(i))
                 {
                     case 'o':
                         axle.options.push_back(Axle::OPTION_o_OPEN);
@@ -2660,7 +2660,7 @@ void Parser::ParseTriggers()
         std::string options_str = this->GetArgStr(6);
         for (unsigned int i = 0; i < options_str.length(); i++)
         {
-            switch(options_str.at(i))
+            switch (options_str.at(i))
             {
                 case 'i': trigger.options |= Trigger::OPTION_i_INVISIBLE;             break;
                 case 'c': trigger.options |= Trigger::OPTION_c_COMMAND_STYLE;         break;

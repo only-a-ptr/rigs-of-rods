@@ -225,7 +225,7 @@ void OpenCLTestBandwidth::testBandwidth(unsigned int start, unsigned int end, un
               testMode mode, memcpyKind kind, accessMode accMode,
               memoryMode memMode, int startDevice, int endDevice)
 {
-    switch(mode)
+    switch (mode)
     {
     case QUICK_MODE:
         testBandwidthQuick( DEFAULT_SIZE, kind, accMode, memMode, startDevice, endDevice);
@@ -276,7 +276,7 @@ void OpenCLTestBandwidth::testBandwidthRange(unsigned int start, unsigned int en
         for(unsigned int i = 0; i < count; i++)
         {
             memSizes[i] = start + i * increment;
-            switch(kind)
+            switch (kind)
             {
             case DEVICE_TO_HOST:    bandwidths[i] += testDeviceToHostTransfer(memSizes[i], accMode, memMode);
                 break;
@@ -327,7 +327,7 @@ void OpenCLTestBandwidth::testBandwidthShmoo(memcpyKind kind, accessMode accMode
         //Run the shmoo
         int iteration = 0;
         unsigned int memSize = 0;
-        while(memSize <= SHMOO_MEMSIZE_MAX )
+        while (memSize <= SHMOO_MEMSIZE_MAX )
         {
             if(memSize < SHMOO_LIMIT_20KB )
             {
@@ -359,7 +359,7 @@ void OpenCLTestBandwidth::testBandwidthShmoo(memcpyKind kind, accessMode accMode
             }
 
             memSizes[iteration] = memSize;
-            switch(kind)
+            switch (kind)
             {
             case DEVICE_TO_HOST:    bandwidths[iteration] += testDeviceToHostTransfer(memSizes[iteration], accMode, memMode);
                 break;

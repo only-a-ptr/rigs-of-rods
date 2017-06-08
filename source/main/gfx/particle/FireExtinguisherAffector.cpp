@@ -63,7 +63,7 @@ FireExtinguisherAffector::FireExtinguisherAffector(ParticleSystem* psys)
     ParticleSystemManager::ParticleAffectorFactoryIterator pafi = ParticleSystemManager::getSingleton().getAffectorFactoryIterator();
     ParticleAffectorFactory *paf;
 
-    while(pafi.hasMoreElements())
+    while (pafi.hasMoreElements())
     {
         paf = pafi.getNext();
         if ( paf->getName() == "ExtinguishableFire" )
@@ -80,7 +80,7 @@ void FireExtinguisherAffector::_affectParticles(ParticleSystem* pSystem, Real ti
     ExtinguishableFireAffectorFactory::affectorIterator affIt = mEfaf->getAffectorIterator();
     ExtinguishableFireAffector* fire;
 
-    while(affIt.hasMoreElements())
+    while (affIt.hasMoreElements())
     {
         fire = (ExtinguishableFireAffector*)affIt.getNext();
 

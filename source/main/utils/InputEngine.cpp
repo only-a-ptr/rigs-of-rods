@@ -3562,7 +3562,7 @@ bool InputEngine::loadMapping(String outfile, bool append, int deviceID)
     FILE *f = fopen(outfile.c_str(), "r");
     if (!f)
         return false;
-    while(fgets(line, 1024, f)!=NULL)
+    while (fgets(line, 1024, f)!=NULL)
     {
         if (strnlen(line, 1024) > 5)
             processLine(line);

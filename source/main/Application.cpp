@@ -329,7 +329,7 @@ const char* EnumToStr(GfxFlaresMode v)
 
 const char* EnumToStr(GfxVegetation v)
 {
-    switch(v)
+    switch (v)
     {
     case GfxVegetation::NONE    : return "NONE";
     case GfxVegetation::x20PERC : return "20%";
@@ -341,7 +341,7 @@ const char* EnumToStr(GfxVegetation v)
 
 const char* EnumToStr(GfxWaterMode v)
 {
-    switch(v)
+    switch (v)
     {
     case GfxWaterMode::NONE      : return "NONE";
     case GfxWaterMode::BASIC     : return "BASIC";
@@ -355,7 +355,7 @@ const char* EnumToStr(GfxWaterMode v)
 
 const char* EnumToStr(GfxSkyMode v)
 {
-    switch(v)
+    switch (v)
     {
     case GfxSkyMode::SANDSTORM: return "SANDSTORM";
     case GfxSkyMode::CAELUM   : return "CAELUM";
@@ -377,7 +377,7 @@ const char* EnumToStr(IoInputGrabMode v)
 
 const char* EnumToStr(GfxShadowType v)
 {
-    switch(v)
+    switch (v)
     {
     case GfxShadowType::NONE   : return "NONE";
     case GfxShadowType::TEXTURE: return "TEXTURE";

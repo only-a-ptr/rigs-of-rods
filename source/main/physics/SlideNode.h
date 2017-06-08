@@ -151,7 +151,7 @@ public:
 	{
 		Rail* cur = mStart;
 		if ( cur->prev ) cur->prev = cur->prev->next = NULL;
-		while( cur->next )
+		while ( cur->next )
 		{
 			cur = cur->next;
 			delete cur->prev;

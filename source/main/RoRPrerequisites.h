@@ -101,7 +101,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef FEAT_DEBUG_ASSERT
 # ifdef _WIN32
 // __debugbreak will break into the debugger in visual studio
-#  define MYASSERT(x)       do { if (x) { } else { LOGSAFE("***ASSERT FAILED: "+OGREFUNCTIONSTRING); __debugbreak(); }; } while(0)
+#  define MYASSERT(x)       do { if (x) { } else { LOGSAFE("***ASSERT FAILED: "+OGREFUNCTIONSTRING); __debugbreak(); }; } while (0)
 # endif // _WIN32
 #else //!FEAT_DEBUG_ASSERT
 # define MYASSERT(x)         assert(x)

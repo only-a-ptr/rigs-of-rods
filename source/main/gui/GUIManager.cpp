@@ -124,17 +124,17 @@ bool GUIManager::IsVisible_LoadingWindow        () { return m_impl->panel_Loadin
 bool GUIManager::IsVisible_Console              () { return m_impl->panel_GameConsole        .IsVisible(); }
 
 // GUI GetInstance*()
-Console*                    GUIManager::GetConsole()           { return &m_impl->panel_GameConsole         ; }
-GUI::MainSelector*          GUIManager::GetMainSelector()      { return &m_impl->panel_MainSelector        ; }
-GUI::GameMainMenu*          GUIManager::GetMainMenu()          { return &m_impl->panel_GameMainMenu        ; }
-GUI::GamePauseMenu*         GUIManager::GetPauseMenu()         { return &m_impl->panel_GamePauseMenu       ; }
-GUI::LoadingWindow*         GUIManager::GetLoadingWindow()     { return &m_impl->panel_LoadingWindow       ; }
-GUI::MpClientList*          GUIManager::GetMpClientList()      { return &m_impl->panel_MpClientList        ; }
-GUI::MultiplayerSelector*   GUIManager::GetMpSelector()        { return &m_impl->panel_MultiplayerSelector ; }
-GUI::FrictionSettings*      GUIManager::GetFrictionSettings()  { return &m_impl->panel_FrictionSettings    ; }
-GUI::SimUtils*              GUIManager::GetSimUtils()          { return &m_impl->panel_SimUtils            ; }
-GUI::TopMenubar*            GUIManager::GetTopMenubar()        { return &m_impl->panel_TopMenubar          ; }
-GUI::TeleportWindow*        GUIManager::GetTeleport()          { return &m_impl->panel_TeleportWindow      ; }
+Console*                    GUIManager::GetConsole()           { return &m_impl->panel_GameConsole;         }
+GUI::MainSelector*          GUIManager::GetMainSelector()      { return &m_impl->panel_MainSelector;        }
+GUI::GameMainMenu*          GUIManager::GetMainMenu()          { return &m_impl->panel_GameMainMenu;        }
+GUI::GamePauseMenu*         GUIManager::GetPauseMenu()         { return &m_impl->panel_GamePauseMenu;       }
+GUI::LoadingWindow*         GUIManager::GetLoadingWindow()     { return &m_impl->panel_LoadingWindow;       }
+GUI::MpClientList*          GUIManager::GetMpClientList()      { return &m_impl->panel_MpClientList;        }
+GUI::MultiplayerSelector*   GUIManager::GetMpSelector()        { return &m_impl->panel_MultiplayerSelector; }
+GUI::FrictionSettings*      GUIManager::GetFrictionSettings()  { return &m_impl->panel_FrictionSettings;    }
+GUI::SimUtils*              GUIManager::GetSimUtils()          { return &m_impl->panel_SimUtils;            }
+GUI::TopMenubar*            GUIManager::GetTopMenubar()        { return &m_impl->panel_TopMenubar;          }
+GUI::TeleportWindow*        GUIManager::GetTeleport()          { return &m_impl->panel_TeleportWindow;      }
 
 GUIManager::GUIManager() :
     m_renderwindow_closed(false),
