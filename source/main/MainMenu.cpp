@@ -75,14 +75,11 @@ void MainMenu::EnterMainMenuLoop()
         minTimePerFrame = 1000 / fpsLimit;
     }
 
-    Ogre::Timer timer;
-    App::GetOgreSubsystem()->GetOgreRoot()->addFrameListener(this);
-    
     while (App::app_state.GetPending() == AppState::MAIN_MENU)
     {
-        startTime = timer.getMilliseconds();
+        startTime = App::GetOgreSubsystem()->GetTimer()->getMilliseconds();
 
-        this->MainMenuLoopUpdate(static_cast<float>(timeSinceLastFrame)/1000);
+        this->MainMenuLoopUpdate(timeSinceLastFrame);
 
         if (RoR::App::GetGuiManager()->GetMainSelector()->IsFinishedSelecting())
         {

@@ -19,7 +19,6 @@
 */
 
 #include "TorqueCurve.h"
-
 #include "Application.h"
 #include "Utils.h"
 

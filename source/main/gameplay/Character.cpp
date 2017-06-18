@@ -614,6 +614,7 @@ void Character::SetActorCoupling(bool enabled, Actor* actor /* = nullptr */)
             return;
         m_actor_coupling = actor;
         if ((App::mp_state.GetActive() == MpState::CONNECTED) && !m_is_remote)
+        if ((App::mp_state.GetActive() == MpState::CONNECTED) && !remote)
         {
 #ifdef USE_SOCKETW
             Networking::CharacterMsgAttach msg;

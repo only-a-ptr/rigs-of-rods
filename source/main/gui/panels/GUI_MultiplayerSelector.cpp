@@ -1,48 +1,18 @@
-/*
-    This source file is part of Rigs of Rods
 
-    Copyright 2005-2012 Pierre-Michel Ricordel
-    Copyright 2007-2012 Thomas Fischer
     Copyright 2013-2017 Petr Ohlidal & contributors
-
-    For more information, see http://www.rigsofrods.org/
-
-    Rigs of Rods is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 3, as
-    published by the Free Software Foundation.
-
-    Rigs of Rods is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Rigs of Rods. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#include "GUI_MultiplayerSelector.h"
-
-#include "Application.h"
 #include "GUIManager.h"
 #include "GUIUtils.h"
-#include "MainMenu.h"
 #include "RoRnet.h"
 #include "RoRVersion.h"
 #include "SHA1.h"
-
 #include <imgui.h>
 #include <rapidjson/document.h>
 #include <vector>
 
-#ifdef USE_CURL
-#   include <curl/curl.h>
-#   include <curl/easy.h>
-#endif //USE_CURL
-
+// TODO: delete file
 #if defined(_MSC_VER) && defined(GetObject) // This MS Windows macro from <wingdi.h> (Windows Kit 8.1) clashes with RapidJSON
 #   undef GetObject
 #endif
-
 struct RoR::GUI::MpServerlistData
 {
     struct ServerInfo
@@ -58,131 +28,79 @@ struct RoR::GUI::MpServerlistData
         int         net_port;
         Str<50>     display_host;
     };
-
     MpServerlistData(): success(false) {}
-
     std::vector<ServerInfo> servers;
     std::string             message;
     bool                    success;
-};
-
 #if defined(USE_CURL)
 
-// From example: https://gist.github.com/whoshuu/2dc858b8730079602044
 size_t CurlWriteFunc(void *ptr, size_t size, size_t nmemb, std::string* data)
 {
-    data->append((char*) ptr, size * nmemb);
-    return size * nmemb;
-}
-
 RoR::GUI::MpServerlistData* FetchServerlist(std::string portal_url)
-{
-    std::string serverlist_url = portal_url + "/server-list?json=true";
-    std::string response_payload;
-    std::string response_header;
-    long        response_code = 0;
-
-    CURL *curl = curl_easy_init();
-    curl_easy_setopt(curl, CURLOPT_URL,           serverlist_url.c_str());
-    curl_easy_setopt(curl, CURLOPT_NOPROGRESS,    1L);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlWriteFunc);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA,     &response_payload);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA,    &response_header);
-
-    curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-
-    curl_easy_cleanup(curl);
-    curl = nullptr;
 
     RoR::GUI::MpServerlistData* res = new RoR::GUI::MpServerlistData();
-    if (response_code != 200)
-    {
-        Ogre::LogManager::getSingleton().stream() 
-            << "[RoR|Multiplayer] Failed to retrieve serverlist; HTTP status code: " << response_code;
         res->message = "Error connecting to server :(";
         return res;
-    }
-
     rapidjson::Document j_data_doc;
     j_data_doc.Parse(response_payload.c_str());
     if (j_data_doc.HasParseError() || !j_data_doc.IsArray())
-    {
-        Ogre::LogManager::getSingleton().stream() 
             << "[RoR|Multiplayer] Error parsing serverlist JSON"; // TODO: Report the actual error
         res->message = "Server returned invalid data :(";
         return res;
     }
-
     // Pre-process data for display
     size_t num_rows = j_data_doc.GetArray().Size();
     res->servers.resize(num_rows);
     for (size_t i = 0; i < num_rows; ++i)
     {
         rapidjson::Value& j_row = j_data_doc[i];
-
         res->servers[i].display_name  = j_row["name"].GetString();
         res->servers[i].display_terrn = j_row["terrain-name"].GetString();
         res->servers[i].net_host      = j_row["ip"].GetString();
         res->servers[i].net_port      = j_row["port"].GetInt();
-
         const bool has_pw = j_row["has-password"].GetBool();
         res->servers[i].has_password  = has_pw;
         res->servers[i].display_passwd = (has_pw) ? "Yes" : "No";
-
         char display_host[400];
         snprintf(display_host, 400, "%s:%d", j_row["ip"].GetString(), j_row["port"].GetInt());
         res->servers[i].display_host  = display_host;
-
         char display_users[200];
         snprintf(display_users, 200, "%d / %d", j_row["current-users"].GetInt(), j_row["max-clients"].GetInt());
         res->servers[i].display_users = display_users;
     }
-
     res->success = true;
     return res;
-}
 #endif // defined(USE_CURL)
-
 inline void DrawTableHeader(const char* title) // Internal helper
 {
     float table_padding_y = 4.f;
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + table_padding_y);
     ImGui::Text("%s", title);
     ImGui::NextColumn();
-}
-
 RoR::GUI::MultiplayerSelector::MultiplayerSelector():
     m_selected_item(-1), m_mode(Mode::ONLINE), m_is_refreshing(false), m_is_visible(false)
 {
     snprintf(m_window_title, 100, "Multiplayer (Rigs of Rods %s | %s)", ROR_VERSION_STRING, RORNET_VERSION);
-}
-
 RoR::GUI::MultiplayerSelector::~MultiplayerSelector()
 {}
 
 void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
-{
     const float TABS_BOTTOM_PADDING = 4.f; // They're actually buttons in role of tabs.
     const float CONTENT_TOP_PADDING = 4.f; // Extra space under top horizontal separator bar.
     const float BUTTONS_EXTRA_SPACE = 6.f;
     const float TABLE_PADDING_LEFT = 4.f;
-
     int window_flags = ImGuiWindowFlags_NoCollapse;
     ImGui::SetNextWindowSize(ImVec2(750.f, 400.f), ImGuiSetCond_FirstUseEver);
     if (!ImGui::Begin(m_window_title, &m_is_visible, window_flags))
     {
         return;
     }
-
     if (!m_is_visible) // If the window was closed...
     {
         App::GetGuiManager()->SetVisible_GameMainMenu(true);
     }
-
     // Window mode buttons
     MultiplayerSelector::Mode next_mode = m_mode;
-
     if (ImGui::Button("Online (click to refresh)"))
     {
         if (m_mode == Mode::ONLINE)
@@ -200,11 +118,9 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
     {
         next_mode = Mode::SETUP;
     }
-
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + TABS_BOTTOM_PADDING);
     ImGui::Separator();
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + CONTENT_TOP_PADDING);
-
     m_mode = next_mode;
 
     if (m_mode == Mode::SETUP)
@@ -239,11 +155,9 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
         }
         ImGui::SameLine();
         ImGui::TextDisabled(" Hash: [%s]", App::mp_player_token_hash.GetActive());
-
         ImGui::PopID();
     }
     else if (m_mode == Mode::DIRECT)
-    {
         ImGui::PushID("direct");
 
         ImGui::PushItemWidth(250.f);
@@ -257,11 +171,9 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
         {
             App::mp_state.SetPending (MpState::CONNECTED);
         }
-
         ImGui::PopID();
     }
     else if (m_mode == Mode::ONLINE)
-    {
         const char* draw_label_text = nullptr;
         ImVec4      draw_label_color;
         bool        draw_table = false;
@@ -289,7 +201,6 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
                 draw_label_color = App::GetGuiManager()->GetTheme().error_text_color;
             }
         }
-
         // DRAW SERVERLIST TABLE
         if (draw_table)
         {
@@ -329,7 +240,6 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
                     m_selected_item = i;
                 }
                 ImGui::NextColumn();
-
                 // Other collumns
                 ImGui::Text("%s", server.display_name.ToCStr());   ImGui::NextColumn();
                 ImGui::Text("%s", server.display_terrn.ToCStr());  ImGui::NextColumn();
@@ -341,7 +251,6 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
             }
             ImGui::Columns(1);
             ImGui::EndChild(); // End of scroll area
-
             // Simple join button
             if (m_selected_item != -1)
             {
@@ -353,7 +262,6 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
                 }
             }
         }
-
         // DRAW CENTERED LABEL
         if (draw_label_text != nullptr)
         {
@@ -363,12 +271,10 @@ void RoR::GUI::MultiplayerSelector::MultiplayerSelector::Draw()
             ImGui::TextColored(draw_label_color, "%s", draw_label_text);
         }
     }
-
     ImGui::End();
 }
 
 void RoR::GUI::MultiplayerSelector::RefreshServerlist()
-{
 #if defined(USE_CURL)
     m_serverlist_data.reset();
     m_selected_item = -1;
@@ -377,10 +283,7 @@ void RoR::GUI::MultiplayerSelector::RefreshServerlist()
     m_serverlist_future = task.get_future();
     std::thread(std::move(task), App::mp_portal_url.GetActive()).detach(); // launch on a thread
 #endif // defined(USE_CURL)
-}
-
 bool RoR::GUI::MultiplayerSelector::IsRefreshThreadRunning() const
-{
     return m_is_refreshing;
 }
 
@@ -390,13 +293,10 @@ void RoR::GUI::MultiplayerSelector::CheckAndProcessRefreshResult()
     if (status != std::future_status::ready)
     {
         return;
-    }
 
     m_serverlist_data = std::unique_ptr<MpServerlistData>(m_serverlist_future.get());
     m_is_refreshing = false;
     return;
-}
-
 void RoR::GUI::MultiplayerSelector::SetVisible(bool visible)
 {
     m_is_visible = visible;

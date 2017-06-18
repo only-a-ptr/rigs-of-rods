@@ -191,7 +191,6 @@ void LandVehicleSimulation::UpdateVehicle(Actor* vehicle, float seconds_since_la
         }
 
         EngineSim* engine = vehicle->ar_engine;
-
         if (engine)
         {
             float accl = RoR::App::GetInputEngine()->getEventValue(EV_TRUCK_ACCELERATE);

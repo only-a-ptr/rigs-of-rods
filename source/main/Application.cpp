@@ -52,7 +52,6 @@
 ["DebugBeams"]                                        --- Pre configured debug overlay mode --- DEAD since debug overlay has been remade with different modes 
 
 */
-
 namespace RoR {
 namespace App {
 
@@ -275,15 +274,18 @@ void CreateCacheSystem()
     g_cache_system = new CacheSystem();
 }
 
-
 void CheckAndCreateMumble()
 {
 #ifdef USE_MUMBLE // The class is always forward-declared but only defined if USE_MUMBLE is defined
     if (g_mumble == nullptr)
         g_mumble = new MumbleIntegration();
 #endif // USE_MUMBLE
-}
-
+    case AppState::PRINT_HELP_EXIT:     return "PRINT_HELP_EXIT";
+    case AppState::PRINT_VERSION_EXIT:  return "PRINT_VERSION_EXIT";
+    case AppState::SHUTDOWN:            return "SHUTDOWN";
+    case AppState::SIMULATION:          return "SIMULATION";
+    default:                            return "~invalid~";
+    }
 } // namespace App
 
 const char* EnumToStr(AppState v)
@@ -297,11 +299,7 @@ const char* EnumToStr(AppState v)
     case AppState::SHUTDOWN:            return "SHUTDOWN";
     case AppState::SIMULATION:          return "SIMULATION";
     default:                            return "~invalid~";
-    }
-}
-
 const char* EnumToStr(MpState v)
-{
     switch (v)
     {
     case MpState::DISABLED:  return "DISABLED";
@@ -453,9 +451,8 @@ const char* GVarBase::LOG_FMT_D = "[RoR|GVar]  %20s:  %s(), new: \"%d\", old: \"
 const char* GVarBase::LOG_FMT_F = "[RoR|GVar]  %20s:  %s(), new: \"%f\", old: \"%f\"";
 
 void GVarBase::LogFormat(const char* format, ...) const
-{
     if (! App::diag_trace_globals.GetActive())
-    {
+{
         return;
     }
 

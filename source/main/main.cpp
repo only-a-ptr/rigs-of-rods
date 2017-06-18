@@ -208,7 +208,6 @@ int main(int argc, char *argv[])
         // Otherwise material links are unresolved and loading ends with an exception
         // TODO: Study Ogre::ResourceLoadingListener and implement smarter solution (not parsing materials on cache refresh!)
         App::GetContentManager()->InitManagedMaterials();
-
         App::GetContentManager()->OnApplicationStartup();
 
         App::CreateGuiManagerIfNotExists();

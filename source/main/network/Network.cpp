@@ -679,6 +679,7 @@ bool ConnectThread()
     {
         RoR::CSHA1 sha1;
         sha1.UpdateHash((uint8_t*)m_password.GetBuffer(), m_password.GetLength());
+        sha1.UpdateHash((uint8_t*)pw, std::strlen(pw));
         sha1.Final();
         sha1.ReportHash(sha1pwresult, RoR::CSHA1::REPORT_HEX_SHORT);
     }

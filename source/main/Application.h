@@ -783,6 +783,114 @@ void SetSimTerrain           (TerrainManager*    obj);
 
 
 } // namespace App
+
+// ------------------------------------------------------------------------------------------------
+// Implemetations
+// ------------------------------------------------------------------------------------------------
+
+
+template <typename T> void GVarPod<T>::SetPending(T val)
+{
+    if (val != m_value_pending)
+    {
+        if (App::diag_trace_globals.GetActive())
+            this->LogSetPending(val);
+
+        m_value_pending = val;
+    }
+}
+
+template <typename T> void GVarPod<T>::ApplyPending()
+{
+    if (m_value_active != m_value_pending)
+    {
+        if (App::diag_trace_globals.GetActive())
+            this->LogApplyPending();
+
+        m_value_active = m_value_pending;
+    }
+}
+
+template <typename T> void GVarPod<T>::SetActive(T val)
+{
+    if (val != m_value_active)
+    {
+        if (App::diag_trace_globals.GetActive())
+            this->LogSetActive(val);
+
+        m_value_active = val;
+        m_value_pending = val;
+    }
+}
+
+template <typename T> void GVarEnum<T>::SetPending(T val)
+{
+    if (val != GVarPod<T>::m_value_pending)
+    {
+        if (App::diag_trace_globals.GetActive())
+            GVarBase::LogSetPending(EnumToStr(val), EnumToStr(GVarPod<T>::m_value_pending), EnumToStr(GVarPod<T>::m_value_active));
+
+        GVarPod<T>::m_value_pending = val;
+    }
+}
+
+template <typename T> void GVarEnum<T>::ApplyPending()
+{
+    if (GVarPod<T>::m_value_active != GVarPod<T>::m_value_pending)
+    {
+        if (App::diag_trace_globals.GetActive())
+            GVarBase::LogApplyPending(EnumToStr(GVarPod<T>::m_value_pending), EnumToStr(GVarPod<T>::m_value_active));
+
+        GVarPod<T>::m_value_active = GVarPod<T>::m_value_pending;
+    }
+}
+
+template <typename T> void GVarEnum<T>::SetActive(T val)
+{
+    if (val != GVarPod<T>::m_value_active)
+    {
+        if (App::diag_trace_globals.GetActive())
+            GVarBase::LogSetActive(EnumToStr(val), EnumToStr(GVarPod<T>::m_value_active));
+
+        GVarPod<T>::m_value_active = val;
+        GVarPod<T>::m_value_pending = val;
+    }
+}
+
+template <size_t L> void GVarStr<L>::SetActive(const char* val)
+{
+    if (val != m_value_active)
+    {
+        if (App::diag_trace_globals.GetActive())
+            GVarBase::LogSetActive(val, m_value_active);
+
+        m_value_active = val;
+        m_value_pending = val;
+    }
+}
+
+template <size_t L> void GVarStr<L>::SetPending(const char* val)
+{
+    if (val != m_value_pending)
+    {
+        if (App::diag_trace_globals.GetActive())
+            GVarBase::LogSetPending(val, m_value_pending, m_value_active);
+
+        m_value_pending = val;
+    }
+}
+
+template <size_t L> void GVarStr<L>::ApplyPending()
+{
+    if (m_value_active != m_value_pending)
+    {
+        if (App::diag_trace_globals.GetActive())
+            GVarBase::LogApplyPending(m_value_pending, m_value_active);
+
+        m_value_active.Assign(m_value_pending.ToCStr());
+    }
+}
+
 } // namespace RoR
 
 inline void          LOG(const char* msg)           { RoR::Log(msg); }         ///< Legacy alias - formerly a macro

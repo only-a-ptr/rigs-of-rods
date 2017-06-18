@@ -122,6 +122,9 @@ void ShowVersion()
 using namespace Ogre;
 using namespace RoR;
 
+    GetParentDirectory(process_dir.GetBuffer(), buf);
+    App::sys_process_dir.SetActive(process_dir);
+    if (FolderExists(local_userdir))
 void Settings::ProcessCommandLine(int argc, char *argv[])
 {
     CSimpleOpt args(argc, argv, cmdline_options);
@@ -156,7 +159,6 @@ void Settings::ProcessCommandLine(int argc, char *argv[])
             App::diag_preset_terrain.SetActive(args.OptionArg());
         }
         else if (args.OptionId() == OPT_POS)
-        {
             App::diag_preset_spawn_pos.SetActive(args.OptionArg());
         }
         else if (args.OptionId() == OPT_ROT)
@@ -521,6 +523,12 @@ inline bool CheckInt(GVarPod_APS<int>& gvar, std::string const & key, std::strin
     }
     return false;
 }
+static const char* CONF_DIAG_TRIG_LOG   = "Trigger Debug";
+static const char* CONF_DIAG_DOF_EFFECT = "DOFDebug";
+static const char* CONF_PRESET_TERRAIN  = "Preselected Map";
+static const char* CONF_PRESET_TRUCK    = "Preselected Truck";
+static const char* CONF_PRESET_TRUCKCFG = "Preselected TruckConfig";
+static const char* CONF_PRESET_ENTER_RIG= "Enter PreselectedTruck";
 
 inline bool CheckBool(GVarPod_A<bool>& gvar, std::string const & key, std::string const & value)
 {
@@ -977,6 +985,7 @@ bool Settings::SetupAllPaths()
 
     // Resources dir
     buf.Clear() << App::sys_process_dir.GetActive() << PATH_SLASH << "resources";
+    if (FolderExists(buf))
     if (FolderExists(buf))
     {
         App::sys_resources_dir.SetActive(buf);
