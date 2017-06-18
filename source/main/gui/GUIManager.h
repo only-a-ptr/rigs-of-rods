@@ -115,6 +115,7 @@ public:
     void PushNotification(Ogre::String Title, Ogre::UTFString text);
     void HideNotification();
     void CenterSpawnerReportWindow();
+    void NewImGuiFrame(float dt);
 
     void UpdateSimUtils(float dt, Actor* truck);
     void NewImGuiFrame(float dt);

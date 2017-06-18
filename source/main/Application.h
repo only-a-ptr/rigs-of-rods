@@ -763,6 +763,8 @@ SimController*       GetSimController();
 MumbleIntegration*   GetMumble();
 TerrainManager*      GetSimTerrain();
 
+void SetMainMenu             (MainMenu*          obj);
+void SetSimController        (RoRFrameListener*  obj);
 // Factories
 void StartOgreSubsystem();
 void ShutdownOgreSubsystem();

@@ -33,7 +33,6 @@
 #include "MainMenu.h"
 #include "RoRFrameListener.h"
 #include "Network.h"
-
 #include <algorithm>
 
 void RoR::GUI::TopMenubar::Update()
@@ -150,9 +149,16 @@ void RoR::GUI::TopMenubar::Update()
 
                     App::GetGuiManager()->UnfocusGui();
                 }
+
+            if (App::mp_state.GetActive() != MpState::CONNECTED) // Singleplayer only!
+            {
+                if (ImGui::Button("Activate all vehicles"))
+                {
+                    App::GetSimController()->GetBeamFactory()->activateAllTrucks();
             }
 
             if (ImGui::Button("Remove current vehicle")) // TODO: make button disabled (fake it!) when no active vehicle
+                if (ImGui::Checkbox("Activated vehicles never sleep", &force_trucks_active))
             {
                 if ((current_actor != nullptr) && (current_actor->ar_sim_state != Actor::SimState::NETWORKED_OK))
                 {
@@ -204,13 +210,14 @@ void RoR::GUI::TopMenubar::Update()
                     App::GetSimController()->GetBeamFactory()->SendAllActorsSleeping();
                 }
             }
-
             ImGui::Separator();
 
             if (ImGui::Button("Back to menu"))
             {
                 App::app_state.SetPending(RoR::AppState::MAIN_MENU);
             }
+        }
+        break;
 
             if (ImGui::Button("Exit"))
             {
@@ -277,10 +284,8 @@ void RoR::GUI::TopMenubar::Update()
                 App::GetGuiManager()->SetVisible_TextureToolWindow(true);
                 m_open_menu = TopMenu::TOPMENU_NONE;
             }
-
             ImGui::Separator();
             ImGui::TextColored(GRAY_HINT_TEXT, "Pre-spawn diag. options:");
-
             bool diag_mass = App::diag_truck_mass.GetActive();
             if (ImGui::Checkbox("Node mass recalc. logging", &diag_mass))
             {
@@ -307,6 +312,10 @@ void RoR::GUI::TopMenubar::Update()
 
             bool diag_deform = App::diag_log_beam_deform.GetActive();
             if (ImGui::Checkbox("Beam deform. logging", &diag_deform))
+            ImGui::Separator();
+
+            int debug_view_type = -1;
+            if (current_actor != nullptr)
             {
                 App::diag_log_beam_deform.SetActive(diag_deform);
             }
@@ -319,6 +328,16 @@ void RoR::GUI::TopMenubar::Update()
 
             bool diag_trig = App::diag_log_beam_trigger.GetActive();
             if (ImGui::Checkbox("Trigger logging", &diag_trig))
+            ImGui::RadioButton("show node&beam numbers", &debug_view_type,  3);
+            ImGui::RadioButton("show node mass"        , &debug_view_type,  4);
+            ImGui::RadioButton("show node locked"      , &debug_view_type,  5);
+            ImGui::RadioButton("show beam compression" , &debug_view_type,  6);
+            ImGui::RadioButton("show beam broken"      , &debug_view_type,  7);
+            ImGui::RadioButton("show beam stress"      , &debug_view_type,  8);
+            ImGui::RadioButton("show beam strength"    , &debug_view_type,  9);
+            ImGui::RadioButton("show beam hydros"      , &debug_view_type, 10);
+            ImGui::RadioButton("show beam commands"    , &debug_view_type, 11);
+            if ((current_actor != nullptr) && (debug_view_type != current_actor->debugVisuals))
             {
                 App::diag_log_beam_trigger.SetActive(diag_trig);
             }
@@ -406,7 +425,8 @@ void RoR::GUI::TopMenubar::DrawMpUserToActorList(RoRnet::UserInfo &user)
     unsigned int num_actors_player = 0;
     for (Actor* actor : App::GetSimController()->GetActors())
     {
-        if (actor->ar_net_source_id == user.uniqueid)
+        Beam *b = m_sim_controller->GetBeamFactory()->getCurrentTruck();
+        if (b) b->setDebugOverlayState(10);
         {
             ++num_actors_player;
         }
@@ -445,12 +465,10 @@ void RoR::GUI::TopMenubar::DrawMpUserToActorList(RoRnet::UserInfo &user)
             {
                 App::GetSimController()->SetPendingPlayerActor(actor);
             }
+            }
         }
     }
-}
-
 void RoR::GUI::TopMenubar::DrawActorListSinglePlayer()
-{
     std::vector<Actor*> actor_list;
     for (auto actor : App::GetSimController()->GetActors())
     {
@@ -471,6 +489,8 @@ void RoR::GUI::TopMenubar::DrawActorListSinglePlayer()
         Actor* player_actor = App::GetSimController()->GetPlayerActor();
         int i = 0;
         for (auto actor : actor_list)
+        return;
+    }
         {
             char text_buf[200];
             snprintf(text_buf, 200, "[%d] %s", i++, actor->ar_design_name.c_str());

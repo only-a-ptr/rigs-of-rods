@@ -60,6 +60,7 @@
 ///   3. Update simulation
 class SimController: public Ogre::WindowEventListener, public ZeroedMemoryAllocator
 {
+    friend class RoR::BeamFactory; // Needed for function `ChangedCurrentVehicle()`. TODO: Eliminate ~ only_a_ptr, 06/2017
 public:
     SimController(RoR::ForceFeedback* ff, RoR::SkidmarkConfig* skid_conf);
 
@@ -73,6 +74,9 @@ public:
     void   QueueActorRemove      (Actor* actor)                       { m_actor_remove_queue.push_back(actor); }
     Actor* SpawnActorDirectly    (RoR::ActorSpawnRequest rq);
     void   RemoveActorByCollisionBox(std::string const & ev_src_instance_name, std::string const & box_name); ///< Scripting utility. TODO: Does anybody use it? ~ only_a_ptr, 08/2017
+    void   SetPlayerActorById    (int actor_id)            { m_beam_factory.setCurrentTruck(actor_id); } // TODO: Eliminate, use pointers ~ only_a_ptr, 06/2017
+    void   SetPlayerActor        (Beam* actor)             { m_beam_factory.setCurrentTruck(actor->trucknum); }
+    void   ReloadCurrentActor    ();
 
     // Scripting interface
     double getTime               () { return m_time; }
@@ -123,6 +127,8 @@ private:
     void   CleanupAfterSimulation  (); /// Unloads all data
     void   UpdateSimulation        (float dt);
     void   ChangePlayerActor       (Actor* actor);
+    //TODO: Eliminate this. This is one of the reasons for the "BeamFactory should not be accessible directly" guideline above ~ only_a_ptr, 06/2017
+    void   ChangedCurrentVehicle (Beam* previous_vehicle, Beam* current_vehicle);
 
     Actor*                   m_player_actor;           //!< Actor (vehicle or machine) mounted and controlled by player
     Actor*                   m_prev_player_actor;      //!< Previous actor (vehicle or machine) mounted and controlled by player

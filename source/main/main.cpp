@@ -323,6 +323,7 @@ int main(int argc, char *argv[])
                         App::app_state.ApplyPending();
                         App::GetGuiManager()->ReflectGameState();
                         App::sim_state.SetActive(SimState::RUNNING);
+                        App::SetSimController(&sim_controller);
                         sim_controller.EnterGameplayLoop();
                         App::SetSimController(nullptr);
 #ifdef USE_SOCKETW
