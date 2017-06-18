@@ -110,11 +110,12 @@ void OgreImGui::updateVertexData()
     mLastRenderedFrame=currentFrame;
 
     ImDrawData* draw_data = ImGui::GetDrawData();
-    while(mRenderables.size()<draw_data->CmdListsCount)
+    size_t cmd_list_count =static_cast<size_t>(draw_data->CmdListsCount);
+    while(mRenderables.size() < cmd_list_count)
     {
         mRenderables.push_back(new ImGUIRenderable());
     }
-    while(mRenderables.size()>draw_data->CmdListsCount)
+    while(mRenderables.size() > cmd_list_count)
     {
         delete mRenderables.back();
         mRenderables.pop_back();
