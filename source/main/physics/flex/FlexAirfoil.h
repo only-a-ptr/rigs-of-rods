@@ -31,7 +31,7 @@ class FlexAirfoil : public ZeroedMemoryAllocator
 
 public:
 
-    FlexAirfoil(Ogre::String const& wname, node_t* nds,
+    FlexAirfoil(Ogre::String const& wname,
         int pnfld, int pnfrd, int pnflu, int pnfru, int pnbld, int pnbrd, int pnblu, int pnbru,
         std::string const & texname,
         Ogre::Vector2 texlf, Ogre::Vector2 texrf, Ogre::Vector2 texlb, Ogre::Vector2 texrb,
@@ -46,6 +46,8 @@ public:
     Ogre::Vector3 flexit();
 
     void enableInducedDrag(float span, float area, bool l);
+
+    void AssignActor(Beam* actor);
 
     void addwash(int propid, float ratio);
 

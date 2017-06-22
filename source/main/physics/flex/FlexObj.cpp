@@ -21,17 +21,19 @@
 
 #include "FlexObj.h"
 
+#include "Beam.h"
+#include "RigSpawner.h"
+
 #include <Ogre.h>
 
 using namespace Ogre;
 
-FlexObj::FlexObj(node_t *nds, std::vector<CabTexcoord>& texcoords, int numtriangles, 
+FlexObj::FlexObj(RigSpawner* spawner, std::vector<node_t> & nodes, std::vector<CabTexcoord>& texcoords, int numtriangles, 
                  int* triangles, std::vector<CabSubmesh>& submesh_defs, 
                  char* texname, const char* name, char* backtexname, char* transtexname)
 {
     m_triangle_count = numtriangles;
 
-    m_all_nodes=nds;
     // Create the mesh via the MeshManager
     m_mesh = MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
@@ -73,13 +75,15 @@ FlexObj::FlexObj(node_t *nds, std::vector<CabTexcoord>& texcoords, int numtriang
 
     for (size_t i=0; i<(unsigned int)numtriangles;i++)
     {
-        Ogre::Vector3 base_pos = m_all_nodes[m_vertex_nodes[m_indices[i*3]]].RelPosition;
-        Ogre::Vector3 v1       = m_all_nodes[m_vertex_nodes[m_indices[i*3+1]]].RelPosition - base_pos;
-        Ogre::Vector3 v2       = m_all_nodes[m_vertex_nodes[m_indices[i*3+2]]].RelPosition - base_pos;
+        Ogre::Vector3 base_pos = nodes[m_vertex_nodes[m_indices[i*3]]].RelPosition;
+        Ogre::Vector3 v1       = nodes[m_vertex_nodes[m_indices[i*3+1]]].RelPosition - base_pos;
+        Ogre::Vector3 v2       = nodes[m_vertex_nodes[m_indices[i*3+2]]].RelPosition - base_pos;
         m_s_ref[i]=v1.crossProduct(v2).length()*2.0;
     }
 
+    m_all_nodes = spawner->GetNodes().data(); // HACK: Use spawner's intermediate nodes. TODO: Create visuals _after_ physics data are completed! ~ only_a_ptr, 06/2017
     this->UpdateMesh(); // Initialize the dynamic mesh
+    m_all_nodes = nullptr; // Cleanup of HACK
 
     // Create vertex data structure for vertices shared between submeshes
     m_mesh->sharedVertexData = new VertexData();
@@ -140,6 +144,11 @@ FlexObj::FlexObj(node_t *nds, std::vector<CabTexcoord>& texcoords, int numtriang
 
     // Notify Mesh object that it has been loaded
     m_mesh->load();
+}
+
+void FlexObj::AssignActor(Beam* actor)
+{
+    m_all_nodes = actor->nodes;
 }
 
 void FlexObj::ScaleFlexObj(float factor)

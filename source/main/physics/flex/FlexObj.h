@@ -57,7 +57,8 @@ class FlexObj : public ZeroedMemoryAllocator
 public:
 
     FlexObj(
-        node_t* nds,
+        RigSpawner* spawner,
+        std::vector<node_t> & nodes,
         std::vector<CabTexcoord>& texcoords,
         int numtriangles,
         int* triangles,
@@ -71,6 +72,7 @@ public:
 
     Ogre::Vector3   UpdateFlexObj();
     void            ScaleFlexObj(float factor);
+    void            AssignActor(Beam* actor);
 
 private:
 
@@ -102,5 +104,5 @@ private:
 
     size_t                      m_index_count;
     unsigned short*             m_indices;
-    int                         m_triangle_count;	
+    int                         m_triangle_count;
 };

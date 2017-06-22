@@ -28,7 +28,7 @@ class Screwprop : public ZeroedMemoryAllocator
 
 public:
 
-    Screwprop(DustManager* dustman, node_t *nd, int nr, int nb, int nu, float power, int trucknum);
+    Screwprop(DustManager* dustman, int nr, int nb, int nu, float power, int trucknum);
 
     void updateForces(int update);
     void setThrottle(float val);
@@ -37,6 +37,7 @@ public:
     float getRudder();
     void reset();
     void toggleReverse();
+    void AssignActor(Beam* actor);
 
 private:
 

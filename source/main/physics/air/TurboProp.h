@@ -37,7 +37,7 @@ public:
 
     Turboprop(
         char* propname,
-        node_t* nd,
+        RigSpawner* spawner,
         int nr,
         int nb,
         int np1,
@@ -84,6 +84,7 @@ public:
     int getNoderef() { return noderef; };
     bool getWarmup() { return warmup; };
     float getRadius() { return radius; };
+    void AssignActor(Beam* actor);
 
 private:
 

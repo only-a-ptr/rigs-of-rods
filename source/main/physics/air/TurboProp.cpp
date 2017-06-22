@@ -23,6 +23,8 @@
 #include <Ogre.h>
 
 #include "Airfoil.h"
+#include "Beam.h"
+#include "RigSpawner.h"
 #include "Scripting.h"
 #include "SoundScriptManager.h"
 #include "BeamData.h"
@@ -31,7 +33,7 @@ using namespace Ogre;
 
 Turboprop::Turboprop(
     char* propname,
-    node_t* nd,
+    RigSpawner* spawner,
     int nr,
     int nb,
     int np1,
@@ -79,11 +81,12 @@ Turboprop::Turboprop(
     twistmap[2] = 10;
     twistmap[3] = 19;
     twistmap[4] = 32;
-    nodes = nd;
+    nodes = nullptr; // assigned later
     noderef = nr;
     nodeback = nb;
     nodep[0] = np1;
     nodep[1] = np2;
+    auto& nd = spawner->GetNodes();
     if (torquenode != -1)
     {
         Plane pplane = Plane((nd[nr].RelPosition - nd[nb].RelPosition).normalisedCopy(), 0.0);
@@ -151,6 +154,11 @@ Turboprop::Turboprop(
     }
 
     reset();
+}
+
+void Turboprop::AssignActor(Beam* actor)
+{
+    this->nodes = actor->nodes;
 }
 
 Turboprop::~Turboprop()

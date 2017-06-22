@@ -21,6 +21,7 @@
 
 #include "FlexMeshWheel.h"
 
+#include "Beam.h"
 #include "BeamData.h"
 
 #include <Ogre.h>
@@ -161,6 +162,11 @@ FlexMeshWheel::~FlexMeshWheel()
 {
     if (m_vertices != nullptr) { delete m_vertices; }
     if (m_indices      != nullptr) { free (m_indices); }
+}
+
+void FlexMeshWheel::AssignActor(Beam* actor)
+{
+    m_all_nodes = actor->nodes;
 }
 
 Vector3 FlexMeshWheel::updateVertices()

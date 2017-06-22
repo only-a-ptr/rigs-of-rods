@@ -151,6 +151,8 @@ public:
 
     static bool CheckSoundScriptLimit(Beam *vehicle, unsigned int count);
 
+    inline std::vector<node_t>& GetNodes() { return m_nodes; }
+
 private:
 
     struct CustomMaterial
@@ -539,7 +541,7 @@ private:
 
     void CreateBeamVisuals(beam_t & beam, int beam_index, std::shared_ptr<RigDef::BeamDefaults> beam_defaults);
 
-    Rail *CreateRail(std::vector<RigDef::Node::Range> & node_ranges);
+    void RequestBuildRailGroup(std::vector<RigDef::Node::Range> & node_ranges, size_t id);
 
     static void AddSoundSource(Beam *vehicle, SoundScriptInstance *sound_script, int node_index, int type = -2);
 
@@ -548,20 +550,6 @@ private:
 /* -------------------------------------------------------------------------- */
 /* Limits.                                                                    */
 /* -------------------------------------------------------------------------- */
-
-    /**
-    * Checks there is still space left in rig_t::nodes array.
-    * @param count Required number of free slots.
-    * @return True if there is space left.
-    */
-    bool CheckNodeLimit(unsigned int count);
-    
-    /**
-    * Checks there is still space left in rig_t::beams array.
-    * @param count Required number of free slots.
-    * @return True if there is space left.
-    */
-    bool CheckBeamLimit(unsigned int count);
 
     /**
     * Checks there is still space left in rig_t::shocks array.
@@ -803,28 +791,20 @@ private:
         m_current_keyword = keyword;
     }
 
-    beam_t & GetBeam(unsigned int index);
-
     /**
     * Parses list of node-ranges into list of individual nodes.
     * @return False if some nodes could not be found and thus the lookup wasn't completed.
     */
     bool CollectNodesFromRanges(
         std::vector<RigDef::Node::Range> & node_ranges,
-        std::vector<unsigned int> & out_node_indices
+        std::vector<size_t> & out_node_indices
     );
 
-    /**
-    * Gets a free node slot; checks limits, sets it's array position and updates 'free_node' index.
-    * @return A reference to node slot.
-    */
-    node_t & GetFreeNode();
-
-    /**
-    * Gets a free beam slot; checks limits, sets it's array position and updates 'free_beam' index.
-    * @return A reference to beam slot.
-    */
-    beam_t & GetFreeBeam();
+    inline node_t& GetFreeNode()
+    {
+        m_nodes.emplace_back(m_nodes.size());
+        return m_nodes.back();
+    }
 
     /**
     * Gets a free beam slot; Sets up defaults & position of a node.
@@ -832,18 +812,7 @@ private:
     */
     node_t & GetAndInitFreeNode(Ogre::Vector3 const & position);
 
-    /**
-    * Gets a free beam slot; checks limits, sets it's array position and updates 'rig_t::free_beam' index.
-    * @return A reference to beam slot.
-    */
-    beam_t & GetAndInitFreeBeam(node_t & node_1, node_t & node_2);
-
     shock_t & GetFreeShock();
-
-    /**
-    * Sets up nodes & length of a beam.
-    */
-    void InitBeam(beam_t & beam, node_t *node_1, node_t *node_2);
 
     void CalculateBeamLength(beam_t & beam);
 
@@ -852,8 +821,6 @@ private:
     void SetBeamSpring(beam_t & beam, float spring);
 
     void SetBeamDamping(beam_t & beam, float damping);
-
-    beam_t *FindBeamInRig(unsigned int node_a, unsigned int node_b);
 
     void SetBeamDeformationThreshold(beam_t & beam, std::shared_ptr<RigDef::BeamDefaults> beam_defaults);
 
@@ -1087,6 +1054,9 @@ private:
     Ogre::Vector3 m_spawn_position;
     std::vector<CabTexcoord> m_oldstyle_cab_texcoords;
     std::vector<CabSubmesh>  m_oldstyle_cab_submeshes;
+    std::vector<node_t>      m_nodes; ///< Intermediate nodes during spawn
+    std::vector<beam_t>      m_beams; ///< Intermediate beams during spawn
+    std::list<RailBuilder>   m_railgroup_builders;
     /// Maps original material names (shared) to their actor-specific substitutes.
     /// There's 1 substitute per 1 material, regardless of user count.
     std::map<std::string, CustomMaterial> m_material_substitutions;

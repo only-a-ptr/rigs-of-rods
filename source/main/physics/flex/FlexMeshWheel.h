@@ -53,6 +53,7 @@ public:
     Ogre::Vector3 flexitFinal();
 
     void setVisible(bool visible);
+    virtual void AssignActor(Beam* actor) override;
 
 private:
 

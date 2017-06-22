@@ -42,9 +42,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "SlideNode.h"
 
 #include "BeamData.h"
-
-// RAIL GROUP IMPLEMENTATION ///////////////////////////////////////////////////
-unsigned int RailGroup::nextId = 7000000;
+#include "Beam.h"
 
 // RAIL IMPLEMENTATION /////////////////////////////////////////////////////////
 Rail::Rail() : prev(NULL), curBeam(NULL), next(NULL)
@@ -70,18 +68,10 @@ Rail::Rail(Rail& o) : prev(o.prev), curBeam(o.curBeam), next(o.next)
 // RAIL BUILDER IMPLEMENTATION /////////////////////////////////////////////////
 
 // pass a rail value, this class does not manage memory
-RailBuilder::RailBuilder() :
+RailBuilder::RailBuilder(std::vector<size_t>& nodes, size_t railgroup_id) :
+    mRailgroupNodes(nodes),
+    mRailgoupId(railgroup_id),
     mStart(NULL),
-    mFront(mStart),
-    mBack(mStart),
-    mLoop(false),
-    mRetreived(false)
-{
-    /* do nothing */
-}
-
-RailBuilder::RailBuilder(Rail* start) :
-    mStart(start),
     mFront(mStart),
     mBack(mStart),
     mLoop(false),
@@ -165,8 +155,25 @@ void RailBuilder::unLoopRail()
     mLoop = false;
 }
 
-Rail* RailBuilder::getCompletedRail()
+Rail* RailBuilder::FinalizeRail(Beam* actor)
 {
+    // Find beams
+    const size_t max_iR = mRailgroupNodes.size() - 1;
+    for (size_t iR = 0; iR < max_iR; ++iR)
+    {
+        const node_t* node_a = &actor->nodes[mRailgroupNodes[iR  ]];
+        const node_t* node_b = &actor->nodes[mRailgroupNodes[iR+1]];
+        for (int iB = 0; iB < actor->free_beam; ++iB)
+        {
+            beam_t& beam = actor->beams[iB];
+            if ((beam.p1 == node_a && beam.p2 == node_b) || (beam.p1 == node_b && beam.p2 == node_a))
+            {
+                this->pushBack(&beam);
+                break;
+            }
+        }
+    }
+
     if (mLoop)
     {
         mFront->prev = mBack;

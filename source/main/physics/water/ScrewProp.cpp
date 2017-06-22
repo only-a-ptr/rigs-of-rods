@@ -20,6 +20,7 @@
 
 #include "ScrewProp.h"
 
+#include "Beam.h"
 #include "BeamData.h"
 #include "BeamFactory.h"
 #include "DustPool.h"
@@ -29,8 +30,8 @@
 
 using namespace Ogre;
 
-Screwprop::Screwprop(DustManager* dustman, node_t* nodes, int noderef, int nodeback, int nodeup, float fullpower, int trucknum) :
-    nodes(nodes)
+Screwprop::Screwprop(DustManager* dustman, int noderef, int nodeback, int nodeup, float fullpower, int trucknum) :
+    nodes(nullptr)
     , noderef(noderef)
     , nodeback(nodeback)
     , nodeup(nodeup)
@@ -66,6 +67,11 @@ void Screwprop::updateForces(int update)
             splashp->allocSplash(nodes[noderef].AbsPosition, 5.0 * dir / fullpower);
         ripplep->allocRipple(nodes[noderef].AbsPosition, 10.0 * dir / fullpower);
     }
+}
+
+void Screwprop::AssignActor(Beam* actor)
+{
+    this->nodes = actor->nodes;
 }
 
 void Screwprop::setThrottle(float val)

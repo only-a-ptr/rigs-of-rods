@@ -47,8 +47,6 @@ class FlexBody : public Flexable
     FlexBody( // Private, for FlexFactory
         RigDef::Flexbody* def,
         RoR::FlexBodyCacheData* preloaded_from_cache,
-        node_t *nds, 
-        int numnodes, 
         Ogre::Entity* entity,
         int ref, 
         int nx, 
@@ -82,6 +80,7 @@ public:
     Ogre::Vector3 flexitFinal();
 
     void setVisible(bool visible);
+    virtual void AssignActor(Beam* actor) override;
 
 private:
 

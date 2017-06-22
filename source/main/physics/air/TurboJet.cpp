@@ -23,15 +23,15 @@
 
 #include <Ogre.h>
 
+#include "Beam.h"
 #include "BeamData.h"
 #include "SoundScriptManager.h"
 
 using namespace Ogre;
 
-Turbojet::Turbojet(int tnumber, int trucknum, node_t* nd, int tnodefront, int tnodeback, int tnoderef, float tmaxdrythrust, bool treversable, float tafterburnthrust, float diskdiam, bool _heathaze)
+Turbojet::Turbojet(int tnumber, int trucknum, std::vector<node_t>& spawner_nodes, int tnodefront, int tnodeback, int tnoderef, float tmaxdrythrust, bool treversable, float tafterburnthrust, float diskdiam, bool _heathaze)
 {
     heathaze = _heathaze;
-    nodes = nd;
     number = tnumber;
     this->trucknum = trucknum;
 #ifdef USE_OPENAL
@@ -61,7 +61,7 @@ Turbojet::Turbojet(int tnumber, int trucknum, node_t* nd, int tnodefront, int tn
     lastflip = 0;
     area = 2 * 3.14159 * radius * 0.6 * radius * 0.6;
     exhaust_velocity = 0;
-    axis = nodes[nodefront].RelPosition - nodes[nodeback].RelPosition;
+    axis = spawner_nodes[nodefront].RelPosition - spawner_nodes[nodeback].RelPosition;
     reflen = axis.length();
     axis = axis / reflen;
     reset();
@@ -130,6 +130,11 @@ Turbojet::~Turbojet()
     {
         nozzleMesh->setVisible(false);
     }
+}
+
+void Turbojet::AssignActor(Beam* actor)
+{
+    this->nodes = actor->nodes;
 }
 
 void Turbojet::updateVisuals()

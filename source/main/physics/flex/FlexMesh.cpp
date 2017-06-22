@@ -25,12 +25,14 @@
 
 #include "ApproxMath.h"
 #include "BeamData.h"
+#include "Beam.h"
+#include "RigSpawner.h"
 
 using namespace Ogre;
 
 FlexMesh::FlexMesh(
-    Ogre::String const & name, 
-    node_t *nds, 
+    Ogre::String const & name,
+    RigSpawner* spawner,
     int n1, 
     int n2, 
     int nstart, 
@@ -42,7 +44,7 @@ FlexMesh::FlexMesh(
 ) :
       m_is_rimmed(rimmed)
     , m_num_rays(nrays)
-    , m_all_nodes(nds)
+    , m_all_nodes(nullptr) // Assigned later
 {
     // Create the mesh via the MeshManager
     m_mesh = MeshManager::getSingleton().createManual(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -135,7 +137,9 @@ FlexMesh::FlexMesh(
     }
 
     //update coords
-    updateVertices();
+    m_all_nodes = spawner->GetNodes().data(); // HACK: use spawner's intermediate node array - Actor's one isn't created yet. TODO: Create visuals _after_ physics/sim logic ~ only_a_ptr, 06/2017
+    this->updateVertices();
+    m_all_nodes; // Cleanup HACK
 
     // Create vertex data structure for 8 vertices shared between submeshes
     m_mesh->sharedVertexData = new VertexData();
@@ -218,6 +222,11 @@ FlexMesh::~FlexMesh()
     if (m_vertex_nodes      != nullptr) { free (m_vertex_nodes); }
     if (m_wheelface_indices != nullptr) { free (m_wheelface_indices); }
     if (m_tiretread_indices != nullptr) { free (m_tiretread_indices); }
+}
+
+void FlexMesh::AssignActor(Beam* actor)
+{
+    m_all_nodes = actor->nodes;
 }
 
 Vector3 FlexMesh::updateVertices()

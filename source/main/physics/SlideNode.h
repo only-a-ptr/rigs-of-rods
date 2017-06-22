@@ -132,12 +132,9 @@ private:
 	//! > 7000000, for Rail groups defined int he rail group section the Id
 	//! needs to be less than 7000000
 	unsigned int mId;
-	
-	static unsigned int nextId;
 
 // Methods /////////////////////////////////////////////////////////////////////
 public:
-	RailGroup(Rail* start): mStart(start), mId(nextId) { MYASSERT(mStart); nextId++; }
 	RailGroup(Rail* start, unsigned int id): mStart(start), mId(id) { MYASSERT(mStart); }
 
 	const Rail* getStartRail() const { return mStart; }
@@ -173,22 +170,21 @@ private:
 class RailBuilder : public ZeroedMemoryAllocator
 {
 // Members /////////////////////////////////////////////////////////////////////
-public:
-	/* no public members */
 private:
 	Rail*    mStart;    //! Start of the Rail series
 	Rail*    mFront;    //! Front of the Rail, not necessarily the start
 	Rail*     mBack;    //! Last rail in the series
 	bool      mLoop;    //! Check if rail is to be looped
 	bool mRetreived;    //! Check if RailBuilder needs to deallocate Rails
-	
+	std::vector<size_t> mRailgroupNodes;    //! Used during spawn; beams between these nodes will form the rail.
+    size_t              mRailgoupId;
+
 // Methods /////////////////////////////////////////////////////////////////////
 public:
 	// pass a rail value, this class does not manage memory
-	RailBuilder();
-	RailBuilder(Rail* start);
+	RailBuilder(std::vector<size_t>& nodes, size_t railgroup_id);
 	~RailBuilder();
-		
+
 	/**
 	 *
 	 * @param next beam attaches to the last beam in the end of the series
@@ -199,22 +195,15 @@ public:
 	 * @param prev adds another beam to the front of the rail series
 	 */
 	void pushFront(beam_t* prev);
-	
+
 	//! wrapper method
-	void loopRail(bool doLoop);	
+	void loopRail(bool doLoop);
 	void loopRail();
 	void unLoopRail();
-	
-	/**
-	 *
-	 * @return the completed rail, if called before instance goes out of reference
-	 * the internal memory is null referenced, if not the memorey is reclaimed
-	 */
-	Rail* getCompletedRail();
-	
-private:
-	/* no private methods */
-	
+
+	Rail*            FinalizeRail(Beam* actor);      ///< Gathers beams from the rig and builds the rail. Returns nullptr on failure
+    inline size_t    GetRailgroupId() const          { return mRailgoupId; }
+
 };
 
 /**

@@ -38,7 +38,7 @@ public:
 
     FlexMesh(
         Ogre::String const& name,
-        node_t* nds,
+        RigSpawner* spawner,
         int n1,
         int n2,
         int nstart,
@@ -59,6 +59,7 @@ public:
     Ogre::Vector3 flexitFinal();
 
     void setVisible(bool visible) {} // Nothing to do here
+    virtual void AssignActor(Beam* actor) override;
 
 private:
 

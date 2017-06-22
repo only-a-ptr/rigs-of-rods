@@ -101,8 +101,6 @@ FlexBody* FlexFactory::CreateFlexBody(
     FlexBody* new_flexbody = new FlexBody(
         def,
         from_cache,
-        m_rig_spawner->GetRig()->nodes,
-        m_rig_spawner->GetRig()->free_node,
         entity,
         ref_node,
         x_node,

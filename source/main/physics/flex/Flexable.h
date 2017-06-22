@@ -30,6 +30,7 @@ public:
     virtual bool flexitPrepare() = 0;
     virtual void flexitCompute() = 0;
     virtual Ogre::Vector3 flexitFinal() = 0;
+    virtual void AssignActor(Beam* actor) = 0;
 
     virtual void setVisible(bool visible) = 0;
 };

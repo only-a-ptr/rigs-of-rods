@@ -22,10 +22,11 @@
 #include "FlexBody.h"
 
 #include "ApproxMath.h"
+#include "Beam.h"
+#include "BeamData.h"
 #include "FlexFactory.h"
 #include "RigDef_File.h"
 #include "RigLoadingProfilerControl.h"
-#include "BeamData.h"
 
 #include <Ogre.h>
 
@@ -34,8 +35,6 @@ using namespace Ogre;
 FlexBody::FlexBody(
     RigDef::Flexbody* def,
     RoR::FlexBodyCacheData* preloaded_from_cache,
-    node_t *all_nodes,
-    int numnodes,
     Ogre::Entity* ent,
     int ref,
     int nx,
@@ -50,7 +49,7 @@ FlexBody::FlexBody(
     , m_node_y(ny)
     , m_is_enabled(true)
     , m_has_texture_blend(true)
-    , m_nodes(all_nodes)
+    , m_nodes(nullptr) // Assigned later
     , m_scene_node(nullptr)
     , m_scene_entity(ent)
     , m_has_texture(true)
@@ -706,6 +705,11 @@ void FlexBody::flexitCompute()
         m_dst_normals[i] = fast_normalise(mat * m_src_normals[i]);
     }
 #endif
+}
+
+void FlexBody::AssignActor(Beam* actor)
+{
+    m_nodes = actor->nodes;
 }
 
 Vector3 FlexBody::flexitFinal()

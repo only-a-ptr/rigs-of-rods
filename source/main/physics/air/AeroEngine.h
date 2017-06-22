@@ -37,6 +37,7 @@ public:
 
     virtual void updateVisuals() =0;
     virtual void updateForces(float dt, int doUpdate) =0;
+    virtual void AssignActor(Beam* actor) = 0;
 
     virtual void setThrottle(float val) =0;
 

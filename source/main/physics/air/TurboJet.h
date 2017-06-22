@@ -29,7 +29,7 @@ class Turbojet: public AeroEngine, public ZeroedMemoryAllocator
 
 public:
 
-    Turbojet(int tnumber, int trucknum, node_t* nd, int tnodefront, int tnodeback, int tnoderef, float tmaxdrythrust, bool treversable, float tafterburnthrust, float diskdiam, bool heathaze);
+    Turbojet(int tnumber, int trucknum, std::vector<node_t>& spawner_nodes, int tnodefront, int tnodeback, int tnoderef, float tmaxdrythrust, bool treversable, float tafterburnthrust, float diskdiam, bool heathaze);
     ~Turbojet();
 
     void SetupVisuals(std::string const& propname, Ogre::Entity* nozzle, float nozdiam, float nozlength, Ogre::Entity* afterburner_flame, bool disable_smoke);
@@ -43,6 +43,7 @@ public:
     void updateVisuals();
 
     Ogre::Vector3 getAxis() { return axis; };
+    virtual void AssignActor(Beam* actor) override;
 
     bool getIgnition() { return ignition; };
     bool getWarmup() { return warmup; };

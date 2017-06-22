@@ -16,6 +16,10 @@
 */
 struct beam_t
 {
+    beam_t() {}
+    beam_t(node_t& n1, node_t& n2): p1(&n1), p2(&n2) {}
+    beam_t(node_t* n1, node_t* n2): p1(n1), p2(n2) {}
+
     node_t *p1;
     node_t *p2;
     Ogre::Real k; //!< tensile spring
@@ -67,4 +71,8 @@ struct beam_t
     shock_t *shock;
     Ogre::SceneNode *mSceneNode; //!< visual
     Ogre::Entity *mEntity; //!< visual
+
+    Ogre::Real initial_beam_strength; ///< for reset
+    Ogre::Real default_beam_deform; ///< for reset
+    Ogre::Real default_beam_plastic_coef; ///< for reset
 };
