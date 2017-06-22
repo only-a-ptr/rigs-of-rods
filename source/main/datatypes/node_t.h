@@ -16,8 +16,8 @@
 */
 struct node_t
 {
-    node_t() {}
-    node_t(size_t _id): id(static_cast<short>(_id)) {}
+    node_t()               { memset(this, 0, sizeof(node_t)); }
+    node_t(size_t _pos)    { memset(this, 0, sizeof(node_t)); pos = static_cast<short>(_pos); }
 
     Ogre::Vector3 RelPosition; //!< relative to the local physics origin (one origin per truck) (shaky)
     Ogre::Vector3 AbsPosition; //!< absolute position in the world (shaky)

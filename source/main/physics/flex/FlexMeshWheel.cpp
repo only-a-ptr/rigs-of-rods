@@ -23,6 +23,7 @@
 
 #include "Beam.h"
 #include "BeamData.h"
+#include "RigSpawner.h"
 
 #include <Ogre.h>
 
@@ -30,7 +31,7 @@ using namespace Ogre;
 
 FlexMeshWheel::FlexMeshWheel(
     Ogre::Entity* rim_prop_entity,
-    node_t *nds, 
+    RigSpawner* spawner,
     int axis_node_1_index, 
     int axis_node_2_index, 
     int nstart, 
@@ -44,7 +45,7 @@ FlexMeshWheel::FlexMeshWheel(
     , m_axis_node1_idx(axis_node_2_index)
     , m_start_node_idx(nstart)
     , m_num_rays(static_cast<size_t>(nrays))
-    , m_all_nodes(nds)
+    , m_all_nodes(nullptr) // Assigned later
     , m_is_rim_reverse(rimreverse)
     , m_rim_radius(rimradius)
 {
@@ -99,6 +100,8 @@ FlexMeshWheel::FlexMeshWheel(
         m_indices[3*(i*10+9)]=i*6+5; m_indices[3*(i*10+9)+1]=(i+1)*6+5; m_indices[3*(i*10+9)+2]=(i+1)*6+4;
     }
 
+    m_all_nodes = spawner->GetNodes().data(); // ## HACK! Use spawner's intermediate nodes for the calculations below. TODO: create visuals _AFTER_ all physics/simlogic data are finished! ~ only_a_ptr, 06/2017
+
     m_norm_y=1.0;
     //update coords
     updateVertices();
@@ -106,6 +109,8 @@ FlexMeshWheel::FlexMeshWheel(
     m_norm_y=((m_vertices[0].position-m_vertices[1].position).crossProduct(m_vertices[1].position-m_vertices[6+1].position)).length();
     //recompute for normals
     updateVertices();
+
+    m_all_nodes = nullptr; // ## Cleanup -- see HACK above
 
     // Create position data structure for 8 vertices shared between submeshes
     m_mesh->sharedVertexData = new VertexData();

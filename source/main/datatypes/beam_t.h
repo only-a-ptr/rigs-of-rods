@@ -16,9 +16,9 @@
 */
 struct beam_t
 {
-    beam_t() {}
-    beam_t(node_t& n1, node_t& n2): p1(&n1), p2(&n2) {}
-    beam_t(node_t* n1, node_t* n2): p1(n1), p2(n2) {}
+    beam_t()                              { memset(this, 0, sizeof(beam_t)); }
+    beam_t(node_t& n1, node_t& n2)        { memset(this, 0, sizeof(beam_t)); p1 = &n1; p2 = &n2; }
+    beam_t(node_t* n1, node_t* n2)        { memset(this, 0, sizeof(beam_t)); p1 = n1; p2 = n2; }
 
     node_t *p1;
     node_t *p2;

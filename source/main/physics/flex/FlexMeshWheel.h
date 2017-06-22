@@ -59,7 +59,7 @@ private:
 
     FlexMeshWheel( // Use FlexFactory
         Ogre::Entity* rim_prop_entity,
-        node_t* nds,
+        RigSpawner* spawner,
         int axis_node_1_index,
         int axis_node_2_index,
         int nstart,
