@@ -1,5 +1,21 @@
 # Rigs of Rods
 
+## Elsaco branch
+
+Extra headers:
+
+ * ENET: includes; 
+
+Extra libs:
+
+ * ws2_32.lib (winsock2)
+ * enet.lib
+ * winmm.lib (timeGetTime ...)
+
+
+
+## Readme
+
 [![Join the chat at gitter.im](https://img.shields.io/gitter/room/RigsOfRods/rigs-of-rods.svg?style=flat-square)](https://gitter.im/RigsOfRods/rigs-of-rods) ![downloads](https://img.shields.io/github/downloads/RigsOfRods/rigs-of-rods/latest/total.svg?style=flat-square)
 ![release](https://img.shields.io/github/release/RigsOfRods/rigs-of-rods.svg?style=flat-square)
 ![contributors](https://img.shields.io/github/contributors/RigsOfRods/rigs-of-rods.svg?style=flat-square)
