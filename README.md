@@ -12,7 +12,9 @@ Extra libs:
  * enet.lib
  * winmm.lib (timeGetTime ...)
 
-
+Other manual edits:
+ 
+ * Exclude "gameplay/ois/win32/Win32JoyStick.old.cpp" from the project
 
 ## Readme
 

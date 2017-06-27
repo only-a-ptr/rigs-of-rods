@@ -232,7 +232,62 @@ set( SOURCE_FILES
   utils/ZeroedMemoryAllocator.h
   utils/profiler/Profiler.{h,cpp}
   utils/profiler/RigLoadingProfilerControl.h
+  
+    gameplay/ois/OIS.h
+    gameplay/ois/OISConfig.h
+    gameplay/ois/OISEffect.{h,cpp}
+    gameplay/ois/OISEvents.h
+    gameplay/ois/OISException.cpp
+    gameplay/ois/OISException.h
+    gameplay/ois/OISFactoryCreator.h
+    gameplay/ois/OISForceFeedback.cpp
+    gameplay/ois/OISForceFeedback.h
+    gameplay/ois/OISInputManager.cpp
+    gameplay/ois/OISInputManager.h
+    gameplay/ois/OISInterface.h
+    gameplay/ois/OISJoyStick.cpp
+    gameplay/ois/OISJoyStick.h
+    gameplay/ois/OISKeyboard.cpp
+    gameplay/ois/OISKeyboard.h
+    gameplay/ois/OISMouse.h
+    gameplay/ois/OISMultiTouch.h
+    gameplay/ois/OISObject.cpp
+    gameplay/ois/OISObject.h
+    gameplay/ois/OISPrereqs.h  
+  )  
+
+if(UNIX)
+  list( APPEND SOURCE_FILES  
+    gameplay/ois/linux/EventHelpers.cpp
+    gameplay/ois/linux/EventHelpers.h
+    gameplay/ois/linux/LinuxForceFeedback.cpp
+    gameplay/ois/linux/LinuxForceFeedback.h
+    gameplay/ois/linux/LinuxInputManager.cpp
+    gameplay/ois/linux/LinuxInputManager.h
+    gameplay/ois/linux/LinuxJoyStickEvents.cpp
+    gameplay/ois/linux/LinuxJoyStickEvents.h
+    gameplay/ois/linux/LinuxKeyboard.cpp
+    gameplay/ois/linux/LinuxKeyboard.h
+    gameplay/ois/linux/LinuxMouse.cpp
+    gameplay/ois/linux/LinuxMouse.h
+    gameplay/ois/linux/LinuxPrereqs.h
   )
+elseif(WIN32)
+  list( APPEND SOURCE_FILES
+    gameplay/ois/win32/Win32ForceFeedback.cpp
+    gameplay/ois/win32/Win32ForceFeedback.h
+    gameplay/ois/win32/Win32InputManager.cpp
+    gameplay/ois/win32/Win32InputManager.h
+    gameplay/ois/win32/Win32JoyStick.cpp
+    gameplay/ois/win32/Win32JoyStick.h
+    gameplay/ois/win32/Win32JoyStick.old.cpp
+    gameplay/ois/win32/Win32KeyBoard.cpp
+    gameplay/ois/win32/Win32KeyBoard.h
+    gameplay/ois/win32/Win32Mouse.cpp
+    gameplay/ois/win32/Win32Mouse.h
+    gameplay/ois/win32/Win32Prereqs.h
+  )
+endif()
 
 if(ROR_USE_ANGELSCRIPT)
   list( APPEND SOURCE_FILES
@@ -303,6 +358,9 @@ target_include_directories( ${BINNAME} PRIVATE
  audio
  datatypes
  gameplay
+ gameplay/ois
+ gameplay/ois/linux
+ gameplay/ois/Win32
  gfx
  gfx/camera
  gfx/dof
@@ -401,12 +459,6 @@ if( OGRE_VERSION VERSION_GREATER 1.8 )
   target_link_libraries( ${BINNAME} PRIVATE ${OGRE_Overlay_LIBRARIES} )
   target_include_directories( ${BINNAME} PRIVATE ${OGRE_Overlay_INCLUDE_DIRS} )
 endif()
-
-
-# --- Object Oriented Input System ---
-find_package( OIS REQUIRED )
-target_link_libraries( ${BINNAME} PRIVATE ${OIS_LIBRARIES} )
-target_include_directories( ${BINNAME} PRIVATE ${OIS_INCLUDE_DIRS} )
 
 
 # --- MoFileReader ---
