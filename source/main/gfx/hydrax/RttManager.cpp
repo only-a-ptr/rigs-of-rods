@@ -83,7 +83,7 @@ namespace Hydrax
 			mHydrax->getSceneManager()->addRenderQueueListener(&mReflectionListener.mCReflectionQueueListener);
 		}
 
-		switch(Rtt)
+		switch (Rtt)
 		{
 		    case RTT_REFLECTION:
 			{

@@ -2,7 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
-    Copyright 2013+     Petr Ohlidal & contributors
+    Copyright 2013-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -24,8 +24,8 @@
 #pragma once
 
 
-#define CONSOLE_PUTMESSAGE(a,b,c,d,e,f) while(0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c,d,e,f); }
-#define CONSOLE_PUTMESSAGE_SHORT(a,b,c) while(0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c); }
+#define CONSOLE_PUTMESSAGE(a,b,c,d,e,f) while (0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c,d,e,f); }
+#define CONSOLE_PUTMESSAGE_SHORT(a,b,c) while (0) { Console *console = RoR::App::GetConsole(); if (console) console->putMessage(a,b,c); }
 
 #include "RoRPrerequisites.h"
 #include "InterThreadStoreVector.h"

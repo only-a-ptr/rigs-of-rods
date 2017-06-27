@@ -2,7 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
-    Copyright 2013+     Petr Ohlidal & contributors
+    Copyright 2013-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -161,7 +161,7 @@ BeamFactory::BeamFactory(RoRFrameListener* sim_controller)
 {
     memset(m_trucks, 0, MAX_TRUCKS * sizeof(void*));
 
-    if (RoR::App::GetAppMultithread())
+    if (RoR::App::app_multithread.GetActive())
     {
         // Create thread pool
         int numThreadsInPool = ISETTING("NumThreadsInThreadPool", 0);
@@ -241,7 +241,7 @@ Beam* BeamFactory::CreateLocalRigInstance(
         fname.c_str(),
         &rig_loading_profiler,
         false, // networked
-        (RoR::App::GetActiveMpState() == RoR::App::MP_STATE_CONNECTED), // networking
+        (RoR::App::mp_state.GetActive() == RoR::MpState::CONNECTED), // networking
         spawnbox,
         ismachine,
         truckconfig,
@@ -268,7 +268,7 @@ Beam* BeamFactory::CreateLocalRigInstance(
     RoR::App::GetGuiManager()->GetTopMenubar()->triggerUpdateVehicleList();
 
     // add own username to truck
-    if (RoR::App::GetActiveMpState() == RoR::App::MP_STATE_CONNECTED)
+    if (RoR::App::mp_state.GetActive() == RoR::MpState::CONNECTED)
     {
         b->updateNetworkInfo();
     }
@@ -277,7 +277,7 @@ Beam* BeamFactory::CreateLocalRigInstance(
     LOG(rig_loading_profiler.Report());
 
 #ifdef ROR_PROFILE_RIG_LOADING
-    std::string out_path = RoR::App::GetSysUserDir() + PATH_SLASH + "profiler" + PATH_SLASH + ROR_PROFILE_RIG_LOADING_OUTFILE;
+    std::string out_path = std::string(App::sys_user_dir.GetActive()) + PATH_SLASH + "profiler" + PATH_SLASH + ROR_PROFILE_RIG_LOADING_OUTFILE;
     ::Profiler::DumpHtml(out_path.c_str());
 #endif
     return b;
@@ -334,7 +334,7 @@ int BeamFactory::CreateRemoteInstance(RoRnet::TruckStreamRegister* reg)
         reg->name,
         &p,
         true, // networked
-        (RoR::App::GetActiveMpState() == RoR::App::MP_STATE_CONNECTED), // networking
+        (RoR::App::mp_state.GetActive() == RoR::MpState::CONNECTED), // networking
         nullptr, // spawnbox
         false, // ismachine
         &truckconfig,

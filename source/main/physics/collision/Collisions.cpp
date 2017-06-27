@@ -2,7 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
-    Copyright 2013+     Petr Ohlidal & contributors
+    Copyright 2013-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -129,7 +129,7 @@ Collisions::Collisions(RoRFrameListener* sim_controller)
 {
     hFinder = gEnv->terrainManager->getHeightFinder();
 
-    debugMode = RoR::App::GetDiagCollisions(); // TODO: make interactive
+    debugMode = RoR::App::diag_collisions.GetActive(); // TODO: make interactive - do not copy the value, use GVar directly
     for (int i=0; i < HASH_POWER; i++)
     {
         hashmask = hashmask << 1;
@@ -182,7 +182,7 @@ void Collisions::resizeMemory(long newSize)
 
 int Collisions::loadDefaultModels()
 {
-    return loadGroundModelsConfigFile(RoR::App::GetSysConfigDir() + PATH_SLASH + "ground_models.cfg");
+    return loadGroundModelsConfigFile(std::string(RoR::App::sys_config_dir.GetActive()) + PATH_SLASH + "ground_models.cfg");
 }
 
 int Collisions::loadGroundModelsConfigFile(Ogre::String filename)

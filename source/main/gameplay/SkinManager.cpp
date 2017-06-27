@@ -51,7 +51,7 @@ void RoR::SkinManager::parseScript(Ogre::DataStreamPtr& stream, const Ogre::Stri
     bool     skin_is_new = true;
     try
     {
-        while(!stream->eof())
+        while (!stream->eof())
         {
             std::string line = RoR::Utils::SanitizeUtf8String(stream->getLine());
 

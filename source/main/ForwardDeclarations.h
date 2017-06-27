@@ -2,7 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
-    Copyright 2013+     Petr Ohlidal & contributors
+    Copyright 2013-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -19,19 +19,22 @@
     along with Rigs of Rods. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/**
-    @file   ForwardDeclarations.h
-    @brief  Global forward declarations.
-    @author Petr Ohlidal
-    @date   12/2013
-*/
+
+/// @file   ForwardDeclarations.h
+/// @brief  Global forward declarations.
+/// @author Petr Ohlidal
+/// @date   12/2013
+
 
 #pragma once
 
 namespace RoR
 {
     class  BeamFactory;
+    class  ConfigFile;
+    class  Console;
     class  ContentManager;
+    class  FlexFactory;
     class  GfxActor;
     class  GUIManager;
     struct GuiManagerImpl;
@@ -45,19 +48,27 @@ namespace RoR
     class  SkidmarkConfig;
     struct SkinDef;
     class  SkinManager;
-    class  Console;
+    struct Terrn2Author;
+    struct Terrn2Def;
+    class  Terrn2Parser;
+    struct Terrn2Telepoint;
 
     namespace GUI
     {
-        class  OpenSaveFileDialog;
         class  Dialog;
-        class  MainSelector;
+        class  FrictionSettings;
+        class  GameMainMenu;
+        class  GamePauseMenu;
         class  LoadingWindow;
+        class  MainSelector;
         class  MpClientList;
         class  MultiplayerSelector;
-        class  FrictionSettings;
+        class  OpenSaveFileDialog;
+        class  SimUtils;
+        class  TeleportWindow;
+        class  TopMenubar;
     }
-}
+} // namespace RoR
 
 namespace MyGUI
 {
@@ -108,9 +119,10 @@ namespace MOC
 
 namespace Ogre
 {
-    class MovableText;
-    class TerrainGroup;
     class ConfigFile;
+    class MovableText;
+    class Overlay;
+    class TerrainGroup;
 }
 
 class AeroEngine;
@@ -178,8 +190,8 @@ class Screwprop;
 class SkyManager;
 class SlideNode;
 class ShadowManager;
+class Sound;
 class SoundManager;
-class RigInspector; // Debug utility; located in [root]/tools/rig_inspector
 class SoundScriptInstance;
 class SoundScriptManager;
 class Streamable;

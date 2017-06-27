@@ -109,10 +109,10 @@
 using namespace Ogre;
 using namespace RoR;
 
-#define simRUNNING(_S_) (_S_ == App::SIM_STATE_RUNNING    )
-#define  simPAUSED(_S_) (_S_ == App::SIM_STATE_PAUSED     )
-#define  simSELECT(_S_) (_S_ == App::SIM_STATE_SELECTING  )
-#define  simEDITOR(_S_) (_S_ == App::SIM_STATE_EDITOR_MODE)
+#define simRUNNING(_S_) (_S_ == SimState::RUNNING    )
+#define  simPAUSED(_S_) (_S_ == SimState::PAUSED     )
+#define  simSELECT(_S_) (_S_ == SimState::SELECTING  )
+#define  simEDITOR(_S_) (_S_ == SimState::EDITOR_MODE)
 
 RoRFrameListener::RoRFrameListener(RoR::ForceFeedback* ff, RoR::SkidmarkConfig* skid_conf) :
     m_beam_factory(this),
@@ -147,17 +147,14 @@ RoRFrameListener::RoRFrameListener(RoR::ForceFeedback* ff, RoR::SkidmarkConfig* 
 {
 }
 
-RoRFrameListener::~RoRFrameListener()
-{
-}
-
 void RoRFrameListener::UpdateForceFeedback(float dt)
 {
-    if (!App::GetIoFFbackEnabled()) { return; }
+    if (!App::io_ffb_enabled.GetActive()) { return; }
+
     if (!RoR::App::GetInputEngine()->getForceFeedbackDevice())
     {
         LOG("No force feedback device detected, disabling force feedback");
-        App::SetIoFFbackEnabled(false);
+        App::io_ffb_enabled.SetActive(false);
         return;
     }
 
@@ -252,7 +249,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
     if (dt == 0.0f)
         return true;
 
-    auto s = App::GetActiveSimState();
+    auto s = App::sim_state.GetActive();
     auto gui_man = App::GetGuiManager();
 
     RoR::App::GetInputEngine()->updateKeyBounces(dt);
@@ -273,11 +270,11 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
         }
         else if (simRUNNING(s))
         {
-            App::SetPendingSimState(App::SIM_STATE_PAUSED);
+            App::sim_state.SetPending(SimState::PAUSED);
         }
         else if (simPAUSED(s))
         {
-            App::SetPendingSimState(App::SIM_STATE_RUNNING);
+            App::sim_state.SetPending(SimState::RUNNING);
         }
     }
 
@@ -291,7 +288,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
         gui_man->SetVisible_TeleportWindow(! gui_man->IsVisible_TeleportWindow());
     }
 
-    if (gui_man->IsVisible_GamePauseMenu())
+    if (App::sim_state.GetActive() == SimState::PAUSED)
         return true; //Stop everything when pause menu is visible
 
     if (gui_man->IsVisible_FrictionSettings() && curr_truck)
@@ -301,7 +298,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
         gui_man->GetFrictionSettings()->setActiveCol(gm);
     }
 
-    const bool mp_connected = (App::GetActiveMpState() == App::MP_STATE_CONNECTED);
+    const bool mp_connected = (App::mp_state.GetActive() == MpState::CONNECTED);
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_ENTER_CHATMODE, 0.5f) && !m_hide_gui && mp_connected)
     {
         RoR::App::GetInputEngine()->resetKeys();
@@ -318,9 +315,9 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
         date << std::put_time(std::localtime(&t), "%Y-%m-%d_%H-%M-%S");
 #endif
 
-        String fn_prefix = App::GetSysScreenshotDir() + PATH_SLASH + String("screenshot_");
+        String fn_prefix = std::string(App::sys_screenshot_dir.GetActive()) + PATH_SLASH + String("screenshot_");
         String fn_name = date.str() + String("_");
-        String fn_suffix = String(".") + App::GetAppScreenshotFormat();
+        String fn_suffix = String(".") + App::app_screenshot_format.GetActive();
 
         if (m_last_screenshot_date == date.str())
         {
@@ -341,7 +338,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
 
         m_beam_factory.updateFlexbodiesFinal(); // Waits until all flexbody tasks are finished
 
-        if (App::GetAppScreenshotFormat() == "png")
+        if (App::app_screenshot_format.GetActive() == "png")
         {
             // add some more data into the image
             AdvancedScreen* as = new AdvancedScreen(RoR::App::GetOgreSubsystem()->GetRenderWindow(), tmpfn);
@@ -356,14 +353,14 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
                 as->addData("Truck_beams", TOSTRING(curr_truck->getBeamCount()));
                 as->addData("Truck_nodes", TOSTRING(curr_truck->getNodeCount()));
             }
-            as->addData("User_NickName", App::GetMpPlayerName());
-            as->addData("User_Language", App::GetAppLanguage());
+            as->addData("User_NickName", App::mp_player_name.GetActive());
+            as->addData("User_Language", App::app_language.GetActive());
             as->addData("RoR_VersionString", String(ROR_VERSION_STRING));
             as->addData("RoR_ProtocolVersion", String(RORNET_VERSION));
             as->addData("RoR_BinaryHash", "");
-            as->addData("MP_ServerName", App::GetMpServerHost());
-            as->addData("MP_ServerPort", TOSTRING(App::GetMpServerPort()));
-            as->addData("MP_NetworkEnabled", (App::GetActiveMpState() == App::MP_STATE_CONNECTED) ? "Yes" : "No");
+            as->addData("MP_ServerName", App::mp_server_host.GetActive());
+            as->addData("MP_ServerPort", TOSTRING(App::mp_server_port.GetActive()));
+            as->addData("MP_NetworkEnabled", (App::mp_state.GetActive() == MpState::CONNECTED) ? "Yes" : "No");
             as->addData("Camera_Mode", gEnv->cameraManager ? TOSTRING(gEnv->cameraManager->getCurrentBehavior()) : "None");
             as->addData("Camera_Position", TOSTRING(gEnv->mainCamera->getPosition()));
 
@@ -390,12 +387,12 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
 
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_TRUCKEDIT_RELOAD, 0.5f) && curr_truck)
     {
-        this->ReloadCurrentTruck();
+        this->ReloadCurrentActor();
         return true;
     }
 
     // position storage
-    if (curr_truck && App::GetSimPositionStorage())
+    if (curr_truck && App::sim_position_storage.GetActive())
     {
         int res = -10, slot = -1;
         if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_TRUCK_SAVE_POS01, 0.5f))
@@ -545,11 +542,11 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
                 gEnv->cameraManager->hasActiveBehavior() &&
                 gEnv->cameraManager->getCurrentBehavior() == RoR::PerVehicleCameraContext::CAMCTX_BEHAVIOR_VEHICLE_CINECAM)
             {
-                App::SetGfxFovInternal(fov);
+                App::gfx_fov_internal.SetActive(fov);
             }
             else
             {
-                App::SetGfxFovExternal(fov);
+                App::gfx_fov_external.SetActive(fov);
             }
         }
         else
@@ -592,7 +589,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_TOGGLE_TERRAIN_EDITOR))
     {
         terrain_editing_mode = !terrain_editing_mode;
-        App::SetActiveSimState(terrain_editing_mode ? App::SIM_STATE_EDITOR_MODE : App::SIM_STATE_RUNNING);
+        App::sim_state.SetActive(terrain_editing_mode ? SimState::EDITOR_MODE : SimState::RUNNING);
         UTFString ssmsg = terrain_editing_mode ? _L("Entered terrain editing mode") : _L("Left terrain editing mode");
         RoR::App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, ssmsg, "infromation.png", 2000, false);
         RoR::App::GetGuiManager()->PushNotification("Notice:", ssmsg);
@@ -604,7 +601,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
         }
         else
         {
-            std::string path = App::GetSysConfigDir() + PATH_SLASH + "editor_out.cfg";
+            std::string path = std::string(RoR::App::sys_config_dir.GetActive()) + PATH_SLASH + "editor_out.cfg";
             std::ofstream file(path);
             if (file.is_open())
             {
@@ -792,7 +789,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
             {
                 if (gEnv->player)
                 {
-                    if (!App::GetGuiManager()->IsVisible_GamePauseMenu())
+                    if (App::sim_state.GetActive() != SimState::PAUSED)
                         gEnv->player->setPhysicsEnabled(true);
                 }
             }
@@ -1114,12 +1111,9 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
                         curr_truck->toggleCustomParticles();
                     }
 
-                    if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_SHOW_SKELETON))
+                    if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_CYCLE_DEBUG_VIEWS))
                     {
-                        if (curr_truck->m_skeletonview_is_active)
-                            curr_truck->hideSkeleton();
-                        else
-                            curr_truck->showSkeleton(true);
+                        curr_truck->GetGfxActor()->CycleDebugViews();
                     }
 
                     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_TOGGLE_TRUCK_LIGHTS))
@@ -1215,7 +1209,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
 
 #ifdef USE_CAELUM
 
-        static const bool caelum_enabled = App::GetGfxSkyMode() == 1;
+        static const bool caelum_enabled = App::gfx_sky_mode.GetActive() == GfxSkyMode::CAELUM;
         if (caelum_enabled && (simRUNNING(s) || simPAUSED(s) || simEDITOR(s)))
         {
             Real time_factor = 1000.0f;
@@ -1421,7 +1415,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
             }
             App::GetGuiManager()->GetMainSelector()->Hide();
             RoR::App::GetGuiManager()->UnfocusGui();
-            App::SetActiveSimState(App::SIM_STATE_RUNNING); // TODO: use pending mechanism
+            App::sim_state.SetActive(SimState::RUNNING); // TODO: use pending mechanism
         }
     }
 
@@ -1429,7 +1423,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
     {
         if ((simRUNNING(s) || simPAUSED(s) || simEDITOR(s)) && gEnv->player != nullptr)
         {
-            App::SetActiveSimState(App::SIM_STATE_SELECTING); // TODO: use pending mechanism
+            App::sim_state.SetActive(SimState::SELECTING); // TODO: use pending mechanism
 
             App::GetGuiManager()->GetMainSelector()->Show(LT_AllBeam);
         }
@@ -1560,7 +1554,7 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
 
     m_beam_factory.SyncWithSimThread();
 
-    const bool mp_connected = (App::GetActiveMpState() == App::MP_STATE_CONNECTED);
+    const bool mp_connected = (App::mp_state.GetActive() == MpState::CONNECTED);
 #ifdef USE_SOCKETW
     if (mp_connected)
     {
@@ -1580,8 +1574,9 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
 #endif //SOCKETW
 
     RoR::App::GetInputEngine()->Capture();
+    App::GetGuiManager()->NewImGuiFrame(dt);
     const bool is_altkey_pressed =  App::GetInputEngine()->isKeyDown(OIS::KeyCode::KC_LMENU) || App::GetInputEngine()->isKeyDown(OIS::KeyCode::KC_RMENU);
-    auto s = App::GetActiveSimState();
+    auto s = App::sim_state.GetActive();
 
     //if (gEnv->collisions) 	printf("> ground model used: %s\n", gEnv->collisions->last_used_ground_model->name);
     //
@@ -1729,7 +1724,7 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
         m_time_until_next_toggle -= dt;
     }
 
-    RoR::App::GetGuiManager()->framestep(dt);
+    RoR::App::GetGuiManager()->DrawSimulationGui(dt);
 
     App::GetGuiManager()->GetTeleport()->TeleportWindowFrameStep(
         gEnv->player->getPosition().x, gEnv->player->getPosition().z, is_altkey_pressed);
@@ -1769,9 +1764,9 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
                     RoR::App::GetOverlayWrapper()->UpdatePressureTexture(curr_truck->getPressure());
                 }
 
-                if (m_race_in_progress && !RoR::App::GetGuiManager()->IsVisible_GamePauseMenu())
+                if (m_race_in_progress && (App::sim_state.GetActive() != SimState::PAUSED))
                 {
-                    UpdateRacingGui(); //I really think that this should stay here.
+                    this->UpdateRacingGui();
                 }
 
                 if (curr_truck->driveable == TRUCK && curr_truck->engine != nullptr)
@@ -1793,26 +1788,22 @@ bool RoRFrameListener::frameStarted(const FrameEvent& evt)
             m_beam_factory.updateFlexbodiesFinal(); // Updates the harware buffers 
         }
 
-        if (simRUNNING(s) && (App::GetPendingSimState() == App::SIM_STATE_PAUSED))
+        if (simRUNNING(s) && (App::sim_state.GetPending() == SimState::PAUSED))
         {
-            App::GetGuiManager()->SetVisible_GamePauseMenu(true);
             m_beam_factory.MuteAllTrucks();
             gEnv->player->setPhysicsEnabled(false);
 
-            App::SetActiveSimState(App::SIM_STATE_PAUSED);
-            App::SetPendingSimState(App::SIM_STATE_NONE);
+            App::sim_state.ApplyPending();
         }
-        else if (simPAUSED(s) && (App::GetPendingSimState() == App::SIM_STATE_RUNNING))
+        else if (simPAUSED(s) && (App::sim_state.GetPending() == SimState::RUNNING))
         {
-            App::GetGuiManager()->SetVisible_GamePauseMenu(false);
             m_beam_factory.UnmuteAllTrucks();
             if (gEnv->player->getVisible() && !gEnv->player->getBeamCoupling())
             {
                 gEnv->player->setPhysicsEnabled(true);
             }
 
-            App::SetActiveSimState(App::SIM_STATE_RUNNING);
-            App::SetPendingSimState(App::SIM_STATE_NONE);
+            App::sim_state.ApplyPending();
         }
     }
 
@@ -1836,7 +1827,7 @@ void RoRFrameListener::ShowLoaderGUI(int type, const Ogre::String& instance, con
     Beam** trucks = m_beam_factory.getTrucks();
 
     // first, test if the place if clear, BUT NOT IN MULTIPLAYER
-    if (!(App::GetActiveMpState() == App::MP_STATE_CONNECTED))
+    if (!(App::mp_state.GetActive() == MpState::CONNECTED))
     {
         collision_box_t* spawnbox = gEnv->collisions->getBox(instance, box);
         for (int t = 0; t < free_truck; t++)
@@ -1858,7 +1849,7 @@ void RoRFrameListener::ShowLoaderGUI(int type, const Ogre::String& instance, con
     m_reload_pos = gEnv->collisions->getPosition(instance, box);
     m_reload_dir = gEnv->collisions->getDirection(instance, box);
     m_reload_box = gEnv->collisions->getBox(instance, box);
-    App::SetActiveSimState(App::SIM_STATE_SELECTING); // TODO: use 'pending' mechanism
+    App::sim_state.SetActive(SimState::SELECTING); // TODO: use 'pending' mechanism
     if (gEnv->surveyMap)
         gEnv->surveyMap->setVisibility(false);
 
@@ -1930,7 +1921,7 @@ void RoRFrameListener::HideGUI(bool hidden)
         curr_truck->getReplay()->setHidden(hidden);
 
 #ifdef USE_SOCKETW
-    if (App::GetActiveMpState() == App::MP_STATE_CONNECTED)
+    if (App::mp_state.GetActive() == MpState::CONNECTED)
     {
         App::GetGuiManager()->SetVisible_MpClientList(!hidden);
     }
@@ -1957,7 +1948,7 @@ void RoRFrameListener::HideGUI(bool hidden)
     App::GetGuiManager()->hideGUI(hidden);
 }
 
-void RoRFrameListener::ReloadCurrentTruck()
+void RoRFrameListener::ReloadCurrentActor()
 {
     Beam* curr_truck = m_beam_factory.getCurrentTruck();
     if (!curr_truck)
@@ -2126,8 +2117,7 @@ void RoRFrameListener::ChangedCurrentVehicle(Beam* previous_vehicle, Beam* curre
 bool RoRFrameListener::LoadTerrain()
 {
     // check if the resource is loaded
-    Ogre::String terrain_file = App::GetSimNextTerrain();
-    App::SetSimNextTerrain("");
+    Ogre::String terrain_file = App::sim_terrain_name.GetPendingCStr();
     if (! RoR::App::GetCacheSystem()->checkResourceLoaded(terrain_file)) // Input-output argument.
     {
         // fallback for terrains, add .terrn if not found and retry
@@ -2156,7 +2146,7 @@ bool RoRFrameListener::LoadTerrain()
 
     gEnv->terrainManager = new TerrainManager(this);
     gEnv->terrainManager->loadTerrain(terrain_file);
-    App::SetSimActiveTerrain(terrain_file);
+    App::sim_terrain_name.ApplyPending();
 
     App::GetGuiManager()->FrictionSettingsUpdateCollisions();
 
@@ -2256,31 +2246,31 @@ bool RoRFrameListener::SetupGameplayLoop()
     // Loading settings resources
     // ============================================================================
 
-    if (App::GetGfxWaterMode() == App::GFX_WATER_HYDRAX && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::HYDRAX.mask))
+    if (App::gfx_water_mode.GetActive() == GfxWaterMode::HYDRAX && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::HYDRAX.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::HYDRAX);
 
-    if (App::GetGfxSkyMode() == 1 && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::CAELUM.mask))
+    if (App::gfx_sky_mode.GetActive() == GfxSkyMode::CAELUM && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::CAELUM.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::CAELUM);
 
-    if (App::GetGfxVegetationMode() != RoR::App::GFX_VEGETATION_NONE && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::PAGED.mask))
+    if (App::gfx_vegetation_mode.GetActive() != RoR::GfxVegetation::NONE && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::PAGED.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::PAGED);
 
-    if (App::GetGfxEnableHdr() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::HDR.mask))
+    if (App::gfx_enable_hdr.GetActive() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::HDR.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::HDR);
 
     if (BSETTING("DOF", false) && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::DEPTH_OF_FIELD.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::DEPTH_OF_FIELD);
 
-    if (App::GetGfxEnableGlow() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::GLOW.mask))
+    if (App::gfx_enable_glow.GetActive() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::GLOW.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::GLOW);
 
     if (BSETTING("Motion blur", false) && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::BLUR.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::BLUR);
 
-    if (App::GetGfxUseHeathaze() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::HEATHAZE.mask))
+    if (App::gfx_enable_heathaze.GetActive() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::HEATHAZE.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::HEATHAZE);
 
-    if (App::GetGfxEnableSunburn() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::SUNBURN.mask))
+    if (App::gfx_enable_sunburn.GetActive() && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::SUNBURN.mask))
         RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::SUNBURN);
 
     /*if (SSETTING("Shadow technique", "") == "Parallel-split Shadow Maps" && !RoR::App::GetContentManager()->isLoaded(ContentManager::ResourcePack::PSSM.mask))
@@ -2298,7 +2288,7 @@ bool RoRFrameListener::SetupGameplayLoop()
     int colourNum = -1;
 
 #ifdef USE_SOCKETW
-    if (App::GetActiveMpState() == App::MP_STATE_CONNECTED)
+    if (App::mp_state.GetActive() == MpState::CONNECTED)
     {
         wchar_t tmp[255] = L"";
         UTFString format = _L("Press %ls to start chatting");
@@ -2329,17 +2319,17 @@ bool RoRFrameListener::SetupGameplayLoop()
     // Loading map
     // ============================================================================
 
-    if (App::GetDiagPreselectedTerrain() != "")
+    if (!App::diag_preset_terrain.IsActiveEmpty())
     {
-        App::SetSimNextTerrain(App::GetDiagPreselectedTerrain());
+        App::sim_terrain_name.SetPending(App::diag_preset_terrain.GetActive());
     }
 
-    if (App::GetSimNextTerrain().empty())
+    if (App::sim_terrain_name.GetPending().IsEmpty())
     {
         CacheEntry* selected_map = RoR::App::GetGuiManager()->GetMainSelector()->GetSelectedEntry();
         if (selected_map != nullptr)
         {
-            App::SetSimNextTerrain(selected_map->fname);
+            App::sim_terrain_name.SetPending(selected_map->fname.c_str());
         }
         else
         {
@@ -2367,20 +2357,20 @@ bool RoRFrameListener::SetupGameplayLoop()
     // Loading vehicle
     // ========================================================================
 
-    if (App::GetDiagPreselectedVehicle() != "")
+    if (!App::diag_preset_vehicle.IsActiveEmpty())
     {
-        if (App::GetDiagPreselectedVehConfig() != "")
+        RoR::LogFormat("[RoR|Diag] Preselected Truck: %s", App::diag_preset_vehicle.GetActive());
+        if (!App::diag_preset_veh_config.IsActiveEmpty())
         {
-            LOG("Preselected Truck Config: " + App::GetDiagPreselectedVehConfig());
+            RoR::LogFormat("[RoR|Diag] Preselected Truck Config: %s", App::diag_preset_veh_config.GetActive());
         }
-        LOG("Preselected Truck: " + App::GetDiagPreselectedVehicle());
 
-        const std::vector<Ogre::String> truckConfig = std::vector<Ogre::String>(1, App::GetDiagPreselectedVehConfig());
+        const std::vector<Ogre::String> truckConfig = std::vector<Ogre::String>(1, App::diag_preset_veh_config.GetActive());
 
         Vector3 pos = gEnv->player->getPosition();
         Quaternion rot = Quaternion(Degree(180) - gEnv->player->getRotation(), Vector3::UNIT_Y);
 
-        Beam* b = m_beam_factory.CreateLocalRigInstance(pos, rot, App::GetDiagPreselectedVehicle(), -1, nullptr, false, &truckConfig);
+        Beam* b = m_beam_factory.CreateLocalRigInstance(pos, rot, App::diag_preset_vehicle.GetActive(), -1, nullptr, false, &truckConfig);
 
         if (b != nullptr)
         {
@@ -2392,7 +2382,7 @@ bool RoRFrameListener::SetupGameplayLoop()
             b->updateFlexbodiesFinal();
             b->updateVisual();
 
-            if (App::GetDiagPreselectedVehEnter() && b->free_node > 0)
+            if (App::diag_preset_veh_enter.GetActive() && b->free_node > 0)
             {
                 m_beam_factory.setCurrentTruck(b->trucknum);
             }
@@ -2417,7 +2407,7 @@ bool RoRFrameListener::SetupGameplayLoop()
     App::CreateOverlayWrapper();
     App::GetOverlayWrapper()->SetupDirectionArrow();
 
-    if (App::GetAudioMenuMusic())
+    if (App::audio_menu_music.GetActive())
     {
         SoundScriptManager::getSingleton().trigKill(-1, SS_TRIG_MAIN_MENU);
     }
@@ -2445,7 +2435,7 @@ void RoRFrameListener::EnterGameplayLoop()
     unsigned long timeSinceLastFrame = 1;
     unsigned long startTime = 0;
     unsigned long minTimePerFrame = 0;
-    unsigned long fpsLimit = App::GetGfxFpsLimit();
+    unsigned long fpsLimit = App::gfx_fps_limit.GetActive();
 
     if (fpsLimit < 10 || fpsLimit >= 200)
     {
@@ -2463,7 +2453,7 @@ void RoRFrameListener::EnterGameplayLoop()
 
     /* LOOP */
 
-    while (App::GetPendingAppState() == App::APP_STATE_NONE)
+    while (App::app_state.GetPending() == AppState::SIMULATION)
     {
         startTime = RoR::App::GetOgreSubsystem()->GetTimer()->getMilliseconds();
 
@@ -2473,18 +2463,18 @@ void RoRFrameListener::EnterGameplayLoop()
         Ogre::RenderWindow* rw = RoR::App::GetOgreSubsystem()->GetRenderWindow();
         if (rw->isClosed())
         {
-            App::SetPendingAppState(App::APP_STATE_SHUTDOWN);
+            App::app_state.SetPending(AppState::SHUTDOWN);
             continue;
         }
 
         RoR::App::GetOgreSubsystem()->GetOgreRoot()->renderOneFrame();
 #ifdef USE_SOCKETW
-        if ((App::GetActiveMpState() == App::MP_STATE_CONNECTED) && RoR::Networking::CheckError())
+        if ((App::mp_state.GetActive() == MpState::CONNECTED) && RoR::Networking::CheckError())
         {
             Ogre::String title = Ogre::UTFString(_L("Network fatal error: ")).asUTF8();
             Ogre::String msg = RoR::Networking::GetErrorMessage().asUTF8();
             App::GetGuiManager()->ShowMessageBox(title, msg, true, "OK", true, false, "");
-            App::SetPendingAppState(App::APP_STATE_MAIN_MENU);
+            App::app_state.SetPending(AppState::MAIN_MENU);
         }
 #endif
 
@@ -2501,8 +2491,7 @@ void RoRFrameListener::EnterGameplayLoop()
         timeSinceLastFrame = RoR::App::GetOgreSubsystem()->GetTimer()->getMilliseconds() - startTime;
     }
 
-    App::SetActiveSimState(App::SIM_STATE_NONE);
-    App::SetPendingSimState(App::SIM_STATE_NONE);
+    App::sim_state.SetActive(SimState::NONE);
     this->CleanupAfterSimulation();
 
 #ifdef USE_MPLATFORM

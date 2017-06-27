@@ -72,8 +72,6 @@ struct rig_t
     cparticle_t cparticles[MAX_CPARTICLES];
     int free_cparticle;
 
-    std::vector<debugtext_t>nodes_debug, beams_debug;
-
     soundsource_t soundsources[MAX_SOUNDSCRIPTS_PER_TRUCK];
     int free_soundsource;
 
@@ -192,7 +190,7 @@ struct rig_t
     char helpmat[256];
     int cinecameranodepos[MAX_CAMERAS]; //!< Cine-camera node indexes
     int freecinecamera; //!< Number of cine-cameras (lowest free index)
-    RoR::App::GfxFlaresMode m_flares_mode;
+    RoR::GfxFlaresMode m_flares_mode;
     std::vector<Ogre::Entity*> deletion_Entities; //!< For unloading vehicle; filled at spawn.
     std::vector<Ogre::MovableObject *> deletion_Objects; //!< For unloading vehicle; filled at spawn.
     std::vector<Ogre::SceneNode*> deletion_sceneNodes; //!< For unloading vehicle; filled at spawn.
@@ -210,8 +208,6 @@ struct rig_t
     float fuseWidth;
     float brakeforce;
     float hbrakeforce;
-    //! Dbg. overlay type { NODES: 1-Numbers, 4-Mass, 5-Locked | BEAMS: 2-Numbers, 6-Compression, 7-Broken, 8-Stress, 9-Strength, 10-Hydros, 11-Commands, OTHER: 3-N&B numbers, 12-14 unknown }
-    int debugVisuals;
 
     float speedoMax;
     bool useMaxRPMforGUI;

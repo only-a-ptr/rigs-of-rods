@@ -2,7 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
-    Copyright 2013+     Petr Ohlidal & contributors
+    Copyright 2013-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -94,7 +94,7 @@ ScriptEngine::ScriptEngine(Collisions *coll) :
     callbacks["eventCallback"] = std::vector<int>();
 
     // create our own log
-    scriptLog = LogManager::getSingleton().createLog(App::GetSysLogsDir() + PATH_SLASH + "Angelscript.log", false);
+    scriptLog = LogManager::getSingleton().createLog(std::string(App::sys_logs_dir.GetActive()) + PATH_SLASH + "Angelscript.log", false);
     
     scriptLog->logMessage("ScriptEngine initialized");
 
@@ -311,8 +311,6 @@ void ScriptEngine::init()
     result = engine->RegisterObjectMethod("BeamClass", "int  getTruckType()", AngelScript::asMETHOD(Beam,getTruckType), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
     result = engine->RegisterObjectMethod("BeamClass", "void reset(bool)", AngelScript::asMETHOD(Beam,reset), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
     result = engine->RegisterObjectMethod("BeamClass", "void setDetailLevel(int)", AngelScript::asMETHOD(Beam,setDetailLevel), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
-    result = engine->RegisterObjectMethod("BeamClass", "void showSkeleton(bool, bool)", AngelScript::asMETHOD(Beam,showSkeleton), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
-    result = engine->RegisterObjectMethod("BeamClass", "void hideSkeleton(bool)", AngelScript::asMETHOD(Beam,hideSkeleton), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
     result = engine->RegisterObjectMethod("BeamClass", "void parkingbrakeToggle()", AngelScript::asMETHOD(Beam,parkingbrakeToggle), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
     result = engine->RegisterObjectMethod("BeamClass", "void tractioncontrolToggle()", AngelScript::asMETHOD(Beam,tractioncontrolToggle), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
     result = engine->RegisterObjectMethod("BeamClass", "void antilockbrakeToggle()", AngelScript::asMETHOD(Beam,antilockbrakeToggle), AngelScript::asCALL_THISCALL); MYASSERT(result>=0);
@@ -931,7 +929,7 @@ int ScriptEngine::loadScript(String _scriptName)
         // save the bytecode
         scriptHash = builder.getHash();
         {
-            String filepath = App::GetSysCacheDir() + PATH_SLASH + "script" + scriptHash + "_" + scriptName + "c";
+            String filepath = std::string(App::sys_cache_dir.GetActive()) + PATH_SLASH + "script" + scriptHash + "_" + scriptName + "c";
             SLOG("saving script bytecode to file " + filepath);
             CBytecodeStream bstream(filepath);
             mod->SaveByteCode(&bstream);

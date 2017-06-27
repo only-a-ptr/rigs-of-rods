@@ -25,6 +25,7 @@
 #pragma once
 
 #include "GUIInputManager.h"
+#include "OgreImGui.h"
 #include "RoRPrerequisites.h"
 
 #include <OgreWindowEventUtilities.h>
@@ -32,9 +33,6 @@
 #include <MyGUI_UString.h>
 
 namespace RoR {
-
-// Forward
-namespace GUI { class SimUtils; class TopMenubar; class MotionPlatformWindow; class TeleportWindow; }
 
 class GUIManager :
     public GUIInputManager
@@ -50,8 +48,6 @@ public:
     // GUI SetVisible*()
     void SetVisible_GameMainMenu        (bool visible);
     void SetVisible_GameAbout           (bool visible);
-    void SetVisible_GameSettings        (bool visible);
-    void SetVisible_GamePauseMenu       (bool visible);
     void SetVisible_DebugOptions        (bool visible);
     void SetVisible_MultiplayerSelector (bool visible);
     void SetVisible_MotionPlatformWindow(bool visible);
@@ -63,14 +59,11 @@ public:
     void SetVisible_TextureToolWindow   (bool visible);
     void SetVisible_TeleportWindow      (bool visible);
     void SetVisible_LoadingWindow       (bool visible);
-    void SetVisible_TopMenubar          (bool visible);
     void SetVisible_Console             (bool visible);
 
     // GUI IsVisible*()
     bool IsVisible_GameMainMenu         ();
     bool IsVisible_GameAbout            ();
-    bool IsVisible_GameSettings         ();
-    bool IsVisible_GamePauseMenu        ();
     bool IsVisible_DebugOptions         ();
     bool IsVisible_MessageBox           ();
     bool IsVisible_MultiplayerSelector  ();
@@ -84,12 +77,13 @@ public:
     bool IsVisible_TextureToolWindow    ();
     bool IsVisible_TeleportWindow       ();
     bool IsVisible_LoadingWindow        ();
-    bool IsVisible_TopMenubar           ();
     bool IsVisible_Console              ();
 
     // GUI GetInstance*()
     Console* GetConsole();
     GUI::MainSelector* GetMainSelector();
+    GUI::GameMainMenu* GetMainMenu();
+    GUI::GamePauseMenu* GetPauseMenu();
     GUI::LoadingWindow* GetLoadingWindow();
     GUI::MpClientList* GetMpClientList();
     GUI::MultiplayerSelector* GetMpSelector();
@@ -107,15 +101,13 @@ public:
     void PushNotification(Ogre::String Title, Ogre::UTFString text);
     void HideNotification();
     void CenterSpawnerReportWindow();
-    void AdjustPauseMenuPosition();
-    void AdjustMainMenuPosition();
 
     void UpdateSimUtils(float dt, Beam* truck);
-    void framestep(float dt);
+    void NewImGuiFrame(float dt);
+    void DrawMainMenuGui();
+    void DrawSimulationGui(float dt);
 
     int getMessageBoxResult(); //TODO
-
-    void InitMainSelector(RoR::SkinManager* skin_manager);
 
     void hideGUI(bool visible);
 
@@ -135,8 +127,11 @@ public:
     static Ogre::String getRandomWallpaperImage();
 
     void SetSimController(RoRFrameListener* sim);
+    inline OgreImGui& GetImGui() { return m_imgui; }
+
 
 private:
+    void SetupImGui();
 
     virtual bool frameStarted(const Ogre::FrameEvent& _evt);
     virtual bool frameEnded(const Ogre::FrameEvent& _evt);
@@ -146,6 +141,7 @@ private:
 
     GuiManagerImpl* m_impl;
     bool m_renderwindow_closed;
+    OgreImGui m_imgui;
 };
 
 } // namespace RoR

@@ -2,7 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
-    Copyright 2013+     Petr Ohlidal & contributors
+    Copyright 2013-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -27,7 +27,9 @@
 #include "Application.h"
 #include "BeamFactory.h"
 #include "ContentManager.h"
+#include "InputEngine.h"
 #include "Language.h"
+#include "OgreImGui.h"
 #include "OgreSubsystem.h"
 #include "RoRWindowEventUtilities.h"
 #include "RTTLayer.h"
@@ -40,7 +42,6 @@
 #include "GUI_GameMainMenu.h"
 #include "GUI_GameAbout.h"
 #include "GUI_GameConsole.h"
-#include "GUI_GameSettings.h"
 #include "GUI_GamePauseMenu.h"
 #include "GUI_GameChatBox.h"
 #include "GUI_LoadingWindow.h"
@@ -72,7 +73,6 @@ struct GuiManagerImpl
 
     GUI::GameMainMenu           panel_GameMainMenu;
     GUI::GameAbout              panel_GameAbout;
-    GUI::GameSettings           panel_GameSettings;
     GUI::GamePauseMenu          panel_GamePauseMenu;
     GUI::DebugOptions           panel_DebugOptions;
     GUI::SimUtils               panel_SimUtils;
@@ -97,8 +97,6 @@ struct GuiManagerImpl
 
 void GUIManager::SetVisible_GameMainMenu        (bool v) { m_impl->panel_GameMainMenu       .SetVisible(v); }
 void GUIManager::SetVisible_GameAbout           (bool v) { m_impl->panel_GameAbout          .SetVisible(v); }
-void GUIManager::SetVisible_GameSettings        (bool v) { m_impl->panel_GameSettings       .SetVisible(v); }
-void GUIManager::SetVisible_GamePauseMenu       (bool v) { m_impl->panel_GamePauseMenu      .SetVisible(v); }
 void GUIManager::SetVisible_DebugOptions        (bool v) { m_impl->panel_DebugOptions       .SetVisible(v); }
 void GUIManager::SetVisible_MultiplayerSelector (bool v) { m_impl->panel_MultiplayerSelector.SetVisible(v); }
 void GUIManager::SetVisible_ChatBox             (bool v) { m_impl->panel_ChatBox            .SetVisible(v); }
@@ -109,14 +107,11 @@ void GUIManager::SetVisible_FrictionSettings    (bool v) { m_impl->panel_Frictio
 void GUIManager::SetVisible_TextureToolWindow   (bool v) { m_impl->panel_TextureToolWindow  .SetVisible(v); }
 void GUIManager::SetVisible_TeleportWindow      (bool v) { m_impl->panel_TeleportWindow     .SetVisible(v); }
 void GUIManager::SetVisible_LoadingWindow       (bool v) { m_impl->panel_LoadingWindow      .SetVisible(v); }
-void GUIManager::SetVisible_TopMenubar          (bool v) { m_impl->panel_TopMenubar         .SetVisible(v); }
 void GUIManager::SetVisible_Console             (bool v) { m_impl->panel_GameConsole        .SetVisible(v); }
 void GUIManager::SetVisible_MotionPlatformWindow(bool v) { m_impl->panel_MotionPlatformWin  .SetVisible(v); }
 
 bool GUIManager::IsVisible_GameMainMenu         () { return m_impl->panel_GameMainMenu       .IsVisible(); }
 bool GUIManager::IsVisible_GameAbout            () { return m_impl->panel_GameAbout          .IsVisible(); }
-bool GUIManager::IsVisible_GameSettings         () { return m_impl->panel_GameSettings       .IsVisible(); }
-bool GUIManager::IsVisible_GamePauseMenu        () { return m_impl->panel_GamePauseMenu      .IsVisible(); }
 bool GUIManager::IsVisible_DebugOptions         () { return m_impl->panel_DebugOptions       .IsVisible(); }
 bool GUIManager::IsVisible_MessageBox           () { return m_impl->panel_MessageBox         .IsVisible(); }
 bool GUIManager::IsVisible_MultiplayerSelector  () { return m_impl->panel_MultiplayerSelector.IsVisible(); }
@@ -129,20 +124,21 @@ bool GUIManager::IsVisible_FrictionSettings     () { return m_impl->panel_Fricti
 bool GUIManager::IsVisible_TextureToolWindow    () { return m_impl->panel_TextureToolWindow  .IsVisible(); }
 bool GUIManager::IsVisible_TeleportWindow       () { return m_impl->panel_TeleportWindow     .IsVisible(); }
 bool GUIManager::IsVisible_LoadingWindow        () { return m_impl->panel_LoadingWindow      .IsVisible(); }
-bool GUIManager::IsVisible_TopMenubar           () { return m_impl->panel_TopMenubar         .IsVisible(); }
 bool GUIManager::IsVisible_Console              () { return m_impl->panel_GameConsole        .IsVisible(); }
 bool GUIManager::IsVisible_MotionPlatformWindow () { return m_impl->panel_MotionPlatformWin  .IsVisible(); }
 
 // GUI GetInstance*()
-Console*                    GUIManager::GetConsole()           { return &m_impl->panel_GameConsole         ; }
-GUI::MainSelector*          GUIManager::GetMainSelector()      { return &m_impl->panel_MainSelector        ; }
-GUI::LoadingWindow*         GUIManager::GetLoadingWindow()     { return &m_impl->panel_LoadingWindow       ; }
-GUI::MpClientList*          GUIManager::GetMpClientList()      { return &m_impl->panel_MpClientList        ; }
-GUI::MultiplayerSelector*   GUIManager::GetMpSelector()        { return &m_impl->panel_MultiplayerSelector ; }
-GUI::FrictionSettings*      GUIManager::GetFrictionSettings()  { return &m_impl->panel_FrictionSettings    ; }
-GUI::SimUtils*              GUIManager::GetSimUtils()          { return &m_impl->panel_SimUtils            ; }
-GUI::TopMenubar*            GUIManager::GetTopMenubar()        { return &m_impl->panel_TopMenubar          ; }
-GUI::TeleportWindow*        GUIManager::GetTeleport()          { return &m_impl->panel_TeleportWindow      ; }
+Console*                    GUIManager::GetConsole()           { return &m_impl->panel_GameConsole;         }
+GUI::MainSelector*          GUIManager::GetMainSelector()      { return &m_impl->panel_MainSelector;        }
+GUI::GameMainMenu*          GUIManager::GetMainMenu()          { return &m_impl->panel_GameMainMenu;        }
+GUI::GamePauseMenu*         GUIManager::GetPauseMenu()         { return &m_impl->panel_GamePauseMenu;       }
+GUI::LoadingWindow*         GUIManager::GetLoadingWindow()     { return &m_impl->panel_LoadingWindow;       }
+GUI::MpClientList*          GUIManager::GetMpClientList()      { return &m_impl->panel_MpClientList;        }
+GUI::MultiplayerSelector*   GUIManager::GetMpSelector()        { return &m_impl->panel_MultiplayerSelector; }
+GUI::FrictionSettings*      GUIManager::GetFrictionSettings()  { return &m_impl->panel_FrictionSettings;    }
+GUI::SimUtils*              GUIManager::GetSimUtils()          { return &m_impl->panel_SimUtils;            }
+GUI::TopMenubar*            GUIManager::GetTopMenubar()        { return &m_impl->panel_TopMenubar;          }
+GUI::TeleportWindow*        GUIManager::GetTeleport()          { return &m_impl->panel_TeleportWindow;      }
 GUI::MotionPlatformWindow*  GUIManager::GetMotionPlatform()    { return &m_impl->panel_MotionPlatformWin   ; }
 
 GUIManager::GUIManager() :
@@ -152,13 +148,14 @@ GUIManager::GUIManager() :
     RoR::App::GetOgreSubsystem()->GetOgreRoot()->addFrameListener(this);
     RoRWindowEventUtilities::addWindowEventListener(RoR::App::GetOgreSubsystem()->GetRenderWindow(), this);
 
-    std::string gui_logfilename = App::GetSysLogsDir() + PATH_SLASH + "MyGUI.log";
+    GStr<300> gui_logpath;
+    gui_logpath << App::sys_logs_dir.GetActive() << PATH_SLASH << "MyGUI.log";
     auto mygui_platform = new MyGUI::OgrePlatform();
     mygui_platform->initialise(
         RoR::App::GetOgreSubsystem()->GetRenderWindow(), 
         gEnv->sceneManager,
         Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-        gui_logfilename); // use cache resource group so preview images are working
+        gui_logpath.GetBuffer()); // use cache resource group so preview images are working
     auto mygui = new MyGUI::Gui();
 
     // empty init
@@ -183,6 +180,8 @@ GUIManager::GUIManager() :
     MyGUI::LanguageManager::getInstance().eventRequestTag = MyGUI::newDelegate(this, &GUIManager::eventRequestTag);
 #endif // _WIN32
     windowResized(RoR::App::GetOgreSubsystem()->GetRenderWindow());
+
+    this->SetupImGui();
 }
 
 GUIManager::~GUIManager()
@@ -236,9 +235,18 @@ bool GUIManager::frameEnded(const Ogre::FrameEvent& evt)
     return true;
 };
 
-void GUIManager::framestep(float dt)
+void GUIManager::DrawSimulationGui(float dt)
 {
     m_impl->panel_SimUtils.framestep(dt);
+    if (App::app_state.GetActive() == AppState::SIMULATION)
+    {
+        m_impl->panel_TopMenubar.Update();
+
+        if (App::sim_state.GetActive() == SimState::PAUSED)
+        {
+            m_impl->panel_GamePauseMenu.Draw();
+        }
+    }
 };
 
 void GUIManager::PushNotification(Ogre::String Title, Ogre::UTFString text)
@@ -253,7 +261,6 @@ void GUIManager::HideNotification()
 
 void GUIManager::SetSimController(RoRFrameListener* sim)
 {
-    m_impl->panel_TopMenubar        .SetSimController(sim);
     m_impl->panel_GameConsole       .SetSimController(sim);
     m_impl->panel_MpClientList      .SetSimController(sim);
     m_impl->panel_VehicleDescription.SetSimController(sim);
@@ -265,7 +272,6 @@ void GUIManager::windowResized(Ogre::RenderWindow* rw)
     int height = (int)rw->getHeight();
     setInputViewSize(width, height);
 
-    this->AdjustMainMenuPosition();
 }
 
 void GUIManager::windowClosed(Ogre::RenderWindow* rw)
@@ -302,14 +308,6 @@ void GUIManager::SetSceneManagerForGuiRendering(Ogre::SceneManager* scene_manage
     m_impl->mygui_platform->getRenderManagerPtr()->setSceneManager(scene_manager);
 }
 
-void GUIManager::AdjustMainMenuPosition()
-{
-    Ogre::Viewport* viewport = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getViewport(0);
-    int margin = (viewport->getActualHeight() / 15);
-    int top = viewport->getActualHeight() - m_impl->panel_GameMainMenu.GetHeight() - margin;
-    m_impl->panel_GameMainMenu.SetPosition(margin, top);
-}
-
 void GUIManager::UpdateSimUtils(float dt, Beam *truck)
 {
     if (m_impl->panel_SimUtils.IsBaseVisible()) //Better to update only when it's visible.
@@ -331,21 +329,6 @@ void GUIManager::UpdateMessageBox(Ogre::String mTitle, Ogre::String mText, bool 
 int GUIManager::getMessageBoxResult()
 {
     return m_impl->panel_MessageBox.getResult();
-}
-
-void GUIManager::InitMainSelector(RoR::SkinManager* skin_manager)
-{
-// todo remove
-}
-
-void GUIManager::AdjustPauseMenuPosition()
-{
-    Ogre::Viewport* viewport = RoR::App::GetOgreSubsystem()->GetRenderWindow()->getViewport(0);
-    int margin = (viewport->getActualHeight() / 15);
-    m_impl->panel_GamePauseMenu.SetPosition(
-        margin, // left
-        viewport->getActualHeight() - m_impl->panel_GamePauseMenu.GetHeight() - margin // top
-        );
 }
 
 void GUIManager::AddRigLoadingReport(std::string const & vehicle_name, std::string const & text, int num_errors, int num_warnings, int num_other)
@@ -387,33 +370,111 @@ void GUIManager::SetMouseCursorVisible(bool visible)
 
 void GUIManager::ReflectGameState()
 {
-    const auto app_state = App::GetActiveAppState();
-    const auto mp_state  = App::GetActiveMpState();
-    if (app_state == App::APP_STATE_MAIN_MENU)
+    const auto app_state = App::app_state.GetActive();
+    const auto mp_state  = App::mp_state.GetActive();
+    if (app_state == AppState::MAIN_MENU)
     {
         m_impl->panel_GameMainMenu       .SetVisible(!m_impl->panel_MainSelector.IsVisible());
 
-        m_impl->panel_TopMenubar         .SetVisible(false);
         m_impl->panel_ChatBox            .SetVisible(false);
         m_impl->panel_DebugOptions       .SetVisible(false);
         m_impl->panel_FrictionSettings   .SetVisible(false);
-        m_impl->panel_GamePauseMenu      .SetVisible(false);
         m_impl->panel_TextureToolWindow  .SetVisible(false);
         m_impl->panel_TeleportWindow     .SetVisible(false);
         m_impl->panel_VehicleDescription .SetVisible(false);
         m_impl->panel_SpawnerReport      .SetVisible(false);
         m_impl->panel_SimUtils           .SetBaseVisible(false);
-        m_impl->panel_MpClientList       .SetVisible(mp_state == App::MP_STATE_CONNECTED);
+        m_impl->panel_MpClientList       .SetVisible(mp_state == MpState::CONNECTED);
         m_impl->panel_MotionPlatformWin  .SetVisible(false);
         return;
     }
-    if (app_state == App::APP_STATE_SIMULATION)
+    if (app_state == AppState::SIMULATION)
     {
-        m_impl->panel_TopMenubar         .SetVisible(true);
-        m_impl->panel_TopMenubar         .ReflectMultiplayerState();
         m_impl->panel_SimUtils           .SetBaseVisible(true);
         m_impl->panel_GameMainMenu       .SetVisible(false);
         return;
+    }
+}
+
+void GUIManager::NewImGuiFrame(float dt)
+{
+    // Update screen size
+    int left, top, width, height;
+    gEnv->mainCamera->getViewport()->getActualDimensions(left, top, width, height); // output params
+
+     // Read keyboard modifiers inputs
+    OIS::Keyboard* kb = App::GetInputEngine()->GetOisKeyboard();
+    bool ctrl  = kb->isKeyDown(OIS::KC_LCONTROL);
+    bool shift = kb->isKeyDown(OIS::KC_LSHIFT);
+    bool alt   = kb->isKeyDown(OIS::KC_LMENU);
+
+    // Call IMGUI
+    m_imgui.NewFrame(dt, Ogre::Rect(left, top, width, height), ctrl, alt, shift);
+}
+
+void GUIManager::SetupImGui()
+{
+    m_imgui.Init();
+    // Colors
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_Text]                  = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
+    style.Colors[ImGuiCol_TextDisabled]          = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
+    style.Colors[ImGuiCol_WindowBg]              = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+    style.Colors[ImGuiCol_ChildWindowBg]         = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_PopupBg]               = ImVec4(0.05f, 0.05f, 0.10f, 1.00f);
+    style.Colors[ImGuiCol_Border]                = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    style.Colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_FrameBg]               = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    style.Colors[ImGuiCol_FrameBgHovered]        = ImVec4(0.78f, 0.39f, 0.00f, 0.99f);
+    style.Colors[ImGuiCol_FrameBgActive]         = ImVec4(0.90f, 0.65f, 0.65f, 0.98f);
+    style.Colors[ImGuiCol_TitleBg]               = ImVec4(0.57f, 0.31f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.40f, 0.40f, 0.80f, 1.00f);
+    style.Colors[ImGuiCol_TitleBgActive]         = ImVec4(0.74f, 0.44f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_MenuBarBg]             = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    style.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.16f, 0.16f, 0.16f, 0.99f);
+    style.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.30f, 0.30f, 0.29f, 1.00f);
+    style.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.78f, 0.39f, 0.00f, 0.99f);
+    style.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(1.00f, 0.50f, 0.00f, 0.99f);
+    style.Colors[ImGuiCol_ComboBg]               = ImVec4(0.20f, 0.20f, 0.20f, 0.99f);
+    style.Colors[ImGuiCol_CheckMark]             = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
+    style.Colors[ImGuiCol_SliderGrab]            = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    style.Colors[ImGuiCol_SliderGrabActive]      = ImVec4(1.00f, 0.48f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_Button]                = ImVec4(0.26f, 0.26f, 0.25f, 1.00f);
+    style.Colors[ImGuiCol_ButtonHovered]         = ImVec4(0.78f, 0.39f, 0.00f, 0.98f);
+    style.Colors[ImGuiCol_ButtonActive]          = ImVec4(1.00f, 0.48f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_Header]                = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    style.Colors[ImGuiCol_HeaderHovered]         = ImVec4(0.57f, 0.30f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_HeaderActive]          = ImVec4(0.78f, 0.39f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_Column]                = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    style.Colors[ImGuiCol_ColumnHovered]         = ImVec4(0.70f, 0.60f, 0.60f, 1.00f);
+    style.Colors[ImGuiCol_ColumnActive]          = ImVec4(0.90f, 0.70f, 0.70f, 1.00f);
+    style.Colors[ImGuiCol_ResizeGrip]            = ImVec4(0.22f, 0.22f, 0.21f, 1.00f);
+    style.Colors[ImGuiCol_ResizeGripHovered]     = ImVec4(0.78f, 0.39f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_ResizeGripActive]      = ImVec4(1.00f, 0.48f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_CloseButton]           = ImVec4(0.55f, 0.27f, 0.09f, 1.00f);
+    style.Colors[ImGuiCol_CloseButtonHovered]    = ImVec4(0.86f, 0.43f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_CloseButtonActive]     = ImVec4(1.00f, 0.48f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_PlotLines]             = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    style.Colors[ImGuiCol_PlotLinesHovered]      = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_PlotHistogram]         = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_PlotHistogramHovered]  = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    style.Colors[ImGuiCol_TextSelectedBg]        = ImVec4(0.00f, 0.00f, 1.00f, 1.00f);
+    style.Colors[ImGuiCol_ModalWindowDarkening]  = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    // Styles
+    style.WindowPadding         = ImVec2(10.f, 10.f);
+    style.FrameRounding         = 2.f;
+    style.WindowRounding        = 4.f;
+    style.WindowTitleAlign      = ImVec2(0.5f, 0.5f);
+    style.ItemSpacing           = ImVec2(5.f, 5.f);
+    style.GrabRounding          = 3.f;
+    style.ChildWindowRounding   = 4.f;
+}
+
+void GUIManager::DrawMainMenuGui()
+{
+    if (m_impl->panel_GameMainMenu.IsVisible())
+    {
+        m_impl->panel_GameMainMenu.Draw();
     }
 }
 

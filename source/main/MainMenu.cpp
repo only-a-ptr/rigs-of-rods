@@ -2,7 +2,7 @@
     This source file is part of Rigs of Rods
     Copyright 2005-2012 Pierre-Michel Ricordel
     Copyright 2007-2012 Thomas Fischer
-    Copyright 2013+     Petr Ohlidal & contributors
+    Copyright 2013-2017 Petr Ohlidal & contributors
 
     For more information, see http://www.rigsofrods.org/
 
@@ -95,7 +95,7 @@ void MainMenu::EnterMainMenuLoop()
     unsigned long timeSinceLastFrame = 1;
     unsigned long startTime = 0;
     unsigned long minTimePerFrame = 0;
-    unsigned long fpsLimit = App::GetGfxFpsLimit();
+    unsigned long fpsLimit = App::gfx_fps_limit.GetActive(); // TOD: use GVar directly without copying
 
     if (fpsLimit < 10 || fpsLimit >= 200)
     {
@@ -107,12 +107,12 @@ void MainMenu::EnterMainMenuLoop()
         minTimePerFrame = 1000 / fpsLimit;
     }
 
-    while (App::GetPendingAppState() == App::APP_STATE_NONE)
+    App::GetGuiManager()->GetImGui().StartRendering(gEnv->sceneManager);
+    while (App::app_state.GetPending() == AppState::MAIN_MENU)
     {
         startTime = App::GetOgreSubsystem()->GetTimer()->getMilliseconds();
 
-
-        MainMenuLoopUpdate(timeSinceLastFrame);
+        this->MainMenuLoopUpdate(timeSinceLastFrame);
 
         if (RoR::App::GetGuiManager()->GetMainSelector()->IsFinishedSelecting())
         {
@@ -120,8 +120,8 @@ void MainMenu::EnterMainMenuLoop()
             if (selected_map != nullptr)
             {
                 App::GetGuiManager()->GetMainSelector()->Reset(); // TODO: Eliminate this mechanism ~ only_a_ptr 09/2016
-                App::SetPendingAppState(App::APP_STATE_SIMULATION);
-                App::SetSimNextTerrain(selected_map->fname);
+                App::app_state.SetPending(AppState::SIMULATION);
+                App::sim_terrain_name.SetPending(selected_map->fname.c_str());
             }
         }
 
@@ -131,19 +131,22 @@ void MainMenu::EnterMainMenuLoop()
         Ogre::RenderWindow* rw = RoR::App::GetOgreSubsystem()->GetRenderWindow();
         if (rw->isClosed())
         {
-            App::SetPendingAppState(App::APP_STATE_SHUTDOWN);
+            App::app_state.SetPending(AppState::SHUTDOWN);
             continue;
         }
+
+        App::GetGuiManager()->NewImGuiFrame(timeSinceLastFrame);
+        App::GetGuiManager()->DrawMainMenuGui();
 
         RoR::App::GetOgreSubsystem()->GetOgreRoot()->renderOneFrame();
 
 #ifdef USE_SOCKETW
-        if ((App::GetActiveMpState() == App::MP_STATE_CONNECTED) && RoR::Networking::CheckError())
+        if ((App::mp_state.GetActive() == MpState::CONNECTED) && RoR::Networking::CheckError())
         {
             Ogre::String title = Ogre::UTFString(_L("Network fatal error: ")).asUTF8();
             Ogre::String msg = RoR::Networking::GetErrorMessage().asUTF8();
             App::GetGuiManager()->ShowMessageBox(title, msg, true, "OK", true, false, "");
-            App::SetPendingAppState(App::APP_STATE_MAIN_MENU);
+            App::app_state.SetPending(AppState::MAIN_MENU);
 
             RoR::App::GetGuiManager()->GetMainSelector()->Hide();
             RoR::App::GetGuiManager()->GetMainSelector()->Show(LT_Terrain);
@@ -163,7 +166,7 @@ void MainMenu::EnterMainMenuLoop()
 
         timeSinceLastFrame = RoR::App::GetOgreSubsystem()->GetTimer()->getMilliseconds() - startTime;
     }
-
+    App::GetGuiManager()->GetImGui().StopRendering();
     RoRWindowEventUtilities::removeWindowEventListener(App::GetOgreSubsystem()->GetRenderWindow(), this);
 }
 
@@ -180,12 +183,12 @@ void MainMenu::MainMenuLoopUpdate(float seconds_since_last_frame)
 
     if (RoR::App::GetOgreSubsystem()->GetRenderWindow()->isClosed())
     {
-        App::SetPendingAppState(App::APP_STATE_SHUTDOWN);
+        App::app_state.SetPending(AppState::SHUTDOWN);
         return;
     }
 
 #ifdef USE_SOCKETW
-    if (App::GetActiveMpState() == App::MP_STATE_CONNECTED)
+    if (App::mp_state.GetActive() == MpState::CONNECTED)
     {
         App::GetGuiManager()->GetMpClientList()->update();
     }
@@ -226,7 +229,7 @@ void MainMenu::MainMenuLoopUpdateEvents(float seconds_since_last_frame)
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_QUIT_GAME))
     {
         //TODO: Go back to menu 
-        App::SetPendingAppState(App::APP_STATE_SHUTDOWN);
+        App::app_state.SetPending(AppState::SHUTDOWN);
         return;
     }
 
@@ -277,20 +280,20 @@ void MainMenu::JoinMultiplayerServer()
     String terrain_name = Networking::GetTerrainName();
     if (terrain_name != "any")
     {
-        App::SetSimNextTerrain(terrain_name);
-        App::SetPendingAppState(App::APP_STATE_SIMULATION);
+        App::sim_terrain_name.SetPending(terrain_name.c_str());
+        App::app_state.SetPending(AppState::SIMULATION);
     }
     else
     {
         // Connected -> go directly to map selector
-        if (App::GetDiagPreselectedTerrain() == "")
+        if (App::diag_preset_terrain.IsActiveEmpty())
         {
             gui->GetMainSelector()->Reset();
             gui->GetMainSelector()->Show(LT_Terrain);
         }
         else
         {
-            App::SetPendingAppState(App::APP_STATE_SIMULATION);
+            App::app_state.SetPending(AppState::SIMULATION);
         }
     }
 #endif //SOCKETW
@@ -299,7 +302,7 @@ void MainMenu::JoinMultiplayerServer()
 void MainMenu::LeaveMultiplayerServer()
 {
 #ifdef USE_SOCKETW
-    if (App::GetActiveMpState() == App::MP_STATE_CONNECTED)
+    if (App::mp_state.GetActive() == MpState::CONNECTED)
     {
         App::GetGuiManager()->GetLoadingWindow()->setAutotrack(_L("Disconnecting, wait 10 seconds ..."));
         RoR::Networking::Disconnect();

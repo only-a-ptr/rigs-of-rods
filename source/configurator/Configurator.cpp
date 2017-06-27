@@ -1086,7 +1086,7 @@ MyDialog::MyDialog(const wxString& title) : wxDialog(NULL, wxID_ANY, title,  wxP
 
     wxLogStatus(wxT("Known Audio Devices: "));
     char *devices = (char *)alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
-    while(devices && *devices != 0)
+    while (devices && *devices != 0)
     {
         sound->AppendValueItem(wxString(conv(devices)));
         wxLogStatus(wxT(" *") + wxString(conv(devices)));

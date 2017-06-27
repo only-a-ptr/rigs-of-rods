@@ -877,7 +877,7 @@ namespace Hydrax
 
 		mGodRaysManager->mHydrax->getMesh()->getEntity()->setVisible(false);
 
-		while( EntityIterator.hasMoreElements() )
+		while ( EntityIterator.hasMoreElements() )
 		{
 			CurrentEntity = static_cast<Ogre::Entity *>(EntityIterator.peekNextValue());
 
@@ -899,7 +899,7 @@ namespace Hydrax
 
 		mGodRaysManager->mHydrax->getMesh()->getEntity()->setVisible(true);
 
-		while( EntityIterator.hasMoreElements() )
+		while ( EntityIterator.hasMoreElements() )
 		{
 			CurrentEntity = static_cast<Ogre::Entity *>(EntityIterator.peekNextValue());
 
