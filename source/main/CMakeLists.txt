@@ -107,6 +107,7 @@ set(SOURCE_FILES
         gui/DashBoardManager.{h,cpp}
         gui/GUIInputManager.{h,cpp}
         gui/GUIManager.{h,cpp}
+        gui/NodeGraphTool.{h,cpp}
         gui/OverlayWrapper.{h,cpp}
         gui/RTTLayer.{h,cpp}
         gui/imgui/imgui.{h,cpp}

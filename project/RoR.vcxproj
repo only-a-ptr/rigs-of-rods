@@ -190,6 +190,7 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\main\gui\NodeGraphTool.cpp" />
     <ClCompile Include="..\source\main\gui\panels\GUI_GameSettings.cpp" />
     <ClCompile Include="..\source\main\physics\MotionPlatform.cpp" />
     <ClCompile Include="..\source\main\resources\otc_fileformat\OTCFileformat.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="..\source\main\Application.h" />
     <ClInclude Include="..\source\main\ForwardDeclarations.h" />
     <ClInclude Include="..\source\main\GlobalEnvironment.h" />
+    <ClInclude Include="..\source\main\gui\NodeGraphTool.h" />
     <ClInclude Include="..\source\main\gui\panels\GUI_GameSettings.h" />
     <ClInclude Include="..\source\main\MainMenu.h" />
     <ClInclude Include="..\source\main\physics\MotionPlatform.h" />

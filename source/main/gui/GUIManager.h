@@ -34,6 +34,9 @@
 
 namespace RoR {
 
+    // forward
+    class NodeGraphTool;
+
 class GUIManager :
     public GUIInputManager
     , public Ogre::FrameListener
@@ -78,6 +81,7 @@ public:
     void SetVisible_TeleportWindow      (bool visible);
     void SetVisible_LoadingWindow       (bool visible);
     void SetVisible_Console             (bool visible);
+    void SetVisible_MotionFeeder        (bool visible);
 
     // GUI IsVisible*()
     bool IsVisible_GameMainMenu         ();
@@ -99,6 +103,7 @@ public:
 
     // GUI GetInstance*()
     Console* GetConsole();
+    NodeGraphTool* GetMotionFeeder();
     GUI::MainSelector* GetMainSelector();
     GUI::GameMainMenu* GetMainMenu();
     GUI::GamePauseMenu* GetPauseMenu();

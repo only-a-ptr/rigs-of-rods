@@ -35,18 +35,8 @@
 /// http://docs.rigsofrods.org/vehicle-creation/fileformat-truck/#cameras
 ///
 ///     RETRIEVING MOTION DATA
-/// There are several possibilities:
-/// 1. Cinecam - RoR's 'cockpit camera' - a single node tied to 8 other; see
-///    http://docs.rigsofrods.org/vehicle-creation/fileformat-truck/#cinecam
-///    It's position is paired with data from "camera" mechanism, see above.
-///    Advantage: single source of image+motion data.
-///    Caveat: The camera may slightly swing against the vehicle.
-/// 2. Cinecam base nodes - same as above except the position is interpolated
-///    from binding nodes rather than the camera node.
-///    Caveat: camera swings -> slight mismatch between motion and image.
-/// 3. Cinecam + DriverSeat-prop - Read motion data from a "prop" (static 3d
-///    mesh attached to the softbody), specifically the "driver seat" prop
-///    (http://docs.rigsofrods.org/vehicle-creation/fileformat-truck/#props)
+///  Method in place: use the "MotionFeeder" node-graph visual editor. User specifies node numbers to read from
+/// and designs the process of calculating the outputs.
 
 #pragma once
 

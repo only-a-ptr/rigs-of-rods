@@ -56,6 +56,7 @@
 #include "GUI_TeleportWindow.h"
 #include "GUI_TopMenubar.h"
 #include "GUI_VehicleDescription.h"
+#include "NodeGraphTool.h"
 
 #include <MyGUI.h>
 #include <MyGUI_OgrePlatform.h>
@@ -90,6 +91,7 @@ struct GuiManagerImpl
     GUI::LoadingWindow          panel_LoadingWindow;
     GUI::TopMenubar             panel_TopMenubar;
     RoR::Console                panel_GameConsole;
+    RoR::NodeGraphTool          panel_MotionFeeder;
 
     MyGUI::Gui*                 mygui;
     MyGUI::OgrePlatform*        mygui_platform;
@@ -116,6 +118,7 @@ void GUIManager::SetVisible_TeleportWindow      (bool v) { m_impl->panel_Telepor
 void GUIManager::SetVisible_LoadingWindow       (bool v) { m_impl->panel_LoadingWindow      .SetVisible(v); }
 void GUIManager::SetVisible_Console             (bool v) { m_impl->panel_GameConsole        .SetVisible(v); }
 void GUIManager::SetVisible_GameSettings        (bool v) { m_impl->panel_GameSettings       .SetVisible(v); }
+void GUIManager::SetVisible_MotionFeeder        (bool v) { m_impl->panel_MotionFeeder       .SetVisible(v); }
 
 bool GUIManager::IsVisible_GameMainMenu         () { return m_impl->panel_GameMainMenu       .IsVisible(); }
 bool GUIManager::IsVisible_GameAbout            () { return m_impl->panel_GameAbout          .IsVisible(); }
@@ -135,6 +138,7 @@ bool GUIManager::IsVisible_GameSettings         () { return m_impl->panel_GameSe
 
 // GUI GetInstance*()
 Console*                    GUIManager::GetConsole()           { return &m_impl->panel_GameConsole         ; }
+NodeGraphTool*              GUIManager::GetMotionFeeder()      { return &m_impl->panel_MotionFeeder;        }
 GUI::MainSelector*          GUIManager::GetMainSelector()      { return &m_impl->panel_MainSelector        ; }
 GUI::GameMainMenu*          GUIManager::GetMainMenu()          { return &m_impl->panel_GameMainMenu        ; }
 GUI::GamePauseMenu*         GUIManager::GetPauseMenu()         { return &m_impl->panel_GamePauseMenu       ; }
@@ -243,6 +247,7 @@ void GUIManager::DrawSimulationGui(float dt)
     if (App::app_state.GetActive() == AppState::SIMULATION)
     {
         m_impl->panel_TopMenubar.Update();
+        m_impl->panel_MotionFeeder.Draw();
 
         if (App::sim_state.GetActive() == SimState::PAUSED)
         {

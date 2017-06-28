@@ -243,6 +243,12 @@ void RoR::GUI::TopMenubar::Update()
                 m_open_menu = TopMenu::TOPMENU_NONE;
             }
 
+            if (ImGui::Button("MotionFeeder"))
+            {
+                App::GetGuiManager()->SetVisible_MotionFeeder(true);
+                m_open_menu = TopMenu::TOPMENU_NONE;
+            }
+
             ImGui::Separator();
             ImGui::TextColored(GRAY_HINT_TEXT, "Pre-spawn diag. options:");
 
