@@ -108,13 +108,13 @@ void RoR::NodeGraphTool::Draw()
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
     ImGui::PushItemWidth(150.f);
-  //TODO  ImGui::InputText("IP", m_motionsim_ip, IM_ARRAYSIZE(m_motionsim_ip));
-  //TODO  ImGui::SameLine();
-  //TODO  ImGui::InputInt("Port", &m_motionsim_port);
-  //TODO  ImGui::PopItemWidth();
-  //TODO  ImGui::SameLine();
-  //TODO  ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
-    bool transmit = 
+    ImGui::InputText("IP", m_motionsim_ip, IM_ARRAYSIZE(m_motionsim_ip));
+    ImGui::SameLine();
+    ImGui::InputInt("Port", &m_motionsim_port);
+    ImGui::PopItemWidth();
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
+    static bool transmit = false;
     ImGui::Checkbox("Transmit", &transmit); // TODO: Enable/disable networking
 
     if (m_header_mode != HeaderMode::NORMAL)
@@ -177,35 +177,27 @@ void RoR::NodeGraphTool::Draw()
     ImGui::End();
 }
 
-void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
+void RoR::NodeGraphTool::PhysicsTick()
 {
     for (Node* node: m_nodes)
     {
-        if (node->type == Node::Type::GENERATOR) // TODO: Optimize! maintain an array of this type only!
+        if (node->type != Node::Type::GENERATOR)
+            continue;
+
+        GeneratorNode* gen_node = static_cast<GeneratorNode*>(node);
+        gen_node->elapsed += 0.002f;
+
+        float result = cosf((gen_node->elapsed / 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
+
+        // add noise
+        if (gen_node->noise_max != 0)
         {
-            GeneratorNode* gen_node = static_cast<GeneratorNode*>(node);
-            gen_node->elapsed += 0.002f;
-
-            float result = cosf((gen_node->elapsed / 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
-
-            // add noise
-            if (gen_node->noise_max != 0)
-            {
-                int r = rand() % gen_node->noise_max;
-                result += static_cast<float>((r*2)-r) * 0.1f;
-            }
-
-            // save to buffer
-            gen_node->buffer_out.Push(result);
+            int r = rand() % gen_node->noise_max;
+            result += static_cast<float>((r*2)-r) * 0.1f;
         }
-        else if (node->type == Node::Type::READING) // TODO: Optimize! maintain an array of this type only!
-        {
-            ReadingNode* rd_node = static_cast<ReadingNode*>(node);
-            if (rd_node->softbody_node_id >= 0)
-            {
-                rd_node->Push(actor->nodes[rd_node->softbody_node_id].AbsPosition);
-            }
-        }
+
+        // save to buffer
+        gen_node->buffer_out.Push(result);
     }
     this->CalcGraph();
 }
@@ -978,6 +970,18 @@ void RoR::NodeGraphTool::GeneratorNode::Draw()
     this->graph->DrawNodeFinalize(this);
 }
 
+void RoR::NodeGraphTool::GeneratorNode::DetachLink(Link* link)
+{
+    assert(link->node_dst != this); // discrepancy - no inputs in this node
+
+    if (link->node_src == this)
+    {
+        assert(link->buff_src == &this->buffer_out); // check discrepancy
+        link->buff_src = nullptr;
+        link->node_src = nullptr;
+    }
+}
+
 // -------------------------------- Reading node -----------------------------------
 
 void RoR::NodeGraphTool::ReadingNode::BindSrc(Link* link, int slot)
@@ -988,6 +992,18 @@ void RoR::NodeGraphTool::ReadingNode::BindSrc(Link* link, int slot)
     case 1:    link->buff_src = &buffer_y;    link->node_src = this;     return;
     case 2:    link->buff_src = &buffer_z;    link->node_src = this;     return;
     default: return;
+    }
+}
+
+void RoR::NodeGraphTool::ReadingNode::DetachLink(Link* link)
+{
+    assert(link->node_dst != this); // Check discrepancy - this node has no inputs
+
+    if (link->node_src == this)
+    {
+        assert (link->buff_src == &buffer_x || link->buff_src == &buffer_y || link->buff_src == &buffer_z); // check discrepancy
+        link->buff_src = nullptr;
+        link->node_src = nullptr;
     }
 }
 
@@ -1003,15 +1019,15 @@ void RoR::NodeGraphTool::ReadingNode::Draw()
 
 RoR::NodeGraphTool::ScriptNode::ScriptNode(NodeGraphTool* _graph, ImVec2 _pos):
     Node(_graph, Type::SCRIPT, _pos), 
-    script_func(nullptr), script_engine(nullptr), script_context(nullptr),
+    script_func(nullptr), script_engine(nullptr), script_context(nullptr), enabled(false),
     outputs{{0},{1},{2},{3},{4},{5},{6},{7},{8}} // C++11 mandatory :)
 {
     num_outputs = 9;
     num_inputs = 9;
     memset(code_buf, 0, sizeof(code_buf));
-    user_size = ImVec2(200, 100);
+    memset(inputs, 0, sizeof(inputs));
+    user_size = ImVec2(250, 200);
     snprintf(node_name, 10, "Node %d", id);
-    enabled = false;
     this->InitScripting();
 }
 
@@ -1031,7 +1047,7 @@ void RoR::NodeGraphTool::ScriptNode::InitScripting()
         return;
     }
 
-    result = script_engine->RegisterGlobalFunction("void Write(float)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNode, Write), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
+    result = script_engine->RegisterGlobalFunction("void Write(int, float)", asMETHOD(RoR::NodeGraphTool::ScriptNode, Write), asCALL_THISCALL_ASGLOBAL, this);
     if (result < 0)
     {
         graph->AddMessage("%s: failed to register function `Write`, res: %d", node_name, result);
@@ -1056,9 +1072,9 @@ void RoR::NodeGraphTool::ScriptNode::Apply()
         return;
     }
 
-    char sourcecode[1100];
-    snprintf(sourcecode, 1100, "void main() {\n%s\n}", code_buf);
-    int result = module->AddScriptSection("body", sourcecode, strlen(sourcecode));
+    //char sourcecode[1100];
+    //snprintf(sourcecode, 1100, "void main() {\n%s\n}", code_buf);
+    int result = module->AddScriptSection("body", code_buf, strlen(code_buf));
     if (result < 0)
     {
         graph->AddMessage("%s: failed to `AddScriptSection()`, res: %d", node_name, result);
@@ -1074,7 +1090,7 @@ void RoR::NodeGraphTool::ScriptNode::Apply()
         return;
     }
 
-    script_func = module->GetFunctionByDecl("void main()");
+    script_func = module->GetFunctionByDecl("void step()");
     if (script_func == nullptr)
     {
         graph->AddMessage("%s: failed to `GetFunctionByDecl()`", node_name);
@@ -1210,7 +1226,7 @@ void RoR::NodeGraphTool::ScriptNode::Draw()
 // -------------------------------- Transform node -----------------------------------
 
 RoR::NodeGraphTool::TransformNode::TransformNode(NodeGraphTool* _graph, ImVec2 _pos):
-    Node(_graph, Type::TRANSFORM, _pos), buffer_out(0)
+    Node(_graph, Type::TRANSFORM, _pos), buffer_out(0), link_in(nullptr)
 {
     num_inputs = 1;
     num_outputs = 1;
@@ -1220,7 +1236,6 @@ RoR::NodeGraphTool::TransformNode::TransformNode(NodeGraphTool* _graph, ImVec2 _
     memset(coefs_fir, 0, sizeof(coefs_fir));
     sprintf(input_fir, "3.0 2.0 1.0");
     sprintf(coefs_fir, "3.0 2.0 1.0");
-    done = false;
     user_size.x = 200.f;
 }
 
