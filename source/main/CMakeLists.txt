@@ -109,6 +109,7 @@ set( SOURCE_FILES
   gui/DashBoardManager.{h,cpp}
   gui/GUIInputManager.{h,cpp}
   gui/GUIManager.{h,cpp}
+  gui/NodeGraphTool.{h,cpp}
   gui/OverlayWrapper.{h,cpp}
   gui/RTTLayer.{h,cpp}
   gui/imgui/imgui.{h,cpp}
@@ -143,8 +144,6 @@ set( SOURCE_FILES
   gui/panels/GUI_MainSelectorLayout.{h,cpp}
   gui/panels/GUI_MessageBox.{h,cpp}
   gui/panels/GUI_MessageBoxLayout.{h,cpp}
-  gui/panels/GUI_MotionPlatformWindowLayout.{h,cpp}
-  gui/panels/GUI_MotionPlatformWindow.{h,cpp}  
   gui/panels/GUI_MultiplayerSelector.{h,cpp}
   gui/panels/GUI_MultiplayerSelectorLayout.{h,cpp}
   gui/panels/GUI_MultiplayerClientList.{h,cpp}

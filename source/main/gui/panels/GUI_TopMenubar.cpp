@@ -242,6 +242,12 @@ void RoR::GUI::TopMenubar::Update()
                 m_open_menu = TopMenu::TOPMENU_NONE;
             }
 
+            if (ImGui::Button("Motion platform"))
+            {
+                App::GetGuiManager()->SetVisible_MotionPlatformWindow(true);
+                m_open_menu = TopMenu::TOPMENU_NONE;
+            }
+
             ImGui::Separator();
             ImGui::TextColored(GRAY_HINT_TEXT, "Pre-spawn diag. options:");
 
@@ -249,10 +255,6 @@ void RoR::GUI::TopMenubar::Update()
             if (ImGui::Checkbox("Node mass recalc. logging", &diag_mass))
             {
                 App::diag_truck_mass.SetActive(diag_mass);
-    }
-    else if (_item == m_item_motion_platform)
-    {
-        App::GetGuiManager()->SetVisible_MotionPlatformWindow(true);
             }
             if (ImGui::IsItemHovered())
             {

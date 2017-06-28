@@ -34,6 +34,9 @@
 
 namespace RoR {
 
+    // forward
+    class NodeGraphTool;
+
 class GUIManager :
     public GUIInputManager
     , public Ogre::FrameListener
@@ -81,6 +84,7 @@ public:
 
     // GUI GetInstance*()
     Console* GetConsole();
+    NodeGraphTool* GetMotionFeeder();
     GUI::MainSelector* GetMainSelector();
     GUI::GameMainMenu* GetMainMenu();
     GUI::GamePauseMenu* GetPauseMenu();
@@ -91,7 +95,6 @@ public:
     GUI::SimUtils* GetSimUtils();
     GUI::TopMenubar* GetTopMenubar();
     GUI::TeleportWindow* GetTeleport();
-    GUI::MotionPlatformWindow* GetMotionPlatform();
 
     // GUI manipulation
     void pushMessageChatBox(Ogre::String txt);
