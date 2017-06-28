@@ -3,6 +3,9 @@
 
 #include "GUIManager.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui_internal.h> // For ImRect
+
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 // External
@@ -48,12 +51,6 @@ public:
         Style();
     };
 
-    NodeGraphTool();
-
-    void Draw();
-    void PhysicsTick();
-    void CalcGraph();
-
     struct Node; // Forward
 
     /// An output buffer of a node. 1 buffer = 1 output slot.
@@ -71,6 +68,7 @@ public:
         void            Fill(const float* const src, int offset=0, int len=SIZE);
         inline void     Push(float entry)                                           { data[offset] = entry; this->Step(); }
         inline void     Step()                                                      { offset = (offset+1)%SIZE; }
+        inline float    Read() const                                                { return data[offset]; }
 
         float data[Buffer::SIZE];
         int offset;
@@ -89,7 +87,7 @@ public:
 
     struct Node
     {
-        enum class Type { INVALID, READING, GENERATOR, TRANSFORM, SCRIPT, DISPLAY };
+        enum class Type { INVALID, READING, GENERATOR, TRANSFORM, SCRIPT, DISPLAY, UDP };
 
         Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false)
         {
@@ -134,6 +132,8 @@ public:
         //   BindDst() not needed - no inputs
         //   DetachLink() not needed - no inputs
         void Draw() override;
+
+        inline void Push(Ogre::Vector3 pos)                 { buffer_x.Push(pos.x); buffer_y.Push(-pos.z); buffer_z.Push(pos.y); } // Transform OGRE coords -> classic coords
 
         int softbody_node_id; // -1 means 'none'
         Buffer buffer_x;
@@ -238,6 +238,30 @@ public:
         float plot_extent; // both min and max
     };
 
+    /// Sink of the graph. Each field in UDP packet has one instance. Cannot be created by user, created automatically. Not placed in 'm_nodes' array.
+    struct UdpNode: public Node
+    {
+        UdpNode(NodeGraphTool* nodegraph, ImVec2 _pos, const char* _title, const char* _desc);
+
+        bool Process() override                             { this->done = true; return true; }
+        //   BindSrc() - this node has no outputs.
+        void BindDst(Link* link, int slot) override;
+        void DetachLink(Link* link) override;
+        void Draw() override;
+
+        inline float Capture(int slot)                      { if (inputs[slot] != nullptr) { return inputs[slot]->buff_src->Read(); } else { return 0.f; } }
+
+        Link* inputs[3];
+        const char* title;
+        const char* desc;
+    };
+
+
+    NodeGraphTool();
+
+    void            Draw();
+    void            PhysicsTick(Beam* actor);
+    void            CalcGraph();
     void            SaveAsJson();                                                        ///< Filename specified by `m_filename`
     void            LoadFromJson();                                                      ///< Filename specified by `m_filename`
     void            SetFilename(const char* const filename)                              { strncpy(m_filename, filename, sizeof(m_filename)); }
@@ -305,6 +329,12 @@ private:
     Link*      m_link_mouse_dst;      ///< Link being mouse-dragged by it's output end.
     int        m_free_id;
     bool       m_panel_visible;
+
+public:
+    UdpNode udp_position_node;
+    UdpNode udp_velocity_node;
+    UdpNode udp_accel_node;
+    UdpNode udp_orient_node;
 };
 
 } // namespace RoR

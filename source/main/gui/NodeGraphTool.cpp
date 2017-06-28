@@ -1,7 +1,7 @@
-#include "NodeGraphTool.h"
 
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include <imgui_internal.h> // For ImRect
+
+#include "NodeGraphTool.h"
+#include "Beam.h" // aka 'the actor'
 
 
 #include "rapidjson/rapidjson.h"
@@ -27,7 +27,12 @@ RoR::NodeGraphTool::NodeGraphTool():
     m_hovered_slot_output(-1),
     m_free_id(0),
     m_panel_visible(false),
-    m_fake_mouse_node(this, ImVec2()) // Used for dragging links with mouse
+    m_fake_mouse_node(this, ImVec2()), // Used for dragging links with mouse
+
+    udp_position_node(this, ImVec2(300.f, 200.f), "UDP position", "(world XYZ)"),
+    udp_velocity_node(this, ImVec2(300.f, 250.f), "UDP velocity", "(world XYZ)"),
+    udp_accel_node   (this, ImVec2(300.f, 300.f), "UDP acceleration", "(world XYZ)"),
+    udp_orient_node  (this, ImVec2(300.f, 350.f), "UDP orientation", "(yaw pitch roll)")
 {
     memset(m_filename, 0, sizeof(m_filename));
     snprintf(m_motionsim_ip, IM_ARRAYSIZE(m_motionsim_ip), "localhost");
@@ -172,27 +177,35 @@ void RoR::NodeGraphTool::Draw()
     ImGui::End();
 }
 
-void RoR::NodeGraphTool::PhysicsTick()
+void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
 {
     for (Node* node: m_nodes)
     {
-        if (node->type != Node::Type::GENERATOR)
-            continue;
-
-        GeneratorNode* gen_node = static_cast<GeneratorNode*>(node);
-        gen_node->elapsed += 0.002f;
-
-        float result = cosf((gen_node->elapsed / 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
-
-        // add noise
-        if (gen_node->noise_max != 0)
+        if (node->type == Node::Type::GENERATOR) // TODO: Optimize! maintain an array of this type only!
         {
-            int r = rand() % gen_node->noise_max;
-            result += static_cast<float>((r*2)-r) * 0.1f;
-        }
+            GeneratorNode* gen_node = static_cast<GeneratorNode*>(node);
+            gen_node->elapsed += 0.002f;
 
-        // save to buffer
-        gen_node->buffer_out.Push(result);
+            float result = cosf((gen_node->elapsed / 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
+
+            // add noise
+            if (gen_node->noise_max != 0)
+            {
+                int r = rand() % gen_node->noise_max;
+                result += static_cast<float>((r*2)-r) * 0.1f;
+            }
+
+            // save to buffer
+            gen_node->buffer_out.Push(result);
+        }
+        else if (node->type == Node::Type::READING) // TODO: Optimize! maintain an array of this type only!
+        {
+            ReadingNode* rd_node = static_cast<ReadingNode*>(node);
+            if (rd_node->softbody_node_id >= 0)
+            {
+                rd_node->Push(actor->nodes[rd_node->softbody_node_id].AbsPosition);
+            }
+        }
     }
     this->CalcGraph();
 }
@@ -890,6 +903,49 @@ void RoR::NodeGraphTool::DisplayNode::DetachLink(Link* link)
         assert(&this->buffer_out == link->buff_src); // Check discrepancy
         link->node_src = nullptr;
         link->buff_src = nullptr;
+    }
+}
+
+// -------------------------------- UDP node -----------------------------------
+
+RoR::NodeGraphTool::UdpNode::UdpNode(NodeGraphTool* nodegraph, ImVec2 _pos, const char* _title, const char* _desc):
+    Node(nodegraph, Type::UDP, _pos)
+{
+    num_outputs = 0;
+    num_inputs = 3;
+    inputs[0]=nullptr;
+    inputs[1]=nullptr;
+    inputs[2]=nullptr;
+    title = _title;
+    desc = _desc;
+}
+
+void RoR::NodeGraphTool::UdpNode::Draw()
+{
+    graph->DrawNodeBegin(this);
+    ImGui::Text(title);
+    ImGui::Separator();
+    ImGui::Text(desc);
+    graph->DrawNodeFinalize(this);
+}
+
+void RoR::NodeGraphTool::UdpNode::DetachLink(Link* link)
+{
+    assert (link->node_src != this); // Check discrepancy - this node has no outputs!
+
+    if (link->node_dst == this)
+    {
+        for (int i=0; i<num_inputs; ++i)
+        {
+            if (inputs[i] == link)
+            {
+                inputs[i] == nullptr;
+                link->node_dst = nullptr;
+                link->slot_dst = -1;
+                return;
+            }
+            assert(false && "UdpNode::DetachLink(): Discrepancy! link points to node but node doesn't point to link");
+        }
     }
 }
 

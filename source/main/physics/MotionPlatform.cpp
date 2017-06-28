@@ -24,8 +24,8 @@
 #include "Application.h"
 #include "Beam.h"
 #include "GUIManager.h"
-#include "GUI_MotionPlatformWindow.h"
 #include "Euler.h"
+#include "NodeGraphTool.h"
 
 #include <math.h>
 
@@ -98,14 +98,7 @@ void MotionPlatform::MPlatformDisconnect()
     LOG("[RoR|MotionPlatform] Disconnected");
 }
 
-void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (2000hz)
-{
-
-    m_elapsed_time += 500;
-    if ((m_elapsed_time - m_last_update_time) < SEND_INTERVAL_MICROSEC)
-    {
-        return;
-    }
+/* ______________________________________ Original integration for reference ___________________________________________
 
     UdpElsaco1 datagram;
     datagram._unused    = Ogre::Vector3::ZERO;
@@ -163,18 +156,56 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
     m_last_velocity      = ogre_velocity;
     m_last_orient_matrix = orient_mtx;
 
-    // Update stats
-    m_velo_jitter.AddReading(ogre_velocity);
-    m_pos_jitter.AddReading(cinecam_pos);
-    m_acc_jitter.AddReading(ogre_accel);
+    ___________________________________________________________________________________________________________________
+*/
 
-    Ogre::Euler euler(orient_mtx);
-    m_euler_jitter.AddReading(
-        Ogre::Vector3(
-            euler.GetYaw().valueRadians(),
-            euler.GetPitch().valueRadians(),
-            euler.GetRoll().valueRadians())
-        );
+void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (2000hz)
+{
+    m_elapsed_time += 500;
+
+    NodeGraphTool* feeder = App::GetGuiManager()->GetMotionFeeder();
+    feeder->PhysicsTick(actor);
+
+    if ((m_elapsed_time - m_last_update_time) < SEND_INTERVAL_MICROSEC)
+    {
+        return;
+    }
+
+    UdpElsaco1 datagram;
+    datagram._unused    = Ogre::Vector3::ZERO;
+    datagram.game       = reinterpret_cast<int32_t>(MPLATFORM_GAME_ID);
+    datagram.time_milis = m_elapsed_time/1000; // microsec -> milisec
+
+    // ## OGRE engine coords: Right-handed; X is right, Y is up (screen-like), Z is back
+    // ## Motion plat. coords: Z is up, Y/X is mixed.
+
+    datagram.position_x = static_cast<int32_t>((feeder->udp_position_node.Capture(0) * 10000.f) * UPDATES_PER_SEC);
+    datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1) * 10000.f) * UPDATES_PER_SEC);
+    datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2) * 10000.f) * UPDATES_PER_SEC);
+
+    // @@@@@@@@@@
+    // TODO: Euler angles !!!
+    // @@@@@@@@@
+
+    // Velocity
+    datagram.velocity.x = feeder->udp_velocity_node.Capture(0) * UPDATES_PER_SEC;
+    datagram.velocity.y = feeder->udp_velocity_node.Capture(1) * UPDATES_PER_SEC;
+    datagram.velocity.z = feeder->udp_velocity_node.Capture(2) * UPDATES_PER_SEC;
+
+    // Acceleration
+    datagram.accel.x = feeder->udp_accel_node.Capture(0) * UPDATES_PER_SEC;
+    datagram.accel.y = feeder->udp_accel_node.Capture(1) * UPDATES_PER_SEC;;
+    datagram.accel.z = feeder->udp_accel_node.Capture(2) * UPDATES_PER_SEC;
+
+    // Send data
+    ENetBuffer buf;
+    buf.data       = static_cast<void*>(&datagram);
+    buf.dataLength = sizeof(UdpElsaco1);
+    if (enet_socket_send(m_socket, &m_addr_remote, &buf, 1) != 0)
+    {
+        LOG("[RoR|MotionPlatform] Failed to send data!");
+    }
+
 }
 
 float CalcJitter(float start, float mid, float end)
@@ -210,48 +241,6 @@ float CalcJitter(float start, float mid, float end)
     return (fabsf(mid - optim_mid) / (diff/2)) * 100.f; // percentual error
 }
 
-void JitterCacheV3::AddReading(Ogre::Vector3 val)
-{
-    // Keep the last value
-    last_udp_value = val;
 
-    // Compute jitter
-    results2[results_caret].x = CalcJitter(val.x, readings[0].x, readings[1].x); // Sequence of readings: START, MID, END
-    results2[results_caret].y = CalcJitter(val.y, readings[0].y, readings[1].y);
-    results2[results_caret].z = CalcJitter(val.z, readings[0].z, readings[1].z);
-
-    results4[results_caret].x = CalcJitter(val.x, readings[1].x, readings[3].x); // START, n, MID, n, END
-    results4[results_caret].y = CalcJitter(val.y, readings[1].y, readings[3].y);
-    results4[results_caret].z = CalcJitter(val.z, readings[1].z, readings[3].z);
-
-    results8[results_caret].x = CalcJitter(val.x, readings[3].x, readings[7].x); // START, n, n, n, MID, n, n, n, END
-    results8[results_caret].y = CalcJitter(val.y, readings[3].y, readings[7].y);
-    results8[results_caret].z = CalcJitter(val.z, readings[3].z, readings[7].z);
-
-    // Move caret
-    results_caret = ((results_caret + 1) % NUM_RESULTS);
-
-    // Shove the old readings and insert new
-    memmove((readings + 1), readings, 7 * sizeof(Ogre::Vector3));
-    readings[0] = val;
-}
-
-JitterStatV3 JitterCacheV3::ProduceStats()
-{
-    Ogre::Vector3 total2, total4, total8;
-    for (size_t i = 0; i < NUM_RESULTS; ++i)
-    {
-        total2 += results2[i];
-        total4 += results4[i];
-        total8 += results8[i];
-    }
-
-    JitterStatV3 stat;
-    stat.stat2 = total2 / static_cast<float>(NUM_RESULTS);
-    stat.stat4 = total4 / static_cast<float>(NUM_RESULTS);
-    stat.stat8 = total8 / static_cast<float>(NUM_RESULTS);
-    stat.last_udp = last_udp_value;
-    return stat;
-}
 
 #endif // USE_MPLATFORM
