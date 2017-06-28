@@ -33,7 +33,6 @@
 #include "Collisions.h"
 #include "DynamicCollisions.h"
 #include "GUIManager.h"
-#include "GUI_MotionPlatformWindow.h"
 #include "GUI_TopMenubar.h"
 #include "Language.h"
 #include "MainMenu.h"

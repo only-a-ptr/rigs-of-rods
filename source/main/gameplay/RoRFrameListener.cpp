@@ -40,7 +40,6 @@
 #include "EnvironmentMap.h"
 #include "ForceFeedback.h"
 #include "GUI_LoadingWindow.h"
-#include "GUI_MotionPlatformWindow.h"
 #include "GUI_TeleportWindow.h"
 #include "GUI_TopMenubar.h"
 #include "GUIManager.h"

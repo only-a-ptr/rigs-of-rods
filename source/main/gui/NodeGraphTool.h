@@ -191,6 +191,21 @@ public:
         void Apply();
     };
 
+    struct EulerNode: public Node
+    {
+        EulerNode(NodeGraphTool* _nodegraph, ImVec2 _pos);
+        
+        virtual bool Process() override;                          ///< @return false if waiting for data, true if processed/nothing to process.
+        virtual void BindSrc(Link* link, int slot) override;
+        virtual void BindDst(Link* link, int slot) override;
+        virtual void DetachLink(Link* link) override;
+        virtual void Draw() override;
+
+        Link* inputs[9]; // yaw axis XYZ, pitch axis XYZ, roll axis XYZ
+        Buffer outputs[3]; // yaw pitch roll
+
+    };
+
     struct TransformNode: public Node
     {
         enum class Method
