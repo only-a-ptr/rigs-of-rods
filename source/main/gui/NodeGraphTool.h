@@ -87,7 +87,7 @@ public:
 
     struct Node
     {
-        enum class Type { INVALID, READING, GENERATOR, TRANSFORM, SCRIPT, DISPLAY, UDP };
+        enum class Type { INVALID, READING, GENERATOR, TRANSFORM, SCRIPT, DISPLAY, EULER, UDP };
 
         Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false)
         {
@@ -200,9 +200,9 @@ public:
         virtual void DetachLink(Link* link) override;
         virtual void Draw() override;
 
-        Link* inputs[9]; // yaw axis XYZ, pitch axis XYZ, roll axis XYZ
-        Buffer outputs[3]; // yaw pitch roll
-
+        Link* inputs[6]; // pitch axis XYZ, roll axis XYZ
+        Buffer outputs[3]; // 
+        bool error;
     };
 
     struct TransformNode: public Node

@@ -2415,8 +2415,6 @@ bool RoRFrameListener::SetupGameplayLoop()
 
     gEnv->sceneManager->setAmbientLight(Ogre::ColourValue(0.3f, 0.3f, 0.3f));
 
-    RoR::App::GetGuiManager()->GetMotionPlatform()->SetMPlatformController(&m_motion_platform);
-
     return true;
 }
 

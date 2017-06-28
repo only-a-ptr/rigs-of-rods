@@ -1015,6 +1015,102 @@ void RoR::NodeGraphTool::ReadingNode::Draw()
     this->graph->DrawNodeFinalize(this);
 }
 
+// -------------------------------- Euler node -----------------------------------
+
+RoR::NodeGraphTool::ScriptNode::ScriptNode(NodeGraphTool* _graph, ImVec2 _pos):
+    Node(_graph, Type::EULER, _pos), error(false)
+    outputs{{0},{1},{2},{3},{4},{5},{6},{7},{8}} // C++11 mandatory :)
+{
+    num_outputs = 3; // yaw pitch roll
+    num_inputs = 9; // 3 XYZ axes: yaw pitch roll
+    memset(inputs, 0, sizeof(inputs));
+}
+
+void RoR::NodeGraphTool::ScriptNode::BindSrc(Link* link, int slot)
+{
+    link->node_src = this;
+    link->buff_src = &outputs[slot];
+}
+
+void RoR::NodeGraphTool::EulerNode::BindDst(Link* link, int slot)
+{
+    inputs[slot] = link;
+    link->node_dst = this;
+    link->slot_dst = slot;
+}
+
+void RoR::NodeGraphTool::EulerNode::DetachLink(Link* link)
+{
+    if (link->node_dst == this)
+    {
+        assert(inputs[link->slot_dst] == link); // Check discrepancy
+        inputs[link->slot_dst] = nullptr;
+        link->node_dst = nullptr;
+        link->slot_dst = -1;
+    }
+    else if (link->node_src == this)
+    {
+        assert((link->buff_src != nullptr)); // Check discrepancy
+        link->buff_src = nullptr;
+        link->node_src = nullptr;
+    }
+    else assert(false && "EulerNode::DetachLink() called on unrelated node");
+}
+
+inline float ReadFromLink(RoR::NodeGraphTool::Link* link)
+{ 
+    if (link != nullptr && link.node_src != nullptr && link.buff_src != nullptr)
+    {
+        return link.buff_src->Read();
+    }
+    else
+    {
+        return 0.f;
+    }
+}
+
+bool RoR::NodeGraphTool::EulerNode::Process()
+{
+    if (this->error) // Emergency disable
+        return true;
+
+    bool ready = true; // If completely disconnected, we're good to go. Otherwise, all inputs must be ready.
+    for (int i=0; i<num_inputs; ++i)
+    {
+        if ((inputs[i] != nullptr) && (! inputs[i]->node_src->done))
+            ready = false;
+    }
+
+    if (!ready)
+        return;
+
+    // Readings
+
+    Ogre::Vector3 roll_axis(ReadFromLink(inputs[0]), ReadFromLink(inputs[1]), ReadFromLink(inputs[2]));
+    Ogre::Vector3 pitch_axis(ReadFromLink(inputs[3]), ReadFromLink(inputs[4]), ReadFromLink(inputs[5]));
+    Ogre::Vector3 yaw_axis     = pitch_axis.crossProduct(roll_axis);
+
+    // Orientation
+    Ogre::Matrix3 orient_mtx;
+    orient_mtx.FromAxes(pitch_axis, yaw_axis, roll_axis);
+    Ogre::Radian yaw, pitch, roll;
+    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch); // NOTE: This is probably swapped... Function args are(Y, P, R)
+    outputs[0].Push( pitch.valueRadians());
+    outputs[1].Push(roll.valueRadians());
+    outputs[2].Push(yaw.valueRadians());
+}
+
+void RoR::NodeGraphTool::EulerNode::Draw()
+{
+    this->graph->DrawNodeBegin(this);
+
+    ImGui::Text("Euler node");
+    ImGui::Separator();
+    ImGui::Text("Out: pitch, roll, yaw");
+
+    this->graph->DrawNodeFinalize(this);
+}
+
 // -------------------------------- Script node -----------------------------------
 
 RoR::NodeGraphTool::ScriptNode::ScriptNode(NodeGraphTool* _graph, ImVec2 _pos):
