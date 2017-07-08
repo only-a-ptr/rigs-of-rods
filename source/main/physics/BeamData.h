@@ -461,7 +461,6 @@ struct cparticle_t
 };
 
 
-
 // some non-beam structs
 
 

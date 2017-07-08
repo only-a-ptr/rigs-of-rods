@@ -231,7 +231,6 @@ void ActorSpawner::InitializeRig()
 
     if (req.num_rotators > 0)
         m_actor->ar_rotators = new rotator_t[req.num_rotators];
-
     if (req.num_wings > 0)
         m_actor->ar_wings = new wing_t[req.num_wings];
 

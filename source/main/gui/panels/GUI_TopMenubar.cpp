@@ -314,6 +314,54 @@ void RoR::GUI::TopMenubar::Update()
 
             bool diag_deform = App::diag_log_beam_deform.GetActive();
             if (ImGui::Checkbox("Beam deform. logging", &diag_deform))
+            {
+                App::diag_log_beam_deform.SetActive(diag_deform);
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::Text("Extra logging on runtime (config: \"Beam Deform Debug\"; GVar: \"diag_log_beam_deform\")");
+                ImGui::EndTooltip();
+            }
+
+            bool diag_trig = App::diag_log_beam_trigger.GetActive();
+            if (ImGui::Checkbox("Trigger logging", &diag_trig))
+            {
+                App::diag_log_beam_trigger.SetActive(diag_trig);
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::Text("Extra logging on runtime - trigger beams activity (config: \"Trigger Debug\"; GVar: \"diag_log_beam_trigger\")");
+                ImGui::EndTooltip();
+            }
+
+            bool diag_vcam = App::diag_videocameras.GetActive();
+            if (ImGui::Checkbox("VideoCamera direction marker", &diag_vcam))
+            {
+                App::diag_videocameras.SetActive(diag_vcam);
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::Text("Visual marker of VideoCameras direction (config: \"VideoCameraDebug\"; GVar: \"diag_videocameras\")");
+                ImGui::EndTooltip();
+            }
+
+            bool diag_break = App::diag_log_beam_break.GetActive();
+            if (ImGui::Checkbox("Beam break logging", &diag_break))
+            {
+                App::diag_log_beam_break.SetActive(diag_break);
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::Text("Extra logging on runtime (config: \"Beam Break Debug\"; GVar: \"diag_log_beam_break\")");
+                ImGui::EndTooltip();
+            }
+
+            bool diag_deform = App::diag_log_beam_deform.GetActive();
+            if (ImGui::Checkbox("Beam deform. logging", &diag_deform))
                 ImGui::Separator();
 
             int debug_view_type = -1;
