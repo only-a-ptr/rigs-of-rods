@@ -308,7 +308,7 @@ void ActorSpawner::InitializeRig()
     m_actor->ar_camera_node_dir[0]=-1;
     m_actor->ar_camera_node_roll[0]=-1;
     m_actor->ar_lowest_node=0;
-
+    
 #ifdef USE_ANGELSCRIPT
     m_actor->ar_vehicle_ai = new VehicleAI(m_actor);
 #endif // USE_ANGELSCRIPT

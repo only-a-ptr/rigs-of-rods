@@ -274,24 +274,17 @@ Actor::~Actor()
         delete m_transfer_case;
 
     for (int i = 0; i < m_num_axle_diffs; ++i)
-    {
         if (m_axle_diffs[i] != nullptr)
             delete m_axle_diffs[i];
     }
-
     for (int i = 0; i < m_num_wheel_diffs; ++i)
-    {
         if (m_wheel_diffs[i] != nullptr)
             delete m_wheel_diffs[i];
-    }
-
     delete ar_nodes;
     delete ar_beams;
     delete ar_shocks;
     delete ar_rotators;
     delete ar_wings;
-}
-
 // This method scales actors. Stresses should *NOT* be scaled, they describe
 // the material type and they do not depend on length or scale.
 void Actor::ScaleActor(float value)
@@ -342,12 +335,9 @@ Vector3 Actor::getDirection()
 {
     return ar_main_camera_dir_corr * this->GetCameraDir();
 }
-
 Vector3 Actor::getPosition()
 {
     return m_avg_node_position; //the position is already in absolute position
-}
-
 void Actor::PushNetwork(char* data, int size)
 {
     if (!oob3)
@@ -3087,60 +3077,44 @@ void Actor::setDetailLevel(int v)
     if (m_gfx_detail_level == 0 && v == 1)
     {
         m_gfx_actor->SetRodsVisible(false);
-    }
     if (m_gfx_detail_level == 1 && v == 0)
     {
         m_gfx_actor->SetRodsVisible(true);
     }
     m_gfx_detail_level = v;
 }
-
 void Actor::AddInterActorBeam(beam_t* beam, Actor* a, Actor* b)
 {
     beam->bm_locked_actor = b;
-
     auto pos = std::find(ar_inter_beams.begin(), ar_inter_beams.end(), beam);
     if (pos == ar_inter_beams.end())
     {
         ar_inter_beams.push_back(beam);
-    }
-
     std::pair<Actor*, Actor*> actor_pair(a, b);
     App::GetSimController()->GetBeamFactory()->inter_actor_links[beam] = actor_pair;
-
     a->DetermineLinkedActors();
     for (auto actor : a->m_linked_actors)
         actor->DetermineLinkedActors();
-
     b->DetermineLinkedActors();
     for (auto actor : b->m_linked_actors)
         actor->DetermineLinkedActors();
 }
-
 void Actor::RemoveInterActorBeam(beam_t* beam)
 {
     auto pos = std::find(ar_inter_beams.begin(), ar_inter_beams.end(), beam);
     if (pos != ar_inter_beams.end())
-    {
         ar_inter_beams.erase(pos);
-    }
-
     auto it = App::GetSimController()->GetBeamFactory()->inter_actor_links.find(beam);
     if (it != App::GetSimController()->GetBeamFactory()->inter_actor_links.end())
     {
         auto actor_pair = it->second;
         App::GetSimController()->GetBeamFactory()->inter_actor_links.erase(it);
-
         actor_pair.first->DetermineLinkedActors();
         for (auto actor : actor_pair.first->m_linked_actors)
             actor->DetermineLinkedActors();
-
         actor_pair.second->DetermineLinkedActors();
         for (auto actor : actor_pair.second->m_linked_actors)
             actor->DetermineLinkedActors();
-    }
-}
-
 void Actor::DisjoinInterActorBeams()
 {
     ar_inter_beams.clear();
@@ -3154,11 +3128,9 @@ void Actor::DisjoinInterActorBeams()
             it->first->bm_inter_actor = false;
             it->first->bm_disabled = true;
             inter_actor_links->erase(it++);
-
             actor_pair.first->DetermineLinkedActors();
             for (auto actor : actor_pair.first->m_linked_actors)
                 actor->DetermineLinkedActors();
-
             actor_pair.second->DetermineLinkedActors();
             for (auto actor : actor_pair.second->m_linked_actors)
                 actor->DetermineLinkedActors();
@@ -3185,18 +3157,14 @@ void Actor::ToggleTies(int group)
 
     // untie all ties if one is tied
     bool istied = false;
-
     for (std::vector<tie_t>::iterator it = ar_ties.begin(); it != ar_ties.end(); it++)
     {
         // only handle ties with correct group
         if (group != -1 && (it->ti_group != -1 && it->ti_group != group))
             continue;
-
         // if tied, untie it. And the other way round
         if (it->ti_tied)
-        {
             istied = !it->ti_beam->bm_disabled;
-
             // tie is locked and should get unlocked and stop tying
             it->ti_tied = false;
             it->ti_tying = false;

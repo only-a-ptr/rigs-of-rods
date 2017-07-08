@@ -29,6 +29,7 @@
 
 #include "RoRPrerequisites.h"
 
+#include "imgui.h" // For ImVec2
 #include "utf8/checked.h"
 #include "utf8/unchecked.h"
 
