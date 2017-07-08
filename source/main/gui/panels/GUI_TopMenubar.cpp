@@ -46,6 +46,8 @@ void RoR::GUI::TopMenubar::Update()
     int num_playable_actors = std::count_if(actors.begin(), actors.end(), [](Actor* a) {return !a->ar_hide_in_actor_list;});
     actors_title << "Vehicles (" << num_playable_actors << ")";
     const char* tools_title = "Tools";
+    GStr<50> actors_title;
+    actors_title << "Actors (" << App::GetSimController()->GetNumActors() << ")";
 
     float panel_target_width = 
         (ImGui::GetStyle().WindowPadding.x * 2) + (ImGui::GetStyle().FramePadding.x * 2) + // Left+right window padding
@@ -312,7 +314,7 @@ void RoR::GUI::TopMenubar::Update()
 
             bool diag_deform = App::diag_log_beam_deform.GetActive();
             if (ImGui::Checkbox("Beam deform. logging", &diag_deform))
-            ImGui::Separator();
+                ImGui::Separator();
 
             int debug_view_type = -1;
             if (current_actor != nullptr)

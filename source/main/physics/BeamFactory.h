@@ -45,6 +45,7 @@ namespace RoR {
 class ActorManager
 {
     friend class GameScript; // needs to call RemoveActorByCollisionBox()
+    friend class RoRFrameListener; // Needs to call removeTruck()
 public:
 
     ActorManager();
@@ -92,6 +93,9 @@ public:
 
     // A list of all beams interconnecting two actors
     std::map<beam_t*, std::pair<Actor*, Actor*>> inter_actor_links;
+
+    void RemoveActorByCollisionBox(Collisions* collisions, const Ogre::String& inst, const Ogre::String& box); ///< Only for scripting
+    void removeTruck(int truck); ///< Internal+friends use only; see `RoRFrameListener::*Actor*()` functions.
 
 private:
 

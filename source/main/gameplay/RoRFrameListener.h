@@ -75,8 +75,10 @@ public:
     Actor* SpawnActorDirectly    (RoR::ActorSpawnRequest rq);
     void   RemoveActorByCollisionBox(std::string const & ev_src_instance_name, std::string const & box_name); ///< Scripting utility. TODO: Does anybody use it? ~ only_a_ptr, 08/2017
     void   SetPlayerActorById    (int actor_id)            { m_beam_factory.setCurrentTruck(actor_id); } // TODO: Eliminate, use pointers ~ only_a_ptr, 06/2017
-    void   SetPlayerActor        (Beam* actor)             { m_beam_factory.setCurrentTruck(actor->trucknum); }
-    void   ReloadCurrentActor    ();
+    void   SetPlayerActor        (Beam* actor)             { m_beam_factory.setCurrentTruck((actor == nullptr) ? -1 : actor->trucknum); }
+    Beam*  GetPlayerActor        ()                        { return m_beam_factory.getCurrentTruck(); }
+    void   ReloadPlayerActor     ();
+    void   RemovePlayerActor     ();
 
     // Scripting interface
     double getTime               () { return m_time; }

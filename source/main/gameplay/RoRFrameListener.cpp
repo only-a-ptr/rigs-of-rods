@@ -1661,6 +1661,7 @@ void SimController::UpdateSimulation(float dt)
         m_prev_player_actor = m_player_actor ? m_player_actor : m_prev_player_actor;
         this->ChangePlayerActor(m_pending_player_actor); // 'Pending' remains the same until next change is queued
     }
+    // TODO: This is a mess - actor updates from misc. inputs should be buffered, evaluated and executed at once, not ad-hoc ~ only_a_ptr, 07/2017
 
     RoR::App::GetInputEngine()->Capture();
     auto s = App::sim_state.GetActive();
@@ -1838,6 +1839,13 @@ void SimController::HideGUI(bool hidden)
     }
 #endif // USE_SOCKETW
 
+{
+    Beam* actor = m_beam_factory.getCurrentTruck();
+    this->SetPlayerActor(nullptr);
+    m_beam_factory.removeTruck(actor->trucknum);
+}
+
+void RoRFrameListener::ReloadPlayerActor()
     if (RoR::App::GetOverlayWrapper())
         RoR::App::GetOverlayWrapper()->showDashboardOverlays(!hidden, m_player_actor);
 
