@@ -894,7 +894,7 @@ struct Wheel2: BaseWheel2
 };
 
 /* -------------------------------------------------------------------------- */
-/* Section MESHWHEELS                                                         */
+/* Section MESHWHEELS and MESHWHEELS2 (unified)                               */
 /* -------------------------------------------------------------------------- */
 
 struct MeshWheel: BaseWheel
