@@ -94,101 +94,14 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PostBuildEvent>
-      <Message>	Copy resources to build directory</Message>
-      <Command>setlocal
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/OgreMain.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/OgreOverlay.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/OgrePaging.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/OgreTerrain.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/OgreRTShaderSystem.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/OgreVolume.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/Plugin_BSPSceneManager.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/Plugin_CgProgramManager.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/Plugin_OctreeSceneManager.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/Plugin_OctreeZone.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/Plugin_ParticleFX.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/Plugin_PCZSceneManager.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/RenderSystem_GL.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/RenderSystem_GL3Plus.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/RenderSystem_Direct3D9.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/plugins.cfg C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/OIS.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/cg.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/release/MyGUIEngine.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/Caelum.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/libcurl.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/OpenAL32.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxbase311u_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxbase311u_net_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxbase311u_xml_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_adv_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_aui_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_core_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_gl_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_html_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_media_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_qa_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_ribbon_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_richtext_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_stc_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_webview_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy C:/Builds/ror-dependencies-upstream/Dependencies_Windows_Visual-Studio-14-2015/bin/wxmsw311u_xrc_vc_custom.dll C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd
-setlocal
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -E copy_directory C:/Source/rigs-of-rods-elsaco/bin/resources C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo/resources
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:X86</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;dinput8.lib;dxguid.lib;$(SolutionDir)dependencies\lib\Release\OgreMain.lib;$(SolutionDir)dependencies\lib\Release\OgrePaging.lib;$(SolutionDir)dependencies\lib\Release\OgreRTShaderSystem.lib;$(SolutionDir)dependencies\lib\Release\OgreTerrain.lib;$(SolutionDir)dependencies\lib\Release\OgreOverlay.lib;$(SolutionDir)dependencies\lib\OpenAL32.lib;$(SolutionDir)dependencies\lib\libcurl_imp.lib;$(SolutionDir)dependencies\lib\Release\moFileReader.static.lib;$(SolutionDir)dependencies\lib\release\MyGUIEngine.lib;$(SolutionDir)dependencies\lib\release\MyGUI.OgrePlatform.lib;$(SolutionDir)dependencies\lib\SocketW.lib;ws2_32.lib;$(SolutionDir)dependencies\lib\Release\Angelscript.lib;$(SolutionDir)dependencies\lib\Caelum.lib;$(SolutionDir)dependencies\lib\PagedGeometry.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;dinput8.lib;dxguid.lib;$(SolutionDir)dependencies\lib\Release\OgreMain.lib;$(SolutionDir)dependencies\lib\Release\OgrePaging.lib;$(SolutionDir)dependencies\lib\Release\OgreRTShaderSystem.lib;$(SolutionDir)dependencies\lib\Release\OgreTerrain.lib;$(SolutionDir)dependencies\lib\Release\OgreOverlay.lib;$(SolutionDir)dependencies\lib\OpenAL32.lib;$(SolutionDir)dependencies\lib\libcurl_imp.lib;$(SolutionDir)dependencies\lib\Release\moFileReader.static.lib;$(SolutionDir)dependencies\lib\release\MyGUIEngine.lib;$(SolutionDir)dependencies\lib\release\MyGUI.OgrePlatform.lib;$(SolutionDir)dependencies\lib\SocketW.lib;$(SolutionDir)dependencies\lib\relwithdebinfo\enet.lib;$(SolutionDir)dependencies\lib\angelscript_2_31_2\MultiThreadedDLL\angelscript.lib;ws2_32.lib;winmm.lib;$(SolutionDir)dependencies\lib\Caelum.lib;$(SolutionDir)dependencies\lib\PagedGeometry.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>d:/projects/lib/DirectX_SDK_June2010/lib/x86;d:/projects/lib/DirectX_SDK_June2010/lib/x86/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <FixedBaseAddress>true</FixedBaseAddress>
@@ -198,7 +111,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ImportLibrary>C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo/RoR.lib</ImportLibrary>
       <LargeAddressAware>true</LargeAddressAware>
       <OptimizeReferences>false</OptimizeReferences>
-      <ProgramDataBaseFile>C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo/RoR.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>$(SolutionDir)..\bin\</ProgramDataBaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
       <Version>
