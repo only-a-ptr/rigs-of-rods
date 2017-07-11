@@ -36,14 +36,18 @@ using namespace RoR;
 const size_t SEND_INTERVAL_MICROSEC = 1000000/MPLATFORM_SEND_RATE;
 const float  UPDATES_PER_SEC        = static_cast<float>(MPLATFORM_SEND_RATE);
 
+bool G_motionsim_connected = false;
+
 
 MotionPlatform::MotionPlatform():
     m_socket(ENET_SOCKET_NULL),
     m_elapsed_time(0),
-    m_last_update_time(0)
+    m_last_update_time(0),
+    m_connected(false)
 {
     memset(&m_addr_remote, 0, sizeof(ENetAddress));
     memset(&m_addr_local , 0, sizeof(ENetAddress));
+    G_motionsim_connected=false;
 }
 
 // ## TODO: Error reporting!
@@ -71,7 +75,7 @@ bool MotionPlatform::MPlatformConnect()
     // Proof-of-concept mode: hardcode everything!
     m_addr_local.host = ENET_HOST_ANY;
     m_addr_local.port = 43000;
-    const char IP[] = {char(192),char(168),char(223),char(101)};
+    //?? const char IP[] = {char(192),char(168),char(223),char(101)};
     // 
     m_addr_remote.host = ENET_HOST_TO_NET_32(0x7F000001); // = 127.0.0.1 localhost
         //ENET_HOST_TO_NET_32 (0xC0A8DF65); //(reinterpret_cast<int>(IP));//
@@ -88,7 +92,12 @@ bool MotionPlatform::MPlatformConnect()
     m_last_update_time = 0;
 
     LOG("[RoR|MotionPlatform] Connected");
+
+    m_connected = true;
+    G_motionsim_connected = true;
     return true;
+        
+        
 }
 
 void MotionPlatform::MPlatformDisconnect()
@@ -96,6 +105,8 @@ void MotionPlatform::MPlatformDisconnect()
     enet_socket_shutdown(m_socket, ENET_SOCKET_SHUTDOWN_READ_WRITE);
     this->DeleteSocket();
     LOG("[RoR|MotionPlatform] Disconnected");
+    m_connected = false;
+    G_motionsim_connected = false;
 }
 
 /* ______________________________________ Original integration for reference ___________________________________________

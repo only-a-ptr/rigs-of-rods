@@ -14,6 +14,10 @@
 #include <map>
 #include "..\..\..\dependencies\angelscript-2-31-2\angelscript\include\angelscript.h"
 
+extern bool G_motionsim_connected;
+
+/// ========================================
+
 RoR::NodeGraphTool::NodeGraphTool():
     m_scroll(0.0f, 0.0f),
     m_last_scaled_node(nullptr),
@@ -111,9 +115,9 @@ void RoR::NodeGraphTool::Draw()
     }
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
-    static bool transmit = false;
-    ImGui::Checkbox("Transmit", &transmit); // TODO: Enable/disable networking
-
+    
+    ImGui::Text(G_motionsim_connected ? "Connected :)" : " [!!] Disconnected");
+  
     if (m_header_mode != HeaderMode::NORMAL)
     {
         if (ImGui::Button("Cancel"))
@@ -497,22 +501,11 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
         else
         {
             ImGui::Text("-- Create new node --");
-            if (ImGui::MenuItem("Generator"))
-            {
-                m_nodes.push_back(new GeneratorNode(this, scene_pos));
-            }
-            if (ImGui::MenuItem("Display"))
-            {
-                m_nodes.push_back(new DisplayNode(this, scene_pos));
-            }
-            if (ImGui::MenuItem("Script"))
-            {
-                m_nodes.push_back(new ScriptNode(this, scene_pos));
-            }
-            if (ImGui::MenuItem("Euler"))
-            {
-                m_nodes.push_back(new EulerNode(this, scene_pos));
-            }
+            if (ImGui::MenuItem("Reading"))   { m_nodes.push_back(new ReadingNode(this, scene_pos));   }
+            if (ImGui::MenuItem("Generator")) { m_nodes.push_back(new GeneratorNode(this, scene_pos)); }
+            if (ImGui::MenuItem("Display"))   { m_nodes.push_back(new DisplayNode(this, scene_pos));   }
+            if (ImGui::MenuItem("Script"))    { m_nodes.push_back(new ScriptNode(this, scene_pos));    }
+            if (ImGui::MenuItem("Euler")) { m_nodes.push_back(new EulerNode(this, scene_pos)); }
             ImGui::Text("-- Fetch UDP node --");
             if (ImGui::MenuItem("Position")) { udp_position_node.pos = scene_pos; }
             if (ImGui::MenuItem("Velocity")) { udp_velocity_node.pos = scene_pos; }

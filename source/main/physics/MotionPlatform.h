@@ -55,6 +55,8 @@
 #include "enet/enet.h" // UDP networking
 #include <stdint.h>
 
+extern bool G_motionsim_connected;
+
 namespace RoR {
 
 struct UdpElsaco1
@@ -82,10 +84,12 @@ public:
     void MPlatformDisconnect  ();
     void MPlatformSetActive   (bool active);
     void MPlatformUpdate      (Beam* vehicle);
+    bool IsConnected() { return m_connected; }
 
 private:
     void  DeleteSocket  ();
 
+    bool m_connected;
     ENetAddress   m_addr_remote;
     ENetAddress   m_addr_local;
     ENetSocket    m_socket;
