@@ -1,4 +1,14 @@
 
+# elsaco
+*.sdf
+*.opensdf
+*.obj
+*.log
+*.tlog
+*.pdb
+*.vcxprojResolveAssemblyReference.cache
+
+# --- ORIG ---
 CMakeFiles
 Solution/
 cmake_install.cmake

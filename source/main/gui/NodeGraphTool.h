@@ -16,6 +16,7 @@
 #include <vector>
 
 
+
 namespace RoR {
 
 struct Vec3 { float x, y, z; };
@@ -25,6 +26,12 @@ struct Vec3 { float x, y, z; };
 class NodeGraphTool
 {
 public:
+
+    static const int MOUSEDRAG_NODE_ID  = std::numeric_limits<int>::min() + 1;
+    static const int UDP_POS_NODE_ID    = std::numeric_limits<int>::min() + 2;
+    static const int UDP_VELO_NODE_ID   = std::numeric_limits<int>::min() + 3;
+    static const int UDP_ACC_NODE_ID    = std::numeric_limits<int>::min() + 4;
+    static const int UDP_ANGLES_NODE_ID = std::numeric_limits<int>::min() + 5;
 
     struct Style
     {
@@ -85,43 +92,51 @@ public:
         Buffer* buff_src;
     };
 
-    struct Node
+    struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
-        enum class Type { INVALID, READING, GENERATOR, TRANSFORM, SCRIPT, DISPLAY, EULER, UDP };
+        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP };
 
         Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false)
         {
-            id = _graph->AssignId();
+            
         }
 
         inline ImVec2 GetInputSlotPos(size_t slot_idx)  { return ImVec2(pos.x,               pos.y + (calc_size.y * (static_cast<float>(slot_idx+1) / static_cast<float>(num_inputs+1)))); }
         inline ImVec2 GetOutputSlotPos(size_t slot_idx) { return ImVec2(pos.x + calc_size.x, pos.y + (calc_size.y * (static_cast<float>(slot_idx+1) / static_cast<float>(num_outputs+1)))); }
 
-        virtual bool Process() { return true; }
-        virtual void BindSrc(Link* link, int slot) {}
-        virtual void BindDst(Link* link, int slot) {}
-        virtual void DetachLink(Link* link) {}
-        virtual void Draw() {}
+        virtual bool    Process()                              { this->done = true; return true; }
+        virtual void    BindSrc(Link* link, int slot)          {} ///< Binds node output to link's SRC end.
+        virtual void    BindDst(Link* link, int slot)          {} ///< Binds node input to link's DST end.
+        virtual void    DetachLink(Link* link)                 {}
+        virtual void    Draw()                                 {}
 
         NodeGraphTool* graph;
-        size_t num_inputs;
-        size_t num_outputs;
-        ImVec2 pos;
-        ImVec2 draw_rect_min; // Updated by `DrawNodeBegin()`
-        ImVec2 calc_size;
-        ImVec2 user_size;
-        int id;
-        Type type;
-        bool done; // Are data ready in this processing step?
+        int      num_inputs;
+        int      num_outputs;
+        ImVec2   pos;
+        ImVec2   draw_rect_min; // Updated by `DrawNodeBegin()`
+        ImVec2   calc_size;
+        ImVec2   user_size;
+        int      id;
+        Type     type;
+        bool     done; // Are data ready in this processing step?
+    };
+
+    struct UserNode: Node ///< Node added to graph by user. Gets auto-assigned ID.
+    {
+        UserNode(NodeGraphTool* _graph, Type _type, ImVec2 _pos): Node(_graph, _type, _pos)
+        {
+            id = _graph->AssignId();
+        }
     };
 
     /// reports XYZ position of node in world space
     /// Inputs: none
     /// Outputs(3): X position, Y position, Z position
-    struct ReadingNode: public Node
+    struct ReadingNode: public UserNode
     {
         ReadingNode(NodeGraphTool* _graph, ImVec2 _pos):
-            Node(_graph, Type::READING, _pos), buffer_x(0), buffer_y(1), buffer_z(2), softbody_node_id(-1)
+            UserNode(_graph, Type::READING, _pos), buffer_x(0), buffer_y(1), buffer_z(2), softbody_node_id(-1)
         {
             num_inputs = 0;
             num_outputs = 3;
@@ -140,19 +155,19 @@ public:
         Buffer buffer_z;
     };
 
-    struct GeneratorNode: public Node
+    struct GeneratorNode: public UserNode
     {
         GeneratorNode(NodeGraphTool* _graph, ImVec2 _pos):
-            Node(_graph, Type::GENERATOR, _pos), amplitude(1.f), frequency(1.f), noise_max(0), elapsed(0.f), buffer_out(0)
+            UserNode(_graph, Type::GENERATOR, _pos), amplitude(1.f), frequency(1.f), noise_max(0), elapsed(0.f), buffer_out(0)
         {
             num_inputs = 0;
             num_outputs = 1;
         }
 
         virtual bool Process() override                          { this->done = true; return true; }
-        virtual void BindSrc(Link* link, int slot) override      { if (slot == 0) { link->buff_src = &buffer_out; link->node_src = this; } }
-        //   BindDst() not needed - no inputs
-        virtual void DetachLink(Link* link);
+        virtual void BindSrc(Link* link, int slot) override;
+        //           BindDst() not needed - no inputs
+        virtual void DetachLink(Link* link) override;
         virtual void Draw() override;
 
         float frequency; // Hz
@@ -162,10 +177,10 @@ public:
         Buffer buffer_out;
     };
 
-    struct ScriptNode: public Node
+    struct ScriptNode: public UserNode
     {
         ScriptNode(NodeGraphTool* _nodegraph, ImVec2 _pos);
-        
+
         virtual bool Process() override;                          ///< @return false if waiting for data, true if processed/nothing to process.
         virtual void BindSrc(Link* link, int slot) override;
         virtual void BindDst(Link* link, int slot) override;
@@ -190,7 +205,7 @@ public:
         void Apply();
     };
 
-    struct EulerNode: public Node
+    struct EulerNode: public UserNode
     {
         EulerNode(NodeGraphTool* _nodegraph, ImVec2 _pos);
         
@@ -205,63 +220,44 @@ public:
         bool error;
     };
 
-    struct TransformNode: public Node
+    struct MouseDragNode: public Node // special - inherits directly node
     {
-        enum class Method
-        {
-            NONE, // Pass-through
-            FIR_PLAIN,
-            // TODO // FIR_ADAPTIVE_LMS,
-            // TODO // FIR_ADAPTIVE_RLS,
-            // TODO // FIR_ADAPTIVE_NLMS
-        };
+        MouseDragNode(NodeGraphTool* nodegraph, ImVec2 _pos);
 
-        TransformNode(NodeGraphTool* nodegraph, ImVec2 _pos);
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override      { assert(slot == 0); if (slot == 0) { link->node_src = this; link->buff_src = &buffer_out; } }
+        virtual void BindDst(Link* link, int slot) override      { assert(slot == 0); if (slot == 0) { link->node_dst = this; link->slot_dst = slot; link_in = link; } }
+        virtual void DetachLink(Link* link) override; // FINAL
+        virtual void Draw() override;
 
-        void ApplyFIR();
-
-        bool Process() override;
-        void BindSrc(Link* link, int slot) override      { if (slot == 0) { link->node_src = this; link->buff_src = &buffer_out; } }
-        void BindDst(Link* link, int slot) override      { if (slot == 0) { link->node_dst = this; link->slot_dst = slot; link_in = link; } }
-        void DetachLink(Link* link) override; // FINAL
-        void Draw() override;
-
-        char input_fir[100];
-        char coefs_fir[100];
-      //TODO  float adapt_rls_lambda;
-      //TODO  float adapt_rls_p0;
-      //TODO  float adapt_nlms_step;
-      //TODO  float adapt_nlms_regz; // "regularization factor"
-        Method method;
         Link* link_in;
         Buffer buffer_out;
-        bool done;
     };
 
-    struct DisplayNode: public Node
+    struct DisplayNode: public UserNode
     {
         DisplayNode(NodeGraphTool* nodegraph, ImVec2 _pos);
 
-        bool Process() override                             { this->done = true; return true; }
-        //   BindSrc() - this node has no outputs.
-        void BindDst(Link* link, int slot) override         { if (slot == 0) { link->node_dst = this; link->slot_dst = slot; link_in = link; } }
-        void DetachLink(Link* link) override; // FINAL
-        void Draw() override;
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override         { graph->Assert(false, "Called DisplayNode::BindSrc() - node has no outputs!"); }
+        virtual void BindDst(Link* link, int slot) override;
+        virtual void DetachLink(Link* link) override; // FINAL
+        virtual void Draw() override;
 
         Link* link_in;
         float plot_extent; // both min and max
     };
 
     /// Sink of the graph. Each field in UDP packet has one instance. Cannot be created by user, created automatically. Not placed in 'm_nodes' array.
-    struct UdpNode: public Node
+    struct UdpNode: public Node // Special - inherits directly Node
     {
         UdpNode(NodeGraphTool* nodegraph, ImVec2 _pos, const char* _title, const char* _desc);
 
-        bool Process() override                             { this->done = true; return true; }
-        //   BindSrc() - this node has no outputs.
-        void BindDst(Link* link, int slot) override;
-        void DetachLink(Link* link) override;
-        void Draw() override;
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override         { graph->Assert(false, "Called UdpNode::BindSrc() - node has no outputs!"); }
+        virtual void BindDst(Link* link, int slot) override;
+        virtual void DetachLink(Link* link) override;
+        virtual void Draw() override;
 
         inline float Capture(int slot)                      { if (inputs[slot] != nullptr) { return inputs[slot]->buff_src->Read(); } else { return 0.f; } }
 
@@ -274,7 +270,7 @@ public:
     NodeGraphTool();
 
     void            Draw();
-    void            PhysicsTick(Beam* actor);
+    void            PhysicsTick();
     void            CalcGraph();
     void            SaveAsJson();                                                        ///< Filename specified by `m_filename`
     void            LoadFromJson();                                                      ///< Filename specified by `m_filename`
@@ -293,6 +289,7 @@ private:
     inline void     DrawInputSlot (Node* node, const int index)                          { this->DrawSlotUni(node, index, true); }
     inline void     DrawOutputSlot (Node* node, const int index)                         { this->DrawSlotUni(node, index, false); }
     inline int      AssignId()                                                           { return m_free_id++; }
+    inline void     Assert(bool expr, const char* msg)                                   { if (!expr) { this->AddMessage("Assert failed: %s", msg); } }
     inline void     UpdateFreeId(int existing_id)                                        { if (existing_id >= m_free_id) { m_free_id = (existing_id + 1); } }
     void            DrawSlotUni (Node* node, const int index, const bool input);
     Link*           AddLink (Node* src, Node* dst, int src_slot, int dst_slot);          ///< creates new link or fetches existing unused one
@@ -310,6 +307,7 @@ private:
     void            JsonToNode(Node* node, const rapidjson::Value& j_object);
     void            ScriptMessageCallback(const AngelScript::asSMessageInfo *msg, void *param);
     void            DetachAndDeleteNode(Node* node);
+    void            DetachAndDeleteLink(Link* link);
 
 
     inline bool IsSlotHovered(ImVec2 center_pos) const /// Slots can't use the "InvisibleButton" technique because it won't work when dragging.
@@ -324,8 +322,6 @@ private:
     std::list<std::string>          m_messages;
     char       m_directory[300];
     char       m_filename[100];
-    char       m_motionsim_ip[40];
-    int        m_motionsim_port;
     Style      m_style;
     ImVec2     m_scroll;
     ImVec2     m_scroll_offset;
@@ -338,7 +334,7 @@ private:
     bool       m_is_any_slot_hovered;
     HeaderMode m_header_mode;
     Node*      m_last_scaled_node;
-    TransformNode  m_fake_mouse_node;     ///< Used while dragging link with mouse. Type 'Transform' used just because we need anything with 1 input and 1 output.
+    MouseDragNode  m_fake_mouse_node;     ///< Used while dragging link with mouse. Type 'Transform' used just because we need anything with 1 input and 1 output.
     Link*      m_link_mouse_src;      ///< Link being mouse-dragged by it's input end.
     Link*      m_link_mouse_dst;      ///< Link being mouse-dragged by it's output end.
     int        m_free_id;

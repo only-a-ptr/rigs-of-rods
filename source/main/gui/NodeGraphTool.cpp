@@ -29,14 +29,18 @@ RoR::NodeGraphTool::NodeGraphTool():
     m_panel_visible(false),
     m_fake_mouse_node(this, ImVec2()), // Used for dragging links with mouse
 
-    udp_position_node(this, ImVec2(300.f, 200.f), "UDP position", "(world XYZ)"),
-    udp_velocity_node(this, ImVec2(300.f, 250.f), "UDP velocity", "(world XYZ)"),
-    udp_accel_node   (this, ImVec2(300.f, 300.f), "UDP acceleration", "(world XYZ)"),
-    udp_orient_node  (this, ImVec2(300.f, 350.f), "UDP orientation", "(yaw pitch roll)")
+    udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position", "(world XYZ)"),
+    udp_velocity_node(this, ImVec2(-300.f, 200.f), "UDP velocity", "(world XYZ)"),
+    udp_accel_node   (this, ImVec2(-300.f, 300.f), "UDP acceleration", "(world XYZ)"),
+    udp_orient_node  (this, ImVec2(-300.f, 400.f), "UDP orientation", "(pitch roll yaw)")
 {
     memset(m_filename, 0, sizeof(m_filename));
-    snprintf(m_motionsim_ip, IM_ARRAYSIZE(m_motionsim_ip), "localhost");
-    m_motionsim_port = 1234;
+    m_fake_mouse_node.id = MOUSEDRAG_NODE_ID;
+    udp_position_node.id = UDP_POS_NODE_ID;
+    udp_velocity_node.id = UDP_VELO_NODE_ID;
+    udp_accel_node   .id = UDP_ACC_NODE_ID;
+    udp_orient_node  .id = UDP_ANGLES_NODE_ID;
+
 }
 
 RoR::NodeGraphTool::Link* RoR::NodeGraphTool::FindLinkByDestination(Node* node, const int slot)
@@ -105,13 +109,6 @@ void RoR::NodeGraphTool::Draw()
     {
         m_header_mode = HeaderMode::CLEAR_ALL;
     }
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
-    ImGui::PushItemWidth(150.f);
-    ImGui::InputText("IP", m_motionsim_ip, IM_ARRAYSIZE(m_motionsim_ip));
-    ImGui::SameLine();
-    ImGui::InputInt("Port", &m_motionsim_port);
-    ImGui::PopItemWidth();
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
     static bool transmit = false;
@@ -258,12 +255,12 @@ void RoR::NodeGraphTool::DrawSlotUni(Node* node, const int index, const bool inp
                 node->DetachLink(link);
                 if (input)
                 {
-                    link->node_dst = &m_fake_mouse_node;
+                    m_fake_mouse_node.BindDst(link, 0);
                     m_link_mouse_dst = link;
                 }
                 else
                 {
-                    link->node_src = &m_fake_mouse_node;
+                    m_fake_mouse_node.BindSrc(link, 0);
                     m_link_mouse_src = link;
                 }
             }
@@ -310,9 +307,9 @@ void RoR::NodeGraphTool::DrawNodeFinalize(Node* node)
     node->calc_size = ImGui::GetItemRectSize() + (m_style.node_window_padding * 2.f);
 
     // Draw slots: 0 inputs, 3 outputs (XYZ)
-    for (size_t i = 0; i<node->num_inputs; ++i)
+    for (int i = 0; i<node->num_inputs; ++i)
         this->DrawInputSlot(node, i);
-    for (size_t i = 0; i<node->num_outputs; ++i)
+    for (int i = 0; i<node->num_outputs; ++i)
         this->DrawOutputSlot(node, i);
 
     // Handle mouse dragging
@@ -345,6 +342,15 @@ void RoR::NodeGraphTool::DrawNodeFinalize(Node* node)
         m_hovered_node = node;
 }
 
+void RoR::NodeGraphTool::DetachAndDeleteLink(Link* link)
+{
+    if (link->node_dst != nullptr)
+        link->node_dst->DetachLink(link);
+    if (link->node_src != nullptr)
+        link->node_src->DetachLink(link);
+    this->DeleteLink(link);
+}
+
 void RoR::NodeGraphTool::DeleteLink(Link* link)
 {
     auto itor = m_links.begin();
@@ -358,6 +364,7 @@ void RoR::NodeGraphTool::DeleteLink(Link* link)
             return;
         }
     }
+    this->Assert(false , "NodeGraphTool::DeleteLink(): stray link - not in list");
 }
 
 void RoR::NodeGraphTool::DrawNodeGraphPane()
@@ -390,7 +397,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             }
             else
             {
-                this->DeleteLink(m_link_mouse_src);
+                this->DetachAndDeleteLink(m_link_mouse_src);
             }
             m_link_mouse_src = nullptr;
         }
@@ -402,7 +409,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             }
             else
             {
-                this->DeleteLink(m_link_mouse_dst);
+                this->DetachAndDeleteLink(m_link_mouse_dst);
             }
             m_link_mouse_dst = nullptr;
         }
@@ -425,6 +432,12 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
     {
         node->Draw();
     }
+
+    // DRAW SPECIAL NODES
+    udp_accel_node   .Draw();
+    udp_velocity_node.Draw();
+    udp_orient_node  .Draw();
+    udp_position_node.Draw();
 
     // Slot hover cleanup
     if (!m_is_any_slot_hovered)
@@ -456,16 +469,28 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
         ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup() - m_scroll_offset;
         if (m_context_menu_node != nullptr)
         {
-            ImGui::Text("Existing node:");
-            if (ImGui::MenuItem("Delete"))
+            if (m_context_menu_node == &udp_accel_node ||
+                m_context_menu_node == &udp_velocity_node ||
+                m_context_menu_node == &udp_position_node ||
+                m_context_menu_node == &udp_orient_node 
+                )
             {
-                this->DetachAndDeleteNode(m_context_menu_node);
-                m_context_menu_node = nullptr;
+                ImGui::Text("UDP node:");
+                ImGui::Text("~ no actions ~");
+            }
+            else
+            {
+                ImGui::Text("Existing node:");
+                if (ImGui::MenuItem("Delete"))
+                {
+                    this->DetachAndDeleteNode(m_context_menu_node);
+                    m_context_menu_node = nullptr;
+                }
             }
         }
         else
         {
-            ImGui::Text("New node:");
+            ImGui::Text("-- Create new node --");
             if (ImGui::MenuItem("Generator"))
             {
                 m_nodes.push_back(new GeneratorNode(this, scene_pos));
@@ -474,14 +499,19 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             {
                 m_nodes.push_back(new DisplayNode(this, scene_pos));
             }
-            if (ImGui::MenuItem("Transform"))
-            {
-                m_nodes.push_back(new TransformNode(this, scene_pos));
-            }
             if (ImGui::MenuItem("Script"))
             {
                 m_nodes.push_back(new ScriptNode(this, scene_pos));
             }
+            if (ImGui::MenuItem("Euler"))
+            {
+                m_nodes.push_back(new EulerNode(this, scene_pos));
+            }
+            ImGui::Text("-- Fetch UDP node --");
+            if (ImGui::MenuItem("Position")) { udp_position_node.pos = scene_pos; }
+            if (ImGui::MenuItem("Velocity")) { udp_velocity_node.pos = scene_pos; }
+            if (ImGui::MenuItem("Accel."))   { udp_accel_node.pos = scene_pos; }
+            if (ImGui::MenuItem("Rotation")) { udp_orient_node.pos = scene_pos; }
         }
         ImGui::EndPopup();
     }
@@ -512,6 +542,7 @@ void RoR::NodeGraphTool::CalcGraph()
     bool all_done = true;
     do
     {
+        all_done = true;
         for (Node* n: m_nodes)
         {
             if (! n->done)
@@ -555,6 +586,7 @@ void RoR::NodeGraphTool::NodeToJson(rapidjson::Value& j_data, Node* node, rapidj
     j_data.AddMember("user_size_x", node->user_size.x, doc.GetAllocator());
     j_data.AddMember("user_size_y", node->user_size.y, doc.GetAllocator());
     j_data.AddMember("id",          node->id,          doc.GetAllocator());
+    j_data.AddMember("type_id",     static_cast<int>(node->type),  doc.GetAllocator());
 }
 
 void RoR::NodeGraphTool::JsonToNode(Node* node, const rapidjson::Value& j_object)
@@ -572,10 +604,7 @@ void RoR::NodeGraphTool::SaveAsJson()
 
     // EXPORT NODES
 
-    rapidjson::Value j_xform_nodes(rapidjson::kArrayType);
-    rapidjson::Value j_disp_nodes(rapidjson::kArrayType);
-    rapidjson::Value j_script_nodes(rapidjson::kArrayType);
-    rapidjson::Value j_gen_nodes(rapidjson::kArrayType);
+    rapidjson::Value j_nodes(rapidjson::kArrayType);
     for (Node* node: m_nodes)
     {
         rapidjson::Value j_data(rapidjson::kObjectType); // Common properties....
@@ -587,25 +616,37 @@ void RoR::NodeGraphTool::SaveAsJson()
             j_data.AddMember("amplitude", static_cast<GeneratorNode*>(node)->amplitude, j_alloc);
             j_data.AddMember("frequency", static_cast<GeneratorNode*>(node)->frequency, j_alloc);
             j_data.AddMember("noise_max", static_cast<GeneratorNode*>(node)->noise_max, j_alloc);
-            j_gen_nodes.PushBack(j_data, j_alloc);
-            break;
-
-        case Node::Type::TRANSFORM:
-            j_data.AddMember("method_id", static_cast<int>(static_cast<TransformNode*>(node)->method), j_alloc);
-            j_xform_nodes.PushBack(j_data, j_alloc);
-            break;
-
-        case Node::Type::DISPLAY:
-            j_disp_nodes.PushBack(j_data, j_alloc);
             break;
 
         case Node::Type::SCRIPT:
             j_data.AddMember("source_code", rapidjson::StringRef(static_cast<ScriptNode*>(node)->code_buf), j_alloc);
-            j_script_nodes.PushBack(j_data, j_alloc);
+            break;
+
+        case Node::Type::READING:
+            j_data.AddMember("softbody_node_id", static_cast<ReadingNode*>(node)->softbody_node_id, j_alloc); // Int
+            break;
+
+        case Node::Type::DISPLAY:
+            j_data.AddMember("scale", static_cast<DisplayNode*>(node)->plot_extent, j_alloc);
+            break;
+
+        default:
             break;
 
         } // end switch
+        j_nodes.PushBack(j_data, j_alloc);
     }
+
+    // EXPORT UDP NODES
+    rapidjson::Value j_udp_pos   (rapidjson::kObjectType);
+    rapidjson::Value j_udp_acc   (rapidjson::kObjectType);
+    rapidjson::Value j_udp_orient(rapidjson::kObjectType);
+    rapidjson::Value j_udp_velo  (rapidjson::kObjectType);
+
+    this->NodeToJson(j_udp_pos,    &this->udp_position_node, doc);
+    this->NodeToJson(j_udp_acc,    &this->udp_accel_node,    doc);
+    this->NodeToJson(j_udp_orient, &this->udp_orient_node,   doc);
+    this->NodeToJson(j_udp_velo,   &this->udp_velocity_node, doc);
 
     // EXPORT LINKS
 
@@ -613,20 +654,21 @@ void RoR::NodeGraphTool::SaveAsJson()
     for (Link* link: m_links)
     {
         rapidjson::Value j_data(rapidjson::kObjectType);
-        j_data.AddMember("node_src_id",  link->node_src->id,  j_alloc);
-        j_data.AddMember("node_dst_id",  link->node_dst->id,  j_alloc);
-        j_data.AddMember("slot_src",     link->buff_src->slot, j_alloc);
-        j_data.AddMember("slot_dst",     link->slot_dst,      j_alloc);
+        j_data.AddMember("node_src_id",  link->node_src->id,    j_alloc);
+        j_data.AddMember("node_dst_id",  link->node_dst->id,    j_alloc);
+        j_data.AddMember("slot_src",     link->buff_src->slot,  j_alloc);
+        j_data.AddMember("slot_dst",     link->slot_dst,        j_alloc);
         j_links.PushBack(j_data, j_alloc);
     }
 
     // COMBINE
 
-    doc.AddMember("generator_nodes", j_gen_nodes,    j_alloc);
-    doc.AddMember("transform_nodes", j_xform_nodes,  j_alloc);
-    doc.AddMember("script_nodes",    j_script_nodes, j_alloc);
-    doc.AddMember("display_nodes",   j_disp_nodes,   j_alloc);
-    doc.AddMember("links",           j_links,        j_alloc);
+    doc.AddMember("nodes", j_nodes, j_alloc);
+    doc.AddMember("links", j_links, j_alloc);
+    doc.AddMember("udp_pos_node",    j_udp_pos   , j_alloc);
+    doc.AddMember("udp_acc_node",    j_udp_acc   , j_alloc);
+    doc.AddMember("udp_orient_node", j_udp_orient, j_alloc);
+    doc.AddMember("udp_velo_node",   j_udp_velo  , j_alloc);
 
     // SAVE FILE
 
@@ -683,84 +725,101 @@ void RoR::NodeGraphTool::LoadFromJson()
     // IMPORT NODES
     std::unordered_map<int, Node*> lookup;
 
-    const char* field = "generator_nodes";
-    if (d.HasMember(field) && d[field].IsArray())
+    if (d.HasMember("nodes") && d["nodes"].IsArray())
     {
-        auto& j_gen = d[field];
-        rapidjson::Value::ConstValueIterator itor = j_gen.Begin();
-        rapidjson::Value::ConstValueIterator endi = j_gen.End();
+        rapidjson::Value::ConstValueIterator itor = d["nodes"].Begin();
+        rapidjson::Value::ConstValueIterator endi = d["nodes"].End();
         for (; itor != endi; ++itor)
         {
-            GeneratorNode* node = new GeneratorNode(this, ImVec2());
+            Node::Type type = static_cast<Node::Type>((*itor)["type_id"].GetInt());
+            Node* node = nullptr;
+            switch(type)
+            {
+            case Node::Type::DISPLAY:
+            {
+                DisplayNode* dnode = new DisplayNode  (this, ImVec2());
+                dnode->plot_extent = (*itor)["scale"].GetFloat();
+                node = dnode;
+                break;
+            }
+            case Node::Type::READING:
+            {
+                ReadingNode* rnode = new ReadingNode  (this, ImVec2());
+                rnode->softbody_node_id = (*itor)["softbody_node_id"].GetInt();
+                node = rnode;
+                break;
+            }
+            //case Node::Type::MOUSE:   // Not enabled for use at the moment
+            case Node::Type::GENERATOR:
+            {
+                GeneratorNode* gnode = new GeneratorNode(this, ImVec2());
+                gnode->amplitude = (*itor)["amplitude"].GetFloat();
+                gnode->frequency = (*itor)["frequency"].GetFloat();
+                gnode->noise_max = (*itor)["noise_max"].GetInt();
+                node = gnode;
+                break;
+            }
+            case Node::Type::SCRIPT:
+            {
+                ScriptNode* gnode = new ScriptNode(this, ImVec2());
+                strncpy(gnode->code_buf, (*itor)["source_code"].GetString(), IM_ARRAYSIZE(gnode->code_buf));
+                node = gnode;
+                break;
+            }
+            case Node::Type::EULER:
+            {
+                node = new EulerNode    (this, ImVec2());  // No parameters
+                break;
+            }
+            //case Node::Type::UDP: // special, saved separately
+            }
             this->JsonToNode(node, *itor);
-            node->amplitude = (*itor)["amplitude"].GetFloat();
-            node->frequency = (*itor)["frequency"].GetFloat();
-            node->noise_max = (*itor)["noise_max"].GetInt();
-            m_nodes.push_back(node);
             lookup.insert(std::make_pair(node->id, node));
+            m_nodes.push_back(node);
         }
     }
-    field = "display_nodes";
-    if (d.HasMember(field) && d[field].IsArray())
-    {
-        auto& j_array = d[field];
-        rapidjson::Value::ConstValueIterator itor = j_array.Begin();
-        rapidjson::Value::ConstValueIterator endi = j_array.End();
-        for (; itor != endi; ++itor)
-        {
-            DisplayNode* node = new DisplayNode(this, ImVec2());
-            this->JsonToNode(node, *itor);
-            m_nodes.push_back(node);
-            lookup.insert(std::make_pair(node->id, node));
-        }
-    }
-    field = "transform_nodes";
-    if (d.HasMember(field) && d[field].IsArray())
-    {
-        auto& j_array = d[field];
-        rapidjson::Value::ConstValueIterator itor = j_array.Begin();
-        rapidjson::Value::ConstValueIterator endi = j_array.End();
-        for (; itor != endi; ++itor)
-        {
-            TransformNode* node = new TransformNode(this, ImVec2());
-            this->JsonToNode(node, *itor);
-            node->method = static_cast<TransformNode::Method>((*itor)["method_id"].GetInt());
-            m_nodes.push_back(node);
-            lookup.insert(std::make_pair(node->id, node));
-        }
-    }
-    field = "script_nodes";
-    if (d.HasMember(field) && d[field].IsArray())
-    {
-        auto& j_array = d[field];
-        rapidjson::Value::ConstValueIterator itor = j_array.Begin();
-        rapidjson::Value::ConstValueIterator endi = j_array.End();
-        for (; itor != endi; ++itor)
-        {
-            ScriptNode* node = new ScriptNode(this, ImVec2());
-            this->JsonToNode(node, *itor);
-            strncpy(node->code_buf, (*itor)["source_code"].GetString(), IM_ARRAYSIZE(node->code_buf));
-            m_nodes.push_back(node);
-            lookup.insert(std::make_pair(node->id, node));
-        }
-    }
+    else this->Assert(false, "LoadFromJson(): No 'nodes' array in JSON");
+
+    // IMPORT special UDP nodes
+
+    this->JsonToNode(&this->udp_position_node, d["udp_pos_node"]);
+    this->JsonToNode(&this->udp_accel_node,    d["udp_acc_node"]);
+    this->JsonToNode(&this->udp_orient_node,   d["udp_orient_node"]);
+    this->JsonToNode(&this->udp_orient_node,   d["udp_velo_node"]);
 
     // IMPORT LINKS
 
-    field = "links";
-    if (d.HasMember(field) && d[field].IsArray())
+    if (d.HasMember("links") && d["links"].IsArray())
     {
-        auto& j_array = d[field];
-        rapidjson::Value::ConstValueIterator itor = j_array.Begin();
-        rapidjson::Value::ConstValueIterator endi = j_array.End();
-        for (; itor != endi; ++itor)
+        rapidjson::Value::ConstValueIterator l_itor = d["links"].Begin();
+        rapidjson::Value::ConstValueIterator l_endi = d["links"].End();
+        for (; l_itor != l_endi; ++l_itor)
         {
             Link* link = new Link();
-            lookup.find((*itor)["node_src_id"].GetInt())->second->BindSrc(link, (*itor)["slot_src"].GetInt());
-            lookup.find((*itor)["node_dst_id"].GetInt())->second->BindDst(link, (*itor)["slot_dst"].GetInt());
+            int src_id = (*l_itor)["node_src_id"].GetInt();
+            int dst_id = (*l_itor)["node_dst_id"].GetInt();
+
+            auto src_found = lookup.find(src_id);
+            auto dst_found = lookup.find(dst_id);
+
+            if (src_found == lookup.end())
+            {
+                this->AddMessage("JSON load error: failed to resolve link src node %d", src_id);
+                delete link;
+                continue;
+            }
+            if (dst_found == lookup.end())
+            {
+                this->AddMessage("JSON load error: failed to resolve link dst node %d", dst_id);
+                delete link;
+                continue;
+            }
+            src_found->second->BindSrc(link, (*l_itor)["slot_src"].GetInt());
+            dst_found->second->BindDst(link, (*l_itor)["slot_dst"].GetInt());
             m_links.push_back(link);
         }
     }
+    else this->Assert(false, "LoadFromJson(): No 'links' array in JSON");
 }
 
 void RoR::NodeGraphTool::ClearAll()
@@ -852,7 +911,7 @@ void RoR::NodeGraphTool::Buffer::Fill(const float* const src, int offset, int le
 // -------------------------------- Display node -----------------------------------
 
 RoR::NodeGraphTool::DisplayNode::DisplayNode(NodeGraphTool* nodegraph, ImVec2 _pos):
-    Node(nodegraph, Type::DISPLAY, _pos), link_in(nullptr)
+    UserNode(nodegraph, Type::DISPLAY, _pos), link_in(nullptr)
 {
     num_outputs = 0;
     num_inputs = 1;
@@ -888,13 +947,27 @@ void RoR::NodeGraphTool::DisplayNode::Draw()
 
 void RoR::NodeGraphTool::DisplayNode::DetachLink(Link* link)
 {
-    assert (link->node_dst != this); // Check discrepancy - this node has no inputs!
+    graph->Assert (link->node_src != this, "DisplayNode::DetachLink() discrepancy - this node has no outputs!");
 
-    if (link->node_src == this)
+    if (link->node_dst == this)
     {
-        assert(&this->buffer_out == link->buff_src); // Check discrepancy
-        link->node_src = nullptr;
-        link->buff_src = nullptr;
+        graph->Assert(this->link_in == link, "DisplayNode::DetachLink() discrepancy in link: node_dst attached, link_in not");
+        link->node_dst = nullptr;
+        link->slot_dst = -1;
+        link_in = nullptr;
+    }
+    else graph->Assert (false, "DisplayNode::DetachLink() called with unrelated link");
+}
+
+void RoR::NodeGraphTool::DisplayNode::BindDst(Link* link, int slot)
+{ 
+    graph->Assert(slot == 0, "DisplayNode::BindDst() called with bad slot");
+
+    if (slot == 0)
+    { 
+        link->node_dst = this; 
+        link->slot_dst = slot; 
+        link_in = link; 
     }
 }
 
@@ -916,7 +989,7 @@ void RoR::NodeGraphTool::UdpNode::Draw()
 {
     graph->DrawNodeBegin(this);
     ImGui::Text(title);
-    ImGui::Separator();
+    ImGui::Text(" ---------- ");
     ImGui::Text(desc);
     graph->DrawNodeFinalize(this);
 }
@@ -931,7 +1004,7 @@ void RoR::NodeGraphTool::UdpNode::DetachLink(Link* link)
         {
             if (inputs[i] == link)
             {
-                inputs[i] == nullptr;
+                inputs[i] = nullptr;
                 link->node_dst = nullptr;
                 link->slot_dst = -1;
                 return;
@@ -939,6 +1012,14 @@ void RoR::NodeGraphTool::UdpNode::DetachLink(Link* link)
             assert(false && "UdpNode::DetachLink(): Discrepancy! link points to node but node doesn't point to link");
         }
     }
+}
+
+void RoR::NodeGraphTool::UdpNode::BindDst(Link* link, int slot)
+{
+    assert(slot >= 0 && slot < num_inputs);
+    inputs[slot] = link;
+    link->node_dst = this;
+    link->slot_dst = slot;
 }
 
 // -------------------------------- Generator node -----------------------------------
@@ -982,6 +1063,16 @@ void RoR::NodeGraphTool::GeneratorNode::DetachLink(Link* link)
     }
 }
 
+void RoR::NodeGraphTool::GeneratorNode::BindSrc(Link* link, int slot)
+{
+    assert(slot == 0); // Check invalid input
+    if (slot == 0)
+    {
+        link->node_src = this;
+        link->buff_src = &buffer_out;
+    }
+}
+
 // -------------------------------- Reading node -----------------------------------
 
 void RoR::NodeGraphTool::ReadingNode::BindSrc(Link* link, int slot)
@@ -991,7 +1082,7 @@ void RoR::NodeGraphTool::ReadingNode::BindSrc(Link* link, int slot)
     case 0:    link->buff_src = &buffer_x;    link->node_src = this;     return;
     case 1:    link->buff_src = &buffer_y;    link->node_src = this;     return;
     case 2:    link->buff_src = &buffer_z;    link->node_src = this;     return;
-    default: return;
+    default: assert(false && "ReadingNode::BindSrc(): invalid slot index");
     }
 }
 
@@ -1017,16 +1108,16 @@ void RoR::NodeGraphTool::ReadingNode::Draw()
 
 // -------------------------------- Euler node -----------------------------------
 
-RoR::NodeGraphTool::ScriptNode::ScriptNode(NodeGraphTool* _graph, ImVec2 _pos):
-    Node(_graph, Type::EULER, _pos), error(false)
-    outputs{{0},{1},{2},{3},{4},{5},{6},{7},{8}} // C++11 mandatory :)
+RoR::NodeGraphTool::EulerNode::EulerNode(NodeGraphTool* _graph, ImVec2 _pos):
+    UserNode(_graph, Type::EULER, _pos),
+    outputs{{0},{1},{2}} // C++11 mandatory :)
 {
-    num_outputs = 3; // yaw pitch roll
-    num_inputs = 9; // 3 XYZ axes: yaw pitch roll
+    num_outputs = 3; // Pitch roll yaw
+    num_inputs = 6; // Roll XYZ, Pitch XYZ
     memset(inputs, 0, sizeof(inputs));
 }
 
-void RoR::NodeGraphTool::ScriptNode::BindSrc(Link* link, int slot)
+void RoR::NodeGraphTool::EulerNode::BindSrc(Link* link, int slot)
 {
     link->node_src = this;
     link->buff_src = &outputs[slot];
@@ -1059,9 +1150,9 @@ void RoR::NodeGraphTool::EulerNode::DetachLink(Link* link)
 
 inline float ReadFromLink(RoR::NodeGraphTool::Link* link)
 { 
-    if (link != nullptr && link.node_src != nullptr && link.buff_src != nullptr)
+    if (link != nullptr && link->node_src != nullptr && link->buff_src != nullptr)
     {
-        return link.buff_src->Read();
+        return link->buff_src->Read();
     }
     else
     {
@@ -1082,7 +1173,7 @@ bool RoR::NodeGraphTool::EulerNode::Process()
     }
 
     if (!ready)
-        return;
+        return false;
 
     // Readings
 
@@ -1098,29 +1189,44 @@ bool RoR::NodeGraphTool::EulerNode::Process()
     outputs[0].Push( pitch.valueRadians());
     outputs[1].Push(roll.valueRadians());
     outputs[2].Push(yaw.valueRadians());
+
+    this->done = true;
+    return true;
 }
 
 void RoR::NodeGraphTool::EulerNode::Draw()
 {
     this->graph->DrawNodeBegin(this);
 
-    ImGui::Text("Euler node");
-    ImGui::Separator();
-    ImGui::Text("Out: pitch, roll, yaw");
+    ImGui::Text("     Euler angles     ");
+    ImGui::Text("IN axes ==> angles OUT");
+    ImGui::Text("Roll(XYZ)        pitch");
+    ImGui::Text("Pitch(XYZ)        roll");
+    ImGui::Text("                   yaw");
 
     this->graph->DrawNodeFinalize(this);
 }
 
 // -------------------------------- Script node -----------------------------------
 
+const char* SCRIPTNODE_EXAMPLE_CODE =
+    "// Static variables here"     "\n"
+    ""                             "\n"
+    "// Update func. (mandatory)"  "\n"
+    "void step() {"                "\n"
+    "    // Pass-thru"             "\n"
+    "    Write(0,Read(0,0));"      "\n"
+    "}";
+
 RoR::NodeGraphTool::ScriptNode::ScriptNode(NodeGraphTool* _graph, ImVec2 _pos):
-    Node(_graph, Type::SCRIPT, _pos), 
+    UserNode(_graph, Type::SCRIPT, _pos), 
     script_func(nullptr), script_engine(nullptr), script_context(nullptr), enabled(false),
     outputs{{0},{1},{2},{3},{4},{5},{6},{7},{8}} // C++11 mandatory :)
 {
     num_outputs = 9;
     num_inputs = 9;
     memset(code_buf, 0, sizeof(code_buf));
+    sprintf(code_buf, SCRIPTNODE_EXAMPLE_CODE);
     memset(inputs, 0, sizeof(inputs));
     user_size = ImVec2(250, 200);
     snprintf(node_name, 10, "Node %d", id);
@@ -1143,7 +1249,7 @@ void RoR::NodeGraphTool::ScriptNode::InitScripting()
         return;
     }
 
-    result = script_engine->RegisterGlobalFunction("void Write(int, float)", asMETHOD(RoR::NodeGraphTool::ScriptNode, Write), asCALL_THISCALL_ASGLOBAL, this);
+    result = script_engine->RegisterGlobalFunction("void Write(int, float)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNode, Write), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
     if (result < 0)
     {
         graph->AddMessage("%s: failed to register function `Write`, res: %d", node_name, result);
@@ -1275,12 +1381,16 @@ bool RoR::NodeGraphTool::ScriptNode::Process()
 
 void RoR::NodeGraphTool::ScriptNode::BindSrc(Link* link, int slot)
 {
+    assert(slot >= 0 && slot < num_outputs); // Check input
+    assert(link != nullptr); // Check input
     link->node_src = this;
     link->buff_src = &outputs[slot];
 }
 
 void RoR::NodeGraphTool::ScriptNode::BindDst(Link* link, int slot)
 {
+    assert(slot >= 0 && slot < num_inputs); // Check input
+    assert(link != nullptr); // Check input
     inputs[slot] = link;
     link->node_dst = this;
     link->slot_dst = slot;
@@ -1290,18 +1400,18 @@ void RoR::NodeGraphTool::ScriptNode::DetachLink(Link* link)
 {
     if (link->node_dst == this)
     {
-        assert(inputs[link->slot_dst] == link); // Check discrepancy
+        graph->Assert(inputs[link->slot_dst] == link, "ScriptNode::DetachLink(): Discrepancy: inputs[link->slot_dst] != link "); // Check discrepancy
         inputs[link->slot_dst] = nullptr;
         link->node_dst = nullptr;
         link->slot_dst = -1;
     }
     else if (link->node_src == this)
     {
-        assert((link->buff_src != nullptr)); // Check discrepancy
+        graph->Assert((link->buff_src != nullptr), "ScriptNode::DetachLink(): Discrepancy, buff_src is NULL"); // Check discrepancy
         link->buff_src = nullptr;
         link->node_src = nullptr;
     }
-    else assert(false && "ScriptNode::DetachLink() called on unrelated node");
+    else graph->Assert(false,"ScriptNode::DetachLink() called on unrelated node");
 }
 
 void RoR::NodeGraphTool::ScriptNode::Draw()
@@ -1321,112 +1431,24 @@ void RoR::NodeGraphTool::ScriptNode::Draw()
 
 // -------------------------------- Transform node -----------------------------------
 
-RoR::NodeGraphTool::TransformNode::TransformNode(NodeGraphTool* _graph, ImVec2 _pos):
-    Node(_graph, Type::TRANSFORM, _pos), buffer_out(0), link_in(nullptr)
+RoR::NodeGraphTool::MouseDragNode::MouseDragNode(NodeGraphTool* _graph, ImVec2 _pos):
+    Node(_graph, Type::MOUSE, _pos), buffer_out(0), link_in(nullptr)
 {
     num_inputs = 1;
     num_outputs = 1;
-    done = false;
-    method = Method::NONE;
-    memset(input_fir, 0, sizeof(input_fir));
-    memset(coefs_fir, 0, sizeof(coefs_fir));
-    sprintf(input_fir, "3.0 2.0 1.0");
-    sprintf(coefs_fir, "3.0 2.0 1.0");
     user_size.x = 200.f;
 }
 
-void RoR::NodeGraphTool::TransformNode::Draw()
+void RoR::NodeGraphTool::MouseDragNode::Draw()
 {
     graph->DrawNodeBegin(this);
     ImGui::PushItemWidth(this->user_size.x);
     ImGui::Text("Transform");
-
-    int method_id = static_cast<int>(this->method);
-    const char* mode_options[] = { "~ None ~", "FIR (plain)", "FIR + adapt. LMS", "FIR + adapt. RLS", "FIR + adapt. N-LMS" };
-    if (ImGui::Combo("Method", &method_id, mode_options, IM_ARRAYSIZE(mode_options)))
-    {
-        this->method = static_cast<TransformNode::Method>(method_id);
-    }
-
-    switch (this->method)
-    {
-    case TransformNode::Method::FIR_PLAIN:
-   //TODO case TransformNode::Method::FIR_ADAPTIVE_LMS:
-   //TODO case TransformNode::Method::FIR_ADAPTIVE_RLS:
-   //TODO case TransformNode::Method::FIR_ADAPTIVE_NLMS:
-        ImGui::InputText("Coefs", this->input_fir, sizeof(this->input_fir));
-        if (ImGui::SmallButton("Submit coefs"))
-        {
-            strcpy(this->coefs_fir, this->input_fir);
-        }
-     //TODO   switch (this->method)
-     //TODO   {
-     //TODO       case TransformNode::Method::FIR_ADAPTIVE_RLS:
-     //TODO           ImGui::InputFloat("Lambda", &this->adapt_rls_lambda);
-     //TODO           ImGui::InputFloat("P0",     &this->adapt_rls_p0);
-     //TODO           break;
-     //TODO       case TransformNode::Method::FIR_ADAPTIVE_NLMS:
-     //TODO           ImGui::InputFloat("Step", &adapt_nlms_step);
-     //TODO           ImGui::InputFloat("Regz", &adapt_nlms_regz);
-     //TODO           break;
-     //TODO   }
-        break;
-    default: break;
-    }
-
-    ImGui::PopItemWidth();
+    ImGui::Text("No options");
     graph->DrawNodeFinalize(this);
 }
 
-void RoR::NodeGraphTool::TransformNode::ApplyFIR()
-{
-    sp::FIR_filt<float, float, float> fir;
-    arma::fvec coefs = coefs_fir;
-    fir.set_coeffs(coefs);
-
-    Buffer src0(-1); // Copy of source with 0-offset
-    src0.CopyResetOffset(link_in->buff_src);
-    arma::fvec src_vec(src0.data,       static_cast<arma::uword>(Buffer::SIZE), false, true); // use memory in-place, strict mode
-    arma::fvec dst_vec(buffer_out.data, static_cast<arma::uword>(Buffer::SIZE), false, true);
-
-    dst_vec = fir.filter(src_vec);
-}
-
-bool RoR::NodeGraphTool::TransformNode::Process() // Ret: false if it's waiting for data
-{
-    if (this->link_in == nullptr)
-    {
-        this->done = true; // Nothing to transform here
-        return true;
-    }
-
-    Node* node_src = this->link_in->node_src;
-    if (! node_src->done)
-    {
-        return false; // data not ready
-    }
-
-    switch (this->method)
-    {
-    case Method::NONE: // Pass-thru
-        this->buffer_out.CopyKeepOffset(this->link_in->buff_src);
-        this->done = true;
-        return true;
-
-    case Method::FIR_PLAIN:
-    //TODO   case Method::FIR_ADAPTIVE_LMS:
-    //TODO   case Method::FIR_ADAPTIVE_RLS:
-    //TODO   case Method::FIR_ADAPTIVE_NLMS:
-        this->ApplyFIR();
-        this->done = true;
-        return true;
-
-    default: return true;
-    }
-
-}
-
-void RoR::NodeGraphTool::TransformNode::DetachLink(Link* link)
+void RoR::NodeGraphTool::MouseDragNode::DetachLink(Link* link)
 {
     if (link->node_dst == this)
     {
@@ -1437,10 +1459,11 @@ void RoR::NodeGraphTool::TransformNode::DetachLink(Link* link)
     }
     else if (link->node_src == this)
     {
-        assert(this->buffer_out == *link->buff_src); // Check discrepancy
+        assert(&this->buffer_out == link->buff_src); // Check discrepancy
         link->node_src = nullptr;
         link->buff_src = nullptr;
     }
-    else assert(false && "TransformNode::DetachLink() called on unrelated node");
+    else assert(false && "MouseDragNode::DetachLink() called on unrelated node");
 }
+
 

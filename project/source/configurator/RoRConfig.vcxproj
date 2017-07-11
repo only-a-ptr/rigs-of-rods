@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{E24D10B7-4781-3EEA-B0E0-2B7BABBC6B77}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>RoRConfig</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoRConfig.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoRConfig</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoRConfig.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoRConfig</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
+      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\network;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\utils;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\mswu;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OIS;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4996;4251;4275;4099;4305;4244</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <StringPooling>false</StringPooling>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOOGRE;_UNICODE;USE_MYGUI;USE_OPENAL;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;UNICODE;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOOGRE;_UNICODE;USE_MYGUI;USE_OPENAL;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;UNICODE;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\network;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\utils;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\mswu;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OIS;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\network;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\utils;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\mswu;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OIS;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:X86</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;Version.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxbase31u.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxmsw31u_core.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxmsw31u_html.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxbase31u_net.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxmsw31u_adv.lib;winmm.lib;comctl32.lib;oleacc.lib;rpcrt4.lib;shlwapi.lib;version.lib;wsock32.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreMain.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgrePaging.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreRTShaderSystem.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreTerrain.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreOverlay.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OIS.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\OpenAL32.lib;dinput8.lib;dxguid.lib;..\..\bin\RelWithDebInfo\version_info.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\release\MyGUIEngine.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\release\MyGUI.OgrePlatform.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>d:/projects/lib/DirectX_SDK_June2010/lib/x86;d:/projects/lib/DirectX_SDK_June2010/lib/x86/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
+      <FixedBaseAddress>true</FixedBaseAddress>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo/RoRConfig.lib</ImportLibrary>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>false</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo/RoRConfig.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\network;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\utils;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\mswu;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OIS;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4996;4251;4275;4099;4305;4244</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOOGRE;_UNICODE;USE_MYGUI;USE_OPENAL;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;UNICODE;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOOGRE;_UNICODE;USE_MYGUI;USE_OPENAL;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;UNICODE;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\network;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\utils;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\mswu;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OIS;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\network;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\utils;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\mswu;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OIS;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:X86</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;Version.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxbase31u.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxmsw31u_core.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxmsw31u_html.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxbase31u_net.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\wxmsw31u_adv.lib;winmm.lib;comctl32.lib;oleacc.lib;rpcrt4.lib;shlwapi.lib;version.lib;wsock32.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreMain.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgrePaging.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreRTShaderSystem.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreTerrain.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreOverlay.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OIS.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\OpenAL32.lib;dinput8.lib;dxguid.lib;..\..\bin\Release\version_info.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\release\MyGUIEngine.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\release\MyGUI.OgrePlatform.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>d:/projects/lib/DirectX_SDK_June2010/lib/x86;d:/projects/lib/DirectX_SDK_June2010/lib/x86/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Builds/rigs-of-rods-elsaco/bin/Release/RoRConfig.lib</ImportLibrary>
+      <LargeAddressAware>true</LargeAddressAware>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Builds/rigs-of-rods-elsaco/bin/Release/RoRConfig.pdb</ProgramDataBaseFile>
+      <SetChecksum>true</SetChecksum>
+      <SubSystem>Windows</SubSystem>
+      <Version></Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Source\rigs-of-rods-elsaco\source\configurator\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Source/rigs-of-rods-elsaco/source/configurator/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -HC:/Source/rigs-of-rods-elsaco -BC:/Builds/rigs-of-rods-elsaco --check-stamp-file C:/Builds/rigs-of-rods-elsaco/source/configurator/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Source/rigs-of-rods-elsaco/source/configurator/CMakeLists.txt;C:\Source\rigs-of-rods-elsaco\source\configurator\CMakeLists.txt;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindwxWidgets.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\UsewxWidgets.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindOGRE.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindPkgMacros.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\PreprocessorUtils.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPkgConfig.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindOIS.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindPkgMacros.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPkgConfig.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Source\rigs-of-rods-elsaco\cmake\FindMyGUI.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindOpenAL.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Source\rigs-of-rods-elsaco\source\configurator\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Builds\rigs-of-rods-elsaco\source\configurator\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Source/rigs-of-rods-elsaco/source/configurator/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -HC:/Source/rigs-of-rods-elsaco -BC:/Builds/rigs-of-rods-elsaco --check-stamp-file C:/Builds/rigs-of-rods-elsaco/source/configurator/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Source/rigs-of-rods-elsaco/source/configurator/CMakeLists.txt;C:\Source\rigs-of-rods-elsaco\source\configurator\CMakeLists.txt;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindwxWidgets.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\UsewxWidgets.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindOGRE.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindPkgMacros.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\PreprocessorUtils.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPkgConfig.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindOIS.cmake;C:\Source\rigs-of-rods-elsaco\cmake\3rdparty\FindPkgMacros.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPkgConfig.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Source\rigs-of-rods-elsaco\cmake\FindMyGUI.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindOpenAL.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;C:\Source\rigs-of-rods-elsaco\source\configurator\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\source\configurator\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\RoRConfig.h" />
+    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\conf_file.h" />
+    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\ocl_bwtest.h" />
+    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\resource.h" />
+    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\statpict.h" />
+    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\wxValueChoice.h" />
+    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\wxutils.h" />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\Configurator.cpp"  />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\SystemTools.cpp"  />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\conf_file.cpp"  />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\statpict.cpp"  />
+    <ResourceCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\icon.rc"  />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\SHA1.cpp"  />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ErrorUtils.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\ZERO_CHECK.vcxproj">
+      <Project>{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\source\version_info\version_info.vcxproj">
+      <Project>{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}</Project>
+      <Name>version_info</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
