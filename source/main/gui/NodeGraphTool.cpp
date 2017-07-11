@@ -203,7 +203,10 @@ void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
         else if (node->type == Node::Type::READING)
         {
             ReadingNode* rnode = static_cast<ReadingNode*>(node);
-            rnode->Push(actor->nodes[rnode->softbody_node_id].AbsPosition);
+            if (rnode->softbody_node_id >= 0)
+            {
+                rnode->Push(actor->nodes[rnode->softbody_node_id].AbsPosition);
+            }
         }
     }
     this->CalcGraph();
