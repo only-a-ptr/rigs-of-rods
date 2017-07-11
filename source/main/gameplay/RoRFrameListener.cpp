@@ -354,8 +354,8 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
             }
             as->addData("User_NickName", App::mp_player_name.GetActive());
             as->addData("User_Language", App::app_language.GetActive());
-            as->addData("RoR_VersionString", String(ROR_VERSION_STRING));
-            as->addData("RoR_ProtocolVersion", String(RORNET_VERSION));
+            as->addData("RoR_VersionString", String());
+            as->addData("RoR_ProtocolVersion", String());
             as->addData("RoR_BinaryHash", "");
             as->addData("MP_ServerName", App::mp_server_host.GetActive());
             as->addData("MP_ServerPort", TOSTRING(App::mp_server_port.GetActive()));

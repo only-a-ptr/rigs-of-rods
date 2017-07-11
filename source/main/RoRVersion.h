@@ -20,7 +20,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-extern const char* const ROR_VERSION_STRING_SHORT;
-extern const char* const ROR_VERSION_STRING;
-extern const char* const ROR_BUILD_DATE;
-extern const char* const ROR_BUILD_TIME;
+#define ROR_VERSION_STRING_SHORT "v4"
+#define ROR_VERSION_STRING "ELSACO v4"
+#define ROR_BUILD_DATE "d"
+#define ROR_BUILD_TIME "t"
