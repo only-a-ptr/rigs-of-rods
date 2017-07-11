@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="RelWithDebInfo|Win32">
@@ -37,17 +37,17 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-    <PropertyGroup>
-      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\RelWithDebInfo\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">version_info.dir\RelWithDebInfo\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">version_info</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\Release\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">version_info.dir\Release\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">version_info</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">version_info.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">version_info</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">version_info.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">version_info</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -129,19 +129,14 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-   
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Builds\rigs-of-rods-elsaco\source\version_info\version_info.cpp"  />
+    <ClCompile Include="C:\Builds\rigs-of-rods-elsaco\source\version_info\version_info.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\ZERO_CHECK.vcxproj">
       <Project>{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}</Project>
       <Name>ZERO_CHECK</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\source\version_info\generate_version.vcxproj">
-      <Project>{6A022046-DE3C-3108-911A-68077870DE6E}</Project>
-      <Name>generate_version</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
