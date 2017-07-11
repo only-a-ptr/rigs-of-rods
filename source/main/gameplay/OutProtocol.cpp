@@ -24,7 +24,7 @@
 #include "Application.h"
 #include "BeamEngine.h"
 #include "BeamFactory.h"
-#include "RoRVersion.h"
+
 #include "Settings.h"
 
 #include <Ogre.h>

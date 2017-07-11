@@ -34,8 +34,7 @@
 #include "InterThreadStoreVector.h"
 #include "Singleton.h"
 
-#include "scriptdictionary/scriptdictionary.h"
-#include "scriptbuilder/scriptbuilder.h"
+
 
 #define AS_INTERFACE_VERSION "0.2.0" //!< versioning for the scripting interface
 

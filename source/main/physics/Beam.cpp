@@ -80,7 +80,7 @@
 #include "Triangle.h"
 #include "TurboJet.h"
 #include "TurboProp.h"
-#include "VehicleAI.h"
+
 #include "Water.h"
 #include "GUIManager.h"
 
@@ -139,9 +139,7 @@ Beam::~Beam()
         delete replay;
     replay = 0;
 
-    if (vehicle_ai)
-        delete vehicle_ai;
-    vehicle_ai = 0;
+
 
     // TODO: Make sure we catch everything here
     // remove all scene nodes

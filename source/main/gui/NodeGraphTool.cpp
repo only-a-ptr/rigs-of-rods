@@ -4,15 +4,15 @@
 #include "Beam.h" // aka 'the actor'
 
 
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/document.h"
-#include "rapidjson/filewritestream.h"
-#include "rapidjson/filereadstream.h"
-#include "rapidjson/prettywriter.h"
-#include "sigpack/sigpack.h"
+#include "..\..\..\dependencies\rapidjson\rapidjson.h"
+#include "..\..\..\dependencies\rapidjson\/document.h"
+#include "..\..\..\dependencies\rapidjson\/filewritestream.h"
+#include "..\..\..\dependencies\rapidjson\/filereadstream.h"
+#include "..\..\..\dependencies\rapidjson\/prettywriter.h"
+
 
 #include <map>
-#include <angelscript.h>
+#include "..\..\..\dependencies\angelscript-2-31-2\angelscript\include\angelscript.h"
 
 RoR::NodeGraphTool::NodeGraphTool():
     m_scroll(0.0f, 0.0f),

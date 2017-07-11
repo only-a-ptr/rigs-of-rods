@@ -208,7 +208,7 @@ class TruckEditor;
 class Turbojet;
 class Turboprop;
 class VideoCamera;
-class VehicleAI;
+
 class Water;
 
 #ifdef USE_SOCKETW

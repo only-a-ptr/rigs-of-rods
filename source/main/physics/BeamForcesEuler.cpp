@@ -42,7 +42,7 @@
 #include "SoundScriptManager.h"
 #include "Water.h"
 #include "TerrainManager.h"
-#include "VehicleAI.h"
+
 
 using namespace Ogre;
 

@@ -29,7 +29,7 @@
 #include "Language.h"
 #include "SoundScriptManager.h"
 #include "GUIManager.h"
-#include "VehicleAI.h"
+
 
 using namespace RoR;
 

@@ -1,4 +1,5 @@
-
+*.VC.db
+*.VC.opendb
 # elsaco
 *.sdf
 *.opensdf
@@ -8,6 +9,8 @@
 *.pdb
 *.vcxprojResolveAssemblyReference.cache
 *.suo
+*.ipch
+*.pch
 
 # --- ORIG ---
 CMakeFiles

@@ -268,5 +268,5 @@ struct rig_t
 
     std::vector<std::pair<Ogre::String, bool> > dashBoardLayouts;
 
-    VehicleAI *vehicle_ai;
+
 };

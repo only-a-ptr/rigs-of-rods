@@ -49,7 +49,7 @@
 
 // ANGELSCRIPT
 #ifdef USE_ANGELSCRIPT
-#include <angelscript.h>
+#include "..\..\angelscript-2-31-2\angelscript\include\angelscript.h"
 #endif
 
 // JSON

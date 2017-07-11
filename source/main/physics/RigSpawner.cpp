@@ -33,7 +33,7 @@
 #include "Airfoil.h"
 #include "Application.h"
 #include "AutoPilot.h"
-#include "VehicleAI.h"
+
 #include "Beam.h"
 #include "BeamEngine.h"
 #include "BeamFactory.h"

@@ -20,7 +20,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-/* The following definitions are automatically set by the CMake build system */
-#define ROR_RESOURCE_VERSION_STRING "0.4.7.0-dev-bfa29a6-dirty"
-#define ROR_RESOURCE_VERSION 0,4,7,0
-
+extern const char* const ROR_VERSION_STRING_SHORT;
+extern const char* const ROR_VERSION_STRING;
+extern const char* const ROR_BUILD_DATE;
+extern const char* const ROR_BUILD_TIME;

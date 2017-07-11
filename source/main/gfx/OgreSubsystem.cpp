@@ -32,6 +32,7 @@
 #include "ErrorUtils.h"
 #include "Language.h"
 #include "RoRVersion.h"
+
 #include "RoRWindowEventUtilities.h"
 #include "Utils.h"
 

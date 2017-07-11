@@ -1,69 +1,21 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ALL_BUILD", "ALL_BUILD.vcxproj", "{D4FC7A5A-5217-3C03-A83A-6B129DA01F3A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1905FF05-3D68-3D74-93D7-2773D932DF50} = {1905FF05-3D68-3D74-93D7-2773D932DF50}
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B} = {54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}
-	EndProjectSection
-EndProject
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RoR", "RoR.vcxproj", "{1905FF05-3D68-3D74-93D7-2773D932DF50}"
-	ProjectSection(ProjectDependencies) = postProject
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B} = {54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}
-		{2EE67D2C-DA57-30D9-9483-EE86329BB496} = {2EE67D2C-DA57-30D9-9483-EE86329BB496}
-		{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F} = {8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZERO_CHECK", "..\..\\ZERO_CHECK.vcxproj", "{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "angelscript_addons", "..\angelscript_addons\angelscript_addons.vcxproj", "{2EE67D2C-DA57-30D9-9483-EE86329BB496}"
-	ProjectSection(ProjectDependencies) = postProject
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B} = {54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generate_version", "..\version_info\generate_version.vcxproj", "{6A022046-DE3C-3108-911A-68077870DE6E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B} = {54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "version_info", "..\version_info\version_info.vcxproj", "{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B} = {54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}
-		{6A022046-DE3C-3108-911A-68077870DE6E} = {6A022046-DE3C-3108-911A-68077870DE6E}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		RelWithDebInfo|Win32 = RelWithDebInfo|Win32
 		Release|Win32 = Release|Win32
+		RelWithDebInfo|Win32 = RelWithDebInfo|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D4FC7A5A-5217-3C03-A83A-6B129DA01F3A}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{D4FC7A5A-5217-3C03-A83A-6B129DA01F3A}.Release|Win32.ActiveCfg = Release|Win32
-		{1905FF05-3D68-3D74-93D7-2773D932DF50}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{1905FF05-3D68-3D74-93D7-2773D932DF50}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
 		{1905FF05-3D68-3D74-93D7-2773D932DF50}.Release|Win32.ActiveCfg = Release|Win32
 		{1905FF05-3D68-3D74-93D7-2773D932DF50}.Release|Win32.Build.0 = Release|Win32
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}.Release|Win32.ActiveCfg = Release|Win32
-		{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}.Release|Win32.Build.0 = Release|Win32
-		{2EE67D2C-DA57-30D9-9483-EE86329BB496}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{2EE67D2C-DA57-30D9-9483-EE86329BB496}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
-		{2EE67D2C-DA57-30D9-9483-EE86329BB496}.Release|Win32.ActiveCfg = Release|Win32
-		{2EE67D2C-DA57-30D9-9483-EE86329BB496}.Release|Win32.Build.0 = Release|Win32
-		{6A022046-DE3C-3108-911A-68077870DE6E}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{6A022046-DE3C-3108-911A-68077870DE6E}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
-		{6A022046-DE3C-3108-911A-68077870DE6E}.Release|Win32.ActiveCfg = Release|Win32
-		{6A022046-DE3C-3108-911A-68077870DE6E}.Release|Win32.Build.0 = Release|Win32
-		{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
-		{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}.Release|Win32.ActiveCfg = Release|Win32
-		{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}.Release|Win32.Build.0 = Release|Win32
+		{1905FF05-3D68-3D74-93D7-2773D932DF50}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
+		{1905FF05-3D68-3D74-93D7-2773D932DF50}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

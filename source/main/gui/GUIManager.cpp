@@ -386,7 +386,7 @@ void GUIManager::ReflectGameState()
         m_impl->panel_SpawnerReport      .SetVisible(false);
         m_impl->panel_SimUtils           .SetBaseVisible(false);
         m_impl->panel_MpClientList       .SetVisible(mp_state == MpState::CONNECTED);
-        m_impl->panel_MotionPlatformWin  .SetVisible(false);
+        m_impl->panel_MotionFeeder  .SetVisible(false);
         return;
     }
     if (app_state == AppState::SIMULATION)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="RelWithDebInfo|Win32">
@@ -37,21 +37,21 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-    <PropertyGroup>
-      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\RelWithDebInfo\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoRConfig.dir\RelWithDebInfo\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoRConfig</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
-      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
-      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\Release\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoRConfig.dir\Release\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoRConfig</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
-      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoRConfig.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoRConfig</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoRConfig.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoRConfig</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\network;C:\Source\rigs-of-rods-elsaco\source\configurator\..\main\utils;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\vc_dll\mswu;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OIS;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Source\rigs-of-rods-elsaco\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -102,7 +102,8 @@
       <ProgramDataBaseFile>C:/Builds/rigs-of-rods-elsaco/bin/RelWithDebInfo/RoRConfig.pdb</ProgramDataBaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -158,7 +159,8 @@
       <ProgramDataBaseFile>C:/Builds/rigs-of-rods-elsaco/bin/Release/RoRConfig.pdb</ProgramDataBaseFile>
       <SetChecksum>true</SetChecksum>
       <SubSystem>Windows</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -202,23 +204,13 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\statpict.h" />
     <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\wxValueChoice.h" />
     <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\configurator\wxutils.h" />
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\Configurator.cpp"  />
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\SystemTools.cpp"  />
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\conf_file.cpp"  />
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\statpict.cpp"  />
-    <ResourceCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\icon.rc"  />
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\SHA1.cpp"  />
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ErrorUtils.cpp"  />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\ZERO_CHECK.vcxproj">
-      <Project>{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}</Project>
-      <Name>ZERO_CHECK</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\source\version_info\version_info.vcxproj">
-      <Project>{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}</Project>
-      <Name>version_info</Name>
-    </ProjectReference>
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\Configurator.cpp" />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\SystemTools.cpp" />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\conf_file.cpp" />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\statpict.cpp" />
+    <ResourceCompile Include="C:\Source\rigs-of-rods-elsaco\source\configurator\icon.rc" />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\SHA1.cpp" />
+    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ErrorUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

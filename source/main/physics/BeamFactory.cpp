@@ -46,7 +46,7 @@
 #include "SoundScriptManager.h"
 #include "ThreadPool.h"
 #include "Utils.h"
-#include "VehicleAI.h"
+
 
 #ifdef _GNU_SOURCE
 #include <sys/sysinfo.h>

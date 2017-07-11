@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="RelWithDebInfo|Win32">
@@ -209,7 +209,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;source\main\.;source\main\audio;source\main\datatypes;source\main\gameplay;source\main\gameplay\ois;source\main\gameplay\ois\linux;source\main\gameplay\ois\Win32;source\main\gfx;source\main\gfx\camera;source\main\gfx\dof;source\main\gfx\hydrax;source\main\gfx\particle;source\main\gfx\procedural;source\main\gui;source\main\gui\imgui;source\main\gui\mygui;source\main\gui\panels;source\main\network;source\main\physics;source\main\physics\air;source\main\physics\collision;source\main\physics\flex;source\main\physics\threading;source\main\physics\utils;source\main\physics\water;source\main\resources;source\main\resources\rig_def_fileformat;source\main\resources\terrn2_fileformat;source\main\rig_editor;source\main\rig_editor\rig_data;source\main\scripting;source\main\terrain;source\main\terrain\map;source\main\threadpool;source\main\utils;source\main\utils\profiler;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;source\main\..\angelscript_addons;source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\Caelum;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)...\..\dependencies\angelscript-2-31-2\angelscript\include;d:\projects\lib\DirectX_SDK_June2010\Include;..\..\..\source\main\;..\..\..\source\main\audio;..\..\..\source\main\datatypes;..\..\..\source\main\gameplay;..\..\..\source\main\gameplay\ois;..\..\..\source\main\gameplay\ois\linux;..\..\..\source\main\gameplay\ois\Win32;..\..\..\source\main\gfx;..\..\..\source\main\gfx\camera;..\..\..\source\main\gfx\dof;..\..\..\source\main\gfx\hydrax;..\..\..\source\main\gfx\particle;..\..\..\source\main\gfx\procedural;..\..\..\source\main\gui;..\..\..\source\main\gui\imgui;..\..\..\source\main\gui\mygui;..\..\..\source\main\gui\panels;..\..\..\source\main\network;..\..\..\source\main\physics;..\..\..\source\main\physics\air;..\..\..\source\main\physics\collision;..\..\..\source\main\physics\flex;..\..\..\source\main\physics\threading;..\..\..\source\main\physics\utils;..\..\..\source\main\physics\water;..\..\..\source\main\resources;..\..\..\source\main\resources\rig_def_fileformat;..\..\..\source\main\resources\terrn2_fileformat;..\..\..\source\main\rig_editor;..\..\..\source\main\rig_editor\rig_data;..\..\..\source\main\scripting;..\..\..\source\main\terrain;..\..\..\source\main\terrain\map;..\..\..\source\main\threadpool;..\..\..\source\main\utils;..\..\..\source\main\utils\profiler;..\..\dependencies\ror-deps\include\OGRE;..\..\dependencies\ror-deps\include;..\..\dependencies\ror-deps\include\OGRE\Paging;..\..\dependencies\ror-deps\include\OGRE\RTShaderSystem;..\..\dependencies\ror-deps\include\OGRE\Terrain;..\..\dependencies\ror-deps\include\OGRE\Overlay;..\..\dependencies\ror-deps\include\AL;source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;..\..\dependencies\ror-deps\include\MYGUI;..\..\dependencies\ror-deps\include\Caelum;..\..\dependencies\ror-deps\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -223,14 +223,16 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>true</OmitFramePointers>
       <Optimization>Full</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_ANGELSCRIPT;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PrecompiledHeaderFile>d:\elsaco\rigs-of-rods-elsaco\tools\windows\pch\Precompiled.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>d:\elsaco\rigs-of-rods-elsaco\tools\windows\pch\Precompiled.h</ForcedIncludeFiles>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_ANGELSCRIPT;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -358,36 +360,12 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="source\main\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Source/rigs-of-rods-elsaco/source/main/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -HC:/Source/rigs-of-rods-elsaco -BC:/Builds/rigs-of-rods-elsaco --check-stamp-file C:/Builds/rigs-of-rods-elsaco/source/main/CMakeFiles/generate.stamp
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Source/rigs-of-rods-elsaco/source/main/CMakeLists.txt;source\main\CMakeLists.txt;cmake\SourceFileUtils.cmake;cmake\3rdparty\FindThreads.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\CheckLibraryExists.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\CheckSymbolExists.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\CheckIncludeFile.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\3rdparty\FindOGRE.cmake;cmake\3rdparty\FindPkgMacros.cmake;cmake\3rdparty\PreprocessorUtils.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPkgConfig.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindMoFileReader.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindMyGUI.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindOpenAL.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindSocketW.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindAngelScript.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindCURL.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindCaelum.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindPagedGeometry.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;source\main\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Builds\rigs-of-rods-elsaco\source\main\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Source/rigs-of-rods-elsaco/source/main/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
-D:\Software\CMake-zip\cmake-3.8.1-win64-x64\bin\cmake.exe -HC:/Source/rigs-of-rods-elsaco -BC:/Builds/rigs-of-rods-elsaco --check-stamp-file C:/Builds/rigs-of-rods-elsaco/source/main/CMakeFiles/generate.stamp
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Source/rigs-of-rods-elsaco/source/main/CMakeLists.txt;source\main\CMakeLists.txt;cmake\SourceFileUtils.cmake;cmake\3rdparty\FindThreads.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\CheckLibraryExists.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\CheckSymbolExists.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\CheckIncludeFile.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\3rdparty\FindOGRE.cmake;cmake\3rdparty\FindPkgMacros.cmake;cmake\3rdparty\PreprocessorUtils.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPkgConfig.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindMoFileReader.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindMyGUI.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindOpenAL.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindSocketW.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindAngelScript.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindCURL.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindCaelum.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;cmake\FindPagedGeometry.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageHandleStandardArgs.cmake;D:\Software\CMake-zip\cmake-3.8.1-win64-x64\share\cmake-3.8\Modules\FindPackageMessage.cmake;source\main\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\source\main\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\tools\windows\pch\Precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">d:\elsaco\rigs-of-rods-elsaco\tools\windows\pch\Precompiled.h</ForcedIncludeFiles>
+    </ClCompile>
     <ClInclude Include="..\..\..\source\main\Application.h" />
     <ClInclude Include="..\..\..\source\main\ForwardDeclarations.h" />
     <ClInclude Include="..\..\..\source\main\GlobalEnvironment.h" />
@@ -840,20 +818,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\..\..\source\main\scripting\OgreScriptBuilder.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\ScriptEngine.cpp" />
     <ResourceCompile Include="source\main\icon.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\ZERO_CHECK.vcxproj">
-      <Project>{54567CF5-4EBB-3D43-8D00-BE45CC4EC04B}</Project>
-      <Name>ZERO_CHECK</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\source\angelscript_addons\angelscript_addons.vcxproj">
-      <Project>{2EE67D2C-DA57-30D9-9483-EE86329BB496}</Project>
-      <Name>angelscript_addons</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Builds\rigs-of-rods-elsaco\source\version_info\version_info.vcxproj">
-      <Project>{8EF4DC6B-75E8-3893-89AE-8CB35C59E04F}</Project>
-      <Name>version_info</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

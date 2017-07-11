@@ -1,1369 +1,463 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\MainMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\MumbleIntegration.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\Sound.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\SoundManager.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\SoundScriptManager.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\AircraftSimulation.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\AutoPilot.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\BeamEngine.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Character.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\CharacterFactory.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ChatSystem.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Landusemap.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\LandVehicleSimulation.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\OutProtocol.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\PositionStorage.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ProceduralManager.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Replay.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Road.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Road2.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\RoRFrameListener.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\SceneMouse.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\SkinManager.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\TorqueCurve.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\VehicleAI.cpp">
-      <Filter>Source Files\gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\ColoredTextAreaOverlayElement.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DecalManager.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DustManager.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DustPool.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DynamicLines.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DynamicRenderable.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\EnvironmentMap.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\GfxActor.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\HDRListener.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\Heathaze.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\HydraxWater.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\MovableText.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\OgreSubsystem.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\ShadowManager.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\Skidmark.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\SkyManager.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\Water.cpp">
-      <Filter>Source Files\gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorCharacter.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorFixed.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorFree.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorIsometric.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorOrbit.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorStatic.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorVehicle.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraManager.cpp">
-      <Filter>Source Files\gfx\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\dof\DepthOfFieldEffect.cpp">
-      <Filter>Source Files\gfx\dof</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\dof\Lens.cpp">
-      <Filter>Source Files\gfx\dof</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\CfgFileManager.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\DecalsManager.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Enums.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\FFT.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\GodRaysManager.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\GPUNormalMapManager.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Help.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Hydrax.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Image.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\MaterialManager.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Mesh.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Module.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Noise.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Perlin.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Prerequisites.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\PressurePoint.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\ProjectedGrid.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\RadialGrid.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Real.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\RttManager.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\SimpleGrid.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\TextureManager.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Wave.cpp">
-      <Filter>Source Files\gfx\hydrax</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\ExtinguishableFireAffector.cpp">
-      <Filter>Source Files\gfx\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\FireExtinguisherAffector.cpp">
-      <Filter>Source Files\gfx\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\OgreShaderParticleRenderer.cpp">
-      <Filter>Source Files\gfx\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\Dashboard.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\DashBoardManager.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\GUIInputManager.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\GUIManager.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\NodeGraphTool.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\OverlayWrapper.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\RTTLayer.cpp">
-      <Filter>Source Files\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\imgui.cpp">
-      <Filter>Source Files\gui\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\imgui_demo.cpp">
-      <Filter>Source Files\gui\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\imgui_draw.cpp">
-      <Filter>Source Files\gui\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\OgreImGui.cpp">
-      <Filter>Source Files\gui\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\mygui\Dialog.cpp">
-      <Filter>Source Files\gui\mygui</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameConsole.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_LoadingWindow.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_FrictionSettings.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TopMenubar.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TextureToolWindow.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_DebugOptions.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_DebugOptionsLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameAbout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameAboutLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameChatBox.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameChatBoxLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameConsoleLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameMainMenu.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GamePauseMenu.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MainSelector.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MainSelectorLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MessageBox.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MessageBoxLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MultiplayerSelector.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MultiplayerSelectorLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MultiplayerClientList.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_SimUtils.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_SimUtilsLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TeleportWindow.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TeleportWindowLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_VehicleDescription.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp">
-      <Filter>Source Files\gui\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\network\Network.cpp">
-      <Filter>Source Files\network</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\Beam.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\BeamFactory.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\BeamForcesEuler.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\BeamSlideNode.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\CmdKeyInertia.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\Differentials.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\MotionPlatform.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\RigSpawner.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\RigSpawner_ProcessControl.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\SlideNode.cpp">
-      <Filter>Source Files\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\AirBrake.cpp">
-      <Filter>Source Files\physics\air</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\Airfoil.cpp">
-      <Filter>Source Files\physics\air</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\TurboJet.cpp">
-      <Filter>Source Files\physics\air</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\TurboProp.cpp">
-      <Filter>Source Files\physics\air</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\Collisions.cpp">
-      <Filter>Source Files\physics\collision</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\DynamicCollisions.cpp">
-      <Filter>Source Files\physics\collision</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\PointColDetector.cpp">
-      <Filter>Source Files\physics\collision</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexAirfoil.cpp">
-      <Filter>Source Files\physics\flex</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexBody.cpp">
-      <Filter>Source Files\physics\flex</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexFactory.cpp">
-      <Filter>Source Files\physics\flex</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexMesh.cpp">
-      <Filter>Source Files\physics\flex</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexMeshWheel.cpp">
-      <Filter>Source Files\physics\flex</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexObj.cpp">
-      <Filter>Source Files\physics\flex</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\utils\BeamStats.cpp">
-      <Filter>Source Files\physics\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\water\Buoyance.cpp">
-      <Filter>Source Files\physics\water</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\water\ScrewProp.cpp">
-      <Filter>Source Files\physics\water</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\CacheSystem.cpp">
-      <Filter>Source Files\resources</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\ContentManager.cpp">
-      <Filter>Source Files\resources</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_File.cpp">
-      <Filter>Source Files\resources\rig_def_fileformat</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Node.cpp">
-      <Filter>Source Files\resources\rig_def_fileformat</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Parser.cpp">
-      <Filter>Source Files\resources\rig_def_fileformat</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.cpp">
-      <Filter>Source Files\resources\rig_def_fileformat</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Serializer.cpp">
-      <Filter>Source Files\resources\rig_def_fileformat</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp">
-      <Filter>Source Files\resources\rig_def_fileformat</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\terrn2_fileformat\Terrn2Fileformat.cpp">
-      <Filter>Source Files\resources\terrn2_fileformat</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\OgreTerrainPSSMMaterialGenerator.cpp">
-      <Filter>Source Files\terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\TerrainGeometryManager.cpp">
-      <Filter>Source Files\terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\TerrainManager.cpp">
-      <Filter>Source Files\terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\TerrainObjectManager.cpp">
-      <Filter>Source Files\terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\map\SurveyMapEntity.cpp">
-      <Filter>Source Files\terrain\map</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\map\SurveyMapManager.cpp">
-      <Filter>Source Files\terrain\map</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\map\SurveyMapTextureCreator.cpp">
-      <Filter>Source Files\terrain\map</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\CollisionTools.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ConfigFile.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ErrorUtils.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ForceFeedback.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\InputEngine.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Language.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\MeshObject.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\PlatformUtils.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\RoRWindowEventUtilities.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Settings.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\SHA1.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Utils.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Win32DirectInput.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\WriteTextToTexture.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\profiler\Profiler.cpp">
-      <Filter>Source Files\utils\profiler</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISEffect.cpp">
-      <Filter>Source Files\gameplay\ois</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISException.cpp">
-      <Filter>Source Files\gameplay\ois</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISForceFeedback.cpp">
-      <Filter>Source Files\gameplay\ois</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISInputManager.cpp">
-      <Filter>Source Files\gameplay\ois</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISJoyStick.cpp">
-      <Filter>Source Files\gameplay\ois</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISKeyboard.cpp">
-      <Filter>Source Files\gameplay\ois</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISObject.cpp">
-      <Filter>Source Files\gameplay\ois</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32ForceFeedback.cpp">
-      <Filter>Source Files\gameplay\ois\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32InputManager.cpp">
-      <Filter>Source Files\gameplay\ois\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32JoyStick.cpp">
-      <Filter>Source Files\gameplay\ois\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32JoyStick.old.cpp">
-      <Filter>Source Files\gameplay\ois\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32KeyBoard.cpp">
-      <Filter>Source Files\gameplay\ois\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32Mouse.cpp">
-      <Filter>Source Files\gameplay\ois\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\CBytecodeStream.cpp">
-      <Filter>Source Files\scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\GameScript.cpp">
-      <Filter>Source Files\scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\LocalStorage.cpp">
-      <Filter>Source Files\scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\OgreAngelscript.cpp">
-      <Filter>Source Files\scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\OgreScriptBuilder.cpp">
-      <Filter>Source Files\scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\ScriptEngine.cpp">
-      <Filter>Source Files\scripting</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\main.cpp" />
+    <ClCompile Include="..\..\..\source\main\Application.cpp" />
+    <ClCompile Include="..\..\..\source\main\MainMenu.cpp" />
+    <ClCompile Include="..\..\..\source\main\audio\MumbleIntegration.cpp" />
+    <ClCompile Include="..\..\..\source\main\audio\Sound.cpp" />
+    <ClCompile Include="..\..\..\source\main\audio\SoundManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\audio\SoundScriptManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\AircraftSimulation.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\AutoPilot.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\BeamEngine.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\Character.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\CharacterFactory.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ChatSystem.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\Landusemap.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\LandVehicleSimulation.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\OutProtocol.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\PositionStorage.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ProceduralManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\Replay.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\Road.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\Road2.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\RoRFrameListener.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\SceneMouse.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\SkinManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\TorqueCurve.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\VehicleAI.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElement.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\DecalManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\DustManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\DustPool.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\DynamicLines.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\DynamicRenderable.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\EnvironmentMap.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\GfxActor.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\HDRListener.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\Heathaze.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\HydraxWater.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\MovableText.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\OgreSubsystem.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\ShadowManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\Skidmark.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\SkyManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\Water.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\dof\DepthOfFieldEffect.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\dof\Lens.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\CfgFileManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\DecalsManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Enums.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\FFT.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Help.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Hydrax.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Image.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\MaterialManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Mesh.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Module.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Noise.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Perlin.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Prerequisites.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\PressurePoint.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\ProjectedGrid.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\RadialGrid.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Real.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\RttManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\TextureManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Wave.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffector.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.cpp" />
+    <ClCompile Include="..\..\..\source\main\gfx\particle\OgreShaderParticleRenderer.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\Dashboard.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\DashBoardManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\GUIInputManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\GUIManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\NodeGraphTool.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\OverlayWrapper.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\RTTLayer.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\imgui\OgreImGui.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\mygui\Dialog.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsole.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAbout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelector.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBox.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtils.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.cpp" />
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp" />
+    <ClCompile Include="..\..\..\source\main\network\Network.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\Beam.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\BeamFactory.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\BeamForcesEuler.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\BeamSlideNode.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\CmdKeyInertia.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\Differentials.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\MotionPlatform.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\RigSpawner.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\RigSpawner_ProcessControl.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\SlideNode.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\air\AirBrake.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\air\Airfoil.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\air\TurboJet.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\air\TurboProp.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\collision\Collisions.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\collision\DynamicCollisions.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\collision\PointColDetector.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexAirfoil.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexBody.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexFactory.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexMesh.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexMeshWheel.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexObj.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\utils\BeamStats.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\water\Buoyance.cpp" />
+    <ClCompile Include="..\..\..\source\main\physics\water\ScrewProp.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\CacheSystem.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\ContentManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp" />
+    <ClCompile Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.cpp" />
+    <ClCompile Include="..\..\..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.cpp" />
+    <ClCompile Include="..\..\..\source\main\terrain\TerrainGeometryManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\terrain\TerrainManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\terrain\TerrainObjectManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapEntity.cpp" />
+    <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapTextureCreator.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\CollisionTools.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\ConfigFile.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\ErrorUtils.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\ForceFeedback.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\InputEngine.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\Language.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\MeshObject.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\PlatformUtils.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\RoRWindowEventUtilities.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\Settings.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\SHA1.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\Utils.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\Win32DirectInput.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\WriteTextToTexture.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\profiler\Profiler.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISEffect.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISException.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISForceFeedback.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISInputManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISJoyStick.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISKeyboard.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISObject.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32InputManager.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.old.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32KeyBoard.cpp" />
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.cpp" />
+    <ClCompile Include="..\..\..\source\main\scripting\CBytecodeStream.cpp" />
+    <ClCompile Include="..\..\..\source\main\scripting\GameScript.cpp" />
+    <ClCompile Include="..\..\..\source\main\scripting\LocalStorage.cpp" />
+    <ClCompile Include="..\..\..\source\main\scripting\OgreAngelscript.cpp" />
+    <ClCompile Include="..\..\..\source\main\scripting\OgreScriptBuilder.cpp" />
+    <ClCompile Include="..\..\..\source\main\scripting\ScriptEngine.cpp" />
+    <ClCompile Include="..\..\..\tools\windows\pch\Precompiled.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\ForwardDeclarations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\GlobalEnvironment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\MainMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\RoRPrerequisites.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\MumbleIntegration.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\Sound.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\SoundManager.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\audio\SoundScriptManager.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\datatypes\beam_t.h">
-      <Filter>Header Files\datatypes</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\datatypes\node_t.h">
-      <Filter>Header Files\datatypes</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\datatypes\rig_t.h">
-      <Filter>Header Files\datatypes</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\datatypes\shock_t.h">
-      <Filter>Header Files\datatypes</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\datatypes\wheel_t.h">
-      <Filter>Header Files\datatypes</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\AircraftSimulation.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\AutoPilot.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\BeamEngine.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Character.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\CharacterFactory.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ChatSystem.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Landusemap.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\LandVehicleSimulation.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\OutProtocol.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\PositionStorage.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ProceduralManager.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Replay.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Road.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Road2.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\RoRFrameListener.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\SceneMouse.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ScriptEvents.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\Scripting.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\SkinManager.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\TorqueCurve.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\VehicleAI.h">
-      <Filter>Header Files\gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\AdvancedScreen.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\ColoredTextAreaOverlayElement.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\ColoredTextAreaOverlayElementFactory.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DecalManager.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DustManager.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DustPool.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DynamicLines.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\DynamicRenderable.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\EnvironmentMap.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\GfxActor.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\GlowMaterialListener.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\HDRListener.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\Heathaze.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\HydraxWater.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\IWater.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\MovableText.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\OgreSubsystem.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\ShadowManager.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\Skidmark.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\SkyManager.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\Water.h">
-      <Filter>Header Files\gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorCharacter.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorFixed.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorFree.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorIsometric.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorOrbit.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorStatic.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorVehicle.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraBehaviorVehicleSpline.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\CameraManager.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\camera\PerVehicleCameraContext.h">
-      <Filter>Header Files\gfx\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\dof\DepthOfFieldEffect.h">
-      <Filter>Header Files\gfx\dof</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\dof\Lens.h">
-      <Filter>Header Files\gfx\dof</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\CfgFileManager.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\DecalsManager.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Enums.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\FFT.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\GodRaysManager.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\GPUNormalMapManager.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Help.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Hydrax.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Image.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\MaterialManager.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Mesh.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Module.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Noise.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Perlin.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Prerequisites.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\PressurePoint.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\ProjectedGrid.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\RadialGrid.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Real.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\RttManager.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\SimpleGrid.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\TextureManager.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\hydrax\Wave.h">
-      <Filter>Header Files\gfx\hydrax</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\ExtinguishableFireAffector.h">
-      <Filter>Header Files\gfx\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\ExtinguishableFireAffectorFactory.h">
-      <Filter>Header Files\gfx\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\FireExtinguisherAffector.h">
-      <Filter>Header Files\gfx\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\FireExtinguisherAffectorFactory.h">
-      <Filter>Header Files\gfx\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\OgreParticleCustomParam.h">
-      <Filter>Header Files\gfx\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gfx\particle\OgreShaderParticleRenderer.h">
-      <Filter>Header Files\gfx\particle</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\Dashboard.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\DashBoardManager.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\GUIInputManager.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\GUIManager.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\NodeGraphTool.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\OverlayWrapper.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\RTTLayer.h">
-      <Filter>Header Files\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\imgui.h">
-      <Filter>Header Files\gui\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\OgreImGui.h">
-      <Filter>Header Files\gui\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\imconfig.h">
-      <Filter>Header Files\gui\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\imgui_internal.h">
-      <Filter>Header Files\gui\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\stb_rect_pack.h">
-      <Filter>Header Files\gui\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\stb_textedit.h">
-      <Filter>Header Files\gui\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\imgui\stb_truetype.h">
-      <Filter>Header Files\gui\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\mygui\Attribute.h">
-      <Filter>Header Files\gui\mygui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\mygui\BaseLayout.h">
-      <Filter>Header Files\gui\mygui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\mygui\Dialog.h">
-      <Filter>Header Files\gui\mygui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\mygui\GuiPanelBase.h">
-      <Filter>Header Files\gui\mygui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\mygui\WrapsAttribute.h">
-      <Filter>Header Files\gui\mygui</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameConsole.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_LoadingWindow.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_FrictionSettings.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TopMenubar.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TextureToolWindow.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_DebugOptions.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_DebugOptionsLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameAbout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameAboutLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameChatBox.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameChatBoxLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameConsoleLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GameMainMenu.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_GamePauseMenu.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MainSelector.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MainSelectorLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MessageBox.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MessageBoxLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MultiplayerSelector.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MultiplayerSelectorLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_MultiplayerClientList.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_OpenSaveFileDialog.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_RigSpawnerReportWindow.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_SimUtils.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_SimUtilsLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TeleportWindow.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_TeleportWindowLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_VehicleDescription.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gui\panels\GUI_VehicleDescriptionLayout.h">
-      <Filter>Header Files\gui\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\network\Network.h">
-      <Filter>Header Files\network</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\ApproxMath.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\Beam.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\BeamData.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\BeamFactory.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\CmdKeyInertia.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\Differentials.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\MotionPlatform.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\RigSpawner.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\SlideNode.h">
-      <Filter>Header Files\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\AeroEngine.h">
-      <Filter>Header Files\physics\air</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\AirBrake.h">
-      <Filter>Header Files\physics\air</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\Airfoil.h">
-      <Filter>Header Files\physics\air</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\TurboJet.h">
-      <Filter>Header Files\physics\air</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\air\TurboProp.h">
-      <Filter>Header Files\physics\air</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\CartesianToTriangleTransform.h">
-      <Filter>Header Files\physics\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\Collisions.h">
-      <Filter>Header Files\physics\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\DynamicCollisions.h">
-      <Filter>Header Files\physics\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\PointColDetector.h">
-      <Filter>Header Files\physics\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\collision\Triangle.h">
-      <Filter>Header Files\physics\collision</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\Flexable.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexAirfoil.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexBody.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexFactory.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexMesh.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexMeshWheel.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\FlexObj.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\flex\Locator_t.h">
-      <Filter>Header Files\physics\flex</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\utils\BeamStats.h">
-      <Filter>Header Files\physics\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\utils\RigLoadingProfiler.h">
-      <Filter>Header Files\physics\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\water\Buoyance.h">
-      <Filter>Header Files\physics\water</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\physics\water\ScrewProp.h">
-      <Filter>Header Files\physics\water</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\CacheSystem.h">
-      <Filter>Header Files\resources</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\ContentManager.h">
-      <Filter>Header Files\resources</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_File.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Node.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Parser.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Prerequisites.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Regexes.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Serializer.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\rig_def_fileformat\RigDef_Validator.h">
-      <Filter>Header Files\resources\rig_def_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h">
-      <Filter>Header Files\resources\terrn2_fileformat</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\IHeightFinder.h">
-      <Filter>Header Files\terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\OgreTerrainPSSMMaterialGenerator.h">
-      <Filter>Header Files\terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\TerrainGeometryManager.h">
-      <Filter>Header Files\terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\TerrainManager.h">
-      <Filter>Header Files\terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\TerrainObjectManager.h">
-      <Filter>Header Files\terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\map\SurveyMapEntity.h">
-      <Filter>Header Files\terrain\map</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\map\SurveyMapManager.h">
-      <Filter>Header Files\terrain\map</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\terrain\map\SurveyMapTextureCreator.h">
-      <Filter>Header Files\terrain\map</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\threadpool\ThreadPool.h">
-      <Filter>Header Files\threadpool</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\CollisionTools.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ConfigFile.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ErrorUtils.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\FileSystemInfo.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ForceFeedback.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\IBehavior.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ImprovedConfigFile.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\InputEngine.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\InterThreadStoreVector.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Language.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\MeshObject.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\PlatformUtils.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\RoRWindowEventUtilities.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Settings.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\SHA1.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\SimpleGlob.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\SimpleOpt.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Singleton.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Timer.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Utils.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\Win32DirectInput.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\WriteTextToTexture.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\ZeroedMemoryAllocator.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\profiler\Profiler.h">
-      <Filter>Header Files\utils\profiler</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\utils\profiler\RigLoadingProfilerControl.h">
-      <Filter>Header Files\utils\profiler</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OIS.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISConfig.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISEffect.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISEvents.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISException.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISFactoryCreator.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISForceFeedback.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISInputManager.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISInterface.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISJoyStick.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISKeyboard.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISMouse.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISMultiTouch.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISObject.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\OISPrereqs.h">
-      <Filter>Header Files\gameplay\ois</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32ForceFeedback.h">
-      <Filter>Header Files\gameplay\ois\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32InputManager.h">
-      <Filter>Header Files\gameplay\ois\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32JoyStick.h">
-      <Filter>Header Files\gameplay\ois\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32KeyBoard.h">
-      <Filter>Header Files\gameplay\ois\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32Mouse.h">
-      <Filter>Header Files\gameplay\ois\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\gameplay\ois\win32\Win32Prereqs.h">
-      <Filter>Header Files\gameplay\ois\win32</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\CBytecodeStream.h">
-      <Filter>Header Files\scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\GameScript.h">
-      <Filter>Header Files\scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\LocalStorage.h">
-      <Filter>Header Files\scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\OgreAngelscript.h">
-      <Filter>Header Files\scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\OgreScriptBuilder.h">
-      <Filter>Header Files\scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="C:\Source\rigs-of-rods-elsaco\source\main\scripting\ScriptEngine.h">
-      <Filter>Header Files\scripting</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\Application.h" />
+    <ClInclude Include="..\..\..\source\main\ForwardDeclarations.h" />
+    <ClInclude Include="..\..\..\source\main\GlobalEnvironment.h" />
+    <ClInclude Include="..\..\..\source\main\MainMenu.h" />
+    <ClInclude Include="..\..\..\source\main\RoRPrerequisites.h" />
+    <ClInclude Include="..\..\..\source\main\audio\MumbleIntegration.h" />
+    <ClInclude Include="..\..\..\source\main\audio\Sound.h" />
+    <ClInclude Include="..\..\..\source\main\audio\SoundManager.h" />
+    <ClInclude Include="..\..\..\source\main\audio\SoundScriptManager.h" />
+    <ClInclude Include="..\..\..\source\main\datatypes\beam_t.h" />
+    <ClInclude Include="..\..\..\source\main\datatypes\node_t.h" />
+    <ClInclude Include="..\..\..\source\main\datatypes\rig_t.h" />
+    <ClInclude Include="..\..\..\source\main\datatypes\shock_t.h" />
+    <ClInclude Include="..\..\..\source\main\datatypes\wheel_t.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\AircraftSimulation.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\AutoPilot.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\BeamEngine.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\Character.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\CharacterFactory.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ChatSystem.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\Landusemap.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\LandVehicleSimulation.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\OutProtocol.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\PositionStorage.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ProceduralManager.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\Replay.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\Road.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\Road2.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\RoRFrameListener.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\SceneMouse.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ScriptEvents.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\Scripting.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\SkinManager.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\TorqueCurve.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\VehicleAI.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\AdvancedScreen.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElement.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElementFactory.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\DecalManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\DustManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\DustPool.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\DynamicLines.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\DynamicRenderable.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\EnvironmentMap.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\GfxActor.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\GlowMaterialListener.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\HDRListener.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\Heathaze.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\HydraxWater.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\IWater.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\MovableText.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\OgreSubsystem.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\ShadowManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\Skidmark.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\SkyManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\Water.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\camera\PerVehicleCameraContext.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\dof\DepthOfFieldEffect.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\dof\Lens.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\CfgFileManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\DecalsManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Enums.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\FFT.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Help.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Hydrax.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Image.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\MaterialManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Mesh.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Module.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Noise.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Perlin.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Prerequisites.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\PressurePoint.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\ProjectedGrid.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\RadialGrid.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Real.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\RttManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\TextureManager.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Wave.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffector.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffectorFactory.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffectorFactory.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\particle\OgreParticleCustomParam.h" />
+    <ClInclude Include="..\..\..\source\main\gfx\particle\OgreShaderParticleRenderer.h" />
+    <ClInclude Include="..\..\..\source\main\gui\Dashboard.h" />
+    <ClInclude Include="..\..\..\source\main\gui\DashBoardManager.h" />
+    <ClInclude Include="..\..\..\source\main\gui\GUIInputManager.h" />
+    <ClInclude Include="..\..\..\source\main\gui\GUIManager.h" />
+    <ClInclude Include="..\..\..\source\main\gui\NodeGraphTool.h" />
+    <ClInclude Include="..\..\..\source\main\gui\OverlayWrapper.h" />
+    <ClInclude Include="..\..\..\source\main\gui\RTTLayer.h" />
+    <ClInclude Include="..\..\..\source\main\gui\imgui\imgui.h" />
+    <ClInclude Include="..\..\..\source\main\gui\imgui\OgreImGui.h" />
+    <ClInclude Include="..\..\..\source\main\gui\imgui\imconfig.h" />
+    <ClInclude Include="..\..\..\source\main\gui\imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\..\source\main\gui\imgui\stb_rect_pack.h" />
+    <ClInclude Include="..\..\..\source\main\gui\imgui\stb_textedit.h" />
+    <ClInclude Include="..\..\..\source\main\gui\imgui\stb_truetype.h" />
+    <ClInclude Include="..\..\..\source\main\gui\mygui\Attribute.h" />
+    <ClInclude Include="..\..\..\source\main\gui\mygui\BaseLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\mygui\Dialog.h" />
+    <ClInclude Include="..\..\..\source\main\gui\mygui\GuiPanelBase.h" />
+    <ClInclude Include="..\..\..\source\main\gui\mygui\WrapsAttribute.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsole.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAbout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelector.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBox.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtils.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.h" />
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.h" />
+    <ClInclude Include="..\..\..\source\main\network\Network.h" />
+    <ClInclude Include="..\..\..\source\main\physics\ApproxMath.h" />
+    <ClInclude Include="..\..\..\source\main\physics\Beam.h" />
+    <ClInclude Include="..\..\..\source\main\physics\BeamData.h" />
+    <ClInclude Include="..\..\..\source\main\physics\BeamFactory.h" />
+    <ClInclude Include="..\..\..\source\main\physics\CmdKeyInertia.h" />
+    <ClInclude Include="..\..\..\source\main\physics\Differentials.h" />
+    <ClInclude Include="..\..\..\source\main\physics\MotionPlatform.h" />
+    <ClInclude Include="..\..\..\source\main\physics\RigSpawner.h" />
+    <ClInclude Include="..\..\..\source\main\physics\SlideNode.h" />
+    <ClInclude Include="..\..\..\source\main\physics\air\AeroEngine.h" />
+    <ClInclude Include="..\..\..\source\main\physics\air\AirBrake.h" />
+    <ClInclude Include="..\..\..\source\main\physics\air\Airfoil.h" />
+    <ClInclude Include="..\..\..\source\main\physics\air\TurboJet.h" />
+    <ClInclude Include="..\..\..\source\main\physics\air\TurboProp.h" />
+    <ClInclude Include="..\..\..\source\main\physics\collision\CartesianToTriangleTransform.h" />
+    <ClInclude Include="..\..\..\source\main\physics\collision\Collisions.h" />
+    <ClInclude Include="..\..\..\source\main\physics\collision\DynamicCollisions.h" />
+    <ClInclude Include="..\..\..\source\main\physics\collision\PointColDetector.h" />
+    <ClInclude Include="..\..\..\source\main\physics\collision\Triangle.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\Flexable.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexAirfoil.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexBody.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexFactory.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexMesh.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexMeshWheel.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexObj.h" />
+    <ClInclude Include="..\..\..\source\main\physics\flex\Locator_t.h" />
+    <ClInclude Include="..\..\..\source\main\physics\utils\BeamStats.h" />
+    <ClInclude Include="..\..\..\source\main\physics\utils\RigLoadingProfiler.h" />
+    <ClInclude Include="..\..\..\source\main\physics\water\Buoyance.h" />
+    <ClInclude Include="..\..\..\source\main\physics\water\ScrewProp.h" />
+    <ClInclude Include="..\..\..\source\main\resources\CacheSystem.h" />
+    <ClInclude Include="..\..\..\source\main\resources\ContentManager.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Prerequisites.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Regexes.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.h" />
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.h" />
+    <ClInclude Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\IHeightFinder.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\TerrainGeometryManager.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\TerrainManager.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\TerrainObjectManager.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapEntity.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapManager.h" />
+    <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapTextureCreator.h" />
+    <ClInclude Include="..\..\..\source\main\threadpool\ThreadPool.h" />
+    <ClInclude Include="..\..\..\source\main\utils\CollisionTools.h" />
+    <ClInclude Include="..\..\..\source\main\utils\ConfigFile.h" />
+    <ClInclude Include="..\..\..\source\main\utils\ErrorUtils.h" />
+    <ClInclude Include="..\..\..\source\main\utils\FileSystemInfo.h" />
+    <ClInclude Include="..\..\..\source\main\utils\ForceFeedback.h" />
+    <ClInclude Include="..\..\..\source\main\utils\IBehavior.h" />
+    <ClInclude Include="..\..\..\source\main\utils\ImprovedConfigFile.h" />
+    <ClInclude Include="..\..\..\source\main\utils\InputEngine.h" />
+    <ClInclude Include="..\..\..\source\main\utils\InterThreadStoreVector.h" />
+    <ClInclude Include="..\..\..\source\main\utils\Language.h" />
+    <ClInclude Include="..\..\..\source\main\utils\MeshObject.h" />
+    <ClInclude Include="..\..\..\source\main\utils\PlatformUtils.h" />
+    <ClInclude Include="..\..\..\source\main\utils\RoRWindowEventUtilities.h" />
+    <ClInclude Include="..\..\..\source\main\utils\Settings.h" />
+    <ClInclude Include="..\..\..\source\main\utils\SHA1.h" />
+    <ClInclude Include="..\..\..\source\main\utils\SimpleGlob.h" />
+    <ClInclude Include="..\..\..\source\main\utils\SimpleOpt.h" />
+    <ClInclude Include="..\..\..\source\main\utils\Singleton.h" />
+    <ClInclude Include="..\..\..\source\main\utils\Timer.h" />
+    <ClInclude Include="..\..\..\source\main\utils\Utils.h" />
+    <ClInclude Include="..\..\..\source\main\utils\Win32DirectInput.h" />
+    <ClInclude Include="..\..\..\source\main\utils\WriteTextToTexture.h" />
+    <ClInclude Include="..\..\..\source\main\utils\ZeroedMemoryAllocator.h" />
+    <ClInclude Include="..\..\..\source\main\utils\profiler\Profiler.h" />
+    <ClInclude Include="..\..\..\source\main\utils\profiler\RigLoadingProfilerControl.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OIS.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISConfig.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISEffect.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISEvents.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISException.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISFactoryCreator.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISForceFeedback.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISInputManager.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISInterface.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISJoyStick.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISKeyboard.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISMouse.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISMultiTouch.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISObject.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISPrereqs.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32InputManager.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32KeyBoard.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.h" />
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32Prereqs.h" />
+    <ClInclude Include="..\..\..\source\main\scripting\CBytecodeStream.h" />
+    <ClInclude Include="..\..\..\source\main\scripting\GameScript.h" />
+    <ClInclude Include="..\..\..\source\main\scripting\LocalStorage.h" />
+    <ClInclude Include="..\..\..\source\main\scripting\OgreAngelscript.h" />
+    <ClInclude Include="..\..\..\source\main\scripting\OgreScriptBuilder.h" />
+    <ClInclude Include="..\..\..\source\main\scripting\ScriptEngine.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Source\rigs-of-rods-elsaco\source\main\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="C:\Source\rigs-of-rods-elsaco\source\main\icon.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="source\main\icon.rc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files\gui\imgui">
@@ -1545,6 +639,9 @@
     </Filter>
     <Filter Include="Header Files\physics\water">
       <UniqueIdentifier>{756C618A-42F4-3017-AAE5-2711EC089AFA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="angelscript_addons">
+      <UniqueIdentifier>{896d4b8f-1af8-408f-b87e-6e3ddc8e1458}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
