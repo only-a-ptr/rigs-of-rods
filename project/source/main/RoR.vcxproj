@@ -229,7 +229,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_MPLATFORM;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <PrecompiledHeaderFile>d:\elsaco\rigs-of-rods-elsaco\tools\windows\pch\Precompiled.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>d:\elsaco\rigs-of-rods-elsaco\tools\windows\pch\Precompiled.h</ForcedIncludeFiles>
@@ -341,7 +341,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
       <AdditionalOptions>%(AdditionalOptions)  /machine:X86</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;dinput8.lib;dxguid.lib;..\..\bin\Release\version_info.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreMain.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgrePaging.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreRTShaderSystem.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreTerrain.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\OgreOverlay.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\OpenAL32.lib;..\..\bin\Release\angelscript_addons.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\libcurl_imp.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\moFileReader.static.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\release\MyGUIEngine.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\release\MyGUI.OgrePlatform.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\SocketW.lib;ws2_32.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Release\Angelscript.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\Caelum.lib;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\lib\PagedGeometry.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\..\dependencies\ror-deps\lib\Release\OgreMain.lib;$(ProjectDir)..\..\dependencies\angelscript-2-31-2\angelscript\lib\angelscript-MT_StaticRelease.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;dinput8.lib;dxguid.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\Release\OgrePaging.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\Release\OgreRTShaderSystem.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\Release\OgreTerrain.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\Release\OgreOverlay.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\OpenAL32.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\libcurl_imp.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\Release\moFileReader.static.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\release\MyGUIEngine.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\release\MyGUI.OgrePlatform.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\SocketW.lib;ws2_32.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\Caelum.lib;$(ProjectDir)..\..\dependencies\ror-deps\lib\PagedGeometry.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>d:/projects/lib/DirectX_SDK_June2010/lib/x86;d:/projects/lib/DirectX_SDK_June2010/lib/x86/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -817,7 +817,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\..\..\source\main\scripting\OgreAngelscript.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\OgreScriptBuilder.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\ScriptEngine.cpp" />
-    <ResourceCompile Include="source\main\icon.rc" />
+    <ResourceCompile Include="..\..\..\source\main\icon.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

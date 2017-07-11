@@ -457,7 +457,7 @@
     <ClInclude Include="..\..\..\source\main\scripting\ScriptEngine.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="source\main\icon.rc" />
+    <ResourceCompile Include="..\..\..\source\main\icon.rc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files\gui\imgui">

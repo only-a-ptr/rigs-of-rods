@@ -1,3 +1,5 @@
+*.ipch
+*.pch
 *.VC.db
 *.VC.opendb
 # elsaco
@@ -11,6 +13,7 @@
 *.suo
 *.ipch
 *.pch
+project/source/main/RoR.dir/Release/RCa01528
 
 # --- ORIG ---
 CMakeFiles
