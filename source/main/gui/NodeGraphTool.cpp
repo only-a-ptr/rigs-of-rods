@@ -4,15 +4,15 @@
 #include "Beam.h" // aka 'the actor'
 
 
-#include "..\..\..\dependencies\rapidjson\rapidjson.h"
-#include "..\..\..\dependencies\rapidjson\/document.h"
-#include "..\..\..\dependencies\rapidjson\/filewritestream.h"
-#include "..\..\..\dependencies\rapidjson\/filereadstream.h"
-#include "..\..\..\dependencies\rapidjson\/prettywriter.h"
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/document.h"
+#include "rapidjson/filewritestream.h"
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/prettywriter.h"
 
 
 #include <map>
-#include "..\..\..\dependencies\angelscript-2-31-2\angelscript\include\angelscript.h"
+#include "angelscript.h"
 
 extern bool G_motionsim_connected;
 

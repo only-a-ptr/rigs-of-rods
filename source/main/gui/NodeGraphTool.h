@@ -6,10 +6,10 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h> // For ImRect
 
-#include "..\..\..\dependencies\rapidjson\rapidjson.h"
-#include "..\..\..\dependencies\rapidjson\document.h"
+#include "rapidjson\rapidjson.h"
+#include "rapidjson\document.h"
 // External
-#include "..\..\..\dependencies\angelscript-2-31-2\angelscript\include\angelscript.h"
+#include "angelscript.h"
 
 #include <list>
 #include <string>

@@ -52,6 +52,7 @@
 
 #include "ForwardDeclarations.h"
 #include <OgreVector3.h> // { float x,y,z; }
+#include <OgreMatrix3.h>
 #include "enet/enet.h" // UDP networking
 #include <stdint.h>
 
