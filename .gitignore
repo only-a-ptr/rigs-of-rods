@@ -14,6 +14,8 @@
 *.ipch
 *.pch
 project/source/main/RoR.dir/Release/RCa01528
+#temporary
+project/dependencies/lib/
 
 # --- ORIG ---
 CMakeFiles
@@ -27,7 +29,6 @@ CPackSourceConfig.cmake
 CMakeTmp
 build_x86
 build_x64
-dependencies/
 bin/RoR
 bin/RoRConfig
 bin/libangelscript_addons.a
