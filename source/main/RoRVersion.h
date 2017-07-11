@@ -20,7 +20,8 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#define ROR_VERSION_STRING_SHORT "v4"
-#define ROR_VERSION_STRING "ELSACO v4"
+#define ROR_VERSION_STRING_SHORT "0.4" // This defines the home directory name (MyDocuments/Rigs of Rods ${ROR_VERSION_STRING_SHORT}) !!!
+#define ROR_VERSION_STRING "ELSACO v5"
 #define ROR_BUILD_DATE "d"
 #define ROR_BUILD_TIME "t"
+
