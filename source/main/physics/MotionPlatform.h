@@ -52,7 +52,7 @@
 
 #include "ForwardDeclarations.h"
 #include <OgreVector3.h> // { float x,y,z; }
-#include <enet\enet.h> // UDP networking
+#include "enet/enet.h" // UDP networking
 #include <stdint.h>
 
 namespace RoR {

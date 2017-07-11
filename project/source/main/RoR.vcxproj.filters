@@ -192,7 +192,6 @@
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32InputManager.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.old.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32KeyBoard.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\CBytecodeStream.cpp" />

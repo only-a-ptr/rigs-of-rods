@@ -241,7 +241,7 @@ void GUIManager::DrawSimulationGui(float dt)
     if (App::app_state.GetActive() == AppState::SIMULATION)
     {
         m_impl->panel_TopMenubar.Update();
-        m_impl->panel_MotionFeeder.Draw();
+        
 
         if (App::sim_state.GetActive() == SimState::PAUSED)
         {

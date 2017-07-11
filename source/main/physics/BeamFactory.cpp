@@ -25,6 +25,8 @@
 
 #include "BeamFactory.h"
 
+#include "NodeGraphTool.h"
+
 #include "Application.h"
 #include "BeamEngine.h"
 #include "BeamStats.h"
@@ -1038,10 +1040,15 @@ void BeamFactory::update(float dt)
     this->SyncWithSimThread();
 
 #ifdef USE_MPLATFORM // TODO: Shouldn't really be here, but needs to run while sim is halted.
-    if (RoR::App::GetGuiManager()->IsVisible_MotionPlatformWindow())
+    if(RoR::App::GetGuiManager()->IsVisible_MotionPlatformWindow())
     {
-        RoR::App::GetGuiManager()->GetMotionPlatform()->UpdateMPlatformGui();
+        RoR::App::GetGuiManager()->GetMotionFeeder()->Draw();
     }
+
+ //OLD   if (RoR::App::GetGuiManager()->IsVisible_MotionPlatformWindow())
+ //OLD   {
+ //OLD       RoR::App::GetGuiManager()->GetMotionPlatform()->UpdateMPlatformGui();
+ //OLD   }
 #endif
 
     this->UpdateSleepingState(dt);

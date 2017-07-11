@@ -15,7 +15,10 @@
 #include <string>
 #include <vector>
 
+// forward decl
+class Beam;
 
+// =============================================================================
 
 namespace RoR {
 
@@ -270,7 +273,7 @@ public:
     NodeGraphTool();
 
     void            Draw();
-    void            PhysicsTick();
+    void            PhysicsTick(Beam* actor);
     void            CalcGraph();
     void            SaveAsJson();                                                        ///< Filename specified by `m_filename`
     void            LoadFromJson();                                                      ///< Filename specified by `m_filename`

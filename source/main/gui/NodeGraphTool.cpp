@@ -174,27 +174,33 @@ void RoR::NodeGraphTool::Draw()
     ImGui::End();
 }
 
-void RoR::NodeGraphTool::PhysicsTick()
+void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
 {
     for (Node* node: m_nodes)
     {
-        if (node->type != Node::Type::GENERATOR)
-            continue;
-
-        GeneratorNode* gen_node = static_cast<GeneratorNode*>(node);
-        gen_node->elapsed += 0.002f;
-
-        float result = cosf((gen_node->elapsed / 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
-
-        // add noise
-        if (gen_node->noise_max != 0)
+        if (node->type == Node::Type::GENERATOR)
         {
-            int r = rand() % gen_node->noise_max;
-            result += static_cast<float>((r*2)-r) * 0.1f;
-        }
 
-        // save to buffer
-        gen_node->buffer_out.Push(result);
+            GeneratorNode* gen_node = static_cast<GeneratorNode*>(node);
+            gen_node->elapsed += 0.002f;
+
+            float result = cosf((gen_node->elapsed / 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
+
+            // add noise
+            if (gen_node->noise_max != 0)
+            {
+                int r = rand() % gen_node->noise_max;
+                result += static_cast<float>((r*2)-r) * 0.1f;
+            }
+
+            // save to buffer
+            gen_node->buffer_out.Push(result);
+        }
+        else if (node->type == Node::Type::READING)
+        {
+            ReadingNode* rnode = static_cast<ReadingNode*>(node);
+            rnode->Push(actor->nodes[rnode->softbody_node_id].AbsPosition);
+        }
     }
     this->CalcGraph();
 }
