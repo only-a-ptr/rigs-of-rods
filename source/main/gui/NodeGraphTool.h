@@ -272,7 +272,7 @@ public:
 
     NodeGraphTool();
 
-    void            Draw();
+    void            Draw(int net_send_state);
     void            PhysicsTick(Beam* actor);
     void            CalcGraph();
     void            SaveAsJson();                                                        ///< Filename specified by `m_filename`

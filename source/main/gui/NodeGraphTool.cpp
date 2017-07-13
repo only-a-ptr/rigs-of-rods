@@ -86,7 +86,7 @@ RoR::NodeGraphTool::Link* RoR::NodeGraphTool::FindLinkBySource(Node* node, const
     return nullptr;
 }
 
-void RoR::NodeGraphTool::Draw()
+void RoR::NodeGraphTool::Draw(int net_send_state)
 {
     // Create a window
     bool is_open = true;
@@ -114,6 +114,10 @@ void RoR::NodeGraphTool::Draw()
     {
         m_header_mode = HeaderMode::CLEAR_ALL;
     }
+
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 100.f);
+    ImGui::Text("Net status: %s", (net_send_state >= 0) ? "OK" : "ERROR");
 
     if (m_header_mode != HeaderMode::NORMAL)
     {

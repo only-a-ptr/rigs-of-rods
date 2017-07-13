@@ -1051,7 +1051,7 @@ void BeamFactory::update(float dt)
 
     if (App::sim_motionfeeder_mode.GetActive() == MotionFeederMode::EDITABLE)
     {
-        RoR::App::GetGuiManager()->GetMotionFeeder()->Draw();
+        RoR::App::GetGuiManager()->GetMotionFeeder()->Draw(App::GetSimController()->GetMPlatformLastSendResult());
     }
 
  //OLD   if (RoR::App::GetGuiManager()->IsVisible_MotionPlatformWindow())

@@ -84,11 +84,13 @@ public:
     void MPlatformSetActive   (bool active);
     void MPlatformUpdate      (Beam* vehicle);
     bool IsConnected() { return m_connected; }
+    int GetLastSendResult() { return m_last_send_result; }
 
 private:
     void  DeleteSocket  ();
 
     bool m_connected;
+    int m_last_send_result;
     ENetAddress   m_addr_remote;
     ENetAddress   m_addr_local;
     ENetSocket    m_socket;

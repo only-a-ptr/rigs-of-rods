@@ -43,6 +43,7 @@ MotionPlatform::MotionPlatform():
     m_socket(ENET_SOCKET_NULL),
     m_elapsed_time(0),
     m_last_update_time(0),
+    m_last_send_result(0),
     m_connected(false)
 {
     memset(&m_addr_remote, 0, sizeof(ENetAddress));
@@ -207,11 +208,9 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     ENetBuffer buf;
     buf.data       = static_cast<void*>(&datagram);
     buf.dataLength = sizeof(UdpElsaco1);
-    if (enet_socket_send(m_socket, &m_addr_remote, &buf, 1) != 0)
-    {
-        LOG("[RoR|MotionPlatform] Failed to send data!");
-    }
 
+    // `enet_socket_send()` (Win32 implmentation) returns number of bytes sent on success, 0 on WSAEWOULDBLOCK and -1 on error.
+    m_last_send_result = enet_socket_send(m_socket, &m_addr_remote, &buf, 1);
 }
 
 float CalcJitter(float start, float mid, float end)
