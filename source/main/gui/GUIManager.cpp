@@ -108,7 +108,6 @@ void GUIManager::SetVisible_TextureToolWindow   (bool v) { m_impl->panel_Texture
 void GUIManager::SetVisible_TeleportWindow      (bool v) { m_impl->panel_TeleportWindow     .SetVisible(v); }
 void GUIManager::SetVisible_LoadingWindow       (bool v) { m_impl->panel_LoadingWindow      .SetVisible(v); }
 void GUIManager::SetVisible_Console             (bool v) { m_impl->panel_GameConsole        .SetVisible(v); }
-void GUIManager::SetVisible_MotionPlatformWindow(bool v) { m_impl->panel_MotionFeeder       .SetVisible(v); }
 
 bool GUIManager::IsVisible_GameMainMenu         () { return m_impl->panel_GameMainMenu       .IsVisible(); }
 bool GUIManager::IsVisible_GameAbout            () { return m_impl->panel_GameAbout          .IsVisible(); }
@@ -125,7 +124,6 @@ bool GUIManager::IsVisible_TextureToolWindow    () { return m_impl->panel_Textur
 bool GUIManager::IsVisible_TeleportWindow       () { return m_impl->panel_TeleportWindow     .IsVisible(); }
 bool GUIManager::IsVisible_LoadingWindow        () { return m_impl->panel_LoadingWindow      .IsVisible(); }
 bool GUIManager::IsVisible_Console              () { return m_impl->panel_GameConsole        .IsVisible(); }
-bool GUIManager::IsVisible_MotionPlatformWindow () { return m_impl->panel_MotionFeeder       .IsVisible(); }
 
 // GUI GetInstance*()
 Console*                    GUIManager::GetConsole()           { return &m_impl->panel_GameConsole;         }
@@ -386,7 +384,6 @@ void GUIManager::ReflectGameState()
         m_impl->panel_SpawnerReport      .SetVisible(false);
         m_impl->panel_SimUtils           .SetBaseVisible(false);
         m_impl->panel_MpClientList       .SetVisible(mp_state == MpState::CONNECTED);
-        m_impl->panel_MotionFeeder  .SetVisible(false);
         return;
     }
     if (app_state == AppState::SIMULATION)

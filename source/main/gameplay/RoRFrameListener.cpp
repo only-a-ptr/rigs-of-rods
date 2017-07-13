@@ -1439,6 +1439,17 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
         gui_man->SetVisible_VehicleDescription(! gui_man->IsVisible_VehicleDescription());
     }
 
+    if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_MOTIONFEEDER_MODE))
+    {
+        switch (App::sim_motionfeeder_mode.GetActive())
+        {
+        case MotionFeederMode::HIDDEN:   App::sim_motionfeeder_mode.SetPending(MotionFeederMode::EDITABLE); break;
+        case MotionFeederMode::EDITABLE: App::sim_motionfeeder_mode.SetPending(MotionFeederMode::LOCKED);   break;
+        case MotionFeederMode::LOCKED:   App::sim_motionfeeder_mode.SetPending(MotionFeederMode::HIDDEN);   break;
+        default:;
+        }
+    }
+
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_HIDE_GUI))
     {
         m_hide_gui = !m_hide_gui;

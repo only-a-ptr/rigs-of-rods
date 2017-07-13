@@ -47,7 +47,6 @@ MotionPlatform::MotionPlatform():
 {
     memset(&m_addr_remote, 0, sizeof(ENetAddress));
     memset(&m_addr_local , 0, sizeof(ENetAddress));
-    G_motionsim_connected=false;
 }
 
 // ## TODO: Error reporting!
@@ -94,10 +93,7 @@ bool MotionPlatform::MPlatformConnect()
     LOG("[RoR|MotionPlatform] Connected");
 
     m_connected = true;
-    G_motionsim_connected = true;
     return true;
-        
-        
 }
 
 void MotionPlatform::MPlatformDisconnect()
@@ -106,7 +102,6 @@ void MotionPlatform::MPlatformDisconnect()
     this->DeleteSocket();
     LOG("[RoR|MotionPlatform] Disconnected");
     m_connected = false;
-    G_motionsim_connected = false;
 }
 
 /* ______________________________________ Original integration for reference ___________________________________________

@@ -244,7 +244,7 @@ void RoR::GUI::TopMenubar::Update()
 
             if (ImGui::Button("Motion platform"))
             {
-                App::GetGuiManager()->SetVisible_MotionPlatformWindow(true);
+                App::sim_motionfeeder_mode.SetPending(MotionFeederMode::EDITABLE);
                 m_open_menu = TopMenu::TOPMENU_NONE;
             }
 

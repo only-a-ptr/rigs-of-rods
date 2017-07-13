@@ -1016,7 +1016,7 @@ eventInfo_t eventInfo[] = {
     {
         "COMMON_RESCUE_TRUCK",
         EV_COMMON_RESCUE_TRUCK,
-        "Keyboard EXPL+R",
+        "", // Previously "Keyboard EXPL+R" - re-mapped to MotionFeeder, the 'rescue truck' function is legacy anyway
         _L("teleport to rescue truck")
     },
     {
@@ -1614,6 +1614,12 @@ eventInfo_t eventInfo[] = {
         "COMMON_TELEPORT_TOGGLE",
         EV_COMMON_TELEPORT_TOGGLE,
         "Keyboard EXPL+F2", // Only in character mode
+        _L("enter/exit teleport mode")
+    },
+    {
+        "COMMON_MOTIONFEEDER_MODE",
+        EV_COMMON_MOTIONFEEDER_MODE,
+        "Keyboard EXPL+R",
         _L("enter/exit teleport mode")
     },
     {

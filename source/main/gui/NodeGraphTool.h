@@ -279,8 +279,6 @@ public:
     void            LoadFromJson();                                                      ///< Filename specified by `m_filename`
     void            SetFilename(const char* const filename)                              { strncpy(m_filename, filename, sizeof(m_filename)); }
     void            ClearAll();
-    void            SetVisible(bool vis)                                                 { m_panel_visible = vis; }
-    bool            IsVisible() const                                                    { return m_panel_visible; }
 
 private:
 
@@ -341,7 +339,6 @@ private:
     Link*      m_link_mouse_src;      ///< Link being mouse-dragged by it's input end.
     Link*      m_link_mouse_dst;      ///< Link being mouse-dragged by it's output end.
     int        m_free_id;
-    bool       m_panel_visible;
 
 public:
     UdpNode udp_position_node;

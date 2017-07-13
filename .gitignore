@@ -16,6 +16,7 @@
 project/source/main/RoR.dir/Release/RCa01528
 bin/RoR.exe
 bin/RoR.map
+bin/imgui.ini
 
 # --- ORIG ---
 CMakeFiles

@@ -14,8 +14,6 @@
 #include <map>
 #include "angelscript.h"
 
-extern bool G_motionsim_connected;
-
 /// ========================================
 
 RoR::NodeGraphTool::NodeGraphTool():
@@ -30,7 +28,6 @@ RoR::NodeGraphTool::NodeGraphTool():
     m_hovered_slot_input(-1),
     m_hovered_slot_output(-1),
     m_free_id(0),
-    m_panel_visible(false),
     m_fake_mouse_node(this, ImVec2()), // Used for dragging links with mouse
 
     udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position", "(world XYZ)"),
@@ -92,8 +89,12 @@ RoR::NodeGraphTool::Link* RoR::NodeGraphTool::FindLinkBySource(Node* node, const
 void RoR::NodeGraphTool::Draw()
 {
     // Create a window
-    if (!ImGui::Begin("MotionFeeder"))
-        return; // No window -> nothing to do.
+    bool is_open = true;
+    ImGui::Begin("MotionFeeder", &is_open);
+    if (!is_open)
+    {
+        App::sim_motionfeeder_mode.SetPending(MotionFeederMode::HIDDEN);
+    }
 
     // Debug outputs
     //ImGui::Text("MouseDrag - src: 0x%p, dst: 0x%p | mousenode - X:%.1f, Y:%.1f", m_link_mouse_src, m_link_mouse_dst, m_fake_mouse_node.pos.x, m_fake_mouse_node.pos.y);
@@ -113,11 +114,7 @@ void RoR::NodeGraphTool::Draw()
     {
         m_header_mode = HeaderMode::CLEAR_ALL;
     }
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
-    
-    ImGui::Text(G_motionsim_connected ? "Connected :)" : " [!!] Disconnected");
-  
+
     if (m_header_mode != HeaderMode::NORMAL)
     {
         if (ImGui::Button("Cancel"))

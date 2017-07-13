@@ -80,6 +80,14 @@ enum class SimGearboxMode
 };
 const char* EnumToStr(SimGearboxMode v);
 
+enum class MotionFeederMode // MotionFeeder (motion simulator input tool) mode
+{
+    HIDDEN, ///< regular simulation
+    EDITABLE, /// < Node graph is editable; all other input is disabled to avoid interference.
+    LOCKED ///< Node graph is frozen, only sliders/checkboxes are editable. Other inputs are enabled.
+};
+const char* EnumToStr(MotionFeederMode v);
+
 enum class GfxShadowType
 {
     NONE,
@@ -211,7 +219,7 @@ inline const char*     BoolToStr(bool b)                        { return (b) ? "
 /// Usage guidelines:
 ///  * There are no definite rules how to use and update a GVar. Each one is specific.
 ///  * The 'active' value should be safe to read from any thread at any time, except when being updated.
-///  * Each GVar should have a Master - a piece of code which checks for 'pending' values and Apply()-es them.
+///  * Each GVar should have a Master - a piece of code which checks for 'pending' values and Apply()-ies them.
 ///    This may be any thread and any code location, but there should be just 1 per GVar.
 struct GVarBase
 {
@@ -224,9 +232,9 @@ struct GVarBase
     //     [RoR|Gvar]  sim_gvar_name  (NEW) ==> (PEND) ==> [ACTIV]            ~~ direct update of active (+pending) value
     //     [RoR|Gvar]  sim_gvar_name     ()     (PEND) ==> [ACTIV]            ~~ direct update of active (+pending) value
 
-    const char* LOG_FMT_S = "[RoR|GVar]  %20s:  (%10s) %s (10%s) %s [10%s]";
-    const char* LOG_FMT_D = "[RoR|GVar]  %20s:  (%10d) %s (10%d) %s [10%d]";
-    const char* LOG_FMT_F = "[RoR|GVar]  %20s:  (%10f) %s (10%f) %s [10%f]";
+    const char* LOG_FMT_S = "[RoR|GVar]  %20s:  (%10s) %s (%10s) %s [%10s]";
+    const char* LOG_FMT_D = "[RoR|GVar]  %20s:  (%10d) %s (%10d) %s [%10d]";
+    const char* LOG_FMT_F = "[RoR|GVar]  %20s:  (%10f) %s (%10f) %s [%10f]";
 
     inline void LogSetPending(const char* input, const char* pending, const char* active) const  { RoR::LogFormat(LOG_FMT_S, name, input, "==>", pending, "   ", active); }
     inline void LogSetPending(int         input, int         pending, int         active) const  { RoR::LogFormat(LOG_FMT_D, name, input, "==>", pending, "   ", active); }
@@ -326,6 +334,7 @@ extern GVarPod<int>            sim_replay_length;
 extern GVarPod<int>            sim_replay_stepping;
 extern GVarPod<bool>           sim_position_storage;
 extern GVarEnum<SimGearboxMode>sim_gearbox_mode;
+extern GVarEnum<MotionFeederMode>sim_motionfeeder_mode;
 
 // Multiplayer
 extern GVarEnum<MpState>       mp_state;

@@ -56,8 +56,6 @@
 #include "enet/enet.h" // UDP networking
 #include <stdint.h>
 
-extern bool G_motionsim_connected;
-
 namespace RoR {
 
 struct UdpElsaco1

@@ -4,155 +4,33 @@
     <ClCompile Include="..\..\..\source\main\main.cpp" />
     <ClCompile Include="..\..\..\source\main\Application.cpp" />
     <ClCompile Include="..\..\..\source\main\MainMenu.cpp" />
-    <ClCompile Include="..\..\..\source\main\audio\MumbleIntegration.cpp" />
-    <ClCompile Include="..\..\..\source\main\audio\Sound.cpp" />
-    <ClCompile Include="..\..\..\source\main\audio\SoundManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\audio\SoundScriptManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\AircraftSimulation.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\AutoPilot.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\BeamEngine.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\Character.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\CharacterFactory.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\ChatSystem.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\Landusemap.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\LandVehicleSimulation.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\OutProtocol.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\PositionStorage.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ProceduralManager.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\Replay.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\Road.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\Road2.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\RoRFrameListener.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\SceneMouse.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\SkinManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\TorqueCurve.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\VehicleAI.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElement.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\DecalManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\DustManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\DustPool.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\DynamicLines.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\DynamicRenderable.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\EnvironmentMap.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\GfxActor.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\HDRListener.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\Heathaze.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\HydraxWater.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\MovableText.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\OgreSubsystem.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\ShadowManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\Skidmark.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\SkyManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\Water.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\dof\DepthOfFieldEffect.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\dof\Lens.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\CfgFileManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\DecalsManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Enums.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\FFT.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Help.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Hydrax.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Image.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\MaterialManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Mesh.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Module.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Noise.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Perlin.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Prerequisites.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\PressurePoint.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\ProjectedGrid.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\RadialGrid.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Real.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\RttManager.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\TextureManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Wave.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffector.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\particle\OgreShaderParticleRenderer.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\Dashboard.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\DashBoardManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\GUIInputManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\GUIManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\NodeGraphTool.cpp" />
     <ClCompile Include="..\..\..\source\main\gui\OverlayWrapper.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\RTTLayer.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\..\..\source\main\gui\imgui\OgreImGui.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\mygui\Dialog.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsole.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAbout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelector.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBox.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtils.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.cpp" />
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp" />
-    <ClCompile Include="..\..\..\source\main\network\Network.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\Beam.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\BeamFactory.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\BeamForcesEuler.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\BeamSlideNode.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\CmdKeyInertia.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\Differentials.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\MotionPlatform.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\RigSpawner.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\RigSpawner_ProcessControl.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\SlideNode.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\air\AirBrake.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\air\Airfoil.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\air\TurboJet.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\air\TurboProp.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\collision\Collisions.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\collision\DynamicCollisions.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\collision\PointColDetector.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\flex\FlexAirfoil.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\flex\FlexBody.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\flex\FlexFactory.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\flex\FlexMesh.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\flex\FlexMeshWheel.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\flex\FlexObj.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\utils\BeamStats.cpp" />
-    <ClCompile Include="..\..\..\source\main\physics\water\Buoyance.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\water\ScrewProp.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\CacheSystem.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\ContentManager.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.cpp" />
@@ -160,47 +38,459 @@
     <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.cpp" />
-    <ClCompile Include="..\..\..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\TerrainGeometryManager.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\TerrainManager.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\TerrainObjectManager.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapEntity.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapTextureCreator.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\CollisionTools.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\ConfigFile.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\ErrorUtils.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\ForceFeedback.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\InputEngine.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\Language.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\MeshObject.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\PlatformUtils.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\RoRWindowEventUtilities.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\Settings.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\SHA1.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\Utils.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\Win32DirectInput.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\WriteTextToTexture.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\profiler\Profiler.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISEffect.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISException.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISForceFeedback.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISInputManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISJoyStick.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISKeyboard.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISObject.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32InputManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32KeyBoard.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\CBytecodeStream.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\GameScript.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\LocalStorage.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\OgreAngelscript.cpp" />
-    <ClCompile Include="..\..\..\source\main\scripting\OgreScriptBuilder.cpp" />
-    <ClCompile Include="..\..\..\source\main\scripting\ScriptEngine.cpp" />
     <ClCompile Include="..\..\..\tools\windows\pch\Precompiled.cpp" />
+    <ClCompile Include="..\..\..\source\main\utils\Win32DirectInput.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32InputManager.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32KeyBoard.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\air\AirBrake.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\air\Airfoil.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\Beam.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\BeamFactory.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\BeamForcesEuler.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\BeamSlideNode.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\utils\BeamStats.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\water\Buoyance.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISEffect.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISException.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISForceFeedback.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISInputManager.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISJoyStick.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISKeyboard.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ois\OISObject.cpp">
+      <Filter>Lib\OIS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\DecalManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\DecalsManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElement.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\dof\DepthOfFieldEffect.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexAirfoil.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexBody.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexFactory.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexMesh.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexMeshWheel.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\flex\FlexObj.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\Dashboard.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\DashBoardManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\DustManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\DustPool.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\DynamicLines.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\DynamicRenderable.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\EnvironmentMap.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAbout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsole.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelector.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBox.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtils.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\GUIInputManager.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\GUIManager.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\mygui\Dialog.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\InputEngine.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffector.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\BeamEngine.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\AutoPilot.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\collision\Collisions.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\AircraftSimulation.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\GfxActor.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\FFT.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\Heathaze.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\HDRListener.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\HydraxWater.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\MaterialManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Mesh.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\MeshObject.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\particle\OgreShaderParticleRenderer.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ProceduralManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\ProjectedGrid.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\RadialGrid.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\RttManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\RTTLayer.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\Skidmark.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\SkyManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\SkinManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\ShadowManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapTextureCreator.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\TextureManager.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\Water.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Wave.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\collision\DynamicCollisions.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\Differentials.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\ForceFeedback.cpp">
+      <Filter>MotionSim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\MotionPlatform.cpp">
+      <Filter>MotionSim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\NodeGraphTool.cpp">
+      <Filter>MotionSim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\CollisionTools.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\ContentManager.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\physics\CmdKeyInertia.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\CfgFileManager.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\ConfigFile.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Enums.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\ErrorUtils.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\Character.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\CharacterFactory.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\VehicleAI.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\TorqueCurve.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\audio\SoundScriptManager.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\audio\SoundManager.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\audio\Sound.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\scripting\ScriptEngine.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\Road2.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\Road.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\PositionStorage.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\scripting\OgreScriptBuilder.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\network\Network.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\audio\MumbleIntegration.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Module.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\LandVehicleSimulation.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Help.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui.cpp">
+      <Filter>Lib\IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui_demo.cpp">
+      <Filter>Lib\IMGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\imgui\imgui_draw.cpp">
+      <Filter>Lib\IMGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\main\Application.h" />
@@ -208,182 +498,44 @@
     <ClInclude Include="..\..\..\source\main\GlobalEnvironment.h" />
     <ClInclude Include="..\..\..\source\main\MainMenu.h" />
     <ClInclude Include="..\..\..\source\main\RoRPrerequisites.h" />
-    <ClInclude Include="..\..\..\source\main\audio\MumbleIntegration.h" />
-    <ClInclude Include="..\..\..\source\main\audio\Sound.h" />
-    <ClInclude Include="..\..\..\source\main\audio\SoundManager.h" />
-    <ClInclude Include="..\..\..\source\main\audio\SoundScriptManager.h" />
-    <ClInclude Include="..\..\..\source\main\datatypes\beam_t.h" />
     <ClInclude Include="..\..\..\source\main\datatypes\node_t.h" />
-    <ClInclude Include="..\..\..\source\main\datatypes\rig_t.h" />
     <ClInclude Include="..\..\..\source\main\datatypes\shock_t.h" />
     <ClInclude Include="..\..\..\source\main\datatypes\wheel_t.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\AircraftSimulation.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\AutoPilot.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\BeamEngine.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\Character.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\CharacterFactory.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\ChatSystem.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\Landusemap.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\LandVehicleSimulation.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\OutProtocol.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\PositionStorage.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ProceduralManager.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\Replay.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\Road.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\Road2.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\RoRFrameListener.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\SceneMouse.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ScriptEvents.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\Scripting.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\SkinManager.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\TorqueCurve.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\VehicleAI.h" />
     <ClInclude Include="..\..\..\source\main\gfx\AdvancedScreen.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElement.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElementFactory.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\DecalManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\DustManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\DustPool.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\DynamicLines.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\DynamicRenderable.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\EnvironmentMap.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\GfxActor.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\GlowMaterialListener.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\HDRListener.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\Heathaze.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\HydraxWater.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\IWater.h" />
     <ClInclude Include="..\..\..\source\main\gfx\MovableText.h" />
     <ClInclude Include="..\..\..\source\main\gfx\OgreSubsystem.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\ShadowManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\Skidmark.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\SkyManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\Water.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\camera\PerVehicleCameraContext.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\dof\DepthOfFieldEffect.h" />
     <ClInclude Include="..\..\..\source\main\gfx\dof\Lens.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\CfgFileManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\DecalsManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Enums.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\FFT.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Help.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Hydrax.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Image.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\MaterialManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Mesh.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Module.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Noise.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Perlin.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Prerequisites.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\PressurePoint.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\ProjectedGrid.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\RadialGrid.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Real.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\RttManager.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\TextureManager.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Wave.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffector.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffectorFactory.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffectorFactory.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\particle\OgreParticleCustomParam.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\particle\OgreShaderParticleRenderer.h" />
-    <ClInclude Include="..\..\..\source\main\gui\Dashboard.h" />
-    <ClInclude Include="..\..\..\source\main\gui\DashBoardManager.h" />
-    <ClInclude Include="..\..\..\source\main\gui\GUIInputManager.h" />
-    <ClInclude Include="..\..\..\source\main\gui\GUIManager.h" />
-    <ClInclude Include="..\..\..\source\main\gui\NodeGraphTool.h" />
     <ClInclude Include="..\..\..\source\main\gui\OverlayWrapper.h" />
-    <ClInclude Include="..\..\..\source\main\gui\RTTLayer.h" />
-    <ClInclude Include="..\..\..\source\main\gui\imgui\imgui.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\OgreImGui.h" />
-    <ClInclude Include="..\..\..\source\main\gui\imgui\imconfig.h" />
-    <ClInclude Include="..\..\..\source\main\gui\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\stb_rect_pack.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\stb_textedit.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\stb_truetype.h" />
     <ClInclude Include="..\..\..\source\main\gui\mygui\Attribute.h" />
-    <ClInclude Include="..\..\..\source\main\gui\mygui\BaseLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\mygui\Dialog.h" />
-    <ClInclude Include="..\..\..\source\main\gui\mygui\GuiPanelBase.h" />
     <ClInclude Include="..\..\..\source\main\gui\mygui\WrapsAttribute.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsole.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAbout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelector.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBox.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtils.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.h" />
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.h" />
-    <ClInclude Include="..\..\..\source\main\network\Network.h" />
-    <ClInclude Include="..\..\..\source\main\physics\ApproxMath.h" />
-    <ClInclude Include="..\..\..\source\main\physics\Beam.h" />
-    <ClInclude Include="..\..\..\source\main\physics\BeamData.h" />
-    <ClInclude Include="..\..\..\source\main\physics\BeamFactory.h" />
-    <ClInclude Include="..\..\..\source\main\physics\CmdKeyInertia.h" />
-    <ClInclude Include="..\..\..\source\main\physics\Differentials.h" />
-    <ClInclude Include="..\..\..\source\main\physics\MotionPlatform.h" />
     <ClInclude Include="..\..\..\source\main\physics\RigSpawner.h" />
     <ClInclude Include="..\..\..\source\main\physics\SlideNode.h" />
-    <ClInclude Include="..\..\..\source\main\physics\air\AeroEngine.h" />
-    <ClInclude Include="..\..\..\source\main\physics\air\AirBrake.h" />
-    <ClInclude Include="..\..\..\source\main\physics\air\Airfoil.h" />
     <ClInclude Include="..\..\..\source\main\physics\air\TurboJet.h" />
     <ClInclude Include="..\..\..\source\main\physics\air\TurboProp.h" />
-    <ClInclude Include="..\..\..\source\main\physics\collision\CartesianToTriangleTransform.h" />
-    <ClInclude Include="..\..\..\source\main\physics\collision\Collisions.h" />
-    <ClInclude Include="..\..\..\source\main\physics\collision\DynamicCollisions.h" />
     <ClInclude Include="..\..\..\source\main\physics\collision\PointColDetector.h" />
     <ClInclude Include="..\..\..\source\main\physics\collision\Triangle.h" />
-    <ClInclude Include="..\..\..\source\main\physics\flex\Flexable.h" />
-    <ClInclude Include="..\..\..\source\main\physics\flex\FlexAirfoil.h" />
-    <ClInclude Include="..\..\..\source\main\physics\flex\FlexBody.h" />
-    <ClInclude Include="..\..\..\source\main\physics\flex\FlexFactory.h" />
-    <ClInclude Include="..\..\..\source\main\physics\flex\FlexMesh.h" />
-    <ClInclude Include="..\..\..\source\main\physics\flex\FlexMeshWheel.h" />
-    <ClInclude Include="..\..\..\source\main\physics\flex\FlexObj.h" />
     <ClInclude Include="..\..\..\source\main\physics\flex\Locator_t.h" />
-    <ClInclude Include="..\..\..\source\main\physics\utils\BeamStats.h" />
     <ClInclude Include="..\..\..\source\main\physics\utils\RigLoadingProfiler.h" />
-    <ClInclude Include="..\..\..\source\main\physics\water\Buoyance.h" />
     <ClInclude Include="..\..\..\source\main\physics\water\ScrewProp.h" />
     <ClInclude Include="..\..\..\source\main\resources\CacheSystem.h" />
-    <ClInclude Include="..\..\..\source\main\resources\ContentManager.h" />
     <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.h" />
     <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.h" />
     <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.h" />
@@ -394,25 +546,16 @@
     <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.h" />
     <ClInclude Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h" />
     <ClInclude Include="..\..\..\source\main\terrain\IHeightFinder.h" />
-    <ClInclude Include="..\..\..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.h" />
     <ClInclude Include="..\..\..\source\main\terrain\TerrainGeometryManager.h" />
     <ClInclude Include="..\..\..\source\main\terrain\TerrainManager.h" />
     <ClInclude Include="..\..\..\source\main\terrain\TerrainObjectManager.h" />
     <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapEntity.h" />
     <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapManager.h" />
-    <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapTextureCreator.h" />
     <ClInclude Include="..\..\..\source\main\threadpool\ThreadPool.h" />
-    <ClInclude Include="..\..\..\source\main\utils\CollisionTools.h" />
-    <ClInclude Include="..\..\..\source\main\utils\ConfigFile.h" />
-    <ClInclude Include="..\..\..\source\main\utils\ErrorUtils.h" />
-    <ClInclude Include="..\..\..\source\main\utils\FileSystemInfo.h" />
-    <ClInclude Include="..\..\..\source\main\utils\ForceFeedback.h" />
     <ClInclude Include="..\..\..\source\main\utils\IBehavior.h" />
     <ClInclude Include="..\..\..\source\main\utils\ImprovedConfigFile.h" />
-    <ClInclude Include="..\..\..\source\main\utils\InputEngine.h" />
     <ClInclude Include="..\..\..\source\main\utils\InterThreadStoreVector.h" />
     <ClInclude Include="..\..\..\source\main\utils\Language.h" />
-    <ClInclude Include="..\..\..\source\main\utils\MeshObject.h" />
     <ClInclude Include="..\..\..\source\main\utils\PlatformUtils.h" />
     <ClInclude Include="..\..\..\source\main\utils\RoRWindowEventUtilities.h" />
     <ClInclude Include="..\..\..\source\main\utils\Settings.h" />
@@ -422,225 +565,564 @@
     <ClInclude Include="..\..\..\source\main\utils\Singleton.h" />
     <ClInclude Include="..\..\..\source\main\utils\Timer.h" />
     <ClInclude Include="..\..\..\source\main\utils\Utils.h" />
-    <ClInclude Include="..\..\..\source\main\utils\Win32DirectInput.h" />
     <ClInclude Include="..\..\..\source\main\utils\WriteTextToTexture.h" />
     <ClInclude Include="..\..\..\source\main\utils\ZeroedMemoryAllocator.h" />
     <ClInclude Include="..\..\..\source\main\utils\profiler\Profiler.h" />
     <ClInclude Include="..\..\..\source\main\utils\profiler\RigLoadingProfilerControl.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OIS.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISConfig.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISEffect.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISEvents.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISException.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISFactoryCreator.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISForceFeedback.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISInputManager.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISInterface.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISJoyStick.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISKeyboard.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISMouse.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISMultiTouch.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISObject.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISPrereqs.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32InputManager.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32KeyBoard.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32Prereqs.h" />
     <ClInclude Include="..\..\..\source\main\scripting\CBytecodeStream.h" />
     <ClInclude Include="..\..\..\source\main\scripting\GameScript.h" />
     <ClInclude Include="..\..\..\source\main\scripting\LocalStorage.h" />
     <ClInclude Include="..\..\..\source\main\scripting\OgreAngelscript.h" />
-    <ClInclude Include="..\..\..\source\main\scripting\OgreScriptBuilder.h" />
-    <ClInclude Include="..\..\..\source\main\scripting\ScriptEngine.h" />
+    <ClInclude Include="..\..\..\source\main\utils\Win32DirectInput.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32InputManager.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32JoyStick.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32KeyBoard.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32Prereqs.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\air\AeroEngine.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\air\AirBrake.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\air\Airfoil.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\Beam.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\datatypes\beam_t.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\BeamData.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\BeamFactory.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\utils\BeamStats.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\water\Buoyance.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\ApproxMath.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OIS.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISConfig.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISEffect.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISEvents.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISException.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISFactoryCreator.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISForceFeedback.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISInputManager.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISInterface.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISJoyStick.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISKeyboard.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISMouse.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISMultiTouch.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISObject.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ois\OISPrereqs.h">
+      <Filter>Lib\OIS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\DecalManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\DecalsManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElement.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\ColoredTextAreaOverlayElementFactory.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\dof\DepthOfFieldEffect.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexAirfoil.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexBody.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexFactory.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexMesh.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexMeshWheel.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\flex\FlexObj.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\Dashboard.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\DashBoardManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\DustManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\DustPool.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\DynamicRenderable.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\DynamicLines.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\EnvironmentMap.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAbout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsole.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelector.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBox.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtils.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\GUIInputManager.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\GUIManager.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\mygui\GuiPanelBase.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\mygui\Dialog.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\InputEngine.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\datatypes\rig_t.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffector.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\particle\ExtinguishableFireAffectorFactory.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\collision\CartesianToTriangleTransform.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\BeamEngine.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\AutoPilot.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\collision\Collisions.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\AircraftSimulation.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\GlowMaterialListener.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\GfxActor.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\flex\Flexable.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffectorFactory.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\FFT.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\Heathaze.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\HDRListener.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\HydraxWater.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\IWater.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\MaterialManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Mesh.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\MeshObject.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\particle\OgreShaderParticleRenderer.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\particle\OgreParticleCustomParam.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\PerVehicleCameraContext.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ProceduralManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\ProjectedGrid.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\RadialGrid.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\RttManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\RTTLayer.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\Skidmark.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\SkyManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\SkinManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\ShadowManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapTextureCreator.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\TextureManager.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\Water.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Wave.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\collision\DynamicCollisions.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\Differentials.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\ForceFeedback.h">
+      <Filter>MotionSim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\MotionPlatform.h">
+      <Filter>MotionSim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\NodeGraphTool.h">
+      <Filter>MotionSim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\CollisionTools.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\ContentManager.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\physics\CmdKeyInertia.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\CfgFileManager.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\ConfigFile.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Enums.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\ErrorUtils.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\FileSystemInfo.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\mygui\BaseLayout.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\Character.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\CharacterFactory.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\VehicleAI.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\TorqueCurve.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\audio\SoundScriptManager.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\audio\SoundManager.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\audio\Sound.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ScriptEvents.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\scripting\ScriptEngine.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\Scripting.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\Road2.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\Road.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\PositionStorage.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\scripting\OgreScriptBuilder.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\network\Network.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\audio\MumbleIntegration.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Module.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\LandVehicleSimulation.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Help.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\imgui\imconfig.h">
+      <Filter>Lib\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\imgui\imgui.h">
+      <Filter>Lib\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\imgui\imgui_internal.h">
+      <Filter>Lib\IMGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\source\main\icon.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Source Files\gui\imgui">
-      <UniqueIdentifier>{ED6771FA-1EF5-3246-833A-A3B4CACAB065}</UniqueIdentifier>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{3190c032-814a-4915-9712-0e6357e85ea1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gui\mygui">
-      <UniqueIdentifier>{C9ADF2B0-8B9D-30AA-9889-C0701EB6FAAB}</UniqueIdentifier>
+    <Filter Include="Input">
+      <UniqueIdentifier>{2f6213b1-5cdb-49f0-8c51-ca25d7f7ace3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gui\panels">
-      <UniqueIdentifier>{4F126A77-7778-3AB9-ABCD-A777739BD0CC}</UniqueIdentifier>
+    <Filter Include="Gfx">
+      <UniqueIdentifier>{6a59bd0a-d453-4f6e-a660-9935465b2b4a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\resources\rig_def_fileformat">
-      <UniqueIdentifier>{0472B880-FDEF-36B6-BF2A-37A51783B456}</UniqueIdentifier>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{1809cfc0-3707-4ec8-bc51-44c3dc5d85fb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\resources\terrn2_fileformat">
-      <UniqueIdentifier>{DE7C23C2-ADD4-3412-B3BB-98CF0B766D7A}</UniqueIdentifier>
+    <Filter Include="MotionSim">
+      <UniqueIdentifier>{76fd06b3-678a-4ba5-b8d9-3c00087d68b0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\resources\rig_def_fileformat">
-      <UniqueIdentifier>{F9A6F48B-CEAA-322F-A572-117BDF3B76CA}</UniqueIdentifier>
+    <Filter Include="Gameplay">
+      <UniqueIdentifier>{53a35269-acac-443a-b353-fc5796ecd8fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\resources\terrn2_fileformat">
-      <UniqueIdentifier>{A34E9CD8-4580-3133-90E0-29CD0040CC38}</UniqueIdentifier>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{ee411712-7157-4c6f-b0da-212d754b8c14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\physics\air">
-      <UniqueIdentifier>{CA2377D9-54DC-3AA0-8458-B8864EB48516}</UniqueIdentifier>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{3cc77539-85ef-4cf5-a2b6-ef137b9a3f74}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\physics\collision">
-      <UniqueIdentifier>{B70667F6-C788-3F6C-BB0B-DADCDFB8E711}</UniqueIdentifier>
+    <Filter Include="Lib\IMGUI">
+      <UniqueIdentifier>{4c98b58f-f476-4a30-ad23-d7c5b6ebc1c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\physics\flex">
-      <UniqueIdentifier>{437DA6C7-A7B6-39DE-89A6-94DBD265EE2C}</UniqueIdentifier>
+    <Filter Include="Lib\OIS">
+      <UniqueIdentifier>{af9f642a-856c-4ee6-81d9-c0eb298e11ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\physics\utils">
-      <UniqueIdentifier>{BD0C2EB7-A424-3693-B714-8F6C12ABE70C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\physics\water">
-      <UniqueIdentifier>{1596B30D-A661-368A-BA0E-83D113BD3999}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gfx\camera">
-      <UniqueIdentifier>{D55EE1CC-FC23-35A0-8EFD-2C44068DD6B0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gfx\dof">
-      <UniqueIdentifier>{F416148A-FAC5-3D54-81D4-19DBA37E6D5D}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gfx\hydrax">
-      <UniqueIdentifier>{0F1F73E8-DDBD-3895-A039-ACE23C3B3CA1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gfx\particle">
-      <UniqueIdentifier>{8BABFF08-87DF-3B8F-8E19-C9E425D5E0C0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gameplay\ois">
-      <UniqueIdentifier>{649613E3-5D2C-3C51-9616-78C76CF46F69}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gameplay\ois\win32">
-      <UniqueIdentifier>{C7EB2A03-5AAC-3707-AC44-C064749E5DB7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\terrain\map">
-      <UniqueIdentifier>{6212E2F5-45C7-35E9-8FF1-CE83554650D9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\utils\profiler">
-      <UniqueIdentifier>{043B13EB-21A3-3C21-8143-6C7D5D110B83}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gameplay\ois">
-      <UniqueIdentifier>{D789989C-5A5A-3992-A63A-432E554A3132}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gameplay\ois\win32">
-      <UniqueIdentifier>{5543903E-558C-368A-A7AB-0A0AEEB1816C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\terrain\map">
-      <UniqueIdentifier>{5ED46A7B-E958-3292-B7F6-F181AC49F993}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\utils\profiler">
-      <UniqueIdentifier>{CA08F5FC-718E-32F7-B482-E9168E5ACD68}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{877ACA96-E665-3250-A7FE-FDF8DF1AECAA}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{F6C5AE62-1D64-3118-B122-30A596A8F2AB}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\audio">
-      <UniqueIdentifier>{FE613037-DCE9-3AD1-9553-D985473049D8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gameplay">
-      <UniqueIdentifier>{CCCD1539-CCA6-38E3-A0DE-14A1C35EAF20}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gfx">
-      <UniqueIdentifier>{E6EC38DB-26CD-3196-8C82-84D6114F5F3B}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gui">
-      <UniqueIdentifier>{34B1137C-DA2B-349A-B6ED-BE8B22695691}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\network">
-      <UniqueIdentifier>{0E4CFBAA-C134-34ED-A95B-CB179D57758E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\physics">
-      <UniqueIdentifier>{1EA4E452-4449-3710-B5F9-02E74362EB6D}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\resources">
-      <UniqueIdentifier>{962A8B3D-C3B8-3E96-B4CF-2017B9BC672B}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\terrain">
-      <UniqueIdentifier>{6749A4D4-1DEB-38C6-869F-A913E6AFA69F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\utils">
-      <UniqueIdentifier>{97864D41-E123-3AC6-BE2B-0D15FCB9A0F8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\scripting">
-      <UniqueIdentifier>{1AAC9F79-7D86-3A98-84F1-BC8B8C1D982D}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gfx\camera">
-      <UniqueIdentifier>{462C1B89-7BD6-3519-8CE5-E4BCFD1E9313}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gfx\dof">
-      <UniqueIdentifier>{32D96120-2DDD-3D77-A9F9-E5AA329E0668}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gfx\hydrax">
-      <UniqueIdentifier>{9319D130-09EF-3F75-B287-CF463E8A39CE}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gfx\particle">
-      <UniqueIdentifier>{CBAFE1DD-628E-3258-963C-EAC978A6B58E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gui\imgui">
-      <UniqueIdentifier>{C3000823-56C3-39AB-AB56-C1F1D936A2AE}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gui\mygui">
-      <UniqueIdentifier>{A87F03FD-C4D4-34F5-B059-54F2B20CE856}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gui\panels">
-      <UniqueIdentifier>{092E214F-03AE-385C-90F0-435A79BFA735}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\audio">
-      <UniqueIdentifier>{916BF3AB-92D5-3CF8-B5EC-48055064A7B0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\datatypes">
-      <UniqueIdentifier>{2E270FB2-AB49-3B29-AFDE-64B1D8F957D3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gameplay">
-      <UniqueIdentifier>{5270FA88-8E51-3FB5-B5E7-AA06CB866861}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gfx">
-      <UniqueIdentifier>{A7701C3D-25CE-32EA-9531-C6302678AF67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gui">
-      <UniqueIdentifier>{9BD9AC9C-D68E-321F-9CCE-AE43F09B7340}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\network">
-      <UniqueIdentifier>{02005B69-C76E-36EC-8354-DDFC77CAEDC1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics">
-      <UniqueIdentifier>{2E8802D1-35C7-3BDE-BF9E-74BE7374F50C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\resources">
-      <UniqueIdentifier>{2C843BEF-C507-3DB9-B7A2-6FE5DD604B95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\terrain">
-      <UniqueIdentifier>{3537B68C-959C-3CDF-B558-C50B6759A117}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\threadpool">
-      <UniqueIdentifier>{B1E810C2-2686-38C2-86AF-6F6695563A3A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\utils">
-      <UniqueIdentifier>{86C117E3-2101-3735-9180-52CD51E940E7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\scripting">
-      <UniqueIdentifier>{7BCB61F4-29F7-3E57-ACBA-995B43334A23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics\air">
-      <UniqueIdentifier>{6629D490-F5AD-30D7-8A8A-00752AC1B57B}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics\collision">
-      <UniqueIdentifier>{EE9BF308-B6E9-375F-AF8C-5A8BB83DCA8A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics\flex">
-      <UniqueIdentifier>{62B1376D-60D8-3222-A4C4-FD51C32E89B5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics\utils">
-      <UniqueIdentifier>{8F044E54-0A9A-39FF-ADCC-FB393B240FDD}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\physics\water">
-      <UniqueIdentifier>{756C618A-42F4-3017-AAE5-2711EC089AFA}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="angelscript_addons">
-      <UniqueIdentifier>{896d4b8f-1af8-408f-b87e-6e3ddc8e1458}</UniqueIdentifier>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{11fdeb68-579b-454c-8ed5-deec9852d07b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

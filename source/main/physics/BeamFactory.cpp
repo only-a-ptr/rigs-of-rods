@@ -36,6 +36,7 @@
 #include "DynamicCollisions.h"
 #include "GUIManager.h"
 #include "GUI_TopMenubar.h"
+#include "InputEngine.h"
 #include "Language.h"
 #include "MainMenu.h"
 
@@ -1040,7 +1041,15 @@ void BeamFactory::update(float dt)
     this->SyncWithSimThread();
 
 #ifdef USE_MPLATFORM // TODO: Shouldn't really be here, but needs to run while sim is halted.
-    if(RoR::App::GetGuiManager()->IsVisible_MotionPlatformWindow())
+    if (App::sim_motionfeeder_mode.GetPending() != App::sim_motionfeeder_mode.GetActive())
+    {
+        App::sim_motionfeeder_mode.ApplyPending();
+        // Important because this mode disables input processing
+        // without it, event state gets stuck, causing endless mode looping.
+        App::GetInputEngine()->resetKeys();
+    }
+
+    if (App::sim_motionfeeder_mode.GetActive() == MotionFeederMode::EDITABLE)
     {
         RoR::App::GetGuiManager()->GetMotionFeeder()->Draw();
     }

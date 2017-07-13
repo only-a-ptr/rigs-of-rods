@@ -53,7 +53,6 @@ public:
     void SetVisible_GameAbout           (bool visible);
     void SetVisible_DebugOptions        (bool visible);
     void SetVisible_MultiplayerSelector (bool visible);
-    void SetVisible_MotionPlatformWindow(bool visible);
     void SetVisible_ChatBox             (bool visible);
     void SetVisible_SpawnerReport       (bool visible);
     void SetVisible_VehicleDescription  (bool visible);
@@ -72,7 +71,6 @@ public:
     bool IsVisible_MultiplayerSelector  ();
     bool IsVisible_MpClientList         ();
     bool IsVisible_MainSelector         ();
-    bool IsVisible_MotionPlatformWindow ();
     bool IsVisible_ChatBox              ();
     bool IsVisible_SpawnerReport        ();
     bool IsVisible_VehicleDescription   ();
