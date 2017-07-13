@@ -223,6 +223,18 @@ void RoR::NodeGraphTool::DrawGrid()
         draw_list->AddLine(ImVec2(0.0f,y)+win_pos, ImVec2(canvasSize.x,y)+win_pos, m_style.color_grid, m_style.grid_line_width);
 }
 
+bool RoR::NodeGraphTool::ClipTest(ImRect r)
+{
+    return ImGui::GetCurrentWindow()->Rect().Overlaps(r);
+}
+
+bool RoR::NodeGraphTool::ClipTestNode(Node* n)
+{
+    n->draw_rect_min = m_scroll_offset + n->pos;
+    // NOTE: We're using value from previous update; `calc_size` is updated by DrawNodeFinalize(); --> We must add a safety minimum size in case the node was never displayed before
+    return this->ClipTest(ImRect(n->draw_rect_min, n->draw_rect_min + n->calc_size + ImVec2(50.f,25.f)));
+}
+
 void RoR::NodeGraphTool::DrawLink(Link* link)
 {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -232,7 +244,7 @@ void RoR::NodeGraphTool::DrawLink(Link* link)
     ImVec2 p2 = offset + link->node_dst->GetInputSlotPos(link->slot_dst);
     ImRect window = ImGui::GetCurrentWindow()->Rect();
 
-    if (this->IsInside(window.Min, window.Max, p1) || this->IsInside(window.Min, window.Max, p1)) // very basic clipping
+    if (this->IsInside(window.Min, window.Max, p1) || this->IsInside(window.Min, window.Max, p2)) // very basic clipping
     {
         float bezier_pt_dist = fmin(50.f, fmin(fabs(p1.x - p2.x)*0.75f, fabs(p1.y - p2.y)*0.75f)); // Maximum: 50; minimum: 75% of shorter-axis distance between p1 and p2
         draw_list->AddBezierCurve(p1, p1+ImVec2(+bezier_pt_dist,0), p2+ImVec2(-bezier_pt_dist,0), p2, m_style.color_link, m_style.link_line_width);
@@ -244,6 +256,16 @@ void RoR::NodeGraphTool::DrawSlotUni(Node* node, const int index, const bool inp
     ImDrawList* drawlist = ImGui::GetWindowDrawList();
     drawlist->ChannelsSetCurrent(2);
     ImVec2 slot_center_pos =  ((input) ? node->GetInputSlotPos(index) : (node->GetOutputSlotPos(index)));
+
+    // Clip test
+    ImVec2 clip_pos = slot_center_pos + m_scroll_offset;
+    ImVec2 clip_min(clip_pos.x - m_style.node_slots_radius, clip_pos.y - m_style.node_slots_radius);
+    ImVec2 clip_max(clip_pos.x + m_style.node_slots_radius, clip_pos.y + m_style.node_slots_radius);
+    if (!this->ClipTest(ImRect(clip_min, clip_max)))
+    {
+        return;
+    }
+
     ImGui::SetCursorScreenPos((slot_center_pos + m_scroll_offset) - m_style.slot_hoverbox_extent);
     ImU32 color = (input) ? m_style.color_input_slot : m_style.color_output_slot;
     if (this->IsSlotHovered(slot_center_pos))
@@ -303,7 +325,6 @@ RoR::NodeGraphTool::Link* RoR::NodeGraphTool::AddLink(Node* src, Node* dst, int 
 void RoR::NodeGraphTool::DrawNodeBegin(Node* node)
 {
     ImGui::PushID(node->id);
-    node->draw_rect_min = m_scroll_offset + node->pos;
     // Draw content
     ImDrawList* drawlist = ImGui::GetWindowDrawList();
     drawlist->ChannelsSetCurrent(2);
@@ -923,6 +944,8 @@ static const float DUMMY_PLOT[] = {0,0,0,0,0};
 
 void RoR::NodeGraphTool::DisplayNode::Draw()
 {
+    if (!graph->ClipTestNode(this))
+        return;
     graph->DrawNodeBegin(this);
 
     const float* data_ptr = DUMMY_PLOT;;
@@ -986,6 +1009,8 @@ RoR::NodeGraphTool::UdpNode::UdpNode(NodeGraphTool* nodegraph, ImVec2 _pos, cons
 
 void RoR::NodeGraphTool::UdpNode::Draw()
 {
+    if (!graph->ClipTestNode(this))
+        return;
     graph->DrawNodeBegin(this);
     ImGui::Text(title);
     ImGui::Text(" ---------- ");
@@ -1025,6 +1050,8 @@ void RoR::NodeGraphTool::UdpNode::BindDst(Link* link, int slot)
 
 void RoR::NodeGraphTool::GeneratorNode::Draw()
 {
+    if (!graph->ClipTestNode(this))
+        return;
     this->graph->DrawNodeBegin(this);
 
     ImGui::Text("Sine generator");
@@ -1099,6 +1126,8 @@ void RoR::NodeGraphTool::ReadingNode::DetachLink(Link* link)
 
 void RoR::NodeGraphTool::ReadingNode::Draw()
 {
+    if (!graph->ClipTestNode(this))
+        return;
     this->graph->DrawNodeBegin(this);
     ImGui::Text("SoftBody reading");
     ImGui::InputInt("Node", &softbody_node_id);
@@ -1195,6 +1224,8 @@ bool RoR::NodeGraphTool::EulerNode::Process()
 
 void RoR::NodeGraphTool::EulerNode::Draw()
 {
+    if (!graph->ClipTestNode(this))
+        return;
     this->graph->DrawNodeBegin(this);
 
     ImGui::Text("     Euler angles     ");
@@ -1415,6 +1446,8 @@ void RoR::NodeGraphTool::ScriptNode::DetachLink(Link* link)
 
 void RoR::NodeGraphTool::ScriptNode::Draw()
 {
+    if (!graph->ClipTestNode(this))
+        return;
     graph->DrawNodeBegin(this);
     const int flags = ImGuiInputTextFlags_AllowTabInput;
     const ImVec2 size = this->user_size;
@@ -1440,6 +1473,8 @@ RoR::NodeGraphTool::MouseDragNode::MouseDragNode(NodeGraphTool* _graph, ImVec2 _
 
 void RoR::NodeGraphTool::MouseDragNode::Draw()
 {
+    if (!graph->ClipTestNode(this))
+        return;
     graph->DrawNodeBegin(this);
     ImGui::PushItemWidth(this->user_size.x);
     ImGui::Text("Transform");

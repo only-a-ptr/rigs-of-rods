@@ -292,6 +292,8 @@ private:
     inline int      AssignId()                                                           { return m_free_id++; }
     inline void     Assert(bool expr, const char* msg)                                   { if (!expr) { this->AddMessage("Assert failed: %s", msg); } }
     inline void     UpdateFreeId(int existing_id)                                        { if (existing_id >= m_free_id) { m_free_id = (existing_id + 1); } }
+    bool            ClipTest(ImRect r);                                                  /// Very basic clipping, added because ImGUI's window clipping doesn't yet work with OGRE
+    bool            ClipTestNode(Node* n);
     void            DrawSlotUni (Node* node, const int index, const bool input);
     Link*           AddLink (Node* src, Node* dst, int src_slot, int dst_slot);          ///< creates new link or fetches existing unused one
     Link*           FindLinkByDestination (Node* node, const int slot);
@@ -301,7 +303,7 @@ private:
     void            DrawLink(Link* link);
     void            DeleteLink(Link* link);
     void            DeleteNode(Node* node);
-    void            DrawNodeBegin(Node* node);
+    void            DrawNodeBegin(Node* node);                                           ///< Important: Call `ClipTestNode()` first!
     void            DrawNodeFinalize(Node* node);
     void            AddMessage(const char* fmt, ...);
     void            NodeToJson(rapidjson::Value& j_data, Node* node, rapidjson::Document& doc);
