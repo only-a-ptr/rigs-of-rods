@@ -14,6 +14,8 @@
 *.ipch
 *.pch
 project/source/main/RoR.dir/Release/RCa01528
+project/test/Debug
+project/test/x64
 bin/RoR.exe
 bin/RoR.map
 bin/imgui.ini
