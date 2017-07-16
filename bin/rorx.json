@@ -37,13 +37,13 @@
             "softbody_node_id": 7
         },
         {
-            "pos_x": 521.0,
-            "pos_y": 8.0,
-            "user_size_x": 250.0,
-            "user_size_y": 200.0,
+            "pos_x": 413.0,
+            "pos_y": -2.0,
+            "user_size_x": 498.0,
+            "user_size_y": 380.0,
             "id": 12,
             "type_id": 4,
-            "source_code": "int prev = -(2000/60);\n\nvoid step()\n{\n  // ------ Position ------\n  Write(0, Read(0,0)*10000*60);\n  Write(1, Read(1,0)*10000*60);\n  Write(2, Read(2,0)*10000*60);\n\n  // ------ Velocity ------\n  Write(6, Read(0,0)-Read(0,prev));\n  Write(7, Read(1,0)-Read(1,prev));\n  Write(8, Read(1,0)-Read(1,prev));\n}"
+            "source_code": "int prev = -(2000/60);\nint prev2 = prev*2;\n\nvoid step()\n{\n  float x,y,z,x1,y1,z1,x2,y2,z2;\n  x =  Read(0,0);     y = Read(1,0);      z = Read(2,0);\n  x1 = Read(0,prev);  y1 = Read(1,prev);  z1 = Read(2,prev);\n  x2 = Read(0,prev2); y2 = Read(1,prev2); z2 = Read(2,prev2);\n\n  // ------ Position ------\n  Write(0, x*10000*60);\n  Write(1, y*10000*60);\n  Write(2, z*10000*60);\n\n  // ------ Velocity ------\n  float veloX, veloY, veloZ, veloX1, veloY1, veloZ1;\n  veloX  = (x-x1);   veloY  = (y-y1);  veloZ = (z-z1);\n  veloX1 = (x1-x2);  veloY1 = (y1-y2); veloZ = (z1-z2);\n  Write(3, veloX * 60);\n  Write(4, veloY * 60);\n  Write(5, veloZ * 60);\n\n  // ------ Acceleration ------\n  Write(6, (veloX - veloX1) * 60);\n  Write(7, (veloY - veloY1) * 60);\n  Write(8, (veloZ - veloZ1) * 60);\n}"
         }
     ],
     "links": [
@@ -86,33 +86,51 @@
         {
             "node_src_id": 12,
             "node_dst_id": -2147483645,
-            "slot_src": 8,
-            "slot_dst": 2
-        },
-        {
-            "node_src_id": 12,
-            "node_dst_id": -2147483645,
-            "slot_src": 7,
+            "slot_src": 4,
             "slot_dst": 1
         },
         {
             "node_src_id": 12,
             "node_dst_id": -2147483645,
+            "slot_src": 3,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 12,
+            "node_dst_id": -2147483645,
+            "slot_src": 5,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 12,
+            "node_dst_id": -2147483644,
             "slot_src": 6,
             "slot_dst": 0
+        },
+        {
+            "node_src_id": 12,
+            "node_dst_id": -2147483644,
+            "slot_src": 7,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 12,
+            "node_dst_id": -2147483644,
+            "slot_src": 8,
+            "slot_dst": 2
         }
     ],
     "udp_pos_node": {
-        "pos_x": 916.0,
-        "pos_y": 30.0,
+        "pos_x": 992.0,
+        "pos_y": 66.0,
         "user_size_x": 0.0,
         "user_size_y": 0.0,
         "id": -2147483646,
         "type_id": 7
     },
     "udp_acc_node": {
-        "pos_x": -300.0,
-        "pos_y": 300.0,
+        "pos_x": 994.0,
+        "pos_y": 319.0,
         "user_size_x": 0.0,
         "user_size_y": 0.0,
         "id": -2147483644,
@@ -127,8 +145,8 @@
         "type_id": 7
     },
     "udp_velo_node": {
-        "pos_x": 926.0,
-        "pos_y": 159.0,
+        "pos_x": 1000.0,
+        "pos_y": 191.0,
         "user_size_x": 0.0,
         "user_size_y": 0.0,
         "id": -2147483645,
