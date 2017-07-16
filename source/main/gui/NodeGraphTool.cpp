@@ -724,6 +724,26 @@ void RoR::NodeGraphTool::SaveAsJson()
     delete buffer;
 }
 
+RoR::NodeGraphTool::Node* ResolveNodeByIdHelper(RoR::NodeGraphTool* graph,
+                                                std::unordered_map<int, RoR::NodeGraphTool::Node*>& lookup,
+                                                int node_id)
+{
+    switch (node_id)
+    {
+        case RoR::NodeGraphTool::UDP_POS_NODE_ID   : return &graph->udp_position_node; 
+        case RoR::NodeGraphTool::UDP_VELO_NODE_ID  : return &graph->udp_velocity_node; 
+        case RoR::NodeGraphTool::UDP_ACC_NODE_ID   : return &graph->udp_accel_node;    
+        case RoR::NodeGraphTool::UDP_ANGLES_NODE_ID: return &graph->udp_orient_node;   
+        default:
+        {
+            auto found_itor = lookup.find(node_id);
+            if (found_itor != lookup.end())
+                return found_itor->second;
+        }
+    }
+    return nullptr;
+}
+
 void RoR::NodeGraphTool::LoadFromJson()
 {
     this->ClearAll();
@@ -822,24 +842,23 @@ void RoR::NodeGraphTool::LoadFromJson()
             Link* link = new Link();
             int src_id = (*l_itor)["node_src_id"].GetInt();
             int dst_id = (*l_itor)["node_dst_id"].GetInt();
+            Node* src_node = ResolveNodeByIdHelper(this, lookup, src_id);
+            Node* dst_node = ResolveNodeByIdHelper(this, lookup, dst_id);
 
-            auto src_found = lookup.find(src_id);
-            auto dst_found = lookup.find(dst_id);
-
-            if (src_found == lookup.end())
+            if (src_node == nullptr)
             {
                 this->AddMessage("JSON load error: failed to resolve link src node %d", src_id);
                 delete link;
                 continue;
             }
-            if (dst_found == lookup.end())
+            if (dst_node == nullptr)
             {
                 this->AddMessage("JSON load error: failed to resolve link dst node %d", dst_id);
                 delete link;
                 continue;
             }
-            src_found->second->BindSrc(link, (*l_itor)["slot_src"].GetInt());
-            dst_found->second->BindDst(link, (*l_itor)["slot_dst"].GetInt());
+            src_node->BindSrc(link, (*l_itor)["slot_src"].GetInt());
+            dst_node->BindDst(link, (*l_itor)["slot_dst"].GetInt());
             m_links.push_back(link);
         }
     }

@@ -295,7 +295,7 @@ private:
     bool            ClipTest(ImRect r);                                                  /// Very basic clipping, added because ImGUI's window clipping doesn't yet work with OGRE
     bool            ClipTestNode(Node* n);
     void            DrawSlotUni (Node* node, const int index, const bool input);
-    Link*           AddLink (Node* src, Node* dst, int src_slot, int dst_slot);          ///< creates new link or fetches existing unused one
+    Link*           AddLink (Node* src, Node* dst, int src_slot, int dst_slot);
     Link*           FindLinkByDestination (Node* node, const int slot);
     Link*           FindLinkBySource (Node* node, const int slot);
     void            DrawNodeGraphPane ();
