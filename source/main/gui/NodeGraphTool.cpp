@@ -19,7 +19,7 @@
 RoR::NodeGraphTool::NodeGraphTool():
     m_scroll(0.0f, 0.0f),
     m_scroll_offset(0.0f, 0.0f),
-    m_last_scaled_node(nullptr),
+    m_mouse_resize_node(nullptr),
     m_link_mouse_src(nullptr),
     m_link_mouse_dst(nullptr),
     m_hovered_slot_node(nullptr),
@@ -75,6 +75,7 @@ RoR::NodeGraphTool::Style::Style()
     node_slots_radius         = 5.f;
     color_link                = ImColor(200,200,100);
     link_line_width           = 3.f;
+    scaler_size               = ImVec2(20, 20);
 }
 
 RoR::NodeGraphTool::Link* RoR::NodeGraphTool::FindLinkBySource(Node* node, const int slot)
@@ -350,7 +351,7 @@ void RoR::NodeGraphTool::DrawNodeFinalize(Node* node)
 
     // Handle mouse dragging
     bool is_hovered = false;
-    if (!m_is_any_slot_hovered)
+    if (!m_is_any_slot_hovered && (m_mouse_resize_node == nullptr))
     {
         ImGui::SetCursorScreenPos(node->draw_rect_min);
         ImGui::InvisibleButton("node", node->calc_size);
@@ -371,6 +372,34 @@ void RoR::NodeGraphTool::DrawNodeFinalize(Node* node)
     ImVec2 draw_rect_max = node->draw_rect_min + node->calc_size;
     drawlist->AddRectFilled(node->draw_rect_min, draw_rect_max, bg_color, m_style.node_rounding);
     drawlist->AddRect(node->draw_rect_min, draw_rect_max, border_color, m_style.node_rounding);
+
+    // Resizing
+    if (node->is_scalable)
+    {
+        // Handle resize
+        ImVec2 scaler_mouse_max = node->pos + node->calc_size;
+        ImVec2 scaler_mouse_min = scaler_mouse_max - m_style.scaler_size;
+        bool scaler_hover = false;
+        if ((m_mouse_resize_node == nullptr) && this->IsInside(scaler_mouse_min, scaler_mouse_max, m_nodegraph_mouse_pos)) // Ignore this scaler if another node is already scaled
+        {
+            scaler_hover = true;
+            if (ImGui::IsMouseDragging(0))
+            {
+                m_mouse_resize_node = node;
+            }
+        }
+
+        // Draw
+        ImColor scaler_color = ImGui::GetStyle().Colors[ImGuiCol_Button];
+        if (scaler_hover || (node == m_mouse_resize_node))
+        {
+            scaler_color = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
+        }
+        drawlist->AddTriangleFilled(draw_rect_max,
+                                    ImVec2(draw_rect_max.x, draw_rect_max.y - m_style.scaler_size.y), 
+                                    ImVec2(draw_rect_max.x - m_style.scaler_size.x, draw_rect_max.y),
+                                    scaler_color);
+    }
 
     ImGui::PopID();
 
@@ -448,6 +477,16 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             }
             m_link_mouse_dst = nullptr;
         }
+    }
+
+    // Update node resize
+    if (ImGui::IsMouseDragging(0) && m_mouse_resize_node != nullptr)
+    {
+        m_mouse_resize_node->user_size += ImGui::GetIO().MouseDelta;
+    }
+    else // Resize ended
+    {
+        m_mouse_resize_node = nullptr;
     }
 
     // Draw grid
@@ -1283,6 +1322,7 @@ RoR::NodeGraphTool::ScriptNode::ScriptNode(NodeGraphTool* _graph, ImVec2 _pos):
     user_size = ImVec2(250, 200);
     snprintf(node_name, 10, "Node %d", id);
     this->InitScripting();
+    is_scalable = true;
 }
 
 void RoR::NodeGraphTool::ScriptNode::InitScripting()

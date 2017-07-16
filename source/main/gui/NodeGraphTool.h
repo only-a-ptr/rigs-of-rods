@@ -57,6 +57,7 @@ public:
         ImU32 color_link;
         float link_line_width;
         ImVec2 slot_hoverbox_extent;
+        ImVec2 scaler_size;
 
         Style();
     };
@@ -99,9 +100,8 @@ public:
     {
         enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP };
 
-        Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false)
+        Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false), is_scalable(false)
         {
-            
         }
 
         inline ImVec2 GetInputSlotPos(size_t slot_idx)  { return ImVec2(pos.x,               pos.y + (calc_size.y * (static_cast<float>(slot_idx+1) / static_cast<float>(num_inputs+1)))); }
@@ -123,6 +123,7 @@ public:
         int      id;
         Type     type;
         bool     done; // Are data ready in this processing step?
+        bool     is_scalable; ///< Should the resize handle be enabled?
     };
 
     struct UserNode: Node ///< Node added to graph by user. Gets auto-assigned ID.
@@ -336,7 +337,7 @@ private:
     int        m_hovered_slot_output; // -1 = none
     bool       m_is_any_slot_hovered;
     HeaderMode m_header_mode;
-    Node*      m_last_scaled_node;
+    Node*      m_mouse_resize_node;    ///< Node with mouse resizing in progress.
     MouseDragNode  m_fake_mouse_node;     ///< Used while dragging link with mouse. Type 'Transform' used just because we need anything with 1 input and 1 output.
     Link*      m_link_mouse_src;      ///< Link being mouse-dragged by it's input end.
     Link*      m_link_mouse_dst;      ///< Link being mouse-dragged by it's output end.
