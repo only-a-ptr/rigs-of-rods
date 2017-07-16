@@ -18,6 +18,7 @@
 
 RoR::NodeGraphTool::NodeGraphTool():
     m_scroll(0.0f, 0.0f),
+    m_scroll_offset(0.0f, 0.0f),
     m_last_scaled_node(nullptr),
     m_link_mouse_src(nullptr),
     m_link_mouse_dst(nullptr),
@@ -416,8 +417,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
     drawlist->ChannelsSplit(3); // 0 = background (grid, curves); 1 = node rectangle/slots; 2 = node content
 
     // Update mouse drag
-    const ImVec2 nodepane_screen_pos = ImGui::GetCursorScreenPos();
-    m_nodegraph_mouse_pos = (ImGui::GetIO().MousePos - nodepane_screen_pos);
+    m_nodegraph_mouse_pos = (ImGui::GetIO().MousePos - m_scroll_offset);
     if (ImGui::IsMouseDragging(0) && this->IsLinkDragInProgress())
     {
         m_fake_mouse_node.pos = m_nodegraph_mouse_pos;

@@ -326,8 +326,8 @@ private:
     char       m_directory[300];
     char       m_filename[100];
     Style      m_style;
-    ImVec2     m_scroll;
-    ImVec2     m_scroll_offset;
+    ImVec2     m_scroll;             ///< Scroll position of the node graph pane
+    ImVec2     m_scroll_offset;      ///< Offset from screen position to nodegraph pane position
     ImVec2     m_nodegraph_mouse_pos;
     Node*      m_hovered_node;
     Node*      m_context_menu_node;
