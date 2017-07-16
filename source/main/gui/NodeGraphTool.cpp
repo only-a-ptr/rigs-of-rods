@@ -829,7 +829,7 @@ void RoR::NodeGraphTool::LoadFromJson()
     this->JsonToNode(&this->udp_position_node, d["udp_pos_node"]);
     this->JsonToNode(&this->udp_accel_node,    d["udp_acc_node"]);
     this->JsonToNode(&this->udp_orient_node,   d["udp_orient_node"]);
-    this->JsonToNode(&this->udp_orient_node,   d["udp_velo_node"]);
+    this->JsonToNode(&this->udp_velocity_node, d["udp_velo_node"]);
 
     // IMPORT LINKS
 
