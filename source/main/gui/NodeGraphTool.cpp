@@ -848,13 +848,12 @@ void RoR::NodeGraphTool::LoadFromJson()
 
 void RoR::NodeGraphTool::ClearAll()
 {
-    for (Link* link: m_links)
-        this->DeleteLink(link);
-    m_links.clear();
+    while (!m_links.empty())
+        this->DetachAndDeleteLink(m_links.back());
 
-    for (Node* n: m_nodes)
-        delete n;
-    m_nodes.clear();
+    while (!m_nodes.empty())
+        this->DetachAndDeleteNode(m_nodes.back());
+
 }
 
 template<typename N> void DeleteNodeFromVector(std::vector<N*>& vec, RoR::NodeGraphTool::Node* node)
