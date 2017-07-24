@@ -145,24 +145,21 @@ public:
     /// Outputs(3): X position, Y position, Z position
     struct ReadingNode: public UserNode
     {
-        ReadingNode(NodeGraphTool* _graph, ImVec2 _pos):
-            UserNode(_graph, Type::READING, _pos), buffer_x(0), buffer_y(1), buffer_z(2), softbody_node_id(-1)
-        {
-            num_inputs = 0;
-            num_outputs = 3;
-        }
+        ReadingNode(NodeGraphTool* _graph, ImVec2 _pos);
 
-        inline void Push(Ogre::Vector3 pos)                 { buffer_x.Push(pos.x); buffer_y.Push(-pos.z); buffer_z.Push(pos.y); } // Transform OGRE coords -> classic coords
-        virtual bool Process() override                             { this->done = true; return true; }
+        inline void  PushPosition(Ogre::Vector3 pos)                 { buffer_pos_x.Push(pos.x);       buffer_pos_y.Push(-pos.z);       buffer_pos_z.Push(pos.y); }       // Transform OGRE coords -> classic coords
+        inline void  PushForces(Ogre::Vector3 forces)                { buffer_forces_x.Push(forces.x); buffer_forces_y.Push(-forces.z); buffer_forces_z.Push(forces.y); } // Transform OGRE coords -> classic coords
+        inline void  PushVelocity(Ogre::Vector3 velo)                { buffer_velo_x.Push(velo.x);     buffer_velo_y.Push(-velo.z);     buffer_velo_z.Push(velo.y); }     // Transform OGRE coords -> classic coords
+        virtual bool Process() override                              { this->done = true; return true; }
         virtual void BindSrc(Link* link, int slot) override;
         //           BindDst() not needed - no inputs
         virtual void DetachLink(Link* link);
         virtual void Draw() override;
 
         int softbody_node_id; // -1 means 'none'
-        Buffer buffer_x;
-        Buffer buffer_y;
-        Buffer buffer_z;
+        Buffer buffer_pos_x, buffer_forces_x, buffer_velo_x;
+        Buffer buffer_pos_y, buffer_forces_y, buffer_velo_y;
+        Buffer buffer_pos_z, buffer_forces_z, buffer_velo_z;
     };
 
     struct GeneratorNode: public UserNode

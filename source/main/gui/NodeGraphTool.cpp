@@ -214,7 +214,10 @@ void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
             ReadingNode* rnode = static_cast<ReadingNode*>(node);
             if (rnode->softbody_node_id >= 0)
             {
-                rnode->Push(actor->nodes[rnode->softbody_node_id].AbsPosition);
+                const node_t& const node = actor->nodes[rnode->softbody_node_id];
+                rnode->PushPosition(node.AbsPosition);
+                rnode->PushForces  (node.Forces);
+                rnode->PushVelocity(node.Velocity);
             }
         }
     }
@@ -1095,7 +1098,7 @@ void RoR::NodeGraphTool::Display2DNode::Draw()
     ImGui::PushStyleColor(ImGuiCol_ChildWindowBg, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
     ImGui::BeginChild("display-node-2D", this->user_size, draw_border, window_flags);
 
-    if (graph->IsLinkAttached(input_scroll_x) && graph->IsLinkAttached(input_scroll_y))
+    if (graph->IsLinkAttached(input_scroll_x) && graph->IsLinkAttached(input_scroll_y) && this->zoom != 0)
     {
         ImDrawList* drawlist = ImGui::GetWindowDrawList();
         const ImVec2 canvas_screen_min    = ImGui::GetCursorScreenPos();
@@ -1104,24 +1107,27 @@ void RoR::NodeGraphTool::Display2DNode::Draw()
         const ImVec2 canvas_world_min     = canvas_world_center - ((this->user_size / 2.f) / this->zoom);
 
         // --- Draw grid ----
-        const float grid_screen_spacing = this->grid_size * this->zoom;
-        ImVec2 grid_screen_min(((this->grid_size - fmodf(canvas_world_center.x, this->grid_size)) * this->zoom),
-                               ((this->grid_size - fmodf(canvas_world_center.y, this->grid_size)) * this->zoom));
-        if (grid_screen_min.x < 0.f)
-            grid_screen_min.x += grid_screen_spacing;
-        if (grid_screen_min.y < 0.f)
-            grid_screen_min.y += grid_screen_spacing;
-        grid_screen_min += canvas_screen_min;
+        if (this->grid_size != 0)
+        {
+            const float grid_screen_spacing = this->grid_size * this->zoom;
+            ImVec2 grid_screen_min(((this->grid_size - fmodf(canvas_world_center.x, this->grid_size)) * this->zoom),
+                                   ((this->grid_size - fmodf(canvas_world_center.y, this->grid_size)) * this->zoom));
+            if (grid_screen_min.x < 0.f)
+                grid_screen_min.x += grid_screen_spacing;
+            if (grid_screen_min.y < 0.f)
+                grid_screen_min.y += grid_screen_spacing;
+            grid_screen_min += canvas_screen_min;
 
-        for (float x = grid_screen_min.x; x < canvas_screen_max.x; x += grid_screen_spacing)
-        {
-            drawlist->AddLine(ImVec2(x, canvas_screen_min.y),               ImVec2(x, canvas_screen_max.y),
-                              graph->m_style.display2d_grid_line_color,     graph->m_style.display2d_grid_line_width);
-        }
-        for (float y = grid_screen_min.y; y < canvas_screen_max.y; y += grid_screen_spacing)
-        {
-            drawlist->AddLine(ImVec2(canvas_screen_min.x, y),               ImVec2(canvas_screen_max.x, y),
-                              graph->m_style.display2d_grid_line_color,     graph->m_style.display2d_grid_line_width);
+            for (float x = grid_screen_min.x; x < canvas_screen_max.x; x += grid_screen_spacing)
+            {
+                drawlist->AddLine(ImVec2(x, canvas_screen_min.y),               ImVec2(x, canvas_screen_max.y),
+                                  graph->m_style.display2d_grid_line_color,     graph->m_style.display2d_grid_line_width);
+            }
+            for (float y = grid_screen_min.y; y < canvas_screen_max.y; y += grid_screen_spacing)
+            {
+                drawlist->AddLine(ImVec2(canvas_screen_min.x, y),               ImVec2(canvas_screen_max.x, y),
+                                  graph->m_style.display2d_grid_line_color,     graph->m_style.display2d_grid_line_width);
+            }
         }
 
         if (graph->IsLinkAttached(input_rough_x) && graph->IsLinkAttached(input_rough_y))
@@ -1347,13 +1353,30 @@ void RoR::NodeGraphTool::GeneratorNode::BindSrc(Link* link, int slot)
 
 // -------------------------------- Reading node -----------------------------------
 
+RoR::NodeGraphTool::ReadingNode::ReadingNode(NodeGraphTool* _graph, ImVec2 _pos):
+    UserNode(_graph, Type::READING, _pos),
+    buffer_pos_x(0), buffer_pos_y(1), buffer_pos_z(2),
+    buffer_forces_x(3), buffer_forces_y(4), buffer_forces_z(5),
+    buffer_velo_x(6), buffer_velo_y(7), buffer_velo_z(8),
+    softbody_node_id(-1)
+{
+    num_inputs = 0;
+    num_outputs = 9;
+}
+
 void RoR::NodeGraphTool::ReadingNode::BindSrc(Link* link, int slot)
 {
     switch (slot)
     {
-    case 0:    link->buff_src = &buffer_x;    link->node_src = this;     return;
-    case 1:    link->buff_src = &buffer_y;    link->node_src = this;     return;
-    case 2:    link->buff_src = &buffer_z;    link->node_src = this;     return;
+    case 0:    link->buff_src = &buffer_pos_x;       link->node_src = this;     return;
+    case 1:    link->buff_src = &buffer_pos_y;       link->node_src = this;     return;
+    case 2:    link->buff_src = &buffer_pos_z;       link->node_src = this;     return;
+    case 3:    link->buff_src = &buffer_forces_x;    link->node_src = this;     return;
+    case 4:    link->buff_src = &buffer_forces_y;    link->node_src = this;     return;
+    case 5:    link->buff_src = &buffer_forces_z;    link->node_src = this;     return;
+    case 6:    link->buff_src = &buffer_velo_x;      link->node_src = this;     return;
+    case 7:    link->buff_src = &buffer_velo_y;      link->node_src = this;     return;
+    case 8:    link->buff_src = &buffer_velo_z;      link->node_src = this;     return;
     default: assert(false && "ReadingNode::BindSrc(): invalid slot index");
     }
 }
@@ -1364,7 +1387,6 @@ void RoR::NodeGraphTool::ReadingNode::DetachLink(Link* link)
 
     if (link->node_src == this)
     {
-        assert (link->buff_src == &buffer_x || link->buff_src == &buffer_y || link->buff_src == &buffer_z); // check discrepancy
         link->buff_src = nullptr;
         link->node_src = nullptr;
     }
@@ -1377,6 +1399,10 @@ void RoR::NodeGraphTool::ReadingNode::Draw()
     this->graph->DrawNodeBegin(this);
     ImGui::Text("SoftBody reading");
     ImGui::InputInt("Node", &softbody_node_id);
+    ImGui::Text(" --- Outputs ---  "); // Filler text to make node tall enough for all the outputs :)
+    ImGui::Text("           Pos XYZ");
+    ImGui::Text("        Forces XYZ");
+    ImGui::Text("      Velocity XYZ");
     this->graph->DrawNodeFinalize(this);
 }
 
