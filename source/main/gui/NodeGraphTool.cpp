@@ -76,6 +76,12 @@ RoR::NodeGraphTool::Style::Style()
     color_link                = ImColor(200,200,100);
     link_line_width           = 3.f;
     scaler_size               = ImVec2(20, 20);
+    display2d_rough_line_color  = ImColor(225,225,225,255);
+    display2d_smooth_line_color = ImColor(125,175,255,255);
+    display2d_rough_line_width  = 1.f;
+    display2d_smooth_line_width = 1.f;
+    display2d_grid_line_color = ImColor(100,125,110,255);
+    display2d_grid_line_width = 1.2f;
 }
 
 RoR::NodeGraphTool::Link* RoR::NodeGraphTool::FindLinkBySource(Node* node, const int slot)
@@ -565,11 +571,12 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
         else
         {
             ImGui::Text("-- Create new node --");
-            if (ImGui::MenuItem("Reading"))   { m_nodes.push_back(new ReadingNode(this, scene_pos));   }
-            if (ImGui::MenuItem("Generator")) { m_nodes.push_back(new GeneratorNode(this, scene_pos)); }
-            if (ImGui::MenuItem("Display"))   { m_nodes.push_back(new DisplayNode(this, scene_pos));   }
-            if (ImGui::MenuItem("Script"))    { m_nodes.push_back(new ScriptNode(this, scene_pos));    }
-            if (ImGui::MenuItem("Euler")) { m_nodes.push_back(new EulerNode(this, scene_pos)); }
+            if (ImGui::MenuItem("Reading"))           { m_nodes.push_back(new ReadingNode  (this, scene_pos)); }
+            if (ImGui::MenuItem("Generator"))         { m_nodes.push_back(new GeneratorNode(this, scene_pos)); }
+            if (ImGui::MenuItem("Display (scalar)"))  { m_nodes.push_back(new DisplayNode  (this, scene_pos)); }
+            if (ImGui::MenuItem("Display (2D)"))      { m_nodes.push_back(new Display2DNode(this, scene_pos)); }
+            if (ImGui::MenuItem("Script"))            { m_nodes.push_back(new ScriptNode   (this, scene_pos)); }
+            if (ImGui::MenuItem("Euler"))             { m_nodes.push_back(new EulerNode    (this, scene_pos)); }
             ImGui::Text("-- Fetch UDP node --");
             if (ImGui::MenuItem("Position")) { udp_position_node.pos = scene_pos; }
             if (ImGui::MenuItem("Velocity")) { udp_velocity_node.pos = scene_pos; }
@@ -691,6 +698,11 @@ void RoR::NodeGraphTool::SaveAsJson()
 
         case Node::Type::DISPLAY:
             j_data.AddMember("scale", static_cast<DisplayNode*>(node)->plot_extent, j_alloc);
+            break;
+
+        case Node::Type::DISPLAY_2D:
+            j_data.AddMember("zoom",      static_cast<Display2DNode*>(node)->zoom, j_alloc);
+            j_data.AddMember("grid_size", static_cast<Display2DNode*>(node)->grid_size, j_alloc);
             break;
 
         default:
@@ -822,6 +834,14 @@ void RoR::NodeGraphTool::LoadFromJson()
             {
                 DisplayNode* dnode = new DisplayNode  (this, ImVec2());
                 dnode->plot_extent = (*itor)["scale"].GetFloat();
+                node = dnode;
+                break;
+            }
+            case Node::Type::DISPLAY_2D:
+            {
+                Display2DNode* dnode = new Display2DNode  (this, ImVec2());
+                dnode->zoom      = (*itor)["zoom"].GetFloat();
+                dnode->grid_size = (*itor)["grid_size"].GetFloat();
                 node = dnode;
                 break;
             }
@@ -987,6 +1007,171 @@ void RoR::NodeGraphTool::Buffer::CopyResetOffset(Buffer* src) // Copies source b
 void RoR::NodeGraphTool::Buffer::Fill(const float* const src, int offset, int len) // offset: default=0; len: default=Buffer::SIZE
 {
     memcpy(this->data + offset, src, len);
+}
+
+// -------------------------------- Display2D node -----------------------------------
+
+RoR::NodeGraphTool::Display2DNode::Display2DNode(NodeGraphTool* nodegraph, ImVec2 _pos):
+    UserNode(nodegraph, Type::DISPLAY_2D, _pos),
+    input_rough_x(nullptr),
+    input_rough_y(nullptr),
+    input_smooth_x(nullptr),
+    input_smooth_y(nullptr),
+    input_scroll_x(nullptr),
+    input_scroll_y(nullptr),
+    zoom(1.5f),
+    grid_size(10.f)
+{
+    num_outputs = 0;
+    num_inputs = 6;
+    user_size = ImVec2(200.f, 200.f);
+    done = false; // Irrelevant for this node type - no outputs
+    is_scalable = true;
+}
+
+void RoR::NodeGraphTool::Display2DNode::DetachLink(Link* link)
+{
+    graph->Assert (link->node_src != this, "Display2DNode::DetachLink() discrepancy - this node has no outputs!");
+    if (link->node_dst != this)
+    {
+        graph->Assert (false, "Display2DNode::DetachLink() called with unrelated link");
+        return;
+    }
+
+    //  Resolve link    -----     Detach link                             --------   Detach node    ------    done
+    if (link == input_rough_x ) { link->node_dst = nullptr; link->slot_dst = -1;    input_rough_x  = nullptr; return; }
+    if (link == input_rough_y ) { link->node_dst = nullptr; link->slot_dst = -1;    input_rough_y  = nullptr; return; }
+    if (link == input_smooth_x) { link->node_dst = nullptr; link->slot_dst = -1;    input_smooth_x = nullptr; return; }
+    if (link == input_smooth_y) { link->node_dst = nullptr; link->slot_dst = -1;    input_smooth_y = nullptr; return; }
+    if (link == input_scroll_x) { link->node_dst = nullptr; link->slot_dst = -1;    input_scroll_x = nullptr; return; }
+    if (link == input_scroll_y) { link->node_dst = nullptr; link->slot_dst = -1;    input_scroll_y = nullptr; return; }
+
+    graph->Assert(false, "Display2DNode::DetachLink() discrepancy in link: node_dst attached, link_in not");
+}
+
+void RoR::NodeGraphTool::Display2DNode::BindDst(Link* link, int slot)
+{ 
+    graph->Assert((slot >= 0 && slot <= num_inputs), "DisplayNode::BindDst() called with bad slot");
+
+    switch (slot)
+    {
+        //Check -- Attach link                                 ---- Attach node     -----  done
+        case 0:    link->node_dst = this; link->slot_dst = slot;    input_rough_x  = link; return;
+        case 1:    link->node_dst = this; link->slot_dst = slot;    input_rough_y  = link; return;
+        case 2:    link->node_dst = this; link->slot_dst = slot;    input_smooth_x = link; return;
+        case 3:    link->node_dst = this; link->slot_dst = slot;    input_smooth_y = link; return;
+        case 4:    link->node_dst = this; link->slot_dst = slot;    input_scroll_x = link; return;
+        case 5:    link->node_dst = this; link->slot_dst = slot;    input_scroll_y = link; return;
+    }
+}
+
+#define TOOLTIP_NODE_DISPLAY_2D \
+    "Inputs:\n" \
+    "-------\n" \
+    "rough X\nrough Y\n" \
+    "smooth X\nsmooth Y\n" \
+    "scroll X\nscroll Y (center)"
+
+void RoR::NodeGraphTool::Display2DNode::Draw()
+{
+    if (!graph->ClipTestNode(this))
+        return;
+    graph->DrawNodeBegin(this);
+
+    // --- Draw header ----
+    ImGui::TextDisabled("<?>");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::TextUnformatted(TOOLTIP_NODE_DISPLAY_2D);
+        ImGui::EndTooltip();
+    }
+    ImGui::SameLine();
+    ImGui::Text("2D display");
+
+    // ---- Create sub panel ----
+    const int window_flags = ImGuiWindowFlags_NoScrollbar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollWithMouse;
+    const bool draw_border = false;
+    ImGui::PushStyleColor(ImGuiCol_ChildWindowBg, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
+    ImGui::BeginChild("display-node-2D", this->user_size, draw_border, window_flags);
+
+    if (graph->IsLinkAttached(input_scroll_x) && graph->IsLinkAttached(input_scroll_y))
+    {
+        ImDrawList* drawlist = ImGui::GetWindowDrawList();
+        const ImVec2 canvas_screen_min    = ImGui::GetCursorScreenPos();
+        const ImVec2 canvas_screen_max    = canvas_screen_min + this->user_size;
+        const ImVec2 canvas_world_center  = ImVec2(input_scroll_x->buff_src->Read(), input_scroll_y->buff_src->Read());
+        const ImVec2 canvas_world_min     = canvas_world_center - ((this->user_size / 2.f) / this->zoom);
+
+        // --- Draw grid ----
+        const float grid_screen_spacing = this->grid_size * this->zoom;
+        ImVec2 grid_screen_min(((this->grid_size - fmodf(canvas_world_center.x, this->grid_size)) * this->zoom),
+                               ((this->grid_size - fmodf(canvas_world_center.y, this->grid_size)) * this->zoom));
+        if (grid_screen_min.x < 0.f)
+            grid_screen_min.x += grid_screen_spacing;
+        if (grid_screen_min.y < 0.f)
+            grid_screen_min.y += grid_screen_spacing;
+        grid_screen_min += canvas_screen_min;
+
+        for (float x = grid_screen_min.x; x < canvas_screen_max.x; x += grid_screen_spacing)
+        {
+            drawlist->AddLine(ImVec2(x, canvas_screen_min.y),               ImVec2(x, canvas_screen_max.y),
+                              graph->m_style.display2d_grid_line_color,     graph->m_style.display2d_grid_line_width);
+        }
+        for (float y = grid_screen_min.y; y < canvas_screen_max.y; y += grid_screen_spacing)
+        {
+            drawlist->AddLine(ImVec2(canvas_screen_min.x, y),               ImVec2(canvas_screen_max.x, y),
+                              graph->m_style.display2d_grid_line_color,     graph->m_style.display2d_grid_line_width);
+        }
+
+        if (graph->IsLinkAttached(input_rough_x) && graph->IsLinkAttached(input_rough_y))
+        {
+            this->DrawPath(input_rough_x->buff_src, input_rough_y->buff_src, graph->m_style.display2d_rough_line_width,
+                           graph->m_style.display2d_rough_line_color, canvas_world_min, canvas_screen_min, canvas_screen_max);
+        }
+
+        if (graph->IsLinkAttached(input_smooth_x) && graph->IsLinkAttached(input_smooth_y))
+        {
+            this->DrawPath(input_smooth_x->buff_src, input_smooth_y->buff_src, graph->m_style.display2d_smooth_line_width,
+                           graph->m_style.display2d_smooth_line_color, canvas_world_min, canvas_screen_min, canvas_screen_max);
+        }
+
+    }
+    else
+    {
+        ImGui::Text("~~ No scroll input! ~~");
+    }
+
+    // ---- Close sub panel ----
+    ImGui::EndChild();
+    ImGui::PopStyleColor();
+
+    ImGui::InputFloat("Zoom (px/m)", &this->zoom);
+    ImGui::InputFloat("Grid size(m)", &this->grid_size);
+
+    graph->DrawNodeFinalize(this);
+}
+
+void RoR::NodeGraphTool::Display2DNode::DrawPath(Buffer* const buff_x, Buffer* const buff_y, float line_width, ImU32 color, ImVec2 canvas_world_min, ImVec2 canvas_screen_min, ImVec2 canvas_screen_max)
+{
+    ImDrawList* const drawlist = ImGui::GetWindowDrawList();
+    Buffer buf_copy_x(-1), buf_copy_y(-1);
+    buf_copy_x.CopyResetOffset(buff_x);
+    buf_copy_y.CopyResetOffset(buff_y);
+    for (int i = 1; i < Buffer::SIZE ; ++i) // Starts at 1 --> line is drawn from end to start
+    {
+        ImVec2 start(((buf_copy_x.data[i - 1] - canvas_world_min.x) * this->zoom),
+                     ((buf_copy_y.data[i - 1] - canvas_world_min.y) * this->zoom));
+        ImVec2 end(((buf_copy_x.data[i]     - canvas_world_min.x) * this->zoom),
+                   ((buf_copy_y.data[i]     - canvas_world_min.y) * this->zoom));
+        start += canvas_screen_min;
+        end   += canvas_screen_min;
+        if (NodeGraphTool::IsInside(canvas_screen_min, canvas_screen_max, start) &&
+            NodeGraphTool::IsInside(canvas_screen_min, canvas_screen_max, end)) // Clipping test
+        {
+            drawlist->AddLine(start, end, color, line_width);
+        }
+    }
 }
 
 // -------------------------------- Display node -----------------------------------
@@ -1561,5 +1746,3 @@ void RoR::NodeGraphTool::MouseDragNode::DetachLink(Link* link)
     }
     else assert(false && "MouseDragNode::DetachLink() called on unrelated node");
 }
-
-

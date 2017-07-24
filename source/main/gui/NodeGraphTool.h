@@ -18,13 +18,13 @@
 // forward decl
 class Beam;
 
-// =============================================================================
-
 namespace RoR {
 
 struct Vec3 { float x, y, z; };
 
 #define RoR_ARRAYSIZE(_ARR)  (sizeof(_ARR)/sizeof(*_ARR))
+
+// =============================================================================
 
 class NodeGraphTool
 {
@@ -58,6 +58,12 @@ public:
         float link_line_width;
         ImVec2 slot_hoverbox_extent;
         ImVec2 scaler_size;
+        ImU32 display2d_rough_line_color;
+        ImU32 display2d_smooth_line_color;
+        float display2d_rough_line_width;
+        float display2d_smooth_line_width;
+        ImU32 display2d_grid_line_color;
+        float display2d_grid_line_width;
 
         Style();
     };
@@ -79,7 +85,7 @@ public:
         void            Fill(const float* const src, int offset=0, int len=SIZE);
         inline void     Push(float entry)                                           { data[offset] = entry; this->Step(); }
         inline void     Step()                                                      { offset = (offset+1)%SIZE; }
-        inline float    Read() const                                                { return data[offset]; }
+        inline float    Read() const                                                { return (offset == 0) ? data[SIZE-1] : data[offset-1]; }
 
         float data[Buffer::SIZE];
         int offset;
@@ -98,7 +104,7 @@ public:
 
     struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
-        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP };
+        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP, DISPLAY_2D }; // IMPORTANT - serialized to JSON files = add new items at the end!
 
         Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false), is_scalable(false)
         {
@@ -252,6 +258,28 @@ public:
         float plot_extent; // both min and max
     };
 
+    struct Display2DNode: public UserNode
+    {
+        Display2DNode(NodeGraphTool* nodegraph, ImVec2 _pos);
+
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override         { graph->Assert(false, "Called Display2DNode::BindSrc() - node has no outputs!"); }
+        virtual void BindDst(Link* link, int slot) override;
+        virtual void DetachLink(Link* link) override; // FINAL
+        virtual void Draw() override;
+
+        void DrawPath(Buffer* const buff_x, Buffer* const buff_y, float width, ImU32 color, ImVec2 canvas_world_min, ImVec2 canvas_screen_min, ImVec2 canvas_screen_max);
+
+        Link* input_rough_x;
+        Link* input_rough_y;
+        Link* input_smooth_x;
+        Link* input_smooth_y;
+        Link* input_scroll_x;
+        Link* input_scroll_y;
+        float zoom;
+        float grid_size;
+    };
+
     /// Sink of the graph. Each field in UDP packet has one instance. Cannot be created by user, created automatically. Not placed in 'm_nodes' array.
     struct UdpNode: public Node // Special - inherits directly Node
     {
@@ -285,7 +313,7 @@ private:
 
     enum class HeaderMode { NORMAL, SAVE_FILE, LOAD_FILE, CLEAR_ALL };
 
-    inline bool     IsInside (ImVec2 min, ImVec2 max, ImVec2 point) const                { return ((point.x > min.x) && (point.y > min.y)) && ((point.x < max.x) && (point.y < max.y)); }
+    static inline bool  IsInside (ImVec2 min, ImVec2 max, ImVec2 point)                  { return ((point.x > min.x) && (point.y > min.y)) && ((point.x < max.x) && (point.y < max.y)); }
     inline bool     IsLinkDragInProgress () const                                        { return (m_link_mouse_src != nullptr) || (m_link_mouse_dst != nullptr); }
     inline bool     IsRectHovered(ImVec2 min, ImVec2 max) const                          { return this->IsInside(min, max, m_nodegraph_mouse_pos); }
     inline void     DrawInputSlot (Node* node, const int index)                          { this->DrawSlotUni(node, index, true); }
@@ -302,6 +330,7 @@ private:
     void            DrawNodeGraphPane ();
     void            DrawGrid ();
     void            DrawLink(Link* link);
+    bool            IsLinkAttached(Link* link)                                           { return link != nullptr && link != m_link_mouse_dst && link != m_link_mouse_src; }
     void            DeleteLink(Link* link);
     void            DeleteNode(Node* node);
     void            DrawNodeBegin(Node* node);                                           ///< Important: Call `ClipTestNode()` first!
@@ -338,7 +367,7 @@ private:
     bool       m_is_any_slot_hovered;
     HeaderMode m_header_mode;
     Node*      m_mouse_resize_node;    ///< Node with mouse resizing in progress.
-    MouseDragNode  m_fake_mouse_node;     ///< Used while dragging link with mouse. Type 'Transform' used just because we need anything with 1 input and 1 output.
+    MouseDragNode  m_fake_mouse_node;     ///< Used while dragging link with mouse.
     Link*      m_link_mouse_src;      ///< Link being mouse-dragged by it's input end.
     Link*      m_link_mouse_dst;      ///< Link being mouse-dragged by it's output end.
     int        m_free_id;
@@ -351,3 +380,4 @@ public:
 };
 
 } // namespace RoR
+
