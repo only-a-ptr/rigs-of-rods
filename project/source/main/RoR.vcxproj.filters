@@ -31,12 +31,6 @@
     <ClCompile Include="..\..\..\source\main\physics\collision\PointColDetector.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\water\ScrewProp.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\CacheSystem.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\TerrainGeometryManager.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\TerrainManager.cpp" />
@@ -491,6 +485,24 @@
     <ClCompile Include="..\..\..\source\main\gui\imgui\imgui_draw.cpp">
       <Filter>Lib\IMGUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\main\Application.h" />
@@ -536,14 +548,6 @@
     <ClInclude Include="..\..\..\source\main\physics\utils\RigLoadingProfiler.h" />
     <ClInclude Include="..\..\..\source\main\physics\water\ScrewProp.h" />
     <ClInclude Include="..\..\..\source\main\resources\CacheSystem.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Prerequisites.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Regexes.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.h" />
-    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.h" />
     <ClInclude Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h" />
     <ClInclude Include="..\..\..\source\main\terrain\IHeightFinder.h" />
     <ClInclude Include="..\..\..\source\main\terrain\TerrainGeometryManager.h" />
@@ -1085,6 +1089,30 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\main\gui\imgui\imgui_internal.h">
       <Filter>Lib\IMGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_File.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Node.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Parser.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Prerequisites.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Regexes.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.h">
+      <Filter>Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
