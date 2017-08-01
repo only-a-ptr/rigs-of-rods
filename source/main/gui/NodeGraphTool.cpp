@@ -140,7 +140,15 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
 
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 25.f);
-    ImGui::Checkbox("Preview arrangement", &m_mouse_arrange_show);
+    ImGui::SameLine();
+    ImGui::Text("Arrangement:");
+    ImGui::SameLine();
+    ImGui::Checkbox("Preview", &m_mouse_arrange_show);
+    ImGui::SameLine();
+    if (ImGui::Button("Lock!"))
+    {
+        App::sim_motionfeeder_mode.SetPending(MotionFeederMode::LOCKED);
+    }
 
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 100.f);

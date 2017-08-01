@@ -1053,11 +1053,10 @@ void BeamFactory::update(float dt)
     {
         RoR::App::GetGuiManager()->GetMotionFeeder()->Draw(App::GetSimController()->GetMPlatformLastSendResult());
     }
-
- //OLD   if (RoR::App::GetGuiManager()->IsVisible_MotionPlatformWindow())
- //OLD   {
- //OLD       RoR::App::GetGuiManager()->GetMotionPlatform()->UpdateMPlatformGui();
- //OLD   }
+    else if (App::sim_motionfeeder_mode.GetActive() == MotionFeederMode::LOCKED)
+    {
+        RoR::App::GetGuiManager()->GetMotionFeeder()->DrawLockedMode();
+    }
 #endif
 
     this->UpdateSleepingState(dt);
