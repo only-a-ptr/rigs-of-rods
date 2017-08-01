@@ -390,6 +390,8 @@ void RigSpawner::InitializeRig()
     // Lights mode
     m_rig->m_flares_mode = App::gfx_flares_mode.GetActive();
 
+    m_rig->m_definition = m_file;
+
     m_flex_factory = RoR::FlexFactory(
         this,
         BSETTING("Flexbody_UseCache", false),
@@ -6317,8 +6319,8 @@ void RigSpawner::ProcessCinecam(RigDef::Cinecam & def)
     {
         return;
     }
-            
-    /* Node */
+
+    // Node
     Ogre::Vector3 node_pos = m_spawn_position + def.position;
     node_t & camera_node = GetAndInitFreeNode(node_pos);
     camera_node.contactless = true; // Orig: hardcoded in BTS_CINECAM
@@ -6328,11 +6330,12 @@ void RigSpawner::ProcessCinecam(RigDef::Cinecam & def)
     AdjustNodeBuoyancy(camera_node, def.node_defaults);
     camera_node.volume_coef   = def.node_defaults->volume;
     camera_node.surface_coef  = def.node_defaults->surface;
+    // NOTE: Not applying the 'node_mass' value here for backwards compatibility - this node must go through initial `Beam::calc_masses2()` pass with default weight.
 
     m_rig->cinecameranodepos[m_rig->freecinecamera] = camera_node.pos;
     m_rig->freecinecamera++;
 
-    /* Beams */
+    // Beams
     for (unsigned int i = 0; i < 8; i++)
     {
         int beam_index = m_rig->free_beam;
