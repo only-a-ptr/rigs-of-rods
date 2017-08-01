@@ -64,6 +64,17 @@ public:
         float display2d_smooth_line_width;
         ImU32 display2d_grid_line_color;
         float display2d_grid_line_width;
+        ImU32 arrange_widget_color;
+        ImU32 arrange_widget_color_hover;
+        float arrange_widget_thickness;
+        ImVec2 arrange_widget_size;
+        ImVec2 arrange_widget_margin;
+        ImU32 node_arrangebox_color;
+        ImU32 node_arrangebox_mouse_color;
+        ImU32 node_arrangebox_inner_color;
+        float node_arrangebox_thickness;
+        float node_arrangebox_mouse_thickness;
+        float node_arrangebox_inner_thickness;
 
         Style();
     };
@@ -104,9 +115,13 @@ public:
 
     struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
-        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP, DISPLAY_2D }; // IMPORTANT - serialized to JSON files = add new items at the end!
+        /// IMPORTANT - serialized as `int` to JSON files = add new items at the end!
+        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP, DISPLAY_2D };
 
-        Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false), is_scalable(false)
+        static const ImVec2 ARRANGE_DISABLED;
+        static const ImVec2 ARRANGE_EMPTY;
+
+        Node(NodeGraphTool* _graph, Type _type, ImVec2 _pos): graph(_graph), num_inputs(0), num_outputs(0), pos(_pos), type(_type), done(false), is_scalable(false), arranged_pos(ARRANGE_DISABLED)
         {
         }
 
@@ -118,14 +133,16 @@ public:
         virtual void    BindDst(Link* link, int slot)          {} ///< Binds node input to link's DST end.
         virtual void    DetachLink(Link* link)                 {}
         virtual void    Draw()                                 {}
+        virtual void    DrawLockedMode()                       {} ///< Only for display nodes with "arrangement" enabled.
 
         NodeGraphTool* graph;
         int      num_inputs;
         int      num_outputs;
         ImVec2   pos;
-        ImVec2   draw_rect_min; // Updated by `DrawNodeBegin()`
+        ImVec2   draw_rect_min; // Updated by `ClipTestNode()`
         ImVec2   calc_size;
         ImVec2   user_size;
+        ImVec2   arranged_pos; ///< Screen-absolute position set by user by "arrangement" feature.
         int      id;
         Type     type;
         bool     done; // Are data ready in this processing step?
@@ -250,6 +267,7 @@ public:
         virtual void BindDst(Link* link, int slot) override;
         virtual void DetachLink(Link* link) override; // FINAL
         virtual void Draw() override;
+        virtual void DrawLockedMode() override;
 
         Link* link_in;
         float plot_extent; // both min and max
@@ -264,6 +282,7 @@ public:
         virtual void BindDst(Link* link, int slot) override;
         virtual void DetachLink(Link* link) override; // FINAL
         virtual void Draw() override;
+        virtual void DrawLockedMode() override;
 
         void DrawPath(Buffer* const buff_x, Buffer* const buff_y, float width, ImU32 color, ImVec2 canvas_world_min, ImVec2 canvas_screen_min, ImVec2 canvas_screen_max);
 
@@ -299,6 +318,7 @@ public:
     NodeGraphTool();
 
     void            Draw(int net_send_state);
+    void            DrawLockedMode();
     void            PhysicsTick(Beam* actor);
     void            CalcGraph();
     void            SaveAsJson();                                                        ///< Filename specified by `m_filename`
@@ -318,14 +338,16 @@ private:
     inline int      AssignId()                                                           { return m_free_id++; }
     inline void     Assert(bool expr, const char* msg)                                   { if (!expr) { this->AddMessage("Assert failed: %s", msg); } }
     inline void     UpdateFreeId(int existing_id)                                        { if (existing_id >= m_free_id) { m_free_id = (existing_id + 1); } }
+    inline Style&   GetStyle()                                                           { return m_style; }
     bool            ClipTest(ImRect r);                                                  /// Very basic clipping, added because ImGUI's window clipping doesn't yet work with OGRE
     bool            ClipTestNode(Node* n);
     void            DrawSlotUni (Node* node, const int index, const bool input);
     Link*           AddLink (Node* src, Node* dst, int src_slot, int dst_slot);
     Link*           FindLinkByDestination (Node* node, const int slot);
     Link*           FindLinkBySource (Node* node, const int slot);
-    void            DrawNodeGraphPane ();
-    void            DrawGrid ();
+    void            DrawNodeGraphPane();
+    void            DrawNodeArrangementBoxes();
+    void            DrawGrid();
     void            DrawLink(Link* link);
     bool            IsLinkAttached(Link* link)                                           { return link != nullptr && link != m_link_mouse_dst && link != m_link_mouse_src; }
     void            DeleteLink(Link* link);
@@ -340,34 +362,36 @@ private:
     void            DetachAndDeleteLink(Link* link);
 
 
-    inline bool IsSlotHovered(ImVec2 center_pos) const /// Slots can't use the "InvisibleButton" technique because it won't work when dragging.
+    inline bool IsSlotHovered(ImVec2 center_pos) const ///< Slots can't use the "InvisibleButton" technique because it won't work when dragging.
     {
         ImVec2 min = center_pos - m_style.slot_hoverbox_extent;
         ImVec2 max = center_pos + m_style.slot_hoverbox_extent;
         return this->IsInside(min, max, m_nodegraph_mouse_pos);
     }
 
-    std::vector<Node*>              m_nodes;
-    std::vector<Link*>              m_links;
-    std::list<std::string>          m_messages;
-    char       m_directory[300];
-    char       m_filename[100];
-    Style      m_style;
-    ImVec2     m_scroll;             ///< Scroll position of the node graph pane
-    ImVec2     m_scroll_offset;      ///< Offset from screen position to nodegraph pane position
-    ImVec2     m_nodegraph_mouse_pos;
-    Node*      m_hovered_node;
-    Node*      m_context_menu_node;
-    Node*      m_hovered_slot_node;
-    int        m_hovered_slot_input;  // -1 = none
-    int        m_hovered_slot_output; // -1 = none
-    bool       m_is_any_slot_hovered;
-    HeaderMode m_header_mode;
-    Node*      m_mouse_resize_node;    ///< Node with mouse resizing in progress.
-    MouseDragNode  m_fake_mouse_node;     ///< Used while dragging link with mouse.
-    Link*      m_link_mouse_src;      ///< Link being mouse-dragged by it's input end.
-    Link*      m_link_mouse_dst;      ///< Link being mouse-dragged by it's output end.
-    int        m_free_id;
+    std::vector<Node*>      m_nodes;
+    std::vector<Link*>      m_links;
+    std::list<std::string>  m_messages;
+    char                    m_directory[300];
+    char                    m_filename[100];
+    Style                   m_style;
+    ImVec2                  m_scroll;              ///< Scroll position of the node graph pane
+    ImVec2                  m_scroll_offset;       ///< Offset from screen position to nodegraph pane position
+    ImVec2                  m_nodegraph_mouse_pos;
+    Node*                   m_hovered_node;
+    Node*                   m_context_menu_node;
+    Node*                   m_hovered_slot_node;
+    int                     m_hovered_slot_input;  // -1 = none
+    int                     m_hovered_slot_output; // -1 = none
+    bool                    m_is_any_slot_hovered;
+    HeaderMode              m_header_mode;
+    Node*                   m_mouse_resize_node;   ///< Node with mouse resizing in progress.
+    Node*                   m_mouse_arrange_node;  ///< Node whose screen-arrangement box is currently being dragged by mouse.
+    bool                    m_mouse_arrange_show;  ///< Show all arrangement boxes for preview.
+    MouseDragNode           m_fake_mouse_node;     ///< Used while dragging link with mouse.
+    Link*                   m_link_mouse_src;      ///< Link being mouse-dragged by it's input end.
+    Link*                   m_link_mouse_dst;      ///< Link being mouse-dragged by it's output end.
+    int                     m_free_id;
 
 public:
     UdpNode udp_position_node;
@@ -375,6 +399,8 @@ public:
     UdpNode udp_accel_node;
     UdpNode udp_orient_node;
 };
+
+// ================================================================================================
 
 } // namespace RoR
 
