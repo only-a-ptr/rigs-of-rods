@@ -828,9 +828,12 @@ void RoR::NodeGraphTool::NodeToJson(rapidjson::Value& j_data, Node* node, rapidj
 void RoR::NodeGraphTool::JsonToNode(Node* node, const rapidjson::Value& j_object)
 {
     node->pos          = ImVec2(j_object["pos_x"]         .GetFloat(), j_object["pos_y"]         .GetFloat());
-    node->arranged_pos = ImVec2(j_object["arranged_pos_x"].GetFloat(), j_object["arranged_pos_y"].GetFloat());
     node->user_size    = ImVec2(j_object["user_size_x"]   .GetFloat(), j_object["user_size_y"]   .GetFloat());
     node->id           = j_object["id"].GetInt();
+    if (j_object.HasMember("arranged_pos_x") && j_object.HasMember("arranged_pos_y"))
+    {
+        node->arranged_pos = ImVec2(j_object["arranged_pos_x"].GetFloat(), j_object["arranged_pos_y"].GetFloat());
+    }
     this->UpdateFreeId(node->id);
 }
 
