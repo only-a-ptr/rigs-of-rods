@@ -116,7 +116,7 @@ public:
     struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
         /// IMPORTANT - serialized as `int` to JSON files = add new items at the end!
-        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP, DISPLAY_2D };
+        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP, DISPLAY_2D, DISPLAY_NUM };
 
         static const ImVec2 ARRANGE_DISABLED;
         static const ImVec2 ARRANGE_EMPTY;
@@ -258,12 +258,12 @@ public:
         Buffer buffer_out;
     };
 
-    struct DisplayNode: public UserNode
+    struct DisplayPlotNode: public UserNode
     {
-        DisplayNode(NodeGraphTool* nodegraph, ImVec2 _pos);
+        DisplayPlotNode(NodeGraphTool* nodegraph, ImVec2 _pos);
 
         //           Process() override                          --- Nothing to do here.
-        virtual void BindSrc(Link* link, int slot) override         { graph->Assert(false, "Called DisplayNode::BindSrc() - node has no outputs!"); }
+        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called DisplayPlotNode::BindSrc() - node has no outputs!"); }
         virtual bool BindDst(Link* link, int slot) override;
         virtual void DetachLink(Link* link) override; // FINAL
         virtual void Draw() override;
@@ -273,12 +273,26 @@ public:
         float plot_extent; // both min and max
     };
 
+    struct DisplayNumberNode: public UserNode
+    {
+        DisplayNumberNode(NodeGraphTool* nodegraph, ImVec2 _pos);
+
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called DisplayNumberNode::BindSrc() - node has no outputs!"); }
+        virtual bool BindDst(Link* link, int slot) override;
+        virtual void DetachLink(Link* link) override; // FINAL
+        virtual void Draw() override;
+        virtual void DrawLockedMode() override;
+
+        Link* link_in;
+    };
+
     struct Display2DNode: public UserNode
     {
         Display2DNode(NodeGraphTool* nodegraph, ImVec2 _pos);
 
         //           Process() override                          --- Nothing to do here.
-        virtual void BindSrc(Link* link, int slot) override         { graph->Assert(false, "Called Display2DNode::BindSrc() - node has no outputs!"); }
+        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called Display2DNode::BindSrc() - node has no outputs!"); }
         virtual bool BindDst(Link* link, int slot) override;
         virtual void DetachLink(Link* link) override; // FINAL
         virtual void Draw() override;

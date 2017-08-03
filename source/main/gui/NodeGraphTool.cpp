@@ -312,7 +312,7 @@ void RoR::NodeGraphTool::DrawLockedMode()
     for (Node* node: m_nodes) // Iterate nodes and draw contents if applicable
     {
         if (node->arranged_pos == Node::ARRANGE_DISABLED || node->arranged_pos == Node::ARRANGE_EMPTY 
-            || (node->type != Node::Type::DISPLAY && node->type != Node::Type::DISPLAY_2D))
+            || (node->type != Node::Type::DISPLAY && node->type != Node::Type::DISPLAY_2D && node->type != Node::Type::DISPLAY_NUM))
         {
             continue;
         }
@@ -726,12 +726,13 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
         else
         {
             ImGui::Text("-- Create new node --");
-            if (ImGui::MenuItem("Reading"))           { m_nodes.push_back(new ReadingNode  (this, scene_pos)); }
-            if (ImGui::MenuItem("Generator"))         { m_nodes.push_back(new GeneratorNode(this, scene_pos)); }
-            if (ImGui::MenuItem("Display (scalar)"))  { m_nodes.push_back(new DisplayNode  (this, scene_pos)); }
-            if (ImGui::MenuItem("Display (2D)"))      { m_nodes.push_back(new Display2DNode(this, scene_pos)); }
-            if (ImGui::MenuItem("Script"))            { m_nodes.push_back(new ScriptNode   (this, scene_pos)); }
-            if (ImGui::MenuItem("Euler"))             { m_nodes.push_back(new EulerNode    (this, scene_pos)); }
+            if (ImGui::MenuItem("Reading"))           { m_nodes.push_back(new ReadingNode        (this, scene_pos)); }
+            if (ImGui::MenuItem("Generator"))         { m_nodes.push_back(new GeneratorNode      (this, scene_pos)); }
+            if (ImGui::MenuItem("Display (plot)"))    { m_nodes.push_back(new DisplayPlotNode    (this, scene_pos)); }
+            if (ImGui::MenuItem("Display (number)"))  { m_nodes.push_back(new DisplayNumberNode  (this, scene_pos)); }
+            if (ImGui::MenuItem("Display (2D)"))      { m_nodes.push_back(new Display2DNode      (this, scene_pos)); }
+            if (ImGui::MenuItem("Script"))            { m_nodes.push_back(new ScriptNode         (this, scene_pos)); }
+            if (ImGui::MenuItem("Euler"))             { m_nodes.push_back(new EulerNode          (this, scene_pos)); }
             ImGui::Text("-- Fetch UDP node --");
             if (ImGui::MenuItem("Position")) { udp_position_node.pos = scene_pos; }
             if (ImGui::MenuItem("Velocity")) { udp_velocity_node.pos = scene_pos; }
@@ -867,7 +868,7 @@ void RoR::NodeGraphTool::SaveAsJson()
             break;
 
         case Node::Type::DISPLAY:
-            j_data.AddMember("scale", static_cast<DisplayNode*>(node)->plot_extent, j_alloc);
+            j_data.AddMember("scale", static_cast<DisplayPlotNode*>(node)->plot_extent, j_alloc);
             break;
 
         case Node::Type::DISPLAY_2D:
@@ -1002,7 +1003,7 @@ void RoR::NodeGraphTool::LoadFromJson()
             {
             case Node::Type::DISPLAY:
             {
-                DisplayNode* dnode = new DisplayNode  (this, ImVec2());
+                DisplayPlotNode* dnode = new DisplayPlotNode  (this, ImVec2());
                 dnode->plot_extent = (*itor)["scale"].GetFloat();
                 node = dnode;
                 break;
@@ -1044,6 +1045,7 @@ void RoR::NodeGraphTool::LoadFromJson()
                 node = new EulerNode    (this, ImVec2());  // No parameters
                 break;
             }
+            //case Node::Type::DISPLAY_NUMBER // No data to handle
             //case Node::Type::UDP: // special, saved separately
             }
             this->JsonToNode(node, *itor);
@@ -1441,9 +1443,74 @@ void RoR::NodeGraphTool::Display2DNode::DrawPath(Buffer* const buff_x, Buffer* c
     }
 }
 
-// -------------------------------- Display node -----------------------------------
+// -------------------------------- DisplayNumber node -----------------------------------
 
-RoR::NodeGraphTool::DisplayNode::DisplayNode(NodeGraphTool* nodegraph, ImVec2 _pos):
+RoR::NodeGraphTool::DisplayNumberNode::DisplayNumberNode(NodeGraphTool* nodegraph, ImVec2 _pos):
+    UserNode(nodegraph, Type::DISPLAY_NUM, _pos), link_in(nullptr)
+{
+    num_outputs = 0;
+    num_inputs = 1;
+    user_size = ImVec2(100.f, 30.f); // Rough estimate
+    done = false; // Irrelevant for this node type - no outputs
+    arranged_pos = Node::ARRANGE_EMPTY; // Enables arranging
+}
+
+void RoR::NodeGraphTool::DisplayNumberNode::Draw()
+{
+    if (!graph->ClipTestNode(this))
+        return;
+    graph->DrawNodeBegin(this);
+
+    if (link_in != nullptr)
+        ImGui::Text("%f", this->link_in->buff_src->Read());
+    else
+        ImGui::Text("~offline~");
+    ImGui::Button("    ", ImVec2(user_size.x, 1.f)); // Spacer (hacky)
+
+    graph->DrawNodeFinalize(this);
+}
+
+void RoR::NodeGraphTool::DisplayNumberNode::DrawLockedMode()
+{
+    ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y));
+
+    if (link_in != nullptr)
+        ImGui::Text("%f", this->link_in->buff_src->Read());
+    else
+        ImGui::Text("~offline~");
+}
+
+void RoR::NodeGraphTool::DisplayNumberNode::DetachLink(Link* link)
+{
+    graph->Assert (link->node_src != this, "DisplayNumberNode::DetachLink() discrepancy - this node has no outputs!");
+
+    if (link->node_dst == this)
+    {
+        graph->Assert(this->link_in == link, "DisplayNumberNode::DetachLink() discrepancy in link: node_dst attached, link_in not");
+        link->node_dst = nullptr;
+        link->slot_dst = -1;
+        link_in = nullptr;
+    }
+    else graph->Assert (false, "DisplayPlDisplayNumberNodeotNode::DetachLink() called with unrelated link");
+}
+
+bool RoR::NodeGraphTool::DisplayNumberNode::BindDst(Link* link, int slot)
+{
+    graph->Assert(slot == 0, "DisplayNumberNode::BindDst() called with bad slot");
+
+    if ((slot == 0) && (link_in == nullptr))
+    {
+        link->node_dst = this;
+        link->slot_dst = slot;
+        link_in = link;
+        return true;
+    }
+    return false;
+}
+
+// -------------------------------- DisplayPlot node -----------------------------------
+
+RoR::NodeGraphTool::DisplayPlotNode::DisplayPlotNode(NodeGraphTool* nodegraph, ImVec2 _pos):
     UserNode(nodegraph, Type::DISPLAY, _pos), link_in(nullptr)
 {
     num_outputs = 0;
@@ -1457,7 +1524,7 @@ RoR::NodeGraphTool::DisplayNode::DisplayNode(NodeGraphTool* nodegraph, ImVec2 _p
 
 static const float DUMMY_PLOT[] = {0,0,0,0,0};
 
-void RoR::NodeGraphTool::DisplayNode::Draw()
+void RoR::NodeGraphTool::DisplayPlotNode::Draw()
 {
     if (!graph->ClipTestNode(this))
         return;
@@ -1482,7 +1549,7 @@ void RoR::NodeGraphTool::DisplayNode::Draw()
     graph->DrawNodeFinalize(this);
 }
 
-void RoR::NodeGraphTool::DisplayNode::DrawLockedMode()
+void RoR::NodeGraphTool::DisplayPlotNode::DrawLockedMode()
 {
     // ## TODO: this is a copypaste of `Draw()` - refactor and unify!
     ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y));
@@ -1503,23 +1570,23 @@ void RoR::NodeGraphTool::DisplayNode::DrawLockedMode()
     ImGui::PlotLines("", data_ptr, data_length, data_offset, title, -this->plot_extent, this->plot_extent, this->user_size, stride);
 }
 
-void RoR::NodeGraphTool::DisplayNode::DetachLink(Link* link)
+void RoR::NodeGraphTool::DisplayPlotNode::DetachLink(Link* link)
 {
-    graph->Assert (link->node_src != this, "DisplayNode::DetachLink() discrepancy - this node has no outputs!");
+    graph->Assert (link->node_src != this, "DisplayPlotNode::DetachLink() discrepancy - this node has no outputs!");
 
     if (link->node_dst == this)
     {
-        graph->Assert(this->link_in == link, "DisplayNode::DetachLink() discrepancy in link: node_dst attached, link_in not");
+        graph->Assert(this->link_in == link, "DisplayPlotNode::DetachLink() discrepancy in link: node_dst attached, link_in not");
         link->node_dst = nullptr;
         link->slot_dst = -1;
         link_in = nullptr;
     }
-    else graph->Assert (false, "DisplayNode::DetachLink() called with unrelated link");
+    else graph->Assert (false, "DisplayPlotNode::DetachLink() called with unrelated link");
 }
 
-bool RoR::NodeGraphTool::DisplayNode::BindDst(Link* link, int slot)
+bool RoR::NodeGraphTool::DisplayPlotNode::BindDst(Link* link, int slot)
 {
-    graph->Assert(slot == 0, "DisplayNode::BindDst() called with bad slot");
+    graph->Assert(slot == 0, "DisplayPlotNode::BindDst() called with bad slot");
 
     if ((slot == 0) && (link_in == nullptr))
     {
