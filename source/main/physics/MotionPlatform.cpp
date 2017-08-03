@@ -178,7 +178,7 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
         return;
     }
 
-    UdpElsaco1 datagram;
+    DatagramDboxRorx datagram;
     datagram._unused    = Ogre::Vector3::ZERO;
     datagram.game       = reinterpret_cast<int32_t>(MPLATFORM_GAME_ID);
     datagram.time_milis = m_elapsed_time/1000; // microsec -> milisec
@@ -207,45 +207,10 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     // Send data
     ENetBuffer buf;
     buf.data       = static_cast<void*>(&datagram);
-    buf.dataLength = sizeof(UdpElsaco1);
+    buf.dataLength = sizeof(DatagramDboxRorx);
 
     // `enet_socket_send()` (Win32 implmentation) returns number of bytes sent on success, 0 on WSAEWOULDBLOCK and -1 on error.
     m_last_send_result = enet_socket_send(m_socket, &m_addr_remote, &buf, 1);
 }
-
-float CalcJitter(float start, float mid, float end)
-{
-    float low, high;
-    
-    if (start > end)
-    {
-        high = start;
-        low = end;
-    }
-    else
-    {
-        high = end;
-        low = start;
-    }
-
-    if (high == low)
-    {
-        return 0.f; // cannot compute percentage - div by zero.
-    }
-
-    if (low < 0.f)
-    {
-        float drop = fabsf(low);
-        high += drop;
-        low += drop;
-    }
-
-    float diff = (high - low);
-    float optim_mid = (diff/2.f) + low;
-
-    return (fabsf(mid - optim_mid) / (diff/2)) * 100.f; // percentual error
-}
-
-
 
 #endif // USE_MPLATFORM

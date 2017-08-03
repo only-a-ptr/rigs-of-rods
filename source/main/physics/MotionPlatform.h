@@ -58,7 +58,7 @@
 
 namespace RoR {
 
-struct UdpElsaco1
+struct DatagramDboxRorx
 {
     int32_t       time_milis;   ///< Time since game start (miliseconds)
     int32_t       position_x;   ///< World position (meters/10000)
@@ -79,15 +79,15 @@ class MotionPlatform
 public:
     MotionPlatform();
 
-    bool MPlatformConnect     ();
-    void MPlatformDisconnect  ();
-    void MPlatformSetActive   (bool active);
-    void MPlatformUpdate      (Beam* vehicle);
-    bool IsConnected() { return m_connected; }
-    int GetLastSendResult() { return m_last_send_result; }
+    bool        MPlatformConnect      ();
+    void        MPlatformDisconnect   ();
+    void        MPlatformSetActive    (bool active);
+    void        MPlatformUpdate       (Beam* vehicle);
+    bool        IsConnected           ()                       { return m_connected; }
+    int         GetLastSendResult     ()                       { return m_last_send_result; }
 
 private:
-    void  DeleteSocket  ();
+    void        DeleteSocket          ();
 
     bool m_connected;
     int m_last_send_result;
