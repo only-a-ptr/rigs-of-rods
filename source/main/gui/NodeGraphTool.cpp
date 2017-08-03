@@ -1461,7 +1461,7 @@ void RoR::NodeGraphTool::DisplayNumberNode::Draw()
         return;
     graph->DrawNodeBegin(this);
 
-    if (link_in != nullptr)
+    if (graph->IsLinkAttached(link_in))
         ImGui::Text("%f", this->link_in->buff_src->Read());
     else
         ImGui::Text("~offline~");
@@ -1474,7 +1474,7 @@ void RoR::NodeGraphTool::DisplayNumberNode::DrawLockedMode()
 {
     ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y));
 
-    if (link_in != nullptr)
+    if (graph->IsLinkAttached(link_in))
         ImGui::Text("%f", this->link_in->buff_src->Read());
     else
         ImGui::Text("~offline~");
@@ -1535,7 +1535,7 @@ void RoR::NodeGraphTool::DisplayPlotNode::Draw()
     int data_offset = 0;
     int stride = sizeof(float);
     const char* title = "~~ disconnected ~~";
-    if (this->link_in != nullptr)
+    if (graph->IsLinkAttached(this->link_in))
     {
         data_ptr    = this->link_in->buff_src->data;
         data_offset = this->link_in->buff_src->offset;
@@ -1559,7 +1559,7 @@ void RoR::NodeGraphTool::DisplayPlotNode::DrawLockedMode()
     int data_offset = 0;
     int stride = sizeof(float);
     const char* title = "~~ disconnected ~~";
-    if (this->link_in != nullptr)
+    if (graph->IsLinkAttached(link_in))
     {
         data_ptr    = this->link_in->buff_src->data;
         data_offset = this->link_in->buff_src->offset;
@@ -2019,7 +2019,7 @@ bool RoR::NodeGraphTool::ScriptNode::Process()
     bool ready = true; // If completely disconnected, we're good to go. Otherwise, all inputs must be ready.
     for (int i=0; i<num_inputs; ++i)
     {
-        if ((inputs[i] != nullptr) && (! inputs[i]->node_src->done))
+        if ((graph->IsLinkAttached(inputs[i])) && (! inputs[i]->node_src->done))
             ready = false;
     }
 

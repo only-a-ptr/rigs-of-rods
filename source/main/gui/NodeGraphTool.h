@@ -356,6 +356,7 @@ private:
     inline void     Assert(bool expr, const char* msg)                                   { if (!expr) { this->AddMessage("Assert failed: %s", msg); } }
     inline void     UpdateFreeId(int existing_id)                                        { if (existing_id >= m_free_id) { m_free_id = (existing_id + 1); } }
     inline Style&   GetStyle()                                                           { return m_style; }
+    inline bool     IsLinkAttached(Link* link)                                           { return link != nullptr && link != m_link_mouse_dst && link != m_link_mouse_src; }
     bool            ClipTest(ImRect r);                                                  /// Very basic clipping, added because ImGUI's window clipping doesn't yet work with OGRE
     bool            ClipTestNode(Node* n);
     void            DrawSlotUni (Node* node, const int index, const bool input);
@@ -366,7 +367,6 @@ private:
     void            DrawNodeArrangementBoxes();
     void            DrawGrid();
     void            DrawLink(Link* link);
-    bool            IsLinkAttached(Link* link)                                           { return link != nullptr && link != m_link_mouse_dst && link != m_link_mouse_src; }
     void            DeleteLink(Link* link);
     void            DeleteNode(Node* node);
     void            DrawNodeBegin(Node* node);                                           ///< Important: Call `ClipTestNode()` first!
