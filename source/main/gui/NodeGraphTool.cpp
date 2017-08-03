@@ -380,7 +380,7 @@ void RoR::NodeGraphTool::DrawSlotUni(Node* node, const int index, const bool inp
         else
             m_hovered_slot_output = static_cast<int>(index);
         color = (input) ? m_style.color_input_slot_hover : m_style.color_output_slot_hover;
-        if (ImGui::IsMouseDragging(0) && (this->DetermineActiveDragType() == DragType::NONE))
+        if (ImGui::IsMouseDragging(0, 0.f) && (this->DetermineActiveDragType() == DragType::NONE))
         {
             // Start link drag!
             Link* link = (input) ? this->FindLinkByDestination(node, index) : this->FindLinkBySource(node, index);
@@ -497,7 +497,7 @@ void RoR::NodeGraphTool::DrawNodeFinalize(Node* node)
         {
             start_mouse_drag = false;
             scaler_hover = true;
-            if (ImGui::IsMouseDragging(0))
+            if (ImGui::IsMouseDragging(0, 0.f))
             {
                 m_mouse_resize_node = node;
             }
@@ -527,7 +527,7 @@ void RoR::NodeGraphTool::DrawNodeFinalize(Node* node)
         if (ara_hover)
             start_mouse_drag = false;
 
-        if (ara_hover && ImGui::IsMouseDragging(0))
+        if (ara_hover && ImGui::IsMouseDragging(0, 0.f))
         {
             m_mouse_arrange_node = node;
             node->arranged_pos = node->pos + m_scroll_offset; // Initialize the screen position
@@ -589,7 +589,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
     // Update mouse drag
     m_nodegraph_mouse_pos = (ImGui::GetIO().MousePos - m_scroll_offset);
     const DragType active_drag = this->DetermineActiveDragType();
-    if (ImGui::IsMouseDragging(0) && this->IsLinkDragInProgress())
+    if (ImGui::IsMouseDragging(0, 0.f) && this->IsLinkDragInProgress())
     {
         m_fake_mouse_node.pos = m_nodegraph_mouse_pos;
     }
@@ -621,7 +621,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
     }
 
     // Update node resize
-    if (ImGui::IsMouseDragging(0) && (active_drag == DragType::NODE_RESIZE))
+    if (ImGui::IsMouseDragging(0, 0.f) && (active_drag == DragType::NODE_RESIZE))
     {
         m_mouse_resize_node->user_size += ImGui::GetIO().MouseDelta;
     }
@@ -631,7 +631,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
     }
 
     // Update node screen arranging
-    if (ImGui::IsMouseDragging(0) && (active_drag == DragType::NODE_ARRANGE))
+    if (ImGui::IsMouseDragging(0, 0.f) && (active_drag == DragType::NODE_ARRANGE))
     {
         m_mouse_arrange_node->arranged_pos += ImGui::GetIO().MouseDelta;
     }
@@ -641,7 +641,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
     }
 
     // Update node positioning
-    if (ImGui::IsMouseDragging(0) && (active_drag == DragType::NODE_MOVE))
+    if (ImGui::IsMouseDragging(0, 0.f) && (active_drag == DragType::NODE_MOVE))
     {
         m_mouse_move_node->pos += ImGui::GetIO().MouseDelta;
     }
