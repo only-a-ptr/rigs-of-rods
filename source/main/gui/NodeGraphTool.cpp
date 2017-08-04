@@ -1023,7 +1023,6 @@ void RoR::NodeGraphTool::LoadFromJson()
                 node = rnode;
                 break;
             }
-            //case Node::Type::MOUSE:   // Not enabled for use at the moment
             case Node::Type::GENERATOR:
             {
                 GeneratorNode* gnode = new GeneratorNode(this, ImVec2());
@@ -1045,12 +1044,19 @@ void RoR::NodeGraphTool::LoadFromJson()
                 node = new EulerNode    (this, ImVec2());  // No parameters
                 break;
             }
-            //case Node::Type::DISPLAY_NUMBER // No data to handle
+            case Node::Type::DISPLAY_NUM:
+            {
+                node = new DisplayNumberNode(this, ImVec2());
+                break;
+            }
             //case Node::Type::UDP: // special, saved separately
             }
-            this->JsonToNode(node, *itor);
-            lookup.insert(std::make_pair(node->id, node));
-            m_nodes.push_back(node);
+            if (node != nullptr)
+            {
+                this->JsonToNode(node, *itor);
+                lookup.insert(std::make_pair(node->id, node));
+                m_nodes.push_back(node);
+            }
         }
     }
     else this->Assert(false, "LoadFromJson(): No 'nodes' array in JSON");
