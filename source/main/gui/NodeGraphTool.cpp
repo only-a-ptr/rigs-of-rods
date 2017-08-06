@@ -80,6 +80,7 @@ RoR::NodeGraphTool::Style::Style()
     color_output_slot_hover   = ImColor(144,155,222,245);
     node_slots_radius         = 5.f;
     color_link                = ImColor(200,200,100);
+    color_link_hover          = ImColor( 88,222,188);
     link_line_width                 = 3.f;
     scaler_size                     = ImVec2(20, 20);
     display2d_rough_line_color      = ImColor(225,225,225,255);
@@ -337,18 +338,21 @@ bool RoR::NodeGraphTool::ClipTestNode(Node* n)
 
 void RoR::NodeGraphTool::DrawLink(Link* link)
 {
+    // Perform clipping test
+    ImVec2 p1 = m_scroll_offset + link->node_src->GetOutputSlotPos(link->buff_src->slot);
+    ImVec2 p2 = m_scroll_offset + link->node_dst->GetInputSlotPos(link->slot_dst);
+    ImRect window = ImGui::GetCurrentWindow()->Rect();
+    if (!this->IsInside(window.Min, window.Max, p1) && !this->IsInside(window.Min, window.Max, p2)) // very basic clipping
+        return;
+
+    // Determine color
+    ImU32 color = (link->node_dst == m_hovered_node || link->node_src == m_hovered_node) ? m_style.color_link_hover : m_style.color_link;
+
+    // Draw curve
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     draw_list->ChannelsSetCurrent(0); // background + curves
-    ImVec2 offset =m_scroll_offset;
-    ImVec2 p1 = offset + link->node_src->GetOutputSlotPos(link->buff_src->slot);
-    ImVec2 p2 = offset + link->node_dst->GetInputSlotPos(link->slot_dst);
-    ImRect window = ImGui::GetCurrentWindow()->Rect();
-
-    if (this->IsInside(window.Min, window.Max, p1) || this->IsInside(window.Min, window.Max, p2)) // very basic clipping
-    {
-        float bezier_pt_dist = fmin(50.f, fmin(fabs(p1.x - p2.x)*0.75f, fabs(p1.y - p2.y)*0.75f)); // Maximum: 50; minimum: 75% of shorter-axis distance between p1 and p2
-        draw_list->AddBezierCurve(p1, p1+ImVec2(+bezier_pt_dist,0), p2+ImVec2(-bezier_pt_dist,0), p2, m_style.color_link, m_style.link_line_width);
-    }
+    float bezier_pt_dist = fmin(50.f, fmin(fabs(p1.x - p2.x)*0.75f, fabs(p1.y - p2.y)*0.75f)); // Maximum: 50; minimum: 75% of shorter-axis distance between p1 and p2
+    draw_list->AddBezierCurve(p1, p1+ImVec2(+bezier_pt_dist,0), p2+ImVec2(-bezier_pt_dist,0), p2, color, m_style.link_line_width);
 }
 
 void RoR::NodeGraphTool::DrawSlotUni(Node* node, const int index, const bool input)

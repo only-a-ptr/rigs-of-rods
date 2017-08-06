@@ -55,6 +55,7 @@ public:
         ImU32 color_output_slot_hover;
         float node_slots_radius;
         ImU32 color_link;
+        ImU32 color_link_hover;
         float link_line_width;
         ImVec2 slot_hoverbox_extent;
         ImVec2 scaler_size;
@@ -200,6 +201,7 @@ public:
 
     struct ScriptNode: public UserNode
     {
+        static const int CODE_BUF_LEN = 4000;
         ScriptNode(NodeGraphTool* _nodegraph, ImVec2 _pos);
 
         virtual bool Process() override;                          ///< @return false if waiting for data, true if processed/nothing to process.
@@ -212,7 +214,7 @@ public:
         float Read(int slot, int offset_mod); ///< Pass in negative `offset_mod` to read previous values
         void  Write(int slot, float val);
 
-        char code_buf[1000];
+        char code_buf[CODE_BUF_LEN];
         AngelScript::asIScriptContext* script_context;
         AngelScript::asIScriptEngine*  script_engine;
         AngelScript::asIScriptFunction* script_func;
