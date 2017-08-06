@@ -93,13 +93,15 @@ public:
 
         void            CopyKeepOffset(Buffer* src);                                ///< Copies source buffer as-is, including the offset; fastest
         void            CopyResetOffset(Buffer* src);                               ///< Copies source buffer, transforms the offset to 0
+        void            CopyReverse(Buffer* src);                                   ///< Copies source buffer, reverses order of elements (0=last, SIZE=first)
         void            Fill(const float* const src, int offset=0, int len=SIZE);
         inline void     Push(float entry)                                           { data[offset] = entry; this->Step(); }
         inline void     Step()                                                      { offset = (offset+1)%SIZE; }
-        inline float    Read() const                                                { return (offset == 0) ? data[SIZE-1] : data[offset-1]; }
+        /// Retrieves last value. Use negative `offset_mod` to read older values.
+        float           Read(int offset_mod = 0) const;
 
-        float data[Buffer::SIZE];
-        int offset;
+        float data[Buffer::SIZE]; ///< Circular buffer. A next free slot is pointed by `offset`.
+        int offset; ///< Starts at 0, moves till `Buffer::SIZE` and then wraps.
         int slot;
     };
 
@@ -181,12 +183,7 @@ public:
 
     struct GeneratorNode: public UserNode
     {
-        GeneratorNode(NodeGraphTool* _graph, ImVec2 _pos):
-            UserNode(_graph, Type::GENERATOR, _pos), amplitude(1.f), frequency(1.f), noise_max(0), elapsed(0.f), buffer_out(0)
-        {
-            num_inputs = 0;
-            num_outputs = 1;
-        }
+        GeneratorNode(NodeGraphTool* _graph, ImVec2 _pos);
 
         virtual bool Process() override                          { this->done = true; return true; }
         virtual void BindSrc(Link* link, int slot) override;
@@ -212,7 +209,7 @@ public:
         virtual void Draw() override;
 
         // Script functions
-        float Read(int slot, int offset);
+        float Read(int slot, int offset_mod); ///< Pass in negative `offset_mod` to read previous values
         void  Write(int slot, float val);
 
         char code_buf[1000];
@@ -268,6 +265,8 @@ public:
         virtual void DetachLink(Link* link) override; // FINAL
         virtual void Draw() override;
         virtual void DrawLockedMode() override;
+
+        void DrawPlot();
 
         Link* link_in;
         float plot_extent; // both min and max
@@ -420,7 +419,6 @@ public:
     UdpNode udp_accel_node;
     UdpNode udp_orient_node;
 };
-
 // ================================================================================================
 
 } // namespace RoR

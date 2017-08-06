@@ -200,10 +200,10 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
             {
                 ImGui::BulletText(msg.c_str());
             }
-            if (ImGui::Button("Clear messages"))
-            {
-                m_messages.clear();
-            }
+        }
+        if (ImGui::Button("Clear messages"))
+        {
+            m_messages.clear();
         }
     }
 
@@ -1155,8 +1155,7 @@ void RoR::NodeGraphTool::DetachAndDeleteNode(Node* node)
         Link* found_link = this->FindLinkByDestination(node, i);
         if (found_link != nullptr)
         {
-            node->DetachLink(found_link);
-            this->DeleteLink(found_link); // De-allocates link
+            this->DetachAndDeleteLink(found_link);
         }
     }
     // Disconnect outputs
@@ -1165,8 +1164,7 @@ void RoR::NodeGraphTool::DetachAndDeleteNode(Node* node)
         Link* found_link = this->FindLinkBySource(node, i);
         if (found_link != nullptr)
         {
-            node->DetachLink(found_link);
-            this->DeleteLink(found_link); // De-allocates link
+            this->DetachAndDeleteLink(found_link);
         }
     }
     // Erase the node
@@ -1192,9 +1190,29 @@ void RoR::NodeGraphTool::Buffer::CopyResetOffset(Buffer* src) // Copies source b
     this->offset = 0; // Reset offset
 }
 
+void RoR::NodeGraphTool::Buffer::CopyReverse(Buffer* src) // Copies source buffer, resets offset to 0 and reverts ordering (0=last, SIZE=first)
+{
+    Buffer tmp(-1);
+    tmp.CopyResetOffset(src);
+    int tmp_index = Buffer::SIZE - 1;
+    for (int i = 0; i < Buffer::SIZE; ++i)
+    {
+        data[i] = tmp.data[tmp_index];
+        --tmp_index;
+    }
+}
+
 void RoR::NodeGraphTool::Buffer::Fill(const float* const src, int offset, int len) // offset: default=0; len: default=Buffer::SIZE
 {
     memcpy(this->data + offset, src, len);
+}
+
+float RoR::NodeGraphTool::Buffer::Read(int offset_mod) const
+{
+    const int pos = ((offset-1) + offset_mod) % SIZE;
+    const int pos_clamp = (pos < 0) ? (SIZE + pos) : pos;
+
+    return data[pos_clamp];
 }
 
 // -------------------------------- Display2D node -----------------------------------
@@ -1530,26 +1548,32 @@ RoR::NodeGraphTool::DisplayPlotNode::DisplayPlotNode(NodeGraphTool* nodegraph, I
 
 static const float DUMMY_PLOT[] = {0,0,0,0,0};
 
+void RoR::NodeGraphTool::DisplayPlotNode::DrawPlot()
+{
+    const float* data_ptr = DUMMY_PLOT;;
+    int data_length = IM_ARRAYSIZE(DUMMY_PLOT);
+    int data_offset = 0;
+    int stride =  static_cast<int>(sizeof(float));
+    const char* title = "~~ disconnected ~~";
+    Buffer buf_rev(-1);
+    if (graph->IsLinkAttached(this->link_in))
+    {
+        buf_rev.CopyResetOffset(this->link_in->buff_src);
+        data_ptr    = buf_rev.data;
+        stride      =  static_cast<int>(sizeof(float));
+        title       = "";
+        data_length = Buffer::SIZE;
+    }
+    ImGui::PlotLines("", data_ptr, data_length, data_offset, title, -this->plot_extent, this->plot_extent, this->user_size, stride);
+}
+
 void RoR::NodeGraphTool::DisplayPlotNode::Draw()
 {
     if (!graph->ClipTestNode(this))
         return;
     graph->DrawNodeBegin(this);
+    this->DrawPlot();
 
-    const float* data_ptr = DUMMY_PLOT;;
-    int data_length = IM_ARRAYSIZE(DUMMY_PLOT);
-    int data_offset = 0;
-    int stride = sizeof(float);
-    const char* title = "~~ disconnected ~~";
-    if (graph->IsLinkAttached(this->link_in))
-    {
-        data_ptr    = this->link_in->buff_src->data;
-        data_offset = this->link_in->buff_src->offset;
-        stride = sizeof(float);
-        title = "";
-        data_length = Buffer::SIZE;
-    }
-    ImGui::PlotLines("", data_ptr, data_length, data_offset, title, -this->plot_extent, this->plot_extent, this->user_size, stride);
     ImGui::InputFloat("Scale", &this->plot_extent);
 
     graph->DrawNodeFinalize(this);
@@ -1557,23 +1581,9 @@ void RoR::NodeGraphTool::DisplayPlotNode::Draw()
 
 void RoR::NodeGraphTool::DisplayPlotNode::DrawLockedMode()
 {
-    // ## TODO: this is a copypaste of `Draw()` - refactor and unify!
     ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y));
 
-    const float* data_ptr = DUMMY_PLOT;;
-    int data_length = IM_ARRAYSIZE(DUMMY_PLOT);
-    int data_offset = 0;
-    int stride = sizeof(float);
-    const char* title = "~~ disconnected ~~";
-    if (graph->IsLinkAttached(link_in))
-    {
-        data_ptr    = this->link_in->buff_src->data;
-        data_offset = this->link_in->buff_src->offset;
-        stride = sizeof(float);
-        title = "";
-        data_length = Buffer::SIZE;
-    }
-    ImGui::PlotLines("", data_ptr, data_length, data_offset, title, -this->plot_extent, this->plot_extent, this->user_size, stride);
+    this->DrawPlot();
 }
 
 void RoR::NodeGraphTool::DisplayPlotNode::DetachLink(Link* link)
@@ -1668,6 +1678,15 @@ bool RoR::NodeGraphTool::UdpNode::BindDst(Link* link, int slot)
 
 // -------------------------------- Generator node -----------------------------------
 
+RoR::NodeGraphTool::GeneratorNode::GeneratorNode(NodeGraphTool* _graph, ImVec2 _pos):
+            UserNode(_graph, Type::GENERATOR, _pos), amplitude(1.f), frequency(1.f), noise_max(0), elapsed(0.f), buffer_out(0)
+{
+    num_inputs = 0;
+    num_outputs = 1;
+    is_scalable = true;
+    user_size = ImVec2(100.f, 50.f);
+}
+
 void RoR::NodeGraphTool::GeneratorNode::Draw()
 {
     if (!graph->ClipTestNode(this))
@@ -1675,6 +1694,15 @@ void RoR::NodeGraphTool::GeneratorNode::Draw()
     this->graph->DrawNodeBegin(this);
 
     ImGui::Text("Sine generator");
+
+    // raw data display
+    const float GRAPH_MINMAX(this->amplitude + 0.1f);
+    ImGui::PlotLines("Raw",                   buffer_out.data,  buffer_out.SIZE,                     0, nullptr, -GRAPH_MINMAX, GRAPH_MINMAX, this->user_size);
+
+    Buffer display_buf(-1);
+    display_buf.CopyResetOffset(&buffer_out);
+    //     PlotLines(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, ImVec2 graph_size = ImVec2(0,0), int stride = sizeof(float));
+    ImGui::PlotLines("Out",                   display_buf.data,  buffer_out.SIZE,                     0, nullptr, -GRAPH_MINMAX, GRAPH_MINMAX, this->user_size);
 
     float freq = this->frequency;
     if (ImGui::InputFloat("Freq", &freq))
@@ -1995,23 +2023,19 @@ void RoR::NodeGraphTool::ScriptNode::Apply()
 }
 
         // Script functions
-float RoR::NodeGraphTool::ScriptNode::Read(int slot, int offset)
+float RoR::NodeGraphTool::ScriptNode::Read(int slot, int offset_mod)
 {
-    if (slot < 0 || slot > (num_inputs - 1) || inputs[slot] == nullptr)
+    if (slot < 0 || slot > (num_inputs - 1) || !graph->IsLinkAttached(inputs[slot]))
         return 0.f;
 
-    if (offset > 0 || offset < -(Buffer::SIZE - 1))
-        return 0.f;
-
-    Buffer* buff_src = inputs[slot]->buff_src;
-    int pos = (buff_src->offset + offset);
-    pos = (pos < 0) ? (pos + Buffer::SIZE) : pos;
-    return buff_src->data[pos];
+    return inputs[slot]->buff_src->Read(offset_mod);
 }
 
 void RoR::NodeGraphTool::ScriptNode::Write(int slot, float val)
 {
-    this->outputs[slot].data[this->outputs[slot].offset] = val;
+    if (slot < 0 || slot > (num_inputs - 1))
+        return;
+    this->outputs[slot].Push(val);
 }
 
 bool RoR::NodeGraphTool::ScriptNode::Process()
@@ -2051,11 +2075,6 @@ bool RoR::NodeGraphTool::ScriptNode::Process()
         script_context = nullptr;
         enabled = false;
         done = true;
-    }
-
-    for (int i=0; i<num_outputs; ++i)
-    {
-        outputs[i].Step();
     }
 
     done = true;
