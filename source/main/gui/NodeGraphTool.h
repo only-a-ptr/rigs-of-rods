@@ -345,7 +345,7 @@ public:
 
 private:
 
-    enum class HeaderMode { NORMAL, SAVE_FILE, LOAD_FILE, CLEAR_ALL };
+    enum class HeaderMode { NORMAL, SAVE_FILE, LOAD_FILE, CLEAR_ALL, RESET_ARRANGE };
 
     enum class DragType { NONE, NODE_MOVE, NODE_RESIZE, NODE_ARRANGE, LINK_SRC, LINK_DST };
 
@@ -380,6 +380,7 @@ private:
     void            DetachAndDeleteNode(Node* node);
     void            DetachAndDeleteLink(Link* link);
     DragType        DetermineActiveDragType();
+    void            ResetAllArrangements();
 
 
     inline bool IsSlotHovered(ImVec2 center_pos) const ///< Slots can't use the "InvisibleButton" technique because it won't work when dragging.

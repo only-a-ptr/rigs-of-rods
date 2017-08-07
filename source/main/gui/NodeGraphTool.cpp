@@ -152,6 +152,11 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
     {
         App::sim_motionfeeder_mode.SetPending(MotionFeederMode::LOCKED);
     }
+    ImGui::SameLine();
+    if (ImGui::Button("Reset all"))
+    {
+        m_header_mode = HeaderMode::RESET_ARRANGE;
+    }
 
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
@@ -191,6 +196,17 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
             if (ImGui::Button("Confirm"))
             {
                 this->ClearAll();
+                m_header_mode = HeaderMode::NORMAL;
+            }
+        }
+        else if ((m_header_mode == HeaderMode::RESET_ARRANGE))
+        {
+            ImGui::SameLine();
+            ImGui::Text("Really reset arrangement of all nodes?");
+            ImGui::SameLine();
+            if (ImGui::Button("Confirm"))
+            {
+                this->ResetAllArrangements();
                 m_header_mode = HeaderMode::NORMAL;
             }
         }
@@ -275,7 +291,7 @@ void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
             ReadingNode* rnode = static_cast<ReadingNode*>(node);
             if (rnode->softbody_node_id >= 0)
             {
-                const node_t& const node = actor->nodes[rnode->softbody_node_id];
+                const node_t& node = actor->nodes[rnode->softbody_node_id];
                 rnode->PushPosition(node.AbsPosition);
                 rnode->PushForces  (node.Forces);
                 rnode->PushVelocity(node.Velocity);
@@ -1159,6 +1175,17 @@ void RoR::NodeGraphTool::ClearAll()
     while (!m_nodes.empty())
         this->DetachAndDeleteNode(m_nodes.back());
 
+}
+
+void RoR::NodeGraphTool::ResetAllArrangements()
+{
+    for (Node* n: m_nodes)
+    {
+        if (n->arranged_pos != Node::ARRANGE_DISABLED)
+        {
+            n->arranged_pos = Node::ARRANGE_EMPTY;
+        }
+    }
 }
 
 template<typename N> void DeleteNodeFromVector(std::vector<N*>& vec, RoR::NodeGraphTool::Node* node)
