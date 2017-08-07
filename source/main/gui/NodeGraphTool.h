@@ -210,6 +210,8 @@ public:
         virtual void DetachLink(Link* link) override;
         virtual void Draw() override;
 
+        void Apply(); ///< Update script from editor + shared source
+
         // Script functions
         float Read(int slot, int offset_mod); ///< Pass in negative `offset_mod` to read previous values
         void  Write(int slot, float val);
@@ -225,7 +227,6 @@ public:
 
     private:
         void InitScripting();
-        void Apply();
     };
 
     struct EulerNode: public UserNode
@@ -393,6 +394,8 @@ private:
     std::list<std::string>  m_messages;
     char                    m_directory[300];
     char                    m_filename[100];
+    char                    m_shared_script[4000]; ///< Sourcecode shared between all script nodes
+    bool                    m_shared_script_window_open;
     Style                   m_style;
     ImVec2                  m_scroll;              ///< Scroll position of the node graph pane
     ImVec2                  m_scroll_offset;       ///< Offset from screen position to nodegraph pane position

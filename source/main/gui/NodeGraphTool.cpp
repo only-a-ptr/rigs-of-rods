@@ -36,11 +36,12 @@ RoR::NodeGraphTool::NodeGraphTool():
     m_free_id(0),
     m_fake_mouse_node(this, ImVec2()), // Used for dragging links with mouse
     m_mouse_arrange_show(false),
+    m_shared_script_window_open(false),
 
-    udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position", "(world XYZ)"),
-    udp_velocity_node(this, ImVec2(-300.f, 200.f), "UDP velocity", "(world XYZ)"),
+    udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position",     "(world XYZ)"),
+    udp_velocity_node(this, ImVec2(-300.f, 200.f), "UDP velocity",     "(world XYZ)"),
     udp_accel_node   (this, ImVec2(-300.f, 300.f), "UDP acceleration", "(world XYZ)"),
-    udp_orient_node  (this, ImVec2(-300.f, 400.f), "UDP orientation", "(pitch roll yaw)")
+    udp_orient_node  (this, ImVec2(-300.f, 400.f), "UDP orientation",  "(pitch roll yaw)")
 {
     memset(m_filename, 0, sizeof(m_filename));
     m_fake_mouse_node.id = MOUSEDRAG_NODE_ID;
@@ -48,7 +49,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     udp_velocity_node.id = UDP_VELO_NODE_ID;
     udp_accel_node   .id = UDP_ACC_NODE_ID;
     udp_orient_node  .id = UDP_ANGLES_NODE_ID;
-
+    memset(m_shared_script, 0, sizeof(m_shared_script));
 }
 
 RoR::NodeGraphTool::Link* RoR::NodeGraphTool::FindLinkByDestination(Node* node, const int slot)
@@ -143,7 +144,6 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
 
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 25.f);
-    ImGui::SameLine();
     ImGui::Text("Arrangement:");
     ImGui::SameLine();
     ImGui::Checkbox("Preview", &m_mouse_arrange_show);
@@ -154,7 +154,27 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
     }
 
     ImGui::SameLine();
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 100.f);
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
+    ImGui::Text("Scripting:");
+    ImGui::SameLine();
+    if (ImGui::Button("Edit shared"))
+    {
+        m_shared_script_window_open = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Upd. all nodes!"))
+    {
+        for (Node* n: m_nodes)
+        {
+            if (n->type == Node::Type::SCRIPT)
+            {
+                static_cast<ScriptNode*>(n)->Apply();
+            }
+        }
+    }
+
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
     ImGui::Text("Net status: %s", (net_send_state >= 0) ? "OK" : "ERROR");
 
     if (m_header_mode != HeaderMode::NORMAL)
@@ -216,6 +236,16 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
     ImGui::End(); // Finalize the window
 
     this->DrawNodeArrangementBoxes(); // Full display drawing
+
+    if (m_shared_script_window_open)
+    {
+        ImGui::SetNextWindowSize(ImVec2(200.f, 400.f), ImGuiSetCond_FirstUseEver);
+        ImGui::Begin("Shared script", &m_shared_script_window_open);
+        const int flags = ImGuiInputTextFlags_AllowTabInput;
+        ImVec2 input_size = ImGui::GetWindowSize()-ImVec2(40.f, 40.f); // dummy padding...whatever, no time!
+        ImGui::InputTextMultiline("##shared_script", m_shared_script, IM_ARRAYSIZE(m_shared_script), input_size, flags );
+        ImGui::End();
+    }
 }
 
 void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
@@ -919,6 +949,7 @@ void RoR::NodeGraphTool::SaveAsJson()
     doc.AddMember("udp_acc_node",    j_udp_acc   , j_alloc);
     doc.AddMember("udp_orient_node", j_udp_orient, j_alloc);
     doc.AddMember("udp_velo_node",   j_udp_velo  , j_alloc);
+    doc.AddMember("shared_script", rapidjson::StringRef(m_shared_script), j_alloc);
 
     // SAVE FILE
 
@@ -1071,6 +1102,13 @@ void RoR::NodeGraphTool::LoadFromJson()
     this->JsonToNode(&this->udp_accel_node,    d["udp_acc_node"]);
     this->JsonToNode(&this->udp_orient_node,   d["udp_orient_node"]);
     this->JsonToNode(&this->udp_velocity_node, d["udp_velo_node"]);
+
+    // IMPORT SHARED SCRIPT SOURCECODE
+
+    if (d["shared_script"].IsString())
+    {
+        strncpy(m_shared_script, d["shared_script"].GetString(), sizeof(m_shared_script));
+    }
 
     // IMPORT LINKS
 
@@ -1989,12 +2027,18 @@ void RoR::NodeGraphTool::ScriptNode::Apply()
         return;
     }
 
-    //char sourcecode[1100];
-    //snprintf(sourcecode, 1100, "void main() {\n%s\n}", code_buf);
-    int result = module->AddScriptSection("body", code_buf, strlen(code_buf));
+    int result = module->AddScriptSection("local_body", code_buf, strlen(code_buf));
     if (result < 0)
     {
-        graph->AddMessage("%s: failed to `AddScriptSection()`, res: %d", node_name, result);
+        graph->AddMessage("%s: failed to `AddScriptSection() for local sourcecode`, res: %d", node_name, result);
+        module->Discard();
+        return;
+    }
+
+    result = module->AddScriptSection("shared_body", graph->m_shared_script, strlen(graph->m_shared_script));
+    if (result < 0)
+    {
+        graph->AddMessage("%s: failed to `AddScriptSection() for shared sourcecode`, res: %d", node_name, result);
         module->Discard();
         return;
     }
