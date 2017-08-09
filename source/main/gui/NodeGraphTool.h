@@ -14,6 +14,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <OgreVector3.h>
 
 // forward decl
 class Beam;

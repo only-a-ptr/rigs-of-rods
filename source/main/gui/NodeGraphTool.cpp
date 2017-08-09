@@ -13,7 +13,11 @@
 
 
 #include <map>
-#include "angelscript.h"
+#include <sstream>
+#include <unordered_map>
+#include <angelscript.h>
+#include <OgreMatrix3.h>
+#include <OgreRadian.h>
 
 // ====================================================================================================================
 
