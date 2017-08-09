@@ -17,7 +17,6 @@
 #include <unordered_map>
 #include <angelscript.h>
 #include <OgreMatrix3.h>
-#include <OgreRadian.h>
 
 // ====================================================================================================================
 
@@ -1950,7 +1949,7 @@ bool RoR::NodeGraphTool::EulerNode::Process()
     bool ready = true; // If completely disconnected, we're good to go. Otherwise, all inputs must be ready.
     for (int i=0; i<num_inputs; ++i)
     {
-        if ((inputs[i] != nullptr) && (! inputs[i]->node_src->done))
+        if (graph->IsLinkAttached(inputs[i]) && (! inputs[i]->node_src->done))
             ready = false;
     }
 
