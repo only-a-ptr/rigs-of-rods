@@ -2,19 +2,12 @@
 
 ## Elsaco branch
 
-Extra headers:
+This branch has signifficantly different workflow than upstream RoR. Changes:
 
- * ENET: includes; 
-
-Extra libs:
-
- * ws2_32.lib (winsock2)
- * enet.lib
- * winmm.lib (timeGetTime ...)
-
-Other manual edits:
- 
- * Exclude "gameplay/ois/win32/Win32JoyStick.old.cpp" from the project
+* CMake scripts are not operational; use the bundled VC2015 projects.
+* Dependencies (headers + libs, VC2015) are bundled
+* New dep: enet (UDP networking)
+* Updated Angelscript to latest version. This required a lot of changes to existing scripting subsystem because upstream RoR uses very outdated version. Changes made here were mostly aggressive truncating or deleting of code because this branch won't probably need the scripting. NOTE: the angelscript addons in "source/angelscript_addons" are the outdated version. The current version addons are in "source/main/scripting/as_addon"
 
 ## Readme
 

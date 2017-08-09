@@ -2,6 +2,7 @@
 
 #include "NodeGraphTool.h"
 #include "Beam.h" // aka 'the actor'
+#include "as_addon/scriptmath.h" // Part of codebase; located in "/source/main/scripting/as_addon"
 
 
 #include "rapidjson/rapidjson.h"
@@ -2021,6 +2022,8 @@ void RoR::NodeGraphTool::ScriptNode::InitScripting()
         graph->AddMessage("%s: failed to create scripting engine", node_name);
         return;
     }
+
+    AngelScript::RegisterScriptMath(script_engine);
 
     int result = script_engine->SetMessageCallback(AngelScript::asMETHOD(NodeGraphTool, ScriptMessageCallback), graph, AngelScript::asCALL_THISCALL);
     if (result < 0)

@@ -503,6 +503,9 @@
     <ClCompile Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp">
       <Filter>Resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\main\scripting\as_addon\scriptmath.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\main\Application.h" />
@@ -1114,6 +1117,9 @@
     <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.h">
       <Filter>Resources</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\main\scripting\as_addon\scriptmath.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\source\main\icon.rc" />
@@ -1151,6 +1157,9 @@
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{11fdeb68-579b-454c-8ed5-deec9852d07b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting">
+      <UniqueIdentifier>{38ed7919-9746-4d0e-b02c-e1db8eb5e9b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

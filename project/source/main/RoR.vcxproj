@@ -188,6 +188,7 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\source\main\scripting\as_addon\scriptmath.cpp" />
     <ClCompile Include="..\..\..\tools\windows\pch\Precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">d:\elsaco\rigs-of-rods-elsaco\tools\windows\pch\Precompiled.h</ForcedIncludeFiles>
@@ -382,6 +383,7 @@
     <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Serializer.h" />
     <ClInclude Include="..\..\..\source\main\resources\rig_def_fileformat\RigDef_Validator.h" />
     <ClInclude Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h" />
+    <ClInclude Include="..\..\..\source\main\scripting\as_addon\scriptmath.h" />
     <ClInclude Include="..\..\..\source\main\terrain\IHeightFinder.h" />
     <ClInclude Include="..\..\..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.h" />
     <ClInclude Include="..\..\..\source\main\terrain\TerrainGeometryManager.h" />
