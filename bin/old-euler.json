@@ -1,0 +1,239 @@
+{
+    "nodes": [
+        {
+            "pos_x": 105.0,
+            "pos_y": 140.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 0,
+            "type_id": 1,
+            "softbody_node_id": 6
+        },
+        {
+            "pos_x": 103.0,
+            "pos_y": 284.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 1,
+            "type_id": 1,
+            "softbody_node_id": 10
+        },
+        {
+            "pos_x": 99.0,
+            "pos_y": 422.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 2,
+            "type_id": 1,
+            "softbody_node_id": 7
+        },
+        {
+            "pos_x": 361.0,
+            "pos_y": 98.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 254.0,
+            "user_size_y": 418.0,
+            "id": 3,
+            "type_id": 4,
+            "source_code": "// --- Clone of 'proof-of-concept'\n// --- ELSACO integration\n\nvoid step() {\n\n  // Node6  = center\n    float centerX = Read(0,0);\n    float centerY = Read(1,0);\n    float centerZ = Read(2,0);\n\n  // Node10 = back\n    float backX = Read(3, 0);\n    float backY = Read(4, 0);\n    float backZ = Read(5, 0);\n\n  // Node7  = left\n    float leftX = Read(6, 0);\n    float leftY = Read(7, 0);\n    float leftZ = Read(8, 0);\n\n  // Output: roll axis\n    Write(0, backX-centerX);\n    Write(1, backY-centerY);\n    Write(2, backZ-centerZ);\n\n  // Output: pitch axis\n    Write(3, leftX-centerX);\n    Write(4, leftY-centerY);\n    Write(5, leftZ-centerZ);\n}"
+        },
+        {
+            "pos_x": 714.0,
+            "pos_y": 194.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 5,
+            "type_id": 6
+        },
+        {
+            "pos_x": 1090.0,
+            "pos_y": 146.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 6,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1106.0,
+            "pos_y": 228.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 7,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1074.0,
+            "pos_y": 308.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 8,
+            "type_id": 9
+        }
+    ],
+    "links": [
+        {
+            "node_src_id": 0,
+            "node_dst_id": 3,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 3,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 3,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 3,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 3,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 3,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 3,
+            "slot_src": 0,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 3,
+            "slot_src": 1,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 3,
+            "slot_src": 2,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 3,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 4,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 5,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 6,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 7,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 8,
+            "slot_src": 2,
+            "slot_dst": 0
+        }
+    ],
+    "udp_pos_node": {
+        "pos_x": -300.0,
+        "pos_y": 100.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483646,
+        "type_id": 7
+    },
+    "udp_acc_node": {
+        "pos_x": -300.0,
+        "pos_y": 300.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483644,
+        "type_id": 7
+    },
+    "udp_orient_node": {
+        "pos_x": -300.0,
+        "pos_y": 400.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483643,
+        "type_id": 7
+    },
+    "udp_velo_node": {
+        "pos_x": -300.0,
+        "pos_y": 200.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483645,
+        "type_id": 7
+    },
+    "shared_script": ""
+}
