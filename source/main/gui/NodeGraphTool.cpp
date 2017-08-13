@@ -3,6 +3,7 @@
 #include "NodeGraphTool.h"
 #include "Beam.h" // aka 'the actor'
 #include "as_addon/scriptmath.h" // Part of codebase; located in "/source/main/scripting/as_addon"
+#include "Euler.h" // from OGRE wiki
 
 
 #include "rapidjson/rapidjson.h"
@@ -45,7 +46,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position",     "(world XYZ)"),
     udp_velocity_node(this, ImVec2(-300.f, 200.f), "UDP velocity",     "(world XYZ)"),
     udp_accel_node   (this, ImVec2(-300.f, 300.f), "UDP acceleration", "(world XYZ)"),
-    udp_orient_node  (this, ImVec2(-300.f, 400.f), "UDP orientation",  "(pitch roll yaw)")
+    udp_orient_node  (this, ImVec2(-300.f, 400.f))
 {
     memset(m_filename, 0, sizeof(m_filename));
     m_fake_mouse_node.id = MOUSEDRAG_NODE_ID;
@@ -786,7 +787,6 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             if (ImGui::MenuItem("Display (number)"))  { m_nodes.push_back(new DisplayNumberNode  (this, scene_pos)); }
             if (ImGui::MenuItem("Display (2D)"))      { m_nodes.push_back(new Display2DNode      (this, scene_pos)); }
             if (ImGui::MenuItem("Script"))            { m_nodes.push_back(new ScriptNode         (this, scene_pos)); }
-            if (ImGui::MenuItem("Euler"))             { m_nodes.push_back(new EulerNode          (this, scene_pos)); }
             ImGui::Text("-- Fetch UDP node --");
             if (ImGui::MenuItem("Position")) { udp_position_node.pos = scene_pos; }
             if (ImGui::MenuItem("Velocity")) { udp_velocity_node.pos = scene_pos; }
@@ -1094,17 +1094,13 @@ void RoR::NodeGraphTool::LoadFromJson()
                 node = gnode;
                 break;
             }
-            case Node::Type::EULER:
-            {
-                node = new EulerNode    (this, ImVec2());  // No parameters
-                break;
-            }
             case Node::Type::DISPLAY_NUM:
             {
                 node = new DisplayNumberNode(this, ImVec2());
                 break;
             }
             //case Node::Type::UDP: // special, saved separately
+            //case Node::Type::ORIENT_UDP: // special, saved separately
             }
             if (node != nullptr)
             {
@@ -1749,6 +1745,137 @@ bool RoR::NodeGraphTool::UdpNode::BindDst(Link* link, int slot)
     }
 }
 
+// -------------------------------- UDP orientation node -----------------------------------
+
+RoR::NodeGraphTool::UdpOrientNode::UdpOrientNode(NodeGraphTool* nodegraph, ImVec2 _pos):
+    Node(nodegraph, Type::UDP_ORIENT, _pos)
+{
+    num_outputs = 0;
+    num_inputs = 3;
+    in_world_yaw  =nullptr;
+    in_world_pitch=nullptr;
+    in_world_roll =nullptr;
+}
+
+void RoR::NodeGraphTool::UdpOrientNode::Draw()
+{
+    if (!graph->ClipTestNode(this))
+        return;
+    graph->DrawNodeBegin(this);
+    ImGui::Text(" Orietation UDP Node ");
+    ImGui::Text(" ------------------- ");
+    ImGui::Text("Inputs:              ");
+    ImGui::Text(" * Yaw     | separate");
+    ImGui::Text(" * Pitch   | world   ");
+    ImGui::Text(" * Roll    | angles  ");
+    // DEBUG
+    ImGui::Text(" ------debug xyz (carth.RH)------- ");
+    
+    ImGui::Text(" Back axis: %8.3f  %8.3f  %8.3f", m_back_vector.x, m_back_vector.y, m_back_vector.z);
+    ImGui::Text(" Left axis: %8.3f  %8.3f  %8.3f", m_left_vector.x, m_left_vector.y, m_left_vector.z);
+    ImGui::Text(" Up axis:   %8.3f  %8.3f  %8.3f", m_up_vector.x,   m_up_vector.y,   m_up_vector.z);
+
+    ImGui::Text(" ------debug xyz (OGRE)------- ");
+    
+    ImGui::Text(" Back axis: %8.3f  %8.3f  %8.3f", m_ogre_back_vec.x, m_ogre_back_vec.y, m_ogre_back_vec.z);
+    ImGui::Text(" Left axis: %8.3f  %8.3f  %8.3f", m_ogre_left_vec.x, m_ogre_left_vec.y, m_ogre_left_vec.z);
+    ImGui::Text(" Up axis:   %8.3f  %8.3f  %8.3f", m_ogre_up_vec.x,   m_ogre_up_vec.y,   m_ogre_up_vec.z);
+    graph->DrawNodeFinalize(this);
+}
+
+void RoR::NodeGraphTool::UdpOrientNode::DetachLink(Link* link)
+{
+    if (link->node_src == this)
+        this->graph->AddMessage(" DEBUG: discrepancy - this node has no outputs!");
+
+    if (link->node_dst == this)
+    {
+        if (in_world_yaw == link)
+        {
+            if (link->slot_dst != 0) graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_yaw' but slot ID is '%d'", link->slot_dst);
+            in_world_yaw = nullptr;
+            link->node_dst = nullptr;
+            link->slot_dst = -1;
+            return;
+        }
+        if (in_world_pitch == link)
+        {
+            if (link->slot_dst != 0) graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_pitch' but slot ID is '%d'", link->slot_dst);
+            in_world_pitch = nullptr;
+            link->node_dst = nullptr;
+            link->slot_dst = -1;
+            return;
+        }
+        if (in_world_roll == link)
+        {
+            if (link->slot_dst != 0) graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_roll' but slot ID is '%d'", link->slot_dst);
+            in_world_roll = nullptr;
+            link->node_dst = nullptr;
+            link->slot_dst = -1;
+            return;
+        }
+        // We shouldn't get here.
+        this->graph->AddMessage("DEBUG -- UdpOrientNode::DetachLink(): Discrepancy! link points to node but node doesn't point to link");
+    }
+}
+
+bool RoR::NodeGraphTool::UdpOrientNode::BindDstSingle(Link*& slot_ptr, int slot_index, Link* link)
+{
+    if (slot_ptr != nullptr)
+        return false; // Occupied!
+
+    slot_ptr = link;
+    link->node_dst = this;
+    link->slot_dst = slot_index;
+    return true;
+}
+
+bool RoR::NodeGraphTool::UdpOrientNode::BindDst(Link* link, int slot)
+{
+    if (slot < 0 || slot > 2)
+    {
+        this->graph->AddMessage("DEBUG: UdpOrientNode::BindDst(): bad slot: %d", slot);
+        return false;
+    }
+
+    if (slot == 0) { return this->BindDstSingle(in_world_yaw,   slot, link); }
+    if (slot == 1) { return this->BindDstSingle(in_world_pitch, slot, link); }
+    if (slot == 2) { return this->BindDstSingle(in_world_roll,  slot, link); }
+}
+
+Ogre::Vector3 RoR::NodeGraphTool::UdpOrientNode::CalcUdpOutput()
+{
+    if (!graph->IsLinkAttached(in_world_yaw) ||
+        !graph->IsLinkAttached(in_world_pitch) ||
+        !graph->IsLinkAttached(in_world_roll))
+    {
+        return Ogre::Vector3::ZERO;
+    }
+
+    Ogre::Euler euler(in_world_yaw->buff_src->Read(), in_world_pitch->buff_src->Read(), in_world_roll->buff_src->Read()); // Input = carthesian RH
+
+    m_back_vector = euler.forward() * -1; // the roll axis, carthesian RH
+    m_left_vector = euler.right() * -1;   // the pitch axis, carthesian RH
+    m_up_vector   = euler.up();           // the yaw axis, carthesian RH
+
+    m_ogre_back_vec = CoordsRhCarthesianToOgre(m_back_vector);
+    m_ogre_left_vec = CoordsRhCarthesianToOgre(m_left_vector);
+    m_ogre_up_vec   = CoordsRhCarthesianToOgre(m_up_vector);
+
+    // Below is an exact reproduction of transformation done for the "proof of concept"
+
+    Ogre::Matrix3 orient_mtx;
+    orient_mtx.FromAxes(m_left_vector, m_up_vector, m_back_vector); // NOTE: totally swapped, args are (X, Y, Z)
+    Ogre::Radian yaw, pitch, roll;
+    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch); // NOTE: totally swapped... Function args are(Y, P, R)
+    Ogre::Vector3 output_vec;
+    output_vec.x = pitch.valueRadians(); // Wrong again.
+    output_vec.y = roll.valueRadians();
+    output_vec.z = yaw.valueRadians();
+    return output_vec;
+}
+
+
 // -------------------------------- Generator node -----------------------------------
 
 RoR::NodeGraphTool::GeneratorNode::GeneratorNode(NodeGraphTool* _graph, ImVec2 _pos):
@@ -1872,121 +1999,6 @@ void RoR::NodeGraphTool::ReadingNode::Draw()
     ImGui::Text("           Pos XYZ");
     ImGui::Text("        Forces XYZ");
     ImGui::Text("      Velocity XYZ");
-    this->graph->DrawNodeFinalize(this);
-}
-
-// -------------------------------- Euler node -----------------------------------
-
-RoR::NodeGraphTool::EulerNode::EulerNode(NodeGraphTool* _graph, ImVec2 _pos):
-    UserNode(_graph, Type::EULER, _pos),
-    outputs{{0},{1},{2}} // C++11 mandatory :)
-{
-    num_outputs = 3; // Pitch roll yaw
-    num_inputs = 6; // Roll XYZ, Pitch XYZ
-    memset(inputs, 0, sizeof(inputs));
-}
-
-void RoR::NodeGraphTool::EulerNode::BindSrc(Link* link, int slot)
-{
-    link->node_src = this;
-    link->buff_src = &outputs[slot];
-}
-
-bool RoR::NodeGraphTool::EulerNode::BindDst(Link* link, int slot)
-{
-    const bool slot_ok = (slot >= 0 && slot < this->num_inputs);
-    if (!slot_ok)
-    {
-        this->graph->AddMessage("EulerNode::BindDst(): bad slot number");
-        return false;
-    }
-
-    if (inputs[slot] == nullptr)
-    {
-        inputs[slot] = link;
-        link->node_dst = this;
-        link->slot_dst = slot;
-        return true;
-    }
-    return false;
-}
-
-void RoR::NodeGraphTool::EulerNode::DetachLink(Link* link)
-{
-    if (link->node_dst == this)
-    {
-        assert(inputs[link->slot_dst] == link); // Check discrepancy
-        inputs[link->slot_dst] = nullptr;
-        link->node_dst = nullptr;
-        link->slot_dst = -1;
-    }
-    else if (link->node_src == this)
-    {
-        assert((link->buff_src != nullptr)); // Check discrepancy
-        link->buff_src = nullptr;
-        link->node_src = nullptr;
-    }
-    else assert(false && "EulerNode::DetachLink() called on unrelated node");
-}
-
-inline float ReadFromLink(RoR::NodeGraphTool::Link* link)
-{ 
-    if (link != nullptr && link->node_src != nullptr && link->buff_src != nullptr)
-    {
-        return link->buff_src->Read();
-    }
-    else
-    {
-        return 0.f;
-    }
-}
-
-bool RoR::NodeGraphTool::EulerNode::Process()
-{
-    if (this->error) // Emergency disable
-        return true;
-
-    bool ready = true; // If completely disconnected, we're good to go. Otherwise, all inputs must be ready.
-    for (int i=0; i<num_inputs; ++i)
-    {
-        if (graph->IsLinkAttached(inputs[i]) && (! inputs[i]->node_src->done))
-            ready = false;
-    }
-
-    if (!ready)
-        return false;
-
-    // Readings
-
-    Ogre::Vector3 roll_axis(ReadFromLink(inputs[0]), ReadFromLink(inputs[1]), ReadFromLink(inputs[2]));
-    Ogre::Vector3 pitch_axis(ReadFromLink(inputs[3]), ReadFromLink(inputs[4]), ReadFromLink(inputs[5]));
-    Ogre::Vector3 yaw_axis     = pitch_axis.crossProduct(roll_axis);
-
-    // Orientation
-    Ogre::Matrix3 orient_mtx;
-    orient_mtx.FromAxes(pitch_axis, yaw_axis, roll_axis);
-    Ogre::Radian yaw, pitch, roll;
-    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch); // NOTE: This is probably swapped... Function args are(Y, P, R)
-    outputs[0].Push( pitch.valueRadians());
-    outputs[1].Push(roll.valueRadians());
-    outputs[2].Push(yaw.valueRadians());
-
-    this->done = true;
-    return true;
-}
-
-void RoR::NodeGraphTool::EulerNode::Draw()
-{
-    if (!graph->ClipTestNode(this))
-        return;
-    this->graph->DrawNodeBegin(this);
-
-    ImGui::Text("     Euler angles     ");
-    ImGui::Text("IN axes ==> angles OUT");
-    ImGui::Text("Roll(XYZ)        pitch");
-    ImGui::Text("Pitch(XYZ)        roll");
-    ImGui::Text("                   yaw");
-
     this->graph->DrawNodeFinalize(this);
 }
 

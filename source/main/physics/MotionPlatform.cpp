@@ -190,9 +190,7 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1) * 10000.f) * UPDATES_PER_SEC);
     datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2) * 10000.f) * UPDATES_PER_SEC);
 
-    datagram.orient.x = feeder->udp_orient_node.Capture(0);       //pitch.valueRadians()
-    datagram.orient.y = feeder->udp_orient_node.Capture(1);       //roll.valueRadians();
-    datagram.orient.z = feeder->udp_orient_node.Capture(2);       //yaw.valueRadians();
+    datagram.orient = feeder->udp_orient_node.CalcUdpOutput();
 
     // Velocity
     datagram.velocity.x = feeder->udp_velocity_node.Capture(0) * UPDATES_PER_SEC;

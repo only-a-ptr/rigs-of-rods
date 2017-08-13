@@ -27,6 +27,9 @@ struct Vec3 { float x, y, z; };
 
 // =============================================================================
 
+inline Ogre::Vector3 CoordsOgreToRhCarthesian(Ogre::Vector3 v) { return Ogre::Vector3(v.x, -v.z,  v.y); }
+inline Ogre::Vector3 CoordsRhCarthesianToOgre(Ogre::Vector3 v) { return Ogre::Vector3(v.x,  v.z, -v.y); }
+
 class NodeGraphTool
 {
 public:
@@ -120,7 +123,7 @@ public:
     struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
         /// IMPORTANT - serialized as `int` to JSON files = add new items at the end!
-        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, EULER, UDP, DISPLAY_2D, DISPLAY_NUM };
+        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, UDP_ORIENT, UDP, DISPLAY_2D, DISPLAY_NUM };
 
         static const ImVec2 ARRANGE_DISABLED;
         static const ImVec2 ARRANGE_EMPTY;
@@ -168,9 +171,9 @@ public:
     {
         ReadingNode(NodeGraphTool* _graph, ImVec2 _pos);
 
-        inline void  PushPosition(Ogre::Vector3 pos)                 { buffer_pos_x.Push(pos.x);       buffer_pos_y.Push(-pos.z);       buffer_pos_z.Push(pos.y); }       // Transform OGRE coords -> classic coords
-        inline void  PushForces(Ogre::Vector3 forces)                { buffer_forces_x.Push(forces.x); buffer_forces_y.Push(-forces.z); buffer_forces_z.Push(forces.y); } // Transform OGRE coords -> classic coords
-        inline void  PushVelocity(Ogre::Vector3 velo)                { buffer_velo_x.Push(velo.x);     buffer_velo_y.Push(-velo.z);     buffer_velo_z.Push(velo.y); }     // Transform OGRE coords -> classic coords
+        inline void  PushPosition(Ogre::Vector3 pos)                 { buffer_pos_x.Push(pos.x);       buffer_pos_y.Push(-pos.z);       buffer_pos_z.Push(pos.y); }       // Transform OGRE coords -> RH carthesian coords
+        inline void  PushForces(Ogre::Vector3 forces)                { buffer_forces_x.Push(forces.x); buffer_forces_y.Push(-forces.z); buffer_forces_z.Push(forces.y); } // Transform OGRE coords -> RH carthesian coords
+        inline void  PushVelocity(Ogre::Vector3 velo)                { buffer_velo_x.Push(velo.x);     buffer_velo_y.Push(-velo.z);     buffer_velo_z.Push(velo.y); }     // Transform OGRE coords -> RH carthesian coords
         virtual bool Process() override                              { this->done = true; return true; }
         virtual void BindSrc(Link* link, int slot) override;
         //           BindDst() not needed - no inputs
@@ -228,21 +231,6 @@ public:
 
     private:
         void InitScripting();
-    };
-
-    struct EulerNode: public UserNode
-    {
-        EulerNode(NodeGraphTool* _nodegraph, ImVec2 _pos);
-        
-        virtual bool Process() override;                          ///< @return false if waiting for data, true if processed/nothing to process.
-        virtual void BindSrc(Link* link, int slot) override;
-        virtual bool BindDst(Link* link, int slot) override;
-        virtual void DetachLink(Link* link) override;
-        virtual void Draw() override;
-
-        Link* inputs[6]; // pitch axis XYZ, roll axis XYZ
-        Buffer outputs[3]; // 
-        bool error;
     };
 
     struct MouseDragNode: public Node // special - inherits directly node
@@ -320,7 +308,7 @@ public:
         UdpNode(NodeGraphTool* nodegraph, ImVec2 _pos, const char* _title, const char* _desc);
 
         //           Process() override                          --- Nothing to do here.
-        virtual void BindSrc(Link* link, int slot) override         { graph->Assert(false, "Called UdpNode::BindSrc() - node has no outputs!"); }
+        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called UdpNode::BindSrc() - node has no outputs!"); }
         virtual bool BindDst(Link* link, int slot) override;
         virtual void DetachLink(Link* link) override;
         virtual void Draw() override;
@@ -330,6 +318,33 @@ public:
         Link* inputs[3];
         const char* title;
         const char* desc;
+    };
+
+    /// See also `UdpNode` - special case, takes orientation axes as input.
+    struct UdpOrientNode: public Node  // Special - inherits directly Node
+    {
+        UdpOrientNode(NodeGraphTool* nodegraph, ImVec2 _pos);
+
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called UdpOrientNode::BindSrc() - node has no outputs!"); }
+        virtual bool BindDst(Link* link, int slot) override;
+        virtual void DetachLink(Link* link) override;
+        virtual void Draw() override;
+        Ogre::Vector3 CalcUdpOutput();
+
+        Link* in_world_yaw;   // Radians
+        Link* in_world_pitch; // Radians
+        Link* in_world_roll;  // Radians
+    private:
+        bool BindDstSingle(Link*& slot_ptr, int slot_index, Link* link); // TODO: copypaste from "Display2DNode" - refactor and unify
+
+        Ogre::Vector3 m_back_vector ; // last values - for display
+        Ogre::Vector3 m_left_vector ; // last values - for display
+        Ogre::Vector3 m_up_vector   ; // last values - for display
+
+        Ogre::Vector3 m_ogre_back_vec;
+        Ogre::Vector3 m_ogre_left_vec;
+        Ogre::Vector3 m_ogre_up_vec;
     };
 
 
@@ -359,7 +374,7 @@ private:
     inline void     Assert(bool expr, const char* msg)                                   { if (!expr) { this->AddMessage("Assert failed: %s", msg); } }
     inline void     UpdateFreeId(int existing_id)                                        { if (existing_id >= m_free_id) { m_free_id = (existing_id + 1); } }
     inline Style&   GetStyle()                                                           { return m_style; }
-    inline bool     IsLinkAttached(Link* link)                                           { return link != nullptr && link != m_link_mouse_dst && link != m_link_mouse_src; }
+    inline bool     IsLinkAttached(Link* link)                                           { return (link != nullptr) && (link != m_link_mouse_dst) && (link != m_link_mouse_src) && (link->buff_src != nullptr); }
     bool            ClipTest(ImRect r);                                                  /// Very basic clipping, added because ImGUI's window clipping doesn't yet work with OGRE
     bool            ClipTestNode(Node* n);
     void            DrawSlotUni (Node* node, const int index, const bool input);
@@ -424,7 +439,7 @@ public:
     UdpNode udp_position_node;
     UdpNode udp_velocity_node;
     UdpNode udp_accel_node;
-    UdpNode udp_orient_node;
+    UdpOrientNode udp_orient_node;
 };
 // ================================================================================================
 
