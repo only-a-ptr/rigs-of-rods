@@ -1748,7 +1748,13 @@ bool RoR::NodeGraphTool::UdpNode::BindDst(Link* link, int slot)
 // -------------------------------- UDP orientation node -----------------------------------
 
 RoR::NodeGraphTool::UdpOrientNode::UdpOrientNode(NodeGraphTool* nodegraph, ImVec2 _pos):
-    Node(nodegraph, Type::UDP_ORIENT, _pos)
+    Node(nodegraph, Type::UDP_ORIENT, _pos),
+    m_back_vector(Ogre::Vector3::ZERO),
+    m_left_vector(Ogre::Vector3::ZERO),
+    m_up_vector(Ogre::Vector3::ZERO),
+    m_ogre_back_vec(Ogre::Vector3::ZERO),
+    m_ogre_left_vec(Ogre::Vector3::ZERO),
+    m_ogre_up_vec(Ogre::Vector3::ZERO)
 {
     num_outputs = 0;
     num_inputs = 3;
@@ -1771,15 +1777,15 @@ void RoR::NodeGraphTool::UdpOrientNode::Draw()
     // DEBUG
     ImGui::Text(" ------debug xyz (carth.RH)------- ");
     
-    ImGui::Text(" Back axis: %8.3f  %8.3f  %8.3f", m_back_vector.x, m_back_vector.y, m_back_vector.z);
-    ImGui::Text(" Left axis: %8.3f  %8.3f  %8.3f", m_left_vector.x, m_left_vector.y, m_left_vector.z);
-    ImGui::Text(" Up axis:   %8.3f  %8.3f  %8.3f", m_up_vector.x,   m_up_vector.y,   m_up_vector.z);
+    ImGui::Text(" Back axis: %10.3f  %10.3f  %10.3f", m_back_vector.x, m_back_vector.y, m_back_vector.z);
+    ImGui::Text(" Left axis: %10.3f  %10.3f  %10.3f", m_left_vector.x, m_left_vector.y, m_left_vector.z);
+    ImGui::Text(" Up axis:   %10.3f  %10.3f  %10.3f", m_up_vector.x,   m_up_vector.y,   m_up_vector.z);
 
     ImGui::Text(" ------debug xyz (OGRE)------- ");
     
-    ImGui::Text(" Back axis: %8.3f  %8.3f  %8.3f", m_ogre_back_vec.x, m_ogre_back_vec.y, m_ogre_back_vec.z);
-    ImGui::Text(" Left axis: %8.3f  %8.3f  %8.3f", m_ogre_left_vec.x, m_ogre_left_vec.y, m_ogre_left_vec.z);
-    ImGui::Text(" Up axis:   %8.3f  %8.3f  %8.3f", m_ogre_up_vec.x,   m_ogre_up_vec.y,   m_ogre_up_vec.z);
+    ImGui::Text(" Back axis: %10.3f  %10.3f  %10.3f", m_ogre_back_vec.x, m_ogre_back_vec.y, m_ogre_back_vec.z);
+    ImGui::Text(" Left axis: %10.3f  %10.3f  %10.3f", m_ogre_left_vec.x, m_ogre_left_vec.y, m_ogre_left_vec.z);
+    ImGui::Text(" Up axis:   %10.3f  %10.3f  %10.3f", m_ogre_up_vec.x,   m_ogre_up_vec.y,   m_ogre_up_vec.z);
     graph->DrawNodeFinalize(this);
 }
 
