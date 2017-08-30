@@ -186,6 +186,7 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     // ## OGRE engine coords: Right-handed; X is right, Y is up (screen-like), Z is back
     // ## Motion plat. coords: Z is up, Y/X is mixed.
 
+    // NOTE: The output position is effectively in (meters*10000*60) --- required for compatibility with motionsim mode RORX
     datagram.position_x = static_cast<int32_t>((feeder->udp_position_node.Capture(0) * 10000.f) * UPDATES_PER_SEC);
     datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1) * 10000.f) * UPDATES_PER_SEC);
     datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2) * 10000.f) * UPDATES_PER_SEC);
@@ -193,14 +194,14 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     datagram.orient = feeder->udp_orient_node.CalcUdpOutput();
 
     // Velocity
-    datagram.velocity.x = feeder->udp_velocity_node.Capture(0) * UPDATES_PER_SEC;
-    datagram.velocity.y = feeder->udp_velocity_node.Capture(1) * UPDATES_PER_SEC;
-    datagram.velocity.z = feeder->udp_velocity_node.Capture(2) * UPDATES_PER_SEC;
+    datagram.velocity.x = feeder->udp_velocity_node.Capture(0); // Must be transformed to (m/s) by MotionFeeder
+    datagram.velocity.y = feeder->udp_velocity_node.Capture(1); // Must be transformed to (m/s) by MotionFeeder
+    datagram.velocity.z = feeder->udp_velocity_node.Capture(2); // Must be transformed to (m/s) by MotionFeeder
 
     // Acceleration
-    datagram.accel.x = feeder->udp_accel_node.Capture(0) * UPDATES_PER_SEC;
-    datagram.accel.y = feeder->udp_accel_node.Capture(1) * UPDATES_PER_SEC;;
-    datagram.accel.z = feeder->udp_accel_node.Capture(2) * UPDATES_PER_SEC;
+    datagram.accel.x = feeder->udp_accel_node.Capture(0); // Must be transformed to (m/s^2) by MotionFeeder
+    datagram.accel.y = feeder->udp_accel_node.Capture(1); // Must be transformed to (m/s^2) by MotionFeeder
+    datagram.accel.z = feeder->udp_accel_node.Capture(2); // Must be transformed to (m/s^2) by MotionFeeder
 
     // Send data
     ENetBuffer buf;
