@@ -2,6 +2,7 @@
 
 #include "NodeGraphTool.h"
 #include "Beam.h" // aka 'the actor'
+#include "BeamFactory.h"
 #include "as_addon/scriptmath.h" // Part of codebase; located in "/source/main/scripting/as_addon"
 #include "Euler.h" // from OGRE wiki
 
@@ -277,9 +278,9 @@ void RoR::NodeGraphTool::PhysicsTick(Beam* actor)
         {
 
             GeneratorNode* gen_node = static_cast<GeneratorNode*>(node);
-            gen_node->elapsed += 0.002f;
+            gen_node->elapsed_sec += PHYSICS_DT;
 
-            float result = cosf((gen_node->elapsed / 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
+            float result = cosf((gen_node->elapsed_sec * 2.f) * 3.14f * gen_node->frequency) * gen_node->amplitude;
 
             // add noise
             if (gen_node->noise_max != 0)
@@ -1885,7 +1886,7 @@ Ogre::Vector3 RoR::NodeGraphTool::UdpOrientNode::CalcUdpOutput()
 // -------------------------------- Generator node -----------------------------------
 
 RoR::NodeGraphTool::GeneratorNode::GeneratorNode(NodeGraphTool* _graph, ImVec2 _pos):
-            UserNode(_graph, Type::GENERATOR, _pos), amplitude(1.f), frequency(1.f), noise_max(0), elapsed(0.f), buffer_out(0)
+            UserNode(_graph, Type::GENERATOR, _pos), amplitude(1.f), frequency(1.f), noise_max(0), elapsed_sec(0.f), buffer_out(0)
 {
     num_inputs = 0;
     num_outputs = 1;

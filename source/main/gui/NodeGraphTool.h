@@ -199,7 +199,7 @@ public:
         float frequency; // Hz
         float amplitude;
         int noise_max;
-        float elapsed;
+        float elapsed_sec; // Seconds
         Buffer buffer_out;
     };
 
