@@ -653,7 +653,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
     {
         if (m_link_mouse_src != nullptr)
         {
-            if (m_hovered_slot_node != nullptr && m_hovered_slot_output != -1)
+            if ((m_hovered_slot_node != nullptr) && (m_hovered_slot_output != -1))
             {
                 m_fake_mouse_node.DetachLink(m_link_mouse_src); // Detach from mouse node
                 m_hovered_slot_node->BindSrc(m_link_mouse_src, m_hovered_slot_output); // Bind to target
@@ -666,9 +666,12 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
         }
         else if (m_link_mouse_dst != nullptr)
         {
-            m_fake_mouse_node.DetachLink(m_link_mouse_dst); // Detach from mouse node
-            const bool should_bind = (m_hovered_slot_node != nullptr && m_hovered_slot_input != -1);
-            if (!should_bind || !m_hovered_slot_node->BindDst(m_link_mouse_dst, m_hovered_slot_input)) // Try binding to target
+            if ((m_hovered_slot_node != nullptr) && (m_hovered_slot_input != -1))
+            {
+                m_fake_mouse_node.DetachLink(m_link_mouse_dst); // Detach from mouse node
+                m_hovered_slot_node->BindDst(m_link_mouse_dst, m_hovered_slot_input); // Bind to target
+            }
+            else
             {
                 this->DetachAndDeleteLink(m_link_mouse_dst);
             }
@@ -1799,7 +1802,9 @@ void RoR::NodeGraphTool::UdpOrientNode::DetachLink(Link* link)
     {
         if (in_world_yaw == link)
         {
-            if (link->slot_dst != 0) graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_yaw' but slot ID is '%d'", link->slot_dst);
+            if (link->slot_dst != 0)
+                graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_yaw' but slot ID is '%d'", link->slot_dst);
+
             in_world_yaw = nullptr;
             link->node_dst = nullptr;
             link->slot_dst = -1;
@@ -1807,7 +1812,9 @@ void RoR::NodeGraphTool::UdpOrientNode::DetachLink(Link* link)
         }
         if (in_world_pitch == link)
         {
-            if (link->slot_dst != 0) graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_pitch' but slot ID is '%d'", link->slot_dst);
+            if (link->slot_dst != 1)
+                graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_pitch' but slot ID is '%d'", link->slot_dst);
+
             in_world_pitch = nullptr;
             link->node_dst = nullptr;
             link->slot_dst = -1;
@@ -1815,7 +1822,9 @@ void RoR::NodeGraphTool::UdpOrientNode::DetachLink(Link* link)
         }
         if (in_world_roll == link)
         {
-            if (link->slot_dst != 0) graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_roll' but slot ID is '%d'", link->slot_dst);
+            if (link->slot_dst != 2)
+                graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_roll' but slot ID is '%d'", link->slot_dst);
+
             in_world_roll = nullptr;
             link->node_dst = nullptr;
             link->slot_dst = -1;
@@ -1848,6 +1857,7 @@ bool RoR::NodeGraphTool::UdpOrientNode::BindDst(Link* link, int slot)
     if (slot == 0) { return this->BindDstSingle(in_world_yaw,   slot, link); }
     if (slot == 1) { return this->BindDstSingle(in_world_pitch, slot, link); }
     if (slot == 2) { return this->BindDstSingle(in_world_roll,  slot, link); }
+    return true;
 }
 
 Ogre::Vector3 RoR::NodeGraphTool::UdpOrientNode::CalcUdpOutput()
