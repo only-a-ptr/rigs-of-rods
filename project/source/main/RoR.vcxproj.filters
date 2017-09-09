@@ -40,7 +40,6 @@
     <ClCompile Include="..\..\..\source\main\utils\Language.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\PlatformUtils.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\RoRWindowEventUtilities.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\Settings.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\SHA1.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\Utils.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\WriteTextToTexture.cpp" />
@@ -506,6 +505,9 @@
     <ClCompile Include="..\..\..\source\main\scripting\as_addon\scriptmath.cpp">
       <Filter>Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\Settings.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\main\Application.h" />
@@ -565,7 +567,6 @@
     <ClInclude Include="..\..\..\source\main\utils\Language.h" />
     <ClInclude Include="..\..\..\source\main\utils\PlatformUtils.h" />
     <ClInclude Include="..\..\..\source\main\utils\RoRWindowEventUtilities.h" />
-    <ClInclude Include="..\..\..\source\main\utils\Settings.h" />
     <ClInclude Include="..\..\..\source\main\utils\SHA1.h" />
     <ClInclude Include="..\..\..\source\main\utils\SimpleGlob.h" />
     <ClInclude Include="..\..\..\source\main\utils\SimpleOpt.h" />
@@ -1119,6 +1120,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\main\scripting\as_addon\scriptmath.h">
       <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\Settings.h">
+      <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

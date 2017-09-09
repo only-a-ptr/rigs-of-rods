@@ -186,7 +186,7 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     // ## OGRE engine coords: Right-handed; X is right, Y is up (screen-like), Z is back
     // ## Motion plat. coords: Z is up, Y/X is mixed.
 
-    // NOTE: The output position is effectively in (meters*10000*60) --- required for compatibility with motionsim mode RORX
+    // NOTE: The output position is effectively in (meters*10000*60) --- obviously a mistake, but required for compatibility with motionsim mode RORX
     datagram.position_x = static_cast<int32_t>((feeder->udp_position_node.Capture(0) * 10000.f) * UPDATES_PER_SEC);
     datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1) * 10000.f) * UPDATES_PER_SEC);
     datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2) * 10000.f) * UPDATES_PER_SEC);
