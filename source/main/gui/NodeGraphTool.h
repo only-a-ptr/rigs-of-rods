@@ -2,6 +2,7 @@
 #pragma once
 
 #include "GUIManager.h"
+#include "MotionPlatform.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h> // For ImRect
@@ -123,7 +124,7 @@ public:
     struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
         /// IMPORTANT - serialized as `int` to JSON files = add new items at the end!
-        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, UDP_ORIENT, UDP, DISPLAY_2D, DISPLAY_NUM };
+        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, UDP_ORIENT, UDP, DISPLAY_2D, DISPLAY_NUM, DISPLAY_REF_IMPL };
 
         static const ImVec2 ARRANGE_DISABLED;
         static const ImVec2 ARRANGE_EMPTY;
@@ -347,6 +348,32 @@ public:
         Ogre::Vector3 m_ogre_up_vec;
     };
 
+    /// Displays outputs of reference implementation (proof of concept) done 02/2017
+    /// Only 1 instance allowed, but created by user anyway
+    struct RefImplDisplayNode: UserNode
+    {
+        RefImplDisplayNode(NodeGraphTool* nodegraph, ImVec2 _pos);
+
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called RefImplDisplayNode::BindSrc() - node has no outputs!"); }
+        virtual bool BindDst(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called RefImplDisplayNode::BindDst() - node has no inputs!"); return false; }
+        virtual void DetachLink(Link* link) override                { graph->AddMessage("DEBUG: Called RefImplDisplayNode::DetachLink() - node has no inputs/outputs!"); }
+        virtual void Draw() override;
+        /// takes data from truckfile "cameras"
+        void CalcUdpPacket(size_t elapsed_microsec, Ogre::Vector3 coord_middle, Ogre::Vector3 coord_rear, Ogre::Vector3 coord_left, Ogre::Vector3 cinecam);
+        RoR::DatagramDboxRorx& GetDatagram()                        { return m_datagram; }
+        inline bool IsUdpEnabled()                                  { return m_udp_enabled; }
+
+    private:
+        RoR::DatagramDboxRorx m_datagram;
+        bool                  m_udp_enabled;
+
+        Ogre::Vector3 m_last_cinecam_pos;
+        Ogre::Vector3 m_last_orient_euler;
+        Ogre::Vector3 m_last_velocity;
+        Ogre::Matrix3 m_last_orient_matrix;
+    };
+
 
     NodeGraphTool();
 
@@ -358,6 +385,7 @@ public:
     void            LoadFromJson();                                                      ///< Filename specified by `m_filename`
     void            SetFilename(const char* const filename)                              { strncpy(m_filename, filename, sizeof(m_filename)); }
     void            ClearAll();
+    inline RefImplDisplayNode*     GetDemoNode()                                         { return m_demo_node; }
 
 private:
 
@@ -427,6 +455,7 @@ private:
     MouseDragNode           m_fake_mouse_node;     ///< Used while dragging link with mouse.
     int                     m_free_id;
     bool                    m_mouse_arrange_show;  ///< Show all arrangement boxes for preview.
+    RefImplDisplayNode*     m_demo_node;
 
     // Mouse dragging context - see function `DetermineActiveDragType()`
     Node*                   m_mouse_move_node;     ///< Node with mouse drag in progress.

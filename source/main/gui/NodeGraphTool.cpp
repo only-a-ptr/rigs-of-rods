@@ -5,7 +5,7 @@
 #include "BeamFactory.h"
 #include "as_addon/scriptmath.h" // Part of codebase; located in "/source/main/scripting/as_addon"
 #include "Euler.h" // from OGRE wiki
-
+#include "MotionPlatform.h"
 
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
@@ -33,6 +33,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     m_mouse_move_node(nullptr),
     m_link_mouse_src(nullptr),
     m_link_mouse_dst(nullptr),
+    m_demo_node(nullptr),
     m_hovered_slot_node(nullptr),
     m_hovered_node(nullptr),
     m_context_menu_node(nullptr),
@@ -791,6 +792,14 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             if (ImGui::MenuItem("Display (number)"))  { m_nodes.push_back(new DisplayNumberNode  (this, scene_pos)); }
             if (ImGui::MenuItem("Display (2D)"))      { m_nodes.push_back(new Display2DNode      (this, scene_pos)); }
             if (ImGui::MenuItem("Script"))            { m_nodes.push_back(new ScriptNode         (this, scene_pos)); }
+
+            // Special - only 1 instance allowed
+            if ((m_demo_node == nullptr) && ImGui::MenuItem("Script"))
+            {
+                m_demo_node = new RefImplDisplayNode         (this, scene_pos);
+                m_nodes.push_back(m_demo_node);
+            }
+
             ImGui::Text("-- Fetch UDP node --");
             if (ImGui::MenuItem("Position")) { udp_position_node.pos = scene_pos; }
             if (ImGui::MenuItem("Velocity")) { udp_velocity_node.pos = scene_pos; }
@@ -1214,6 +1223,10 @@ void RoR::NodeGraphTool::DeleteNode(Node* node)
         if (*itor == node)
         {
             m_nodes.erase(itor);
+            if (node == m_demo_node)
+            {
+                m_demo_node = nullptr;
+            }
             delete node;
             return;
         }
@@ -1869,26 +1882,10 @@ Ogre::Vector3 RoR::NodeGraphTool::UdpOrientNode::CalcUdpOutput()
         return Ogre::Vector3::ZERO;
     }
 
-    Ogre::Euler euler(in_world_yaw->buff_src->Read(), in_world_pitch->buff_src->Read(), in_world_roll->buff_src->Read()); // Input = carthesian RH
-
-    m_back_vector = euler.forward() * -1; // the roll axis, carthesian RH
-    m_left_vector = euler.right() * -1;   // the pitch axis, carthesian RH
-    m_up_vector   = euler.up();           // the yaw axis, carthesian RH
-
-    m_ogre_back_vec = CoordsRhCarthesianToOgre(m_back_vector);
-    m_ogre_left_vec = CoordsRhCarthesianToOgre(m_left_vector);
-    m_ogre_up_vec   = CoordsRhCarthesianToOgre(m_up_vector);
-
-    // Below is an exact reproduction of transformation done for the "proof of concept"
-
-    Ogre::Matrix3 orient_mtx;
-    orient_mtx.FromAxes(m_left_vector, m_up_vector, m_back_vector); // NOTE: totally swapped, args are (X, Y, Z)
-    Ogre::Radian yaw, pitch, roll;
-    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch); // NOTE: totally swapped... Function args are(Y, P, R)
     Ogre::Vector3 output_vec;
-    output_vec.x = pitch.valueRadians(); // Wrong again.
-    output_vec.y = roll.valueRadians();
-    output_vec.z = yaw.valueRadians();
+    output_vec.x = in_world_pitch->buff_src->Read();
+    output_vec.y = in_world_roll->buff_src->Read();
+    output_vec.z = in_world_yaw->buff_src->Read();
     return output_vec;
 }
 
@@ -2290,4 +2287,79 @@ void RoR::NodeGraphTool::MouseDragNode::DetachLink(Link* link)
         link->buff_src = nullptr;
     }
     else assert(false && "MouseDragNode::DetachLink() called on unrelated node");
+}
+
+// -------------------------------- RefImplDisplayNode -----------------------------------
+
+RoR::NodeGraphTool::RefImplDisplayNode::RefImplDisplayNode(NodeGraphTool* _graph, ImVec2 _pos):
+    UserNode(_graph, Type::MOUSE, _pos), m_udp_enabled(false)
+{
+    num_inputs = 0;
+    num_outputs = 0;
+    user_size.x = 200.f;
+}
+
+void RoR::NodeGraphTool::RefImplDisplayNode::CalcUdpPacket(size_t elapsed_microsec, Ogre::Vector3 coord_center, Ogre::Vector3 coord_rear, Ogre::Vector3 coord_left, Ogre::Vector3 cinecam_pos)
+{
+    const float UPDATES_PER_SEC = static_cast<float>(MPLATFORM_SEND_RATE);
+
+    m_datagram._unused    = Ogre::Vector3::ZERO;
+    m_datagram.game       = reinterpret_cast<int32_t>(MPLATFORM_GAME_ID);
+    m_datagram.time_milis = elapsed_microsec/1000; // microsec -> milisec
+
+    // Readings
+    Ogre::Vector3 roll_axis    = -(coord_rear - coord_center);
+    Ogre::Vector3 pitch_axis   = -(coord_left - coord_center);
+    Ogre::Vector3 yaw_axis     = pitch_axis.crossProduct(roll_axis);
+
+    m_datagram.position_x = static_cast<int32_t>((cinecam_pos.x  * 10000.f) * UPDATES_PER_SEC);
+    m_datagram.position_y = static_cast<int32_t>((-cinecam_pos.z * 10000.f) * UPDATES_PER_SEC);
+    m_datagram.position_z = static_cast<int32_t>((cinecam_pos.y  * 10000.f) * UPDATES_PER_SEC);
+
+    // Orientation
+    Ogre::Matrix3 orient_mtx;
+    orient_mtx.FromAxes(pitch_axis, yaw_axis, roll_axis);
+    Ogre::Radian yaw, pitch, roll;
+    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch); // NOTE: This is probably swapped... Function args are(Y, P, R)
+    m_datagram.orient.x = pitch.valueRadians();
+    m_datagram.orient.y = roll.valueRadians();
+    m_datagram.orient.z = yaw.valueRadians();
+
+    // Velocity
+    Ogre::Vector3 ogre_velocity = (cinecam_pos - m_last_cinecam_pos) * UPDATES_PER_SEC;
+    m_datagram.velocity.x = ogre_velocity.x;
+    m_datagram.velocity.y = -ogre_velocity.z;
+    m_datagram.velocity.z = ogre_velocity.y;
+
+    // Acceleration
+    Ogre::Vector3 ogre_accel = (ogre_velocity - m_last_velocity) * UPDATES_PER_SEC;
+    m_datagram.accel.x = ogre_accel.x;
+    m_datagram.accel.y = -ogre_accel.z;
+    m_datagram.accel.z = ogre_accel.y;
+
+    // Remember values
+    m_last_cinecam_pos   = cinecam_pos;
+    m_last_orient_euler  = m_datagram.orient;
+    m_last_velocity      = ogre_velocity;
+    m_last_orient_matrix = orient_mtx;
+}
+
+void RoR::NodeGraphTool::RefImplDisplayNode::Draw()
+{
+    if (!graph->ClipTestNode(this))
+        return;
+    graph->DrawNodeBegin(this);
+    ImGui::Text("   ====  Reference impl. UDP Node ====   ");
+
+    ImGui::Text(" Position : %10d  %10df  %10df",     m_datagram.position_x, m_datagram.position_y, m_datagram.position_z);
+    ImGui::Text("  ~");
+    ImGui::Text(" Orient.  : %10.3f  %10.3f  %10.3f", m_datagram.orient.x, m_datagram.orient.y, m_datagram.orient.z);
+    ImGui::Text("  ~");
+    ImGui::Text(" Velocity : %10.3f  %10.3f  %10.3f", m_datagram.velocity.x, m_datagram.velocity.y, m_datagram.velocity.z);
+    ImGui::Text("  ~");
+    ImGui::Text(" Accel.   : %10.3f  %10.3f  %10.3f", m_datagram.accel.x, m_datagram.accel.y, m_datagram.accel.z);
+
+    ImGui::Checkbox("Send UDP", &m_udp_enabled);
+
+    graph->DrawNodeFinalize(this);
 }
