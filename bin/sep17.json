@@ -1,0 +1,1599 @@
+{
+    "nodes": [
+        {
+            "pos_x": 14.0,
+            "pos_y": 45.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 0,
+            "type_id": 1,
+            "softbody_node_id": 26
+        },
+        {
+            "pos_x": 18.0,
+            "pos_y": 175.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 1,
+            "type_id": 1,
+            "softbody_node_id": 27
+        },
+        {
+            "pos_x": 16.0,
+            "pos_y": 305.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 2,
+            "type_id": 1,
+            "softbody_node_id": 24
+        },
+        {
+            "pos_x": 18.0,
+            "pos_y": 435.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 3,
+            "type_id": 1,
+            "softbody_node_id": 25
+        },
+        {
+            "pos_x": 272.0,
+            "pos_y": 47.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 206.0,
+            "id": 4,
+            "type_id": 4,
+            "source_code": "// Roof, rear, lateral\n// aligned: lat, longi, vert\n// Node26 = right side\n\n\nvoid step() {\n    WriteSmoothXYZ(0);\n    WriteSmoothXYZ(3);\n}"
+        },
+        {
+            "pos_x": 272.0,
+            "pos_y": 295.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 200.0,
+            "id": 5,
+            "type_id": 4,
+            "source_code": "// Roof, front, lateral\n// aligned: lat, longi, vert\n// Node24 = right side\n\n\nvoid step() {\n    WriteSmoothXYZ(0);\n    WriteSmoothXYZ(3);\n}"
+        },
+        {
+            "pos_x": 16.0,
+            "pos_y": 687.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 6,
+            "type_id": 1,
+            "softbody_node_id": 22
+        },
+        {
+            "pos_x": 16.0,
+            "pos_y": 808.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 7,
+            "type_id": 1,
+            "softbody_node_id": 23
+        },
+        {
+            "pos_x": 272.0,
+            "pos_y": 684.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 242.0,
+            "user_size_y": 208.0,
+            "id": 8,
+            "type_id": 4,
+            "source_code": "// Mid-cage, front\n// aligned: lat, longi, vert\n\n\nvoid step() {\n    WriteSmoothXYZ(0);\n    WriteSmoothXYZ(3);\n}"
+        },
+        {
+            "pos_x": 16.0,
+            "pos_y": 932.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 9,
+            "type_id": 1,
+            "softbody_node_id": 28
+        },
+        {
+            "pos_x": 16.0,
+            "pos_y": 1050.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 10,
+            "type_id": 1,
+            "softbody_node_id": 29
+        },
+        {
+            "pos_x": 268.0,
+            "pos_y": 936.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 200.0,
+            "id": 11,
+            "type_id": 4,
+            "source_code": "// Mid-cage, rear, lateral\n// aligned: lat, longi, vert\n\n\nvoid step() {\n    WriteSmoothXYZ(0);\n    WriteSmoothXYZ(3);\n}"
+        },
+        {
+            "pos_x": 20.0,
+            "pos_y": 1295.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 12,
+            "type_id": 1,
+            "softbody_node_id": 20
+        },
+        {
+            "pos_x": 22.0,
+            "pos_y": 1413.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 13,
+            "type_id": 1,
+            "softbody_node_id": 21
+        },
+        {
+            "pos_x": 264.0,
+            "pos_y": 1295.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 200.0,
+            "id": 14,
+            "type_id": 4,
+            "source_code": "// Floor, front, lateral\n// aligned: lat, longi, vert\n\n\nvoid step() {\n    WriteSmoothXYZ(0);\n    WriteSmoothXYZ(3);\n}\n"
+        },
+        {
+            "pos_x": 21.0,
+            "pos_y": 1535.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 15,
+            "type_id": 1,
+            "softbody_node_id": 30
+        },
+        {
+            "pos_x": 19.0,
+            "pos_y": 1659.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 16,
+            "type_id": 1,
+            "softbody_node_id": 31
+        },
+        {
+            "pos_x": 265.0,
+            "pos_y": 1543.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 256.0,
+            "user_size_y": 182.0,
+            "id": 17,
+            "type_id": 4,
+            "source_code": "// Floor, rear, lateral\n// aligned: lat, longi, vert\n// Node30 = right side\n\nvoid step() {\n    WriteSmoothXYZ(0);\n    WriteSmoothXYZ(3);\n}\n"
+        },
+        {
+            "pos_x": 644.0,
+            "pos_y": 145.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 248.0,
+            "user_size_y": 164.0,
+            "id": 27,
+            "type_id": 4,
+            "source_code": "// Outputs\n// 0: Roll (roof, rear)\n// 1: Yaw (roof, rear)\n// 6,7,8 - midpoint(roof, rear)\n\nvoid step(){\n\n   Write(1, \n       CalcYawFromLateral(0,3));\n   WriteMidXYZ(6, 0, 3);\n}"
+        },
+        {
+            "pos_x": 647.0,
+            "pos_y": 370.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 252.0,
+            "user_size_y": 178.0,
+            "id": 30,
+            "type_id": 4,
+            "source_code": "// Outputs\n// 0: Roll (roof, front)\n// 1: yaw  (roof, front)\n// 6,7,8 - midpoint(roof, front)\n\nvoid step(){\n\n   Write(1, \n      CalcYawFromLateral(0,3));\n   WriteMidXYZ(6, 0, 3);\n}\n"
+        },
+        {
+            "pos_x": 689.0,
+            "pos_y": 698.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 284.0,
+            "user_size_y": 180.0,
+            "id": 31,
+            "type_id": 4,
+            "source_code": "// Outputs\n// 0: Roll (cage, front)\n// 1: Pitch (cage, right)\n// 2: Yaw (cage, front)\n// 6,7,8 - midpoint(frame, front)\n\nvoid step(){\n\n   Write(2, CalcYawFromLateral(0,3));\n   WriteMidXYZ(6, 0, 3);\n}"
+        },
+        {
+            "pos_x": 691.0,
+            "pos_y": 942.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 286.0,
+            "user_size_y": 176.0,
+            "id": 32,
+            "type_id": 4,
+            "source_code": "// Outputs\n// 0: Roll (cage, rear)\n// 1: Pitch (cage, left)\n// 2: Yaw (cage, rear)\n// 6,7,8 - midpoint(cage, rear)\n\nvoid step(){\n\n   Write(2, CalcYawFromLateral(3,6));\n   WriteMidXYZ(6, 3, 6);\n}"
+        },
+        {
+            "pos_x": 681.0,
+            "pos_y": 1302.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 282.0,
+            "user_size_y": 188.0,
+            "id": 34,
+            "type_id": 4,
+            "source_code": "// Outputs:\n// 0: Roll (floor, front)\n// 1: Pitch (floor, right)\n// 2: Yaw  (floor, front)\n// 6,7,8 - midpoint(floor, front)\n\n\nvoid step() {\n\n    Write(2, CalcYawFromLateral(0,3));\n    WriteMidXYZ(6, 0, 3);\n}"
+        },
+        {
+            "pos_x": 685.0,
+            "pos_y": 1542.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 278.0,
+            "user_size_y": 180.0,
+            "id": 35,
+            "type_id": 4,
+            "source_code": "// Outputs:\n// 0: Roll  (floor, rear)\n// 1: Pitch (floor, left)\n// 2: Yaw   (floor, rear)\n// 6,7,8 - midpoint(floor, rear)\n\nvoid step() {\n\n    Write(2, CalcYawFromLateral(3,6));\n    WriteMidXYZ(6, 3, 6);\n}"
+        },
+        {
+            "pos_x": 1381.0,
+            "pos_y": 1059.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 280.0,
+            "user_size_y": 324.0,
+            "id": 36,
+            "type_id": 4,
+            "source_code": "// Compose world roll\n\n\nvoid step() {\n  float rearRoof = Read(0,0);\n  float frontRoof= Read(1,0);\n  float frontCage= Read(2,0);\n  float rearCage = Read(6,0);\n  float frontFloor=Read(7,0);\n  float rearFloor= Read(8,0);\n\n    // Simple average\n  float total=\n   rearRoof+frontRoof\n   +frontCage+rearCage\n   +frontFloor+rearFloor;\n\n  Write(0, total/6);\n}"
+        },
+        {
+            "pos_x": 1360.0,
+            "pos_y": 1442.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 226.0,
+            "id": 41,
+            "type_id": 4,
+            "source_code": "// Compose world pitch\n\n\nvoid step() {\n  float cageRight = Read(0,0);\n  float cageLeft  = Read(1,0);\n  float floorRight= Read(7,0);\n  float floorLeft = Read(8,0);\n\n    // Simple average\n  Write(0,\n       (cageRight+cageLeft+\n       floorRight+floorLeft)/4);\n}"
+        },
+        {
+            "pos_x": 1338.0,
+            "pos_y": 444.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 272.0,
+            "user_size_y": 344.0,
+            "id": 42,
+            "type_id": 4,
+            "source_code": "// Compose world yaw\n\nvoid step() {\n    float rearRoof = Read(0,0);\n    float frontRoof= Read(1,0);\n    float frontCage= Read(3,0);\n    float rearCage = Read(4,0);\n    float frontFloor=Read(7,0);\n    float rearFloor= Read(8,0);\n\n  // Simple average\n  float total=\n   rearRoof+frontRoof\n   +frontCage+rearCage\n   +frontFloor+rearFloor;\n\n  Write(8, total/6);\n}"
+        },
+        {
+            "pos_x": 1348.0,
+            "pos_y": 120.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 200.0,
+            "id": 43,
+            "type_id": 4,
+            "source_code": "// Output 0: Roof middle XYZ\n\nvoid step() {\n   WriteMidXYZ(0, 0, 3);\n}"
+        },
+        {
+            "pos_x": 1704.0,
+            "pos_y": 828.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 200.0,
+            "id": 44,
+            "type_id": 4,
+            "source_code": "// output 0: cage middle XYZ\n\n\nvoid step() {\n    WriteMidXYZ(0, 0, 3);\n}"
+        },
+        {
+            "pos_x": 1344.0,
+            "pos_y": 1812.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 200.0,
+            "id": 45,
+            "type_id": 4,
+            "source_code": "// output 0: floor middle XYZ\n\n// Update func. (mandatory)\nvoid step() {\n   WriteMidXYZ(0, 0, 3);\n}"
+        },
+        {
+            "pos_x": 2246.0,
+            "pos_y": 964.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 384.0,
+            "user_size_y": 218.0,
+            "id": 46,
+            "type_id": 4,
+            "source_code": "\n// output 0,1,2: rollcage midpoint XYZ position (m)\n\nvoid step() {\n  //        --roof--   --cage--  --floor--\n  float X = (Read(0,0)+Read(3,0)+Read(6,0))/3.0;\n  float Y = (Read(1,0)+Read(4,0)+Read(7,0))/3.0;\n  float Z = (Read(2,0)+Read(5,0)+Read(8,0))/3.0;\n\n  Write(0, X);         \n  Write(1, Y);         \n  Write(2, Z);         \n\n}"
+        },
+        {
+            "pos_x": 2786.0,
+            "pos_y": 974.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 47,
+            "type_id": 9
+        },
+        {
+            "pos_x": 2784.0,
+            "pos_y": 1012.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 48,
+            "type_id": 9
+        },
+        {
+            "pos_x": 2786.0,
+            "pos_y": 1052.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 49,
+            "type_id": 9
+        },
+        {
+            "pos_x": 2716.0,
+            "pos_y": 1116.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 400.0,
+            "user_size_y": 326.0,
+            "id": 85,
+            "type_id": 4,
+            "source_code": "\n//output0: xyz velocity [(m/s)]\n\n // NOTE sim runs at 2kHz (=500 microsec.)\n //      offset \"-2\" = 1milisec sample (2*500 microsec)\n\nvoid step()\n{\n  // --------- velo in m/s ------------\n  //       offset -20= 10 milis. \n  float veloX=(Read(0,0)-Read(0,-20))*100;\n  float veloY=(Read(1,0)-Read(1,-20))*100;\n  float veloZ=(Read(2,0)-Read(2,-20))*100;\n\n    Write(0,veloX); //X\n    Write(1,veloY); //Y\n    Write(2,veloZ); //Z\n\n  // ------ TEST: velo in m/s without transform------\n   Write(6, Read(0,0)-Read(0,-1999)); // x\n   Write(7, Read(1,0)-Read(1,-1999)); // y\n   Write(8, Read(2,0)-Read(2,-1999)); // z\n}"
+        },
+        {
+            "pos_x": 3292.0,
+            "pos_y": 1276.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 342.0,
+            "user_size_y": 256.0,
+            "id": 89,
+            "type_id": 4,
+            "source_code": "// Output 0: xyz accel [(m/s^2)]\n// NOTE: input is already m/s\n\nint dLen = 10; // num ticks (1tick=500microsec)\n\nvoid step() {\n\n   float dVx =(Read(0,0)-Read(0,-dLen));\n   float dVy =(Read(1,0)-Read(1,-dLen));\n   float dVz =(Read(2,0)-Read(2,-dLen));\n\n   float dT = float(dLen*500)/1000000.0;\n\n    Write(0, dVx/dT);\n    Write(1, dVy/dT);\n    Write(2, dVz/dT);\n}"
+        },
+        {
+            "pos_x": 3911.0,
+            "pos_y": 1227.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 154.0,
+            "user_size_y": 307.0,
+            "id": 90,
+            "type_id": 5,
+            "scale": 5.0
+        },
+        {
+            "pos_x": 3557.0,
+            "pos_y": 695.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 152.0,
+            "user_size_y": 307.0,
+            "id": 91,
+            "type_id": 5,
+            "scale": 5.0
+        },
+        {
+            "pos_x": 3916.0,
+            "pos_y": 880.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 152.0,
+            "user_size_y": 307.0,
+            "id": 100,
+            "type_id": 5,
+            "scale": 5.0
+        },
+        {
+            "pos_x": 3738.0,
+            "pos_y": 696.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 150.0,
+            "user_size_y": 305.0,
+            "id": 101,
+            "type_id": 5,
+            "scale": 5.0
+        },
+        {
+            "pos_x": 3797.0,
+            "pos_y": 1131.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 104,
+            "type_id": 9
+        },
+        {
+            "pos_x": 3767.0,
+            "pos_y": 1341.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 105,
+            "type_id": 9
+        },
+        {
+            "pos_x": 2779.0,
+            "pos_y": 682.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 262.0,
+            "user_size_y": 126.0,
+            "id": 148,
+            "type_id": 4,
+            "source_code": "// analysis of mid-position\n// disp. zoom=500K, grid 0.0001\nvoid step() {\n //  Write(0, DeltaDiff(0,0,1)); //x\n //  Write(1, DeltaDiff(1,0,1)); //y\n   \n   Write(8, 0.0);\n}"
+        },
+        {
+            "pos_x": 3103.0,
+            "pos_y": 558.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 326.0,
+            "user_size_y": 268.0,
+            "id": 149,
+            "type_id": 8,
+            "zoom": 500000.0,
+            "grid_size": 0.00009999999747378752
+        },
+        {
+            "pos_x": 1771.0,
+            "pos_y": 713.0,
+            "arranged_pos_x": 687.0,
+            "arranged_pos_y": 617.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 153,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1031.0,
+            "pos_y": 117.0,
+            "arranged_pos_x": 469.0,
+            "arranged_pos_y": 557.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 154,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1045.0,
+            "pos_y": 191.0,
+            "arranged_pos_x": 477.0,
+            "arranged_pos_y": 597.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 155,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1115.0,
+            "pos_y": 623.0,
+            "arranged_pos_x": 477.0,
+            "arranged_pos_y": 639.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 156,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1167.0,
+            "pos_y": 965.0,
+            "arranged_pos_x": 477.0,
+            "arranged_pos_y": 675.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 158,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1113.0,
+            "pos_y": 1353.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 159,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1199.0,
+            "pos_y": 1471.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 160,
+            "type_id": 9
+        }
+    ],
+    "links": [
+        {
+            "node_src_id": 0,
+            "node_dst_id": 4,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 4,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 4,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 4,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 4,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 4,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 5,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 5,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 5,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 5,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 6,
+            "node_dst_id": 8,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 6,
+            "node_dst_id": 8,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 6,
+            "node_dst_id": 8,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 7,
+            "node_dst_id": 8,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 7,
+            "node_dst_id": 8,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 9,
+            "node_dst_id": 11,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 9,
+            "node_dst_id": 11,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 9,
+            "node_dst_id": 11,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 10,
+            "node_dst_id": 11,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 10,
+            "node_dst_id": 11,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 10,
+            "node_dst_id": 11,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 12,
+            "node_dst_id": 14,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 12,
+            "node_dst_id": 14,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 12,
+            "node_dst_id": 14,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 13,
+            "node_dst_id": 14,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 13,
+            "node_dst_id": 14,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 13,
+            "node_dst_id": 14,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 15,
+            "node_dst_id": 17,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 15,
+            "node_dst_id": 17,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 15,
+            "node_dst_id": 17,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 16,
+            "node_dst_id": 17,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 16,
+            "node_dst_id": 17,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 16,
+            "node_dst_id": 17,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 4,
+            "node_dst_id": 27,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 4,
+            "node_dst_id": 27,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 4,
+            "node_dst_id": 27,
+            "slot_src": 3,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 4,
+            "node_dst_id": 27,
+            "slot_src": 4,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 4,
+            "node_dst_id": 27,
+            "slot_src": 5,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 4,
+            "node_dst_id": 27,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 30,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 30,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 30,
+            "slot_src": 3,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 30,
+            "slot_src": 4,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 30,
+            "slot_src": 5,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 30,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 31,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 31,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 31,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 31,
+            "slot_src": 3,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 31,
+            "slot_src": 5,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 32,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 32,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 32,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 32,
+            "slot_src": 3,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 32,
+            "slot_src": 4,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 32,
+            "slot_src": 3,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 32,
+            "slot_src": 4,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 32,
+            "slot_src": 5,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 34,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 34,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 34,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 34,
+            "slot_src": 3,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 34,
+            "slot_src": 4,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 34,
+            "slot_src": 5,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 31,
+            "slot_src": 0,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 31,
+            "slot_src": 1,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 31,
+            "slot_src": 2,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 34,
+            "slot_src": 0,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 34,
+            "slot_src": 1,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 34,
+            "slot_src": 2,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 35,
+            "slot_src": 3,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 35,
+            "slot_src": 4,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 35,
+            "slot_src": 5,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 35,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 35,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 35,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 35,
+            "slot_src": 3,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 35,
+            "slot_src": 4,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 17,
+            "node_dst_id": 35,
+            "slot_src": 5,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 11,
+            "node_dst_id": 32,
+            "slot_src": 5,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 27,
+            "node_dst_id": 36,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 30,
+            "node_dst_id": 36,
+            "slot_src": 0,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 31,
+            "node_dst_id": 36,
+            "slot_src": 0,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 32,
+            "node_dst_id": 36,
+            "slot_src": 0,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 34,
+            "node_dst_id": 36,
+            "slot_src": 0,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 35,
+            "node_dst_id": 36,
+            "slot_src": 0,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 31,
+            "node_dst_id": 41,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 32,
+            "node_dst_id": 41,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 34,
+            "node_dst_id": 41,
+            "slot_src": 1,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 35,
+            "node_dst_id": 41,
+            "slot_src": 1,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 27,
+            "node_dst_id": 42,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 30,
+            "node_dst_id": 42,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 31,
+            "node_dst_id": 42,
+            "slot_src": 2,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 32,
+            "node_dst_id": 42,
+            "slot_src": 2,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 35,
+            "node_dst_id": 42,
+            "slot_src": 2,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 34,
+            "node_dst_id": 42,
+            "slot_src": 2,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 7,
+            "node_dst_id": 8,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 8,
+            "node_dst_id": 31,
+            "slot_src": 4,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 27,
+            "node_dst_id": 43,
+            "slot_src": 6,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 27,
+            "node_dst_id": 43,
+            "slot_src": 7,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 27,
+            "node_dst_id": 43,
+            "slot_src": 8,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 30,
+            "node_dst_id": 43,
+            "slot_src": 6,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 30,
+            "node_dst_id": 43,
+            "slot_src": 7,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 30,
+            "node_dst_id": 43,
+            "slot_src": 8,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 31,
+            "node_dst_id": 44,
+            "slot_src": 6,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 31,
+            "node_dst_id": 44,
+            "slot_src": 7,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 31,
+            "node_dst_id": 44,
+            "slot_src": 8,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 32,
+            "node_dst_id": 44,
+            "slot_src": 6,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 32,
+            "node_dst_id": 44,
+            "slot_src": 7,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 32,
+            "node_dst_id": 44,
+            "slot_src": 8,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 34,
+            "node_dst_id": 45,
+            "slot_src": 6,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 34,
+            "node_dst_id": 45,
+            "slot_src": 7,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 34,
+            "node_dst_id": 45,
+            "slot_src": 8,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 35,
+            "node_dst_id": 45,
+            "slot_src": 6,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 35,
+            "node_dst_id": 45,
+            "slot_src": 7,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 35,
+            "node_dst_id": 45,
+            "slot_src": 8,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 43,
+            "node_dst_id": 46,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 43,
+            "node_dst_id": 46,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 43,
+            "node_dst_id": 46,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 44,
+            "node_dst_id": 46,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 44,
+            "node_dst_id": 46,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 44,
+            "node_dst_id": 46,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 45,
+            "node_dst_id": 46,
+            "slot_src": 2,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 45,
+            "node_dst_id": 46,
+            "slot_src": 1,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 45,
+            "node_dst_id": 46,
+            "slot_src": 0,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": -2147483646,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": -2147483646,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": -2147483646,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 47,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 48,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 49,
+            "slot_src": 2,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 85,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 85,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 85,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": -2147483645,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": -2147483645,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": -2147483645,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": 89,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 89,
+            "node_dst_id": -2147483644,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 89,
+            "node_dst_id": -2147483644,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 89,
+            "node_dst_id": -2147483644,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": 89,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 89,
+            "node_dst_id": 100,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 89,
+            "node_dst_id": 90,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": 89,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 89,
+            "node_dst_id": 104,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 89,
+            "node_dst_id": 105,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": 91,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 85,
+            "node_dst_id": 101,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 148,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 46,
+            "node_dst_id": 148,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 148,
+            "node_dst_id": 149,
+            "slot_src": 8,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 148,
+            "node_dst_id": 149,
+            "slot_src": 8,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 148,
+            "node_dst_id": 149,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 148,
+            "node_dst_id": 149,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 41,
+            "node_dst_id": -2147483643,
+            "slot_src": 0,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 36,
+            "node_dst_id": -2147483643,
+            "slot_src": 0,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 42,
+            "node_dst_id": -2147483643,
+            "slot_src": 8,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 42,
+            "node_dst_id": 153,
+            "slot_src": 8,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 27,
+            "node_dst_id": 154,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 30,
+            "node_dst_id": 155,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 31,
+            "node_dst_id": 156,
+            "slot_src": 2,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 32,
+            "node_dst_id": 158,
+            "slot_src": 2,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 34,
+            "node_dst_id": 159,
+            "slot_src": 2,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 35,
+            "node_dst_id": 160,
+            "slot_src": 2,
+            "slot_dst": 0
+        }
+    ],
+    "udp_pos_node": {
+        "pos_x": 2820.0,
+        "pos_y": 868.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483646,
+        "type_id": 7
+    },
+    "udp_acc_node": {
+        "pos_x": 3758.0,
+        "pos_y": 1260.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483644,
+        "type_id": 7
+    },
+    "udp_orient_node": {
+        "pos_x": 2125.0,
+        "pos_y": 1424.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483643,
+        "type_id": 6
+    },
+    "udp_velo_node": {
+        "pos_x": 3254.0,
+        "pos_y": 1148.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483645,
+        "type_id": 7
+    },
+    "shared_script": "\n\nfloat MovingAvg(int slot, int NUM_SAMPLES)\n{\n    float total = 0.0;\n    for (int i=0; i>-NUM_SAMPLES; --i)\n    {\n\t\ttotal+= Read(slot, i);\n    }\n    return total/float(NUM_SAMPLES);\n}\n\nvoid WriteSmoothXYZ(int slot)\n{\n    int NUM_SAMPLES = 40; // 2 samples = 1milisec delay\n    Write(slot,   MovingAvg(slot,   NUM_SAMPLES));    // X\n    Write(slot+1, MovingAvg(slot+1, NUM_SAMPLES));    // Y\n    Write(slot+2, MovingAvg(slot+2, NUM_SAMPLES));    // Z\n}\n\nfloat VecLen2d(float x, float y)\n{\n    return sqrt((x*x) + (y*y));\n}\n\nfloat VecAngle2d(float v1x, float v1y, float v2x, float v2y)\n{\n\treturn acos( ((v1x*v2x) + (v1y*v2y))\n             / (VecLen2d(v1x, v1y) * VecLen2d(v2x, v2y)) );\n}\n\nfloat CalcYawFromLateral(int slotR, int slotL)\n{\n  // Algo: project lateral axis on XY plane and do 2D vector angle.\n  float truckX = Read(slotL,  0)-Read(slotR,  0);\n  float truckY = Read(slotL+1,0)-Read(slotR+1,0);\n  float sign = 1.f;\n  if (Read(slotL+1,0) < Read(slotR+1, 0))\n    sign = -1.f;\n\n  return VecAngle2d(truckX, truckY, 1, 0) * sign;\n}\n\nvoid Passthru1(int slot)\n{\n    Write(slot, Read(slot, 0));\n}\n\nvoid Passthru3(int slot)\n{\n    Passthru1(slot);\n    Passthru1(slot+1);\n    Passthru1(slot+2);\n}\n\n/// calculates middle XYZ point between src1/src2 and writes it to dstSlot.\nvoid WriteMidXYZ(int dstSlot, int src1, int src2)\n{\n    Write(dstSlot,   (Read(src1,  0) + Read(src2,  0))/2.0); // X\n    Write(dstSlot+1, (Read(src1+1,0) + Read(src2+1,0))/2.0); // Y\n    Write(dstSlot+2, (Read(src1+2,0) + Read(src2+2,0))/2.0); // Z\n}"
+}

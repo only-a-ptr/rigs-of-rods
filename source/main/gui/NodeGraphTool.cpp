@@ -1234,7 +1234,7 @@ void RoR::NodeGraphTool::DeleteNode(Node* node)
 
 void RoR::NodeGraphTool::DetachAndDeleteNode(Node* node)
 {
-    // Disconnect inputs
+    // Disconnect inputs - only one per slot
     for (int i = 0; i<node->num_inputs; ++i)
     {
         Link* found_link = this->FindLinkByDestination(node, i);
@@ -1243,13 +1243,14 @@ void RoR::NodeGraphTool::DetachAndDeleteNode(Node* node)
             this->DetachAndDeleteLink(found_link);
         }
     }
-    // Disconnect outputs
+    // Disconnect outputs - multiple per slot
     for (int i=0; i< node->num_outputs; ++i)
     {
         Link* found_link = this->FindLinkBySource(node, i);
-        if (found_link != nullptr)
+        while (found_link != nullptr)
         {
             this->DetachAndDeleteLink(found_link);
+            found_link = this->FindLinkBySource(node, i);
         }
     }
     // Erase the node
