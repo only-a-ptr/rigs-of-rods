@@ -203,22 +203,22 @@
             "pos_y": 145.0,
             "arranged_pos_x": -2.0,
             "arranged_pos_y": -2.0,
-            "user_size_x": 248.0,
-            "user_size_y": 164.0,
+            "user_size_x": 282.0,
+            "user_size_y": 156.0,
             "id": 27,
             "type_id": 4,
-            "source_code": "// Outputs\n// 0: Roll (roof, rear)\n// 1: Yaw (roof, rear)\n// 6,7,8 - midpoint(roof, rear)\n\nvoid step(){\n\n   Write(1, \n       CalcYawFromLateral(0,3));\n   WriteMidXYZ(6, 0, 3);\n}"
+            "source_code": "// Outputs\n// 0: Roll (roof, rear)\n// 1: Yaw (roof, rear)\n// 6,7,8 - midpoint(roof, rear)\n\nvoid step(){\n\n   Write(1, CalcYawFromLateral(0,3));\n   WriteMidXYZ(6, 0, 3);\n}"
         },
         {
             "pos_x": 647.0,
             "pos_y": 370.0,
             "arranged_pos_x": -2.0,
             "arranged_pos_y": -2.0,
-            "user_size_x": 252.0,
-            "user_size_y": 178.0,
+            "user_size_x": 290.0,
+            "user_size_y": 150.0,
             "id": 30,
             "type_id": 4,
-            "source_code": "// Outputs\n// 0: Roll (roof, front)\n// 1: yaw  (roof, front)\n// 6,7,8 - midpoint(roof, front)\n\nvoid step(){\n\n   Write(1, \n      CalcYawFromLateral(0,3));\n   WriteMidXYZ(6, 0, 3);\n}\n"
+            "source_code": "// Outputs\n// 0: Roll (roof, front)\n// 1: yaw  (roof, front)\n// 6,7,8 - midpoint(roof, front)\n\nvoid step(){\n\n   Write(1, CalcYawFromLateral(0,3));\n   WriteMidXYZ(6, 0, 3);\n}"
         },
         {
             "pos_x": 689.0,
@@ -479,76 +479,6 @@
             "type_id": 8,
             "zoom": 500000.0,
             "grid_size": 0.00009999999747378752
-        },
-        {
-            "pos_x": 1771.0,
-            "pos_y": 713.0,
-            "arranged_pos_x": 687.0,
-            "arranged_pos_y": 617.0,
-            "user_size_x": 100.0,
-            "user_size_y": 30.0,
-            "id": 153,
-            "type_id": 9
-        },
-        {
-            "pos_x": 1031.0,
-            "pos_y": 117.0,
-            "arranged_pos_x": 469.0,
-            "arranged_pos_y": 557.0,
-            "user_size_x": 100.0,
-            "user_size_y": 30.0,
-            "id": 154,
-            "type_id": 9
-        },
-        {
-            "pos_x": 1045.0,
-            "pos_y": 191.0,
-            "arranged_pos_x": 477.0,
-            "arranged_pos_y": 597.0,
-            "user_size_x": 100.0,
-            "user_size_y": 30.0,
-            "id": 155,
-            "type_id": 9
-        },
-        {
-            "pos_x": 1115.0,
-            "pos_y": 623.0,
-            "arranged_pos_x": 477.0,
-            "arranged_pos_y": 639.0,
-            "user_size_x": 100.0,
-            "user_size_y": 30.0,
-            "id": 156,
-            "type_id": 9
-        },
-        {
-            "pos_x": 1167.0,
-            "pos_y": 965.0,
-            "arranged_pos_x": 477.0,
-            "arranged_pos_y": 675.0,
-            "user_size_x": 100.0,
-            "user_size_y": 30.0,
-            "id": 158,
-            "type_id": 9
-        },
-        {
-            "pos_x": 1113.0,
-            "pos_y": 1353.0,
-            "arranged_pos_x": -1.0,
-            "arranged_pos_y": -1.0,
-            "user_size_x": 100.0,
-            "user_size_y": 30.0,
-            "id": 159,
-            "type_id": 9
-        },
-        {
-            "pos_x": 1199.0,
-            "pos_y": 1471.0,
-            "arranged_pos_x": -1.0,
-            "arranged_pos_y": -1.0,
-            "user_size_x": 100.0,
-            "user_size_y": 30.0,
-            "id": 160,
-            "type_id": 9
         }
     ],
     "links": [
@@ -1087,12 +1017,6 @@
             "slot_dst": 0
         },
         {
-            "node_src_id": 32,
-            "node_dst_id": 41,
-            "slot_src": 1,
-            "slot_dst": 1
-        },
-        {
             "node_src_id": 34,
             "node_dst_id": 41,
             "slot_src": 1,
@@ -1511,48 +1435,6 @@
             "node_dst_id": -2147483643,
             "slot_src": 8,
             "slot_dst": 0
-        },
-        {
-            "node_src_id": 42,
-            "node_dst_id": 153,
-            "slot_src": 8,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 27,
-            "node_dst_id": 154,
-            "slot_src": 1,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 30,
-            "node_dst_id": 155,
-            "slot_src": 1,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 31,
-            "node_dst_id": 156,
-            "slot_src": 2,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 32,
-            "node_dst_id": 158,
-            "slot_src": 2,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 34,
-            "node_dst_id": 159,
-            "slot_src": 2,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 35,
-            "node_dst_id": 160,
-            "slot_src": 2,
-            "slot_dst": 0
         }
     ],
     "udp_pos_node": {
@@ -1595,5 +1477,5 @@
         "id": -2147483645,
         "type_id": 7
     },
-    "shared_script": "\n\nfloat MovingAvg(int slot, int NUM_SAMPLES)\n{\n    float total = 0.0;\n    for (int i=0; i>-NUM_SAMPLES; --i)\n    {\n\t\ttotal+= Read(slot, i);\n    }\n    return total/float(NUM_SAMPLES);\n}\n\nvoid WriteSmoothXYZ(int slot)\n{\n    int NUM_SAMPLES = 40; // 2 samples = 1milisec delay\n    Write(slot,   MovingAvg(slot,   NUM_SAMPLES));    // X\n    Write(slot+1, MovingAvg(slot+1, NUM_SAMPLES));    // Y\n    Write(slot+2, MovingAvg(slot+2, NUM_SAMPLES));    // Z\n}\n\nfloat VecLen2d(float x, float y)\n{\n    return sqrt((x*x) + (y*y));\n}\n\nfloat VecAngle2d(float v1x, float v1y, float v2x, float v2y)\n{\n\treturn acos( ((v1x*v2x) + (v1y*v2y))\n             / (VecLen2d(v1x, v1y) * VecLen2d(v2x, v2y)) );\n}\n\nfloat CalcYawFromLateral(int slotR, int slotL)\n{\n  // Algo: project lateral axis on XY plane and do 2D vector angle.\n  float truckX = Read(slotL,  0)-Read(slotR,  0);\n  float truckY = Read(slotL+1,0)-Read(slotR+1,0);\n  float sign = 1.f;\n  if (Read(slotL+1,0) < Read(slotR+1, 0))\n    sign = -1.f;\n\n  return VecAngle2d(truckX, truckY, 1, 0) * sign;\n}\n\nvoid Passthru1(int slot)\n{\n    Write(slot, Read(slot, 0));\n}\n\nvoid Passthru3(int slot)\n{\n    Passthru1(slot);\n    Passthru1(slot+1);\n    Passthru1(slot+2);\n}\n\n/// calculates middle XYZ point between src1/src2 and writes it to dstSlot.\nvoid WriteMidXYZ(int dstSlot, int src1, int src2)\n{\n    Write(dstSlot,   (Read(src1,  0) + Read(src2,  0))/2.0); // X\n    Write(dstSlot+1, (Read(src1+1,0) + Read(src2+1,0))/2.0); // Y\n    Write(dstSlot+2, (Read(src1+2,0) + Read(src2+2,0))/2.0); // Z\n}"
+    "shared_script": "\n\nfloat MovingAvg(int slot, int NUM_SAMPLES)\n{\n    float total = 0.0;\n    for (int i=0; i>-NUM_SAMPLES; --i)\n    {\n\t\ttotal+= Read(slot, i);\n    }\n    return total/float(NUM_SAMPLES);\n}\n\nvoid WriteSmoothXYZ(int slot)\n{\n    int NUM_SAMPLES = 40; // 2 samples = 1milisec delay\n    Write(slot,   MovingAvg(slot,   NUM_SAMPLES));    // X\n    Write(slot+1, MovingAvg(slot+1, NUM_SAMPLES));    // Y\n    Write(slot+2, MovingAvg(slot+2, NUM_SAMPLES));    // Z\n}\n\nfloat VecLen2d(float x, float y)\n{\n    return sqrt((x*x) + (y*y));\n}\n\nfloat VecAngle2d(float v1x, float v1y, float v2x, float v2y)\n{\n\treturn acos( ((v1x*v2x) + (v1y*v2y))\n             / (VecLen2d(v1x, v1y) * VecLen2d(v2x, v2y)) );\n}\n\nfloat VecLen3d(float x, float y, float z)\n{\n    return sqrt((x*x) + (y*y) + (z*z));\n}\n\nfloat VecAngle3d(float ax, float ay, float az,\n                 float bx, float by, float bz)\n{\n\treturn acos( (ax*bx*cx + ay*by*cy + az*bz*cz)\n      / (VecLen3d(ax,ay,az) * VecLen3d(bx,by,bz) * VecLen3d(cx,cy,cz)) );\n}\n\n\n\nfloat CalcYawFromLateral(int slotR, int slotL)\n{\n  // Algo: project lateral axis on XY plane and do 2D vector angle.\n  float truckX = Read(slotL,  0)-Read(slotR,  0);\n  float truckY = Read(slotL+1,0)-Read(slotR+1,0);\n  float sign = 1.f;\n  if (Read(slotL+1,0) < Read(slotR+1, 0))\n    sign = -1.f;\n\n  return VecAngle2d(truckX, truckY, 1, 0) * sign;\n}\n\nfloat CalcPitch(int slotFront, int slotBack)\n{\n\t// algo: do 2D vec. angle between truck's longi. axis and XY plane\n\n    // Get truck's world vector\n    float truckWx = Read(slotBack  ,0) - Read(slotFront  ,0);\n    float truckWy = Read(slotBack+1,0) - Read(slotFront+1,0);\n    float truckWz = Read(slotBack+2,0) - Read(slotFront+2,0);\n\n    // \n}\n\nvoid Passthru1(int slot)\n{\n    Write(slot, Read(slot, 0));\n}\n\nvoid Passthru3(int slot)\n{\n    Passthru1(slot);\n    Passthru1(slot+1);\n    Passthru1(slot+2);\n}\n\n/// calculates middle XYZ point between src1/src2 and writes it to dstSlot.\nvoid WriteMidXYZ(int dstSlot, int src1, int src2)\n{\n    Write(dstSlot,   (Read(src1,  0) + Read(src2,  0))/2.0); // X\n    Write(dstSlot+1, (Read(src1+1,0) + Read(src2+1,0))/2.0); // Y\n    Write(dstSlot+2, (Read(src1+2,0) + Read(src2+2,0))/2.0); // Z\n}"
 }
