@@ -365,8 +365,7 @@ void RoR::NodeGraphTool::DrawLockedMode()
 
     for (Node* node: m_nodes) // Iterate nodes and draw contents if applicable
     {
-        if (node->arranged_pos == Node::ARRANGE_DISABLED || node->arranged_pos == Node::ARRANGE_EMPTY 
-            || (node->type != Node::Type::DISPLAY && node->type != Node::Type::DISPLAY_2D && node->type != Node::Type::DISPLAY_NUM))
+        if (node->arranged_pos == Node::ARRANGE_DISABLED || node->arranged_pos == Node::ARRANGE_EMPTY)
         {
             continue;
         }
@@ -794,7 +793,7 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             if (ImGui::MenuItem("Script"))            { m_nodes.push_back(new ScriptNode         (this, scene_pos)); }
 
             // Special - only 1 instance allowed
-            if ((m_demo_node == nullptr) && ImGui::MenuItem("Script"))
+            if ((m_demo_node == nullptr) && ImGui::MenuItem("Demo (ref. impl.)"))
             {
                 m_demo_node = new RefImplDisplayNode         (this, scene_pos);
                 m_nodes.push_back(m_demo_node);
@@ -2296,7 +2295,9 @@ RoR::NodeGraphTool::RefImplDisplayNode::RefImplDisplayNode(NodeGraphTool* _graph
 {
     num_inputs = 0;
     num_outputs = 0;
-    user_size.x = 200.f;
+    user_size.x = 350.f;
+    user_size.y = 115.f;
+    arranged_pos = Node::ARRANGE_EMPTY; // Enables arranging
 }
 
 void RoR::NodeGraphTool::RefImplDisplayNode::CalcUdpPacket(size_t elapsed_microsec, Ogre::Vector3 coord_center, Ogre::Vector3 coord_rear, Ogre::Vector3 coord_left, Ogre::Vector3 cinecam_pos)
@@ -2358,8 +2359,29 @@ void RoR::NodeGraphTool::RefImplDisplayNode::Draw()
     ImGui::Text(" Velocity : %10.3f  %10.3f  %10.3f", m_datagram.velocity.x, m_datagram.velocity.y, m_datagram.velocity.z);
     ImGui::Text("  ~");
     ImGui::Text(" Accel.   : %10.3f  %10.3f  %10.3f", m_datagram.accel.x, m_datagram.accel.y, m_datagram.accel.z);
-
     ImGui::Checkbox("Send UDP", &m_udp_enabled);
 
     graph->DrawNodeFinalize(this);
+}
+
+void RoR::NodeGraphTool::RefImplDisplayNode::DrawLockedMode()
+{
+    ImDrawList* drawlist = ImGui::GetWindowDrawList();
+    // background
+    drawlist->ChannelsSetCurrent(0);
+    drawlist->AddRectFilled(this->arranged_pos, this->arranged_pos+this->user_size, ImColor(ImGui::GetStyle().Colors[ImGuiCol_FrameBg]));
+
+    const float Y_SPACING = 20.f;
+
+    ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y));
+    ImGui::Text("   ====  Reference impl. UDP Node ====   ");
+
+    ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y+Y_SPACING));
+    ImGui::Text(" Position : %10d  %10df  %10df",     m_datagram.position_x, m_datagram.position_y, m_datagram.position_z);
+    ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y+(Y_SPACING*2.f)));
+    ImGui::Text(" Orient.  : %10.3f  %10.3f  %10.3f", m_datagram.orient.x, m_datagram.orient.y, m_datagram.orient.z);
+    ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y+(Y_SPACING*3.f)));
+    ImGui::Text(" Velocity : %10.3f  %10.3f  %10.3f", m_datagram.velocity.x, m_datagram.velocity.y, m_datagram.velocity.z);
+    ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y+(Y_SPACING*4.f)));
+    ImGui::Text(" Accel.   : %10.3f  %10.3f  %10.3f", m_datagram.accel.x, m_datagram.accel.y, m_datagram.accel.z);
 }

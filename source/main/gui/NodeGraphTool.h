@@ -359,6 +359,7 @@ public:
         virtual bool BindDst(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called RefImplDisplayNode::BindDst() - node has no inputs!"); return false; }
         virtual void DetachLink(Link* link) override                { graph->AddMessage("DEBUG: Called RefImplDisplayNode::DetachLink() - node has no inputs/outputs!"); }
         virtual void Draw() override;
+        virtual void DrawLockedMode() override;
         /// takes data from truckfile "cameras"
         void CalcUdpPacket(size_t elapsed_microsec, Ogre::Vector3 coord_middle, Ogre::Vector3 coord_rear, Ogre::Vector3 coord_left, Ogre::Vector3 cinecam);
         RoR::DatagramDboxRorx& GetDatagram()                        { return m_datagram; }
