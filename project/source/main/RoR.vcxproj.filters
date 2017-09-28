@@ -3,24 +3,16 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source\main\main.cpp" />
     <ClCompile Include="..\..\..\source\main\Application.cpp" />
-    <ClCompile Include="..\..\..\source\main\MainMenu.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\ChatSystem.cpp" />
-    <ClCompile Include="..\..\..\source\main\gameplay\Landusemap.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\OutProtocol.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\Replay.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\RoRFrameListener.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\SceneMouse.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\MovableText.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\OgreSubsystem.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\dof\Lens.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Hydrax.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Image.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Noise.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Perlin.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Prerequisites.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\PressurePoint.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Real.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.cpp" />
     <ClCompile Include="..\..\..\source\main\gui\OverlayWrapper.cpp" />
     <ClCompile Include="..\..\..\source\main\gui\imgui\OgreImGui.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\RigSpawner.cpp" />
@@ -30,28 +22,19 @@
     <ClCompile Include="..\..\..\source\main\physics\air\TurboProp.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\collision\PointColDetector.cpp" />
     <ClCompile Include="..\..\..\source\main\physics\water\ScrewProp.cpp" />
-    <ClCompile Include="..\..\..\source\main\resources\CacheSystem.cpp" />
     <ClCompile Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.cpp" />
-    <ClCompile Include="..\..\..\source\main\terrain\TerrainGeometryManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\terrain\TerrainManager.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\TerrainObjectManager.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapEntity.cpp" />
     <ClCompile Include="..\..\..\source\main\terrain\map\SurveyMapManager.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\Language.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\PlatformUtils.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\RoRWindowEventUtilities.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\SHA1.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\Utils.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\WriteTextToTexture.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\profiler\Profiler.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\CBytecodeStream.cpp" />
-    <ClCompile Include="..\..\..\source\main\scripting\GameScript.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\LocalStorage.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\OgreAngelscript.cpp" />
     <ClCompile Include="..\..\..\tools\windows\pch\Precompiled.cpp" />
-    <ClCompile Include="..\..\..\source\main\utils\Win32DirectInput.cpp">
-      <Filter>Lib\OIS</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.cpp">
       <Filter>Lib\OIS</Filter>
     </ClCompile>
@@ -310,28 +293,16 @@
     <ClCompile Include="..\..\..\source\main\gameplay\AircraftSimulation.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\main\gfx\GfxActor.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\hydrax\FFT.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\main\gfx\Heathaze.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\main\gfx\HDRListener.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\HydraxWater.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\MaterialManager.cpp">
@@ -508,34 +479,82 @@
     <ClCompile Include="..\..\..\source\main\utils\Settings.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\main\scripting\GameScript.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\Landusemap.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\terrain\TerrainGeometryManager.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\terrain\TerrainManager.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\Win32DirectInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\Language.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\dof\Lens.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gameplay\ChatSystem.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\MainMenu.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\resources\CacheSystem.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\utils\WriteTextToTexture.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\HydraxWater.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Hydrax.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Real.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\Image.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\FFT.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.cpp">
+      <Filter>Gfx\HydraX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\main\Application.h" />
     <ClInclude Include="..\..\..\source\main\ForwardDeclarations.h" />
     <ClInclude Include="..\..\..\source\main\GlobalEnvironment.h" />
-    <ClInclude Include="..\..\..\source\main\MainMenu.h" />
     <ClInclude Include="..\..\..\source\main\RoRPrerequisites.h" />
     <ClInclude Include="..\..\..\source\main\datatypes\node_t.h" />
     <ClInclude Include="..\..\..\source\main\datatypes\shock_t.h" />
     <ClInclude Include="..\..\..\source\main\datatypes\wheel_t.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\ChatSystem.h" />
-    <ClInclude Include="..\..\..\source\main\gameplay\Landusemap.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\OutProtocol.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\Replay.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\RoRFrameListener.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\SceneMouse.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\AdvancedScreen.h" />
     <ClInclude Include="..\..\..\source\main\gfx\MovableText.h" />
     <ClInclude Include="..\..\..\source\main\gfx\OgreSubsystem.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\dof\Lens.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Hydrax.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Image.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Noise.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Perlin.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Prerequisites.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\PressurePoint.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Real.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.h" />
     <ClInclude Include="..\..\..\source\main\gui\OverlayWrapper.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\OgreImGui.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\stb_rect_pack.h" />
@@ -552,11 +571,7 @@
     <ClInclude Include="..\..\..\source\main\physics\flex\Locator_t.h" />
     <ClInclude Include="..\..\..\source\main\physics\utils\RigLoadingProfiler.h" />
     <ClInclude Include="..\..\..\source\main\physics\water\ScrewProp.h" />
-    <ClInclude Include="..\..\..\source\main\resources\CacheSystem.h" />
     <ClInclude Include="..\..\..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h" />
-    <ClInclude Include="..\..\..\source\main\terrain\IHeightFinder.h" />
-    <ClInclude Include="..\..\..\source\main\terrain\TerrainGeometryManager.h" />
-    <ClInclude Include="..\..\..\source\main\terrain\TerrainManager.h" />
     <ClInclude Include="..\..\..\source\main\terrain\TerrainObjectManager.h" />
     <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapEntity.h" />
     <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapManager.h" />
@@ -564,7 +579,6 @@
     <ClInclude Include="..\..\..\source\main\utils\IBehavior.h" />
     <ClInclude Include="..\..\..\source\main\utils\ImprovedConfigFile.h" />
     <ClInclude Include="..\..\..\source\main\utils\InterThreadStoreVector.h" />
-    <ClInclude Include="..\..\..\source\main\utils\Language.h" />
     <ClInclude Include="..\..\..\source\main\utils\PlatformUtils.h" />
     <ClInclude Include="..\..\..\source\main\utils\RoRWindowEventUtilities.h" />
     <ClInclude Include="..\..\..\source\main\utils\SHA1.h" />
@@ -573,17 +587,12 @@
     <ClInclude Include="..\..\..\source\main\utils\Singleton.h" />
     <ClInclude Include="..\..\..\source\main\utils\Timer.h" />
     <ClInclude Include="..\..\..\source\main\utils\Utils.h" />
-    <ClInclude Include="..\..\..\source\main\utils\WriteTextToTexture.h" />
     <ClInclude Include="..\..\..\source\main\utils\ZeroedMemoryAllocator.h" />
     <ClInclude Include="..\..\..\source\main\utils\profiler\Profiler.h" />
     <ClInclude Include="..\..\..\source\main\utils\profiler\RigLoadingProfilerControl.h" />
     <ClInclude Include="..\..\..\source\main\scripting\CBytecodeStream.h" />
-    <ClInclude Include="..\..\..\source\main\scripting\GameScript.h" />
     <ClInclude Include="..\..\..\source\main\scripting\LocalStorage.h" />
     <ClInclude Include="..\..\..\source\main\scripting\OgreAngelscript.h" />
-    <ClInclude Include="..\..\..\source\main\utils\Win32DirectInput.h">
-      <Filter>Lib\OIS</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.h">
       <Filter>Lib\OIS</Filter>
     </ClInclude>
@@ -890,12 +899,6 @@
     <ClInclude Include="..\..\..\source\main\gameplay\AircraftSimulation.h">
       <Filter>Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\main\gfx\GlowMaterialListener.h">
       <Filter>Gfx</Filter>
     </ClInclude>
@@ -911,16 +914,10 @@
     <ClInclude Include="..\..\..\source\main\gfx\particle\FireExtinguisherAffector.h">
       <Filter>Gfx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\hydrax\FFT.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\main\gfx\Heathaze.h">
       <Filter>Gfx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\main\gfx\HDRListener.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\HydraxWater.h">
       <Filter>Gfx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\main\gfx\IWater.h">
@@ -1124,6 +1121,69 @@
     <ClInclude Include="..\..\..\source\main\utils\Settings.h">
       <Filter>Gameplay</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\main\scripting\GameScript.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\Landusemap.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\terrain\IHeightFinder.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\terrain\TerrainGeometryManager.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\terrain\TerrainManager.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\Win32DirectInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\Language.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\dof\Lens.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\AdvancedScreen.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gameplay\ChatSystem.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\MainMenu.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\resources\CacheSystem.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\WriteTextToTexture.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\HydraxWater.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Hydrax.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\SimpleGrid.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Real.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\Image.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\GodRaysManager.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\hydrax\FFT.h">
+      <Filter>Gfx\HydraX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\source\main\icon.rc" />
@@ -1164,6 +1224,9 @@
     </Filter>
     <Filter Include="Scripting">
       <UniqueIdentifier>{38ed7919-9746-4d0e-b02c-e1db8eb5e9b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gfx\HydraX">
+      <UniqueIdentifier>{597a6d71-9501-4320-89a7-d436ea599905}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
