@@ -1,0 +1,173 @@
+{
+    "nodes": [
+        {
+            "pos_x": 102.0,
+            "pos_y": 99.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 0,
+            "type_id": 1,
+            "softbody_node_id": 6
+        },
+        {
+            "pos_x": 104.0,
+            "pos_y": 227.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 1,
+            "type_id": 1,
+            "softbody_node_id": 10
+        },
+        {
+            "pos_x": 334.0,
+            "pos_y": 53.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 352.0,
+            "user_size_y": 380.0,
+            "id": 2,
+            "type_id": 4,
+            "source_code": "// ----------- ROTMAT.JSON -------------\n// Manual impl. of rotating matrix\n\n// Cinecam: mid:6, back: 10, left: 7\n\nvoid step() {\n    Vec3 mid_pos = ReadVec3(0,0);\n    Vec3 back_pos = ReadVec3(3,0);\n    Vec3 left_pos = ReadVec3(6,0);\n\n    Vec3 back = (back_pos - mid_pos);\n    Vec3 left = (back_pos - left_pos);\n    Vec3 up = left.CrossProduct(back);\n\n    Matrix3 m;\n    m.colX = (-back).Normalize();\n    m.colY = left.Normalize();\n    m.colZ = up.Normalize();\n\n    float yaw, pitch, roll;\n    m.ToEulerAngles(yaw, pitch, roll);\n\n    Write(0,yaw);\n    Write(1,pitch);\n    Write(2,roll);\n}"
+        },
+        {
+            "pos_x": 108.0,
+            "pos_y": 357.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 3,
+            "type_id": 1,
+            "softbody_node_id": 7
+        },
+        {
+            "pos_x": 720.0,
+            "pos_y": 292.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 350.0,
+            "user_size_y": 115.0,
+            "id": 6,
+            "type_id": 3
+        }
+    ],
+    "links": [
+        {
+            "node_src_id": 0,
+            "node_dst_id": 2,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 2,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 2,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 2,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 2,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 2,
+            "slot_src": 0,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 2,
+            "slot_src": 1,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 2,
+            "slot_src": 2,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 2,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": -2147483643,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": -2147483643,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": -2147483643,
+            "slot_src": 2,
+            "slot_dst": 2
+        }
+    ],
+    "udp_pos_node": {
+        "pos_x": -300.0,
+        "pos_y": 100.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483646,
+        "type_id": 7
+    },
+    "udp_acc_node": {
+        "pos_x": -300.0,
+        "pos_y": 300.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483644,
+        "type_id": 7
+    },
+    "udp_orient_node": {
+        "pos_x": 720.0,
+        "pos_y": 4.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483643,
+        "type_id": 6
+    },
+    "udp_velo_node": {
+        "pos_x": -300.0,
+        "pos_y": 200.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483645,
+        "type_id": 7
+    },
+    "shared_script": "class Vec3\n{\n    Vec3() {}\n\n    Vec3(float xx, float yy, float zz) { x=xx; y=yy; z=zz; }\n\n    float Len() { return sqrt(x*x + y*y + z*z); }\n\n\tVec3 Normalize()\n    {\n       float len = Len();\n       return Vec3(x/len, y/len, z/len);\n    }\n\n    Vec3 CrossProduct(Vec3 b)\n    {\n\t\treturn Vec3(y*b.z - z*b.y,\n        \t        z*b.x - x*b.z,\n            \t    x*b.y - y*b.x);\n    }\n\n    // overloaded operators\n    void opAssign(Vec3 rhs) { x=rhs.x; y=rhs.y; z=rhs.z; }\n\n    Vec3 opSub(Vec3 rhs) { return Vec3(x-rhs.x, y-rhs.y, z-rhs.z); }\n\n    Vec3 opNeg() { return Vec3(-x, -y, -z); }\n\n    // Var\n    float x, y, z;\n}\n\nfloat Pi = 3.1415927;\nfloat HalfPi = Pi/2.f;\n\nclass Matrix3\n{\n    Matrix3() {}\n\n    bool ToEulerAngles(float &out yaw, float &out pitch, float &out roll)\n    {\n\t    // Implementation from OGRE engine\t\n        pitch = asin(-colZ.y);\n        if (pitch < HalfPi)\n        {\n            if (pitch > -HalfPi)\n            {\n                yaw = atan2(colZ.x, colZ.z);\n                roll = atan2(colX.y, colY.y);\n                return true;\n            }\n            else\n            {\n                yaw = -atan2(-colY.x, colX.x);\n                roll = 0.f; // any angle\n                return false;\n            }\n        }\n        else\n        {\n           yaw=atan2(-colY.x, colX.x);\n           roll = 0.f;// any angle;\n           return false;\n        }\n    }\n\n\t// Var\n    Vec3 colX;   // column 1\n    Vec3 colY;   // column 2\n    Vec3 colZ;   // column 3\n}\n\nVec3 ReadVec3(int slot, int offs)\n{\n\treturn Vec3(Read(slot,  offs),\n                Read(slot+1,offs),\n                Read(slot+2,offs));\n}"
+}
