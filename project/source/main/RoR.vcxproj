@@ -442,7 +442,6 @@
     <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32Prereqs.h" />
     <ClInclude Include="..\..\..\source\main\scripting\CBytecodeStream.h" />
     <ClInclude Include="..\..\..\source\main\scripting\GameScript.h" />
-    <ClInclude Include="..\..\..\source\main\scripting\LocalStorage.h" />
     <ClInclude Include="..\..\..\source\main\scripting\OgreAngelscript.h" />
     <ClInclude Include="..\..\..\source\main\scripting\OgreScriptBuilder.h" />
     <ClInclude Include="..\..\..\source\main\scripting\ScriptEngine.h" />
@@ -641,7 +640,6 @@
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32Mouse.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\CBytecodeStream.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\GameScript.cpp" />
-    <ClCompile Include="..\..\..\source\main\scripting\LocalStorage.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\OgreAngelscript.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\OgreScriptBuilder.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\ScriptEngine.cpp" />

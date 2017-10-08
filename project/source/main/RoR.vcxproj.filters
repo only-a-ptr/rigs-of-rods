@@ -7,7 +7,6 @@
     <ClCompile Include="..\..\..\source\main\gameplay\Replay.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\RoRFrameListener.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\SceneMouse.cpp" />
-    <ClCompile Include="..\..\..\source\main\gfx\MovableText.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\OgreSubsystem.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Noise.cpp" />
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\Perlin.cpp" />
@@ -31,8 +30,6 @@
     <ClCompile Include="..\..\..\source\main\utils\SHA1.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\Utils.cpp" />
     <ClCompile Include="..\..\..\source\main\utils\profiler\Profiler.cpp" />
-    <ClCompile Include="..\..\..\source\main\scripting\CBytecodeStream.cpp" />
-    <ClCompile Include="..\..\..\source\main\scripting\LocalStorage.cpp" />
     <ClCompile Include="..\..\..\source\main\scripting\OgreAngelscript.cpp" />
     <ClCompile Include="..\..\..\tools\windows\pch\Precompiled.cpp" />
     <ClCompile Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.cpp">
@@ -95,36 +92,6 @@
     <ClCompile Include="..\..\..\source\main\gameplay\ois\OISObject.cpp">
       <Filter>Lib\OIS</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraManager.cpp">
-      <Filter>Gfx</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\main\gfx\DecalManager.cpp">
       <Filter>Gfx</Filter>
     </ClCompile>
@@ -175,96 +142,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\main\gfx\EnvironmentMap.cpp">
       <Filter>Gfx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAbout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsole.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelector.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBox.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtils.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp">
-      <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\main\gui\GUIInputManager.cpp">
       <Filter>GUI</Filter>
@@ -536,6 +413,132 @@
     <ClCompile Include="..\..\..\source\main\gfx\hydrax\GPUNormalMapManager.cpp">
       <Filter>Gfx\HydraX</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\camera\CameraManager.cpp">
+      <Filter>Gfx\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\scripting\CBytecodeStream.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAbout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsole.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelector.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBox.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtils.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp">
+      <Filter>GUI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\main\gfx\MovableText.cpp">
+      <Filter>Gfx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\main\Application.h" />
@@ -549,7 +552,6 @@
     <ClInclude Include="..\..\..\source\main\gameplay\Replay.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\RoRFrameListener.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\SceneMouse.h" />
-    <ClInclude Include="..\..\..\source\main\gfx\MovableText.h" />
     <ClInclude Include="..\..\..\source\main\gfx\OgreSubsystem.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Noise.h" />
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\Perlin.h" />
@@ -560,7 +562,6 @@
     <ClInclude Include="..\..\..\source\main\gui\imgui\stb_rect_pack.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\stb_textedit.h" />
     <ClInclude Include="..\..\..\source\main\gui\imgui\stb_truetype.h" />
-    <ClInclude Include="..\..\..\source\main\gui\mygui\Attribute.h" />
     <ClInclude Include="..\..\..\source\main\gui\mygui\WrapsAttribute.h" />
     <ClInclude Include="..\..\..\source\main\physics\RigSpawner.h" />
     <ClInclude Include="..\..\..\source\main\physics\SlideNode.h" />
@@ -576,8 +577,6 @@
     <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapEntity.h" />
     <ClInclude Include="..\..\..\source\main\terrain\map\SurveyMapManager.h" />
     <ClInclude Include="..\..\..\source\main\threadpool\ThreadPool.h" />
-    <ClInclude Include="..\..\..\source\main\utils\IBehavior.h" />
-    <ClInclude Include="..\..\..\source\main\utils\ImprovedConfigFile.h" />
     <ClInclude Include="..\..\..\source\main\utils\InterThreadStoreVector.h" />
     <ClInclude Include="..\..\..\source\main\utils\PlatformUtils.h" />
     <ClInclude Include="..\..\..\source\main\utils\RoRWindowEventUtilities.h" />
@@ -590,8 +589,6 @@
     <ClInclude Include="..\..\..\source\main\utils\ZeroedMemoryAllocator.h" />
     <ClInclude Include="..\..\..\source\main\utils\profiler\Profiler.h" />
     <ClInclude Include="..\..\..\source\main\utils\profiler\RigLoadingProfilerControl.h" />
-    <ClInclude Include="..\..\..\source\main\scripting\CBytecodeStream.h" />
-    <ClInclude Include="..\..\..\source\main\scripting\LocalStorage.h" />
     <ClInclude Include="..\..\..\source\main\scripting\OgreAngelscript.h" />
     <ClInclude Include="..\..\..\source\main\gameplay\ois\win32\Win32ForceFeedback.h">
       <Filter>Lib\OIS</Filter>
@@ -686,36 +683,6 @@
     <ClInclude Include="..\..\..\source\main\gameplay\ois\OISPrereqs.h">
       <Filter>Lib\OIS</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraManager.h">
-      <Filter>Gfx</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\main\gfx\DecalManager.h">
       <Filter>Gfx</Filter>
     </ClInclude>
@@ -769,96 +736,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\main\gfx\EnvironmentMap.h">
       <Filter>Gfx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAbout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsole.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelector.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBox.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtils.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.h">
-      <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\main\gui\GUIInputManager.h">
       <Filter>GUI</Filter>
@@ -1184,6 +1061,141 @@
     <ClInclude Include="..\..\..\source\main\gfx\hydrax\FFT.h">
       <Filter>Gfx\HydraX</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFixed.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorFree.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorCharacter.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorIsometric.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorOrbit.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorStatic.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicle.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraBehaviorVehicleSpline.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\camera\CameraManager.h">
+      <Filter>Gfx\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\scripting\CBytecodeStream.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\ImprovedConfigFile.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\mygui\Attribute.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptions.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_DebugOptionsLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_FrictionSettings.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAbout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameAboutLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsole.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameConsoleLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBox.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameChatBoxLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GameMainMenu.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_GamePauseMenu.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_LoadingWindow.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelector.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MainSelectorLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBox.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MessageBoxLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerClientList.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelector.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_MultiplayerSelectorLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_OpenSaveFileDialog.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindow.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtils.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_SimUtilsLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindow.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TeleportWindowLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TextureToolWindow.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_TopMenubar.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescription.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gui\panels\GUI_VehicleDescriptionLayout.h">
+      <Filter>GUI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\utils\IBehavior.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\main\gfx\MovableText.h">
+      <Filter>Gfx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\source\main\icon.rc" />
@@ -1227,6 +1239,12 @@
     </Filter>
     <Filter Include="Gfx\HydraX">
       <UniqueIdentifier>{597a6d71-9501-4320-89a7-d436ea599905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gfx\Camera">
+      <UniqueIdentifier>{60c2679e-905c-4403-a221-5c393c2dd66c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Panels">
+      <UniqueIdentifier>{3e51d978-432b-4a8d-bd31-0bacf86a1ae1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
