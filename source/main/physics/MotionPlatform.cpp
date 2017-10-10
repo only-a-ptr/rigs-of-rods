@@ -154,7 +154,10 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1) * 10000.f) * UPDATES_PER_SEC);
     datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2) * 10000.f) * UPDATES_PER_SEC);
 
-    datagram.orient = feeder->udp_orient_node.CalcUdpOutput();
+    // Orientation
+    datagram.orient.x = feeder->udp_orient_node.Capture(2); // Roll
+    datagram.orient.y = feeder->udp_orient_node.Capture(1); // Pitch
+    datagram.orient.z = feeder->udp_orient_node.Capture(0); // Yaw. TODO: limit to range (0 - 0.96) for compatibility with motionsim mode RORX
 
     // Velocity
     datagram.velocity.x = feeder->udp_velocity_node.Capture(0); // Must be transformed to (m/s) by MotionFeeder

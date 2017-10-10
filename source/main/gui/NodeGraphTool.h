@@ -321,33 +321,6 @@ public:
         const char* desc;
     };
 
-    /// See also `UdpNode` - special case, takes orientation axes as input.
-    struct UdpOrientNode: public Node  // Special - inherits directly Node
-    {
-        UdpOrientNode(NodeGraphTool* nodegraph, ImVec2 _pos);
-
-        //           Process() override                          --- Nothing to do here.
-        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called UdpOrientNode::BindSrc() - node has no outputs!"); }
-        virtual bool BindDst(Link* link, int slot) override;
-        virtual void DetachLink(Link* link) override;
-        virtual void Draw() override;
-        Ogre::Vector3 CalcUdpOutput();
-
-        Link* in_world_yaw;   // Radians
-        Link* in_world_pitch; // Radians
-        Link* in_world_roll;  // Radians
-    private:
-        bool BindDstSingle(Link*& slot_ptr, int slot_index, Link* link); // TODO: copypaste from "Display2DNode" - refactor and unify
-
-        Ogre::Vector3 m_back_vector ; // last values - for display
-        Ogre::Vector3 m_left_vector ; // last values - for display
-        Ogre::Vector3 m_up_vector   ; // last values - for display
-
-        Ogre::Vector3 m_ogre_back_vec;
-        Ogre::Vector3 m_ogre_left_vec;
-        Ogre::Vector3 m_ogre_up_vec;
-    };
-
     /// Displays outputs of reference implementation (proof of concept) done 02/2017
     /// Only 1 instance allowed, but created by user anyway
     struct RefImplDisplayNode: UserNode
@@ -469,7 +442,7 @@ public:
     UdpNode udp_position_node;
     UdpNode udp_velocity_node;
     UdpNode udp_accel_node;
-    UdpOrientNode udp_orient_node;
+    UdpNode udp_orient_node;
 };
 // ================================================================================================
 

@@ -48,7 +48,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position",     "(world XYZ)"),
     udp_velocity_node(this, ImVec2(-300.f, 200.f), "UDP velocity",     "(world XYZ)"),
     udp_accel_node   (this, ImVec2(-300.f, 300.f), "UDP acceleration", "(world XYZ)"),
-    udp_orient_node  (this, ImVec2(-300.f, 400.f))
+    udp_orient_node   (this, ImVec2(-300.f, 400.f), "UDP orientation", "(Yaw, Pitch, Roll)")
 {
     memset(m_filename, 0, sizeof(m_filename));
     m_fake_mouse_node.id = MOUSEDRAG_NODE_ID;
@@ -1761,134 +1761,6 @@ bool RoR::NodeGraphTool::UdpNode::BindDst(Link* link, int slot)
         return false;
     }
 }
-
-// -------------------------------- UDP orientation node -----------------------------------
-
-RoR::NodeGraphTool::UdpOrientNode::UdpOrientNode(NodeGraphTool* nodegraph, ImVec2 _pos):
-    Node(nodegraph, Type::UDP_ORIENT, _pos),
-    m_back_vector(Ogre::Vector3::ZERO),
-    m_left_vector(Ogre::Vector3::ZERO),
-    m_up_vector(Ogre::Vector3::ZERO),
-    m_ogre_back_vec(Ogre::Vector3::ZERO),
-    m_ogre_left_vec(Ogre::Vector3::ZERO),
-    m_ogre_up_vec(Ogre::Vector3::ZERO)
-{
-    num_outputs = 0;
-    num_inputs = 3;
-    in_world_yaw  =nullptr;
-    in_world_pitch=nullptr;
-    in_world_roll =nullptr;
-}
-
-void RoR::NodeGraphTool::UdpOrientNode::Draw()
-{
-    if (!graph->ClipTestNode(this))
-        return;
-    graph->DrawNodeBegin(this);
-    ImGui::Text(" Orietation UDP Node ");
-    ImGui::Text(" ------------------- ");
-    ImGui::Text("Inputs:              ");
-    ImGui::Text(" * Yaw     | separate");
-    ImGui::Text(" * Pitch   | world   ");
-    ImGui::Text(" * Roll    | angles  ");
-    // DEBUG
-    ImGui::Text(" ------debug xyz (carth.RH)------- ");
-    
-    ImGui::Text(" Back axis: %10.3f  %10.3f  %10.3f", m_back_vector.x, m_back_vector.y, m_back_vector.z);
-    ImGui::Text(" Left axis: %10.3f  %10.3f  %10.3f", m_left_vector.x, m_left_vector.y, m_left_vector.z);
-    ImGui::Text(" Up axis:   %10.3f  %10.3f  %10.3f", m_up_vector.x,   m_up_vector.y,   m_up_vector.z);
-
-    ImGui::Text(" ------debug xyz (OGRE)------- ");
-    
-    ImGui::Text(" Back axis: %10.3f  %10.3f  %10.3f", m_ogre_back_vec.x, m_ogre_back_vec.y, m_ogre_back_vec.z);
-    ImGui::Text(" Left axis: %10.3f  %10.3f  %10.3f", m_ogre_left_vec.x, m_ogre_left_vec.y, m_ogre_left_vec.z);
-    ImGui::Text(" Up axis:   %10.3f  %10.3f  %10.3f", m_ogre_up_vec.x,   m_ogre_up_vec.y,   m_ogre_up_vec.z);
-    graph->DrawNodeFinalize(this);
-}
-
-void RoR::NodeGraphTool::UdpOrientNode::DetachLink(Link* link)
-{
-    if (link->node_src == this)
-        this->graph->AddMessage(" DEBUG: discrepancy - this node has no outputs!");
-
-    if (link->node_dst == this)
-    {
-        if (in_world_yaw == link)
-        {
-            if (link->slot_dst != 0)
-                graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_yaw' but slot ID is '%d'", link->slot_dst);
-
-            in_world_yaw = nullptr;
-            link->node_dst = nullptr;
-            link->slot_dst = -1;
-            return;
-        }
-        if (in_world_pitch == link)
-        {
-            if (link->slot_dst != 1)
-                graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_pitch' but slot ID is '%d'", link->slot_dst);
-
-            in_world_pitch = nullptr;
-            link->node_dst = nullptr;
-            link->slot_dst = -1;
-            return;
-        }
-        if (in_world_roll == link)
-        {
-            if (link->slot_dst != 2)
-                graph->AddMessage("UdpOrientNode::DetachLink()    DEBUG -- discrepancy -- link is attached to 'in_world_roll' but slot ID is '%d'", link->slot_dst);
-
-            in_world_roll = nullptr;
-            link->node_dst = nullptr;
-            link->slot_dst = -1;
-            return;
-        }
-        // We shouldn't get here.
-        this->graph->AddMessage("DEBUG -- UdpOrientNode::DetachLink(): Discrepancy! link points to node but node doesn't point to link");
-    }
-}
-
-bool RoR::NodeGraphTool::UdpOrientNode::BindDstSingle(Link*& slot_ptr, int slot_index, Link* link)
-{
-    if (slot_ptr != nullptr)
-        return false; // Occupied!
-
-    slot_ptr = link;
-    link->node_dst = this;
-    link->slot_dst = slot_index;
-    return true;
-}
-
-bool RoR::NodeGraphTool::UdpOrientNode::BindDst(Link* link, int slot)
-{
-    if (slot < 0 || slot > 2)
-    {
-        this->graph->AddMessage("DEBUG: UdpOrientNode::BindDst(): bad slot: %d", slot);
-        return false;
-    }
-
-    if (slot == 0) { return this->BindDstSingle(in_world_yaw,   slot, link); }
-    if (slot == 1) { return this->BindDstSingle(in_world_pitch, slot, link); }
-    if (slot == 2) { return this->BindDstSingle(in_world_roll,  slot, link); }
-    return true;
-}
-
-Ogre::Vector3 RoR::NodeGraphTool::UdpOrientNode::CalcUdpOutput()
-{
-    if (!graph->IsLinkAttached(in_world_yaw) ||
-        !graph->IsLinkAttached(in_world_pitch) ||
-        !graph->IsLinkAttached(in_world_roll))
-    {
-        return Ogre::Vector3::ZERO;
-    }
-
-    Ogre::Vector3 output_vec;
-    output_vec.x = in_world_pitch->buff_src->Read();
-    output_vec.y = in_world_roll->buff_src->Read();
-    output_vec.z = in_world_yaw->buff_src->Read();
-    return output_vec;
-}
-
 
 // -------------------------------- Generator node -----------------------------------
 
