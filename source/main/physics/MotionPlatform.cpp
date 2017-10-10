@@ -149,15 +149,15 @@ void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (20
     // ## OGRE engine coords: Right-handed; X is right, Y is up (screen-like), Z is back
     // ## Motion plat. coords: Z is up, Y/X is mixed.
 
-    // NOTE: The output position is effectively in (meters*10000*60) --- obviously a mistake, but required for compatibility with motionsim mode RORX
-    datagram.position_x = static_cast<int32_t>((feeder->udp_position_node.Capture(0) * 10000.f) * UPDATES_PER_SEC);
-    datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1) * 10000.f) * UPDATES_PER_SEC);
-    datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2) * 10000.f) * UPDATES_PER_SEC);
+    // NOTE: The output must be in (meters*10000*60) --- mistake from proof-of-concept
+    datagram.position_x = static_cast<int32_t>((feeder->udp_position_node.Capture(0)));
+    datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1)));
+    datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2)));
 
     // Orientation
-    datagram.orient.x = feeder->udp_orient_node.Capture(2); // Roll
-    datagram.orient.y = feeder->udp_orient_node.Capture(1); // Pitch
-    datagram.orient.z = feeder->udp_orient_node.Capture(0); // Yaw. TODO: limit to range (0 - 0.96) for compatibility with motionsim mode RORX
+    datagram.orient.x = feeder->udp_orient_node.Capture(0); // Roll
+    datagram.orient.y = feeder->udp_orient_node.Capture(1); // Pitch (range 0-1.0: mistake from proof-of-concept)
+    datagram.orient.z = feeder->udp_orient_node.Capture(2); // Yaw.
 
     // Velocity
     datagram.velocity.x = feeder->udp_velocity_node.Capture(0); // Must be transformed to (m/s) by MotionFeeder

@@ -48,7 +48,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position",     "(world XYZ)"),
     udp_velocity_node(this, ImVec2(-300.f, 200.f), "UDP velocity",     "(world XYZ)"),
     udp_accel_node   (this, ImVec2(-300.f, 300.f), "UDP acceleration", "(world XYZ)"),
-    udp_orient_node   (this, ImVec2(-300.f, 400.f), "UDP orientation", "(Yaw, Pitch, Roll)")
+    udp_orient_node   (this, ImVec2(-300.f, 400.f), "UDP orientation", "@ -Roll\n@ (Pitch/(Pi/2))*-1\n@ -Yaw")
 {
     memset(m_filename, 0, sizeof(m_filename));
     m_fake_mouse_node.id = MOUSEDRAG_NODE_ID;
