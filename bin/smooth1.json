@@ -1,8 +1,8 @@
 {
     "nodes": [
         {
-            "pos_x": 69.0,
-            "pos_y": 154.0,
+            "pos_x": -141.0,
+            "pos_y": 152.0,
             "arranged_pos_x": -2.0,
             "arranged_pos_y": -2.0,
             "user_size_x": 0.0,
@@ -12,21 +12,21 @@
             "softbody_node_id": 6
         },
         {
-            "pos_x": 261.0,
-            "pos_y": 132.0,
+            "pos_x": 85.0,
+            "pos_y": 136.0,
             "arranged_pos_x": -2.0,
             "arranged_pos_y": -2.0,
-            "user_size_x": 248.0,
+            "user_size_x": 282.0,
             "user_size_y": 380.0,
             "id": 1,
             "type_id": 4,
-            "source_code": "float smX = 0.f;\nfloat smY = 0.f;\nfloat smFACTOR=0.15;\n\nvoid step() {\n    // Pass-thru\n    Write(0,Read(0,0));\n    Write(1,Read(1,0));\n\n //  Write(7, Smooth100(0,0));\n //  Write(8, Smooth100(1,0));\n\n  // Write(7, SmoothN(0,200));\n  // Write(8, SmoothN(1,200));\n\n  smX = SmoothEWMA(\n        Read(0,0),smX,smFACTOR);\n  smY = SmoothEWMA(\n        Read(1,0),smY,smFACTOR);\n\n  Write(7,smX);\n  Write(8,smY);\n}"
+            "source_code": "float smX = Read(0,0);\nfloat smY = Read(1,0);\nfloat smFACTOR=0.001;\n\nvoid step() {\n    Write(0,Read(0,0)); // passthru X\n    Write(1,Read(1,0)); // passthru Y\n\n   Write(2, SmoothAvg(0,100)+0.001);\n   Write(3, SmoothAvg(1,100)+0.001);\n\n  // Write(7, SmoothAvg(0,400));\n  // Write(8, SmoothAvg(1,400));\n\n\n  smX = SmoothEWMA(\n        Read(0,0),smX,smFACTOR);\n  smY = SmoothEWMA(\n        Read(1,0),smY,smFACTOR);\n\n  Write(7,smX);\n  Write(8,smY);\n\n}"
         },
         {
-            "pos_x": 579.0,
-            "pos_y": 554.0,
-            "arranged_pos_x": 65.0,
-            "arranged_pos_y": 444.0,
+            "pos_x": 611.0,
+            "pos_y": 546.0,
+            "arranged_pos_x": 47.0,
+            "arranged_pos_y": 500.0,
             "user_size_x": 436.0,
             "user_size_y": 338.0,
             "id": 2,
@@ -37,14 +37,83 @@
         {
             "pos_x": 581.0,
             "pos_y": 112.0,
-            "arranged_pos_x": 65.0,
-            "arranged_pos_y": 88.0,
+            "arranged_pos_x": 47.0,
+            "arranged_pos_y": 118.0,
             "user_size_x": 436.0,
             "user_size_y": 350.0,
             "id": 3,
             "type_id": 8,
-            "zoom": 8000.0,
-            "grid_size": 0.03999999910593033
+            "zoom": 9000.0,
+            "grid_size": 0.009999999776482582
+        },
+        {
+            "pos_x": -756.0,
+            "pos_y": 1388.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 100.0,
+            "user_size_y": 50.0,
+            "id": 4,
+            "type_id": 2,
+            "amplitude": 10.0,
+            "frequency": 0.10000000149011612,
+            "noise_max": 30
+        },
+        {
+            "pos_x": -518.0,
+            "pos_y": 1404.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 250.0,
+            "user_size_y": 200.0,
+            "id": 5,
+            "type_id": 4,
+            "source_code": "float ewma=0.f;\n\nvoid step() {\n    // Pass-thru\n    Write(0,Read(0,0));\n\n   Write(1,SmoothAvg(0,50));\n\n   ewma = SmoothEWMA(\n            Read(0,0),ewma,0.009);\n   Write(2,ewma);\n   Write(8,0.f);\n}"
+        },
+        {
+            "pos_x": 120.0,
+            "pos_y": 1018.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 186.0,
+            "user_size_y": 565.0,
+            "id": 6,
+            "type_id": 5,
+            "scale": 11.5
+        },
+        {
+            "pos_x": 342.0,
+            "pos_y": 1014.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 196.0,
+            "user_size_y": 569.0,
+            "id": 7,
+            "type_id": 5,
+            "scale": 11.5
+        },
+        {
+            "pos_x": 564.0,
+            "pos_y": 1014.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 194.0,
+            "user_size_y": 569.0,
+            "id": 8,
+            "type_id": 5,
+            "scale": 11.5
+        },
+        {
+            "pos_x": -136.0,
+            "pos_y": 1492.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 200.0,
+            "user_size_y": 200.0,
+            "id": 9,
+            "type_id": 8,
+            "zoom": 22.5,
+            "grid_size": 3.0
         }
     ],
     "links": [
@@ -81,12 +150,6 @@
         {
             "node_src_id": 1,
             "node_dst_id": 3,
-            "slot_src": 0,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 1,
-            "node_dst_id": 3,
             "slot_src": 1,
             "slot_dst": 1
         },
@@ -107,6 +170,72 @@
             "node_dst_id": 2,
             "slot_src": 0,
             "slot_dst": 0
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 3,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 3,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 3,
+            "slot_src": 3,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 4,
+            "node_dst_id": 5,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 6,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 7,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 8,
+            "slot_src": 2,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 9,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 9,
+            "slot_src": 2,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 9,
+            "slot_src": 2,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 5,
+            "node_dst_id": 9,
+            "slot_src": 1,
+            "slot_dst": 2
         }
     ],
     "udp_pos_node": {
@@ -149,5 +278,5 @@
         "id": -2147483645,
         "type_id": 7
     },
-    "shared_script": "\nfloat Smooth5(int slot, int offs)\n{\n   return (Read(slot,offs)+Read(slot,offs-1)\n     +Read(slot,offs-2)+Read(slot,offs-3)\n     +Read(slot,offs-4))    /5.f;\n}\n\nfloat Smooth25(int slot, int offs)\n{\n    return (Smooth5(slot,offs)+Smooth5(slot,offs-5)\n    +Smooth5(slot,offs-10)+Smooth5(slot,offs-15)\n    +Smooth5(slot,offs-20)) / 5.f;\n}\n\nfloat Smooth100(int slot, int offs)\n{\n   return (Smooth25(slot,offs)+Smooth25(slot,offs-25)\n     +Smooth25(slot,offs-50)+Smooth25(slot,offs-75))/4.f;\n}\n\nfloat SmoothN(int slot, int count)\n{\n    float total=0.f;\n    for (int i=0; i< count; ++i) {\n       total += Read(slot, -i);\n    }\n    return total/float(count);\n}\n\nfloat SmoothEWMA(float cur, float prev, float factor)\n{\n    return (factor*cur) + ((1-factor)*prev);\n}"
+    "shared_script": "\n\nfloat SmoothAvg(int slot, int count)\n{\n    float fCount = float(count);\n    float buffer=0.f;\n    for (int i=0; i< count; ++i) {\n        buffer += Read(slot, -i)/fCount;\n    }\n    return buffer;\n}\n\nfloat SmoothEWMA(float cur, float prev, float factor)\n{\n    return (factor*cur) + ((1.0-factor)*prev);\n}"
 }
