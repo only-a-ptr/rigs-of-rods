@@ -20,7 +20,7 @@
             "user_size_y": 390.0,
             "id": 1,
             "type_id": 4,
-            "source_code": "float smX = Read(0,0);\nfloat smY = Read(1,0);\nfloat smFACTOR=0.001;\n\nvoid step() {\n    float inX = Read(0,0);\n    float inY = Read(1,0);\n    Write(0,inX); // passthru X\n    Write(1,inY); // passthru Y\n\n\n   Write(7, inX);\n   Write(8, inY);\n\n//   Write(2, SmoothAvg(0,100)+0.001);\n//   Write(3, SmoothAvg(1,100)+0.001);\n\n//   Write(2, Smooth100(0,0)+0.001);\n//   Write(3, Smooth100(1,0)+0.001);\n\n//   float blueX=Sum100(0,0)/100.f;\n//   float blueY=Sum100(1,0)/100.f;\n\n   float blueX=LoopSum(0,0,100)/100.f;\n   float blueY=LoopSum(1,0,100)/100.f;\n\n   Write(2, blueX + 0.001);\n   Write(3, blueY + 0.001);\n\n\n // smX = SmoothEWMA(\n //       Read(0,0),smX,smFACTOR);\n // smY = SmoothEWMA(\n //       Read(1,0),smY,smFACTOR);\n\n//  Write(7,smX);\n//  Write(8,smY);\n\n\n\n}"
+            "source_code": "double smX = Read(0,0);\ndouble smY = Read(1,0);\ndouble smFACTOR=0.01;\n\nvoid step() {\n    float inX = Read(0,0);\n    float inY = Read(1,0);\n    Write(0,inX); // passthru X\n    Write(1,inY); // passthru Y\n\n\n   Write(7, inX);\n   Write(8, inY);\n\n//   Write(2, SmoothAvg(0,100)+0.001);\n//   Write(3, SmoothAvg(1,100)+0.001);\n\n//   Write(2, Smooth100(0,0)+0.001);\n//   Write(3, Smooth100(1,0)+0.001);\n\n   smX = SmoothEWMA(inX,smX,smFACTOR);\n   smY = SmoothEWMA(inY,smY,smFACTOR);\n\n   float blueX = smX;\n   float blueY = smY;\n\n//   float blueX=LoopSum(0,0,100)/100.f;\n//   float blueY=LoopSum(1,0,100)/100.f;\n\n   Write(2, blueX + 0.001);\n   Write(3, blueY + 0.001);\n\n\n // smX = SmoothEWMA(\n //       Read(0,0),smX,smFACTOR);\n // smY = SmoothEWMA(\n //       Read(1,0),smY,smFACTOR);\n\n//  Write(7,smX);\n//  Write(8,smY);\n\n\n\n}"
         },
         {
             "pos_x": 581.0,
@@ -31,8 +31,8 @@
             "user_size_y": 350.0,
             "id": 3,
             "type_id": 8,
-            "zoom": 6000.0,
-            "grid_size": 0.009999999776482582
+            "zoom": 88000.0,
+            "grid_size": 0.0005000000237487257
         },
         {
             "pos_x": -756.0,
@@ -92,18 +92,6 @@
             "scale": 11.5
         },
         {
-            "pos_x": -136.0,
-            "pos_y": 1492.0,
-            "arranged_pos_x": -1.0,
-            "arranged_pos_y": -1.0,
-            "user_size_x": 200.0,
-            "user_size_y": 200.0,
-            "id": 9,
-            "type_id": 8,
-            "zoom": 22.5,
-            "grid_size": 3.0
-        },
-        {
             "pos_x": 482.0,
             "pos_y": 16.0,
             "arranged_pos_x": 266.0,
@@ -143,8 +131,8 @@
             "user_size_y": 50.0,
             "id": 13,
             "type_id": 2,
-            "amplitude": 0.01899999938905239,
-            "frequency": 0.20000000298023225,
+            "amplitude": 0.0019000000320374966,
+            "frequency": 0.210999995470047,
             "noise_max": 0
         },
         {
@@ -156,7 +144,7 @@
             "user_size_y": 50.0,
             "id": 14,
             "type_id": 2,
-            "amplitude": 0.054999999701976779,
+            "amplitude": 0.005499999970197678,
             "frequency": 0.30000001192092898,
             "noise_max": 0
         },
@@ -231,30 +219,6 @@
             "node_dst_id": 8,
             "slot_src": 2,
             "slot_dst": 0
-        },
-        {
-            "node_src_id": 5,
-            "node_dst_id": 9,
-            "slot_src": 2,
-            "slot_dst": 5
-        },
-        {
-            "node_src_id": 5,
-            "node_dst_id": 9,
-            "slot_src": 2,
-            "slot_dst": 4
-        },
-        {
-            "node_src_id": 5,
-            "node_dst_id": 9,
-            "slot_src": 2,
-            "slot_dst": 3
-        },
-        {
-            "node_src_id": 5,
-            "node_dst_id": 9,
-            "slot_src": 1,
-            "slot_dst": 2
         },
         {
             "node_src_id": 1,
@@ -339,5 +303,5 @@
         "id": -2147483645,
         "type_id": 7
     },
-    "shared_script": "\nfloat SmoothAvg(int slot, int count)\n{\n    float fCount = float(count);\n    float buffer=0.f;\n    for (int i=0; i< count; ++i) {\n        buffer += Read(slot, -i);  \n    }\n    return buffer/fCount;\n}\n\nfloat LoopSum(int slot, int offs, int count)\n{\n\tdouble buffer = 0.0; // float is not enough!\n    for (int i = 0; i<count; ++i)\n   {\n      buffer = buffer + Read(slot, offs-i);\n   }\t\n    return buffer;\n}\n\n\nfloat SmoothEWMA(float cur, float prev, float factor)\n{\n    return (factor*cur) + ((1.0-factor)*prev);\n}\n\nfloat Smooth10(int slot, int offs)\n{\n    float buf = Read(slot,offs)     + Read(slot,offs-1)\n                + Read(slot,offs-2) + Read(slot,offs-3)\n                + Read(slot,offs-4) + Read(slot,offs-5)\n                + Read(slot,offs-6) + Read(slot,offs-7)\n                + Read(slot,offs-8) + Read(slot,offs-9);\n    return buf/10.f;\n}\n\nfloat Smooth100(int slot, int offs)\n{\n    float buf   = Smooth10(slot,offs)    + Smooth10(slot,offs-10)\n                + Smooth10(slot,offs-20) + Smooth10(slot,offs-30)\n                + Smooth10(slot,offs-40) + Smooth10(slot,offs-50)\n                + Smooth10(slot,offs-60) + Smooth10(slot,offs-70)\n                + Smooth10(slot,offs-80) + Smooth10(slot,offs-90);\n    return buf/10.f;\n}\n\nfloat Sum10(int slot, int offs)\n{\n    return        Read(slot,offs)   + Read(slot,offs-1)\n                + Read(slot,offs-2) + Read(slot,offs-3)\n                + Read(slot,offs-4) + Read(slot,offs-5)\n                + Read(slot,offs-6) + Read(slot,offs-7)\n                + Read(slot,offs-8) + Read(slot,offs-9);\n}\n\nfloat Sum100(int slot, int offs)\n{\n    return        Sum10(slot,offs)    + Sum10(slot,offs-10)\n                + Sum10(slot,offs-20) + Sum10(slot,offs-30)\n                + Sum10(slot,offs-40) + Sum10(slot,offs-50)\n                + Sum10(slot,offs-60) + Sum10(slot,offs-70)\n                + Sum10(slot,offs-80) + Sum10(slot,offs-90);\n}\n\n"
+    "shared_script": "\nfloat SmoothAvg(int slot, int count)\n{\n    double buffer=0.f;\n    for (int i=0; i< count; ++i) {\n        buffer += Read(slot, -i);  \n    }\n    return buffer/double(count);\n}\n\nfloat LoopSum(int slot, int offs, int count)\n{\n\tdouble buffer = 0.0; // float is not enough!\n    for (int i = 0; i<count; ++i)\n   {\n      buffer = buffer + Read(slot, offs-i);\n   }\t\n    return buffer;\n}\n\n\ndouble SmoothEWMA(double cur, double prev, double factor)\n{\n    return (factor*cur) + ((1.0-factor)*prev);\n}\n\nfloat Smooth10(int slot, int offs)\n{\n    float buf = Read(slot,offs)     + Read(slot,offs-1)\n                + Read(slot,offs-2) + Read(slot,offs-3)\n                + Read(slot,offs-4) + Read(slot,offs-5)\n                + Read(slot,offs-6) + Read(slot,offs-7)\n                + Read(slot,offs-8) + Read(slot,offs-9);\n    return buf/10.f;\n}\n\nfloat Smooth100(int slot, int offs)\n{\n    float buf   = Smooth10(slot,offs)    + Smooth10(slot,offs-10)\n                + Smooth10(slot,offs-20) + Smooth10(slot,offs-30)\n                + Smooth10(slot,offs-40) + Smooth10(slot,offs-50)\n                + Smooth10(slot,offs-60) + Smooth10(slot,offs-70)\n                + Smooth10(slot,offs-80) + Smooth10(slot,offs-90);\n    return buf/10.f;\n}\n\nfloat Sum10(int slot, int offs)\n{\n    return        Read(slot,offs)   + Read(slot,offs-1)\n                + Read(slot,offs-2) + Read(slot,offs-3)\n                + Read(slot,offs-4) + Read(slot,offs-5)\n                + Read(slot,offs-6) + Read(slot,offs-7)\n                + Read(slot,offs-8) + Read(slot,offs-9);\n}\n\nfloat Sum100(int slot, int offs)\n{\n    return        Sum10(slot,offs)    + Sum10(slot,offs-10)\n                + Sum10(slot,offs-20) + Sum10(slot,offs-30)\n                + Sum10(slot,offs-40) + Sum10(slot,offs-50)\n                + Sum10(slot,offs-60) + Sum10(slot,offs-70)\n                + Sum10(slot,offs-80) + Sum10(slot,offs-90);\n}\n\n"
 }
