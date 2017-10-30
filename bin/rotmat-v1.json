@@ -143,13 +143,13 @@
             "user_size_y": 348.0,
             "id": 14,
             "type_id": 4,
-            "source_code": "\nvoid step() {\n   Vec3 colX = ReadVec3(0,0);\n   Vec3 colY = ReadVec3(3,0);\n   Vec3 colZ = ReadVec3(6,0);\n\n  float yaw = atan2(colX.y, colX.x);\n  float pitch=atan2(-colX.z,\n       sqrt((colY.z*colY.z)+(colZ.z*colZ.z)));\n  float roll = atan2(colZ.y, colZ.z);\n  \n  // post-process for RORX\n\n  float yawRot90Clockwise \n            = atan2(colX.x, colX.y);\n\n  float val1 = -roll;\n  float val2 = (pitch/HalfPi)*-1.0;\n  float val3 = -yawRot90Clockwise;//yaw;\n\n  Write (0,val1);\n  Write (1,val2);\n  Write (2,val3);\n}"
+            "source_code": "\nvoid step() {\n   Vec3 colX = ReadVec3(0,0);\n   Vec3 colY = ReadVec3(3,0);\n   Vec3 colZ = ReadVec3(6,0);\n\n  float yaw = atan2(colX.y, colX.x);\n  float pitch=atan2(-colX.z,\n       sqrt((colY.z*colY.z)+(colZ.z*colZ.z)));\n  float roll = atan2(colY.z, colZ.z);\n  \n  // post-process for RORX\n\n  float yawRot90Clockwise \n            = atan2(colX.x, colX.y);\n\n  float val1 = -roll;\n  float val2 = (pitch/HalfPi)*-1.0;\n  float val3 = -yawRot90Clockwise;//yaw;\n\n  Write (0,val1);\n  Write (1,val2);\n  Write (2,val3);\n}"
         },
         {
             "pos_x": 1267.0,
             "pos_y": 330.0,
-            "arranged_pos_x": 193.0,
-            "arranged_pos_y": 502.0,
+            "arranged_pos_x": 933.0,
+            "arranged_pos_y": 244.0,
             "user_size_x": 100.0,
             "user_size_y": 30.0,
             "id": 18,
@@ -158,8 +158,8 @@
         {
             "pos_x": 1275.0,
             "pos_y": 366.0,
-            "arranged_pos_x": 311.0,
-            "arranged_pos_y": 504.0,
+            "arranged_pos_x": 1047.0,
+            "arranged_pos_y": 244.0,
             "user_size_x": 100.0,
             "user_size_y": 30.0,
             "id": 19,
@@ -168,8 +168,8 @@
         {
             "pos_x": 1275.0,
             "pos_y": 404.0,
-            "arranged_pos_x": 421.0,
-            "arranged_pos_y": 508.0,
+            "arranged_pos_x": 1163.0,
+            "arranged_pos_y": 244.0,
             "user_size_x": 100.0,
             "user_size_y": 30.0,
             "id": 20,
@@ -196,6 +196,16 @@
             "id": 22,
             "type_id": 4,
             "source_code": "\nvoid step() \n{\n   Vec3 mid_pos = ReadVec3(0,0);\n   Vec3 udp_pos = mid_pos*10000.f*60.f;\n   WriteVec3(0, udp_pos);\n\n   Vec3 prev_pos = ReadVec3(0,-33);\n   Vec3 velo = (mid_pos - prev_pos);\n   WriteVec3(3, velo);\n\n   Vec3 prev2_pos = ReadVec3(0,-67);\n   Vec3 prev_velo = (prev_pos - prev2_pos);\n   Vec3 acc = (velo - prev_velo);\n   WriteVec3(6, acc);\n}"
+        },
+        {
+            "pos_x": 1196.0,
+            "pos_y": 580.0,
+            "arranged_pos_x": 940.0,
+            "arranged_pos_y": 108.0,
+            "user_size_x": 350.0,
+            "user_size_y": 115.0,
+            "id": 23,
+            "type_id": 3
         }
     ],
     "links": [
