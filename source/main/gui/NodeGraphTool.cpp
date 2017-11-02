@@ -1187,6 +1187,8 @@ void RoR::NodeGraphTool::ClearAll()
     while (!m_nodes.empty())
         this->DetachAndDeleteNode(m_nodes.back());
 
+    memset(m_shared_script, 0, sizeof(m_shared_script));
+    m_shared_script_window_open = false;
 }
 
 void RoR::NodeGraphTool::ResetAllArrangements()
