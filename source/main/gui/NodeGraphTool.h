@@ -124,7 +124,7 @@ public:
     struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
         /// IMPORTANT - serialized as `int` to JSON files = add new items at the end!
-        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPT, DISPLAY, UDP_ORIENT, UDP, DISPLAY_2D, DISPLAY_NUM, DISPLAY_REF_IMPL };
+        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPTx12, DISPLAY, UDP_ORIENT, UDP, DISPLAY_2D, DISPLAY_NUM, DISPLAY_REF_IMPL, SCRIPTx24 };
 
         static const ImVec2 ARRANGE_DISABLED;
         static const ImVec2 ARRANGE_EMPTY;
@@ -135,10 +135,11 @@ public:
 
         inline ImVec2 GetInputSlotPos(size_t slot_idx)  { return ImVec2(pos.x,               pos.y + (calc_size.y * (static_cast<float>(slot_idx+1) / static_cast<float>(num_inputs+1)))); }
         inline ImVec2 GetOutputSlotPos(size_t slot_idx) { return ImVec2(pos.x + calc_size.x, pos.y + (calc_size.y * (static_cast<float>(slot_idx+1) / static_cast<float>(num_outputs+1)))); }
+        static inline bool IsTypeScript(Type t)         { return (t == Type::SCRIPTx12) || (t == Type::SCRIPTx24); }
 
         virtual bool    Process()                              { this->done = true; return true; }
         virtual void    BindSrc(Link* link, int slot)          {} ///< Binds node output to link's SRC end.
-        virtual bool    BindDst(Link* link, int slot)          { return false; } ///< Binds node input to link's DST end.
+        virtual bool    BindDst(Link* link, int slot)          { graph->AddMessage("ERROR: base Node::BindDst() called !"); return false; } ///< Binds node input to link's DST end.
         virtual void    DetachLink(Link* link)                 {}
         virtual void    Draw()                                 {}
         virtual void    DrawLockedMode()                       {} ///< Only for display nodes with "arrangement" enabled.
@@ -204,10 +205,11 @@ public:
         Buffer buffer_out;
     };
 
-    struct ScriptNode: public UserNode
+    struct ScriptNodeCommon: public UserNode
     {
         static const int CODE_BUF_LEN = 4000;
-        ScriptNode(NodeGraphTool* _nodegraph, ImVec2 _pos);
+        ScriptNodeCommon(Type t, NodeGraphTool* _nodegraph, ImVec2 _pos, int num_slots);
+        virtual ~ScriptNodeCommon() {};
 
         virtual bool Process() override;                          ///< @return false if waiting for data, true if processed/nothing to process.
         virtual void BindSrc(Link* link, int slot) override;
@@ -227,11 +229,47 @@ public:
         AngelScript::asIScriptFunction* script_func;
         char node_name[10];
         bool enabled; // Disables itself on script error
-        Link* inputs[9];
-        Buffer outputs[9];
 
-    private:
+    protected:
         void InitScripting();
+        virtual Buffer& GetOutputBuf(int index) = 0;
+        virtual Link*&  GetInputLink(int index) = 0;
+    };
+
+    struct ScriptNodeX12: public ScriptNodeCommon
+    {
+        ScriptNodeX12(NodeGraphTool* _nodegraph, ImVec2 _pos): ScriptNodeCommon(Type::SCRIPTx12, _nodegraph, _pos, NUM_SLOTS),
+            outputs{{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}} // C++11 mandatory :)
+        {
+            memset(inputs, 0, sizeof(inputs));
+            user_size = ImVec2(250, 200);
+        }
+
+        static const int NUM_SLOTS = 12;
+        Link* inputs[NUM_SLOTS];
+        Buffer outputs[NUM_SLOTS];
+
+    protected:
+        virtual Buffer& GetOutputBuf(int index);
+        virtual Link*&  GetInputLink(int index);
+    };
+
+    struct ScriptNodeX24: public ScriptNodeCommon
+    {
+        ScriptNodeX24(NodeGraphTool* _nodegraph, ImVec2 _pos): ScriptNodeCommon(Type::SCRIPTx24, _nodegraph, _pos, NUM_SLOTS),
+            outputs{{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23}} // C++11 mandatory :)
+        {
+            memset(inputs, 0, sizeof(inputs));
+            user_size = ImVec2(250, 400);
+        }
+
+        static const int NUM_SLOTS = 24;
+        Link* inputs[NUM_SLOTS];
+        Buffer outputs[NUM_SLOTS];
+
+    protected:
+        virtual Buffer& GetOutputBuf(int index);
+        virtual Link*&  GetInputLink(int index);
     };
 
     struct MouseDragNode: public Node // special - inherits directly node
@@ -347,6 +385,12 @@ public:
         Ogre::Vector3 m_last_velocity;
         Ogre::Matrix3 m_last_orient_matrix;
     };
+
+
+    // Debugging dummies
+    Link*   dummy_link_ptr;
+    Link    dummy_link;
+    Buffer  dummy_buf;
 
 
     NodeGraphTool();

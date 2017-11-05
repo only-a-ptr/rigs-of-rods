@@ -44,6 +44,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     m_fake_mouse_node(this, ImVec2()), // Used for dragging links with mouse
     m_mouse_arrange_show(false),
     m_shared_script_window_open(false),
+    dummy_buf(-1),
 
     udp_position_node(this, ImVec2(-300.f, 100.f), "UDP position",     "(world XYZ)"),
     udp_velocity_node(this, ImVec2(-300.f, 200.f), "UDP velocity",     "(world XYZ)"),
@@ -57,6 +58,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     udp_accel_node   .id = UDP_ACC_NODE_ID;
     udp_orient_node  .id = UDP_ANGLES_NODE_ID;
     memset(m_shared_script, 0, sizeof(m_shared_script));
+    dummy_link_ptr = &dummy_link;
 }
 
 RoR::NodeGraphTool::Link* RoR::NodeGraphTool::FindLinkByDestination(Node* node, const int slot)
@@ -178,9 +180,9 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
     {
         for (Node* n: m_nodes)
         {
-            if (n->type == Node::Type::SCRIPT)
+            if (Node::IsTypeScript(n->type))
             {
-                static_cast<ScriptNode*>(n)->Apply();
+                static_cast<ScriptNodeCommon*>(n)->Apply();
             }
         }
     }
@@ -790,7 +792,8 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             if (ImGui::MenuItem("Display (plot)"))    { m_nodes.push_back(new DisplayPlotNode    (this, scene_pos)); }
             if (ImGui::MenuItem("Display (number)"))  { m_nodes.push_back(new DisplayNumberNode  (this, scene_pos)); }
             if (ImGui::MenuItem("Display (2D)"))      { m_nodes.push_back(new Display2DNode      (this, scene_pos)); }
-            if (ImGui::MenuItem("Script"))            { m_nodes.push_back(new ScriptNode         (this, scene_pos)); }
+            if (ImGui::MenuItem("Script (12 slots)")) { m_nodes.push_back(new ScriptNodeX12      (this, scene_pos)); }
+            if (ImGui::MenuItem("Script (24 slots)")) { m_nodes.push_back(new ScriptNodeX24      (this, scene_pos)); }
 
             // Special - only 1 instance allowed
             if ((m_demo_node == nullptr) && ImGui::MenuItem("Demo (ref. impl.)"))
@@ -925,8 +928,9 @@ void RoR::NodeGraphTool::SaveAsJson()
             j_data.AddMember("noise_max", static_cast<GeneratorNode*>(node)->noise_max, j_alloc);
             break;
 
-        case Node::Type::SCRIPT:
-            j_data.AddMember("source_code", rapidjson::StringRef(static_cast<ScriptNode*>(node)->code_buf), j_alloc);
+        case Node::Type::SCRIPTx12:
+        case Node::Type::SCRIPTx24:
+            j_data.AddMember("source_code", rapidjson::StringRef(static_cast<ScriptNodeCommon*>(node)->code_buf), j_alloc);
             break;
 
         case Node::Type::READING:
@@ -1049,6 +1053,8 @@ void RoR::NodeGraphTool::LoadFromJson()
         return;
     }
 
+    m_messages.clear(); // Presence of messages indicates errors
+
     char readBuffer[65536];
     rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
     rapidjson::Document d;
@@ -1099,11 +1105,18 @@ void RoR::NodeGraphTool::LoadFromJson()
                 node = gnode;
                 break;
             }
-            case Node::Type::SCRIPT:
+            case Node::Type::SCRIPTx12:
             {
-                ScriptNode* gnode = new ScriptNode(this, ImVec2());
-                strncpy(gnode->code_buf, (*itor)["source_code"].GetString(), IM_ARRAYSIZE(gnode->code_buf));
-                node = gnode;
+                auto* snode = new ScriptNodeX12(this, ImVec2());
+                strncpy(snode->code_buf, (*itor)["source_code"].GetString(), IM_ARRAYSIZE(snode->code_buf));
+                node = snode;
+                break;
+            }
+            case Node::Type::SCRIPTx24:
+            {
+                auto* snode = new ScriptNodeX24(this, ImVec2());
+                strncpy(snode->code_buf, (*itor)["source_code"].GetString(), IM_ARRAYSIZE(snode->code_buf));
+                node = snode;
                 break;
             }
             case Node::Type::DISPLAY_NUM:
@@ -1177,6 +1190,12 @@ void RoR::NodeGraphTool::LoadFromJson()
         }
     }
     else this->Assert(false, "LoadFromJson(): No 'links' array in JSON");
+
+    if (m_messages.size())
+    {
+        this->ClearAll(); // Messages mean something went wrong ... wipe the project to avoid crash.
+        this->AddMessage("Loading JSON failed with %u messages", m_messages.size());
+    }
 }
 
 void RoR::NodeGraphTool::ClearAll()
@@ -1881,8 +1900,8 @@ void RoR::NodeGraphTool::ReadingNode::Draw()
     if (!graph->ClipTestNode(this))
         return;
     this->graph->DrawNodeBegin(this);
-    ImGui::Text("SoftBody reading");
-    ImGui::InputInt("Node", &softbody_node_id);
+    ImGui::Text("[#%d] Reading", this->id);
+    ImGui::InputInt("Node", &this->softbody_node_id);
     ImGui::Text(" --- Outputs ---  "); // Filler text to make node tall enough for all the outputs :)
     ImGui::Text("           Pos XYZ");
     ImGui::Text("        Forces XYZ");
@@ -1901,23 +1920,21 @@ const char* SCRIPTNODE_EXAMPLE_CODE =
     "    Write(0,Read(0,0));"      "\n"
     "}";
 
-RoR::NodeGraphTool::ScriptNode::ScriptNode(NodeGraphTool* _graph, ImVec2 _pos):
-    UserNode(_graph, Type::SCRIPT, _pos), 
-    script_func(nullptr), script_engine(nullptr), script_context(nullptr), enabled(false),
-    outputs{{0},{1},{2},{3},{4},{5},{6},{7},{8}} // C++11 mandatory :)
+RoR::NodeGraphTool::ScriptNodeCommon::ScriptNodeCommon(Type t, NodeGraphTool* _graph, ImVec2 _pos, int num_slots):
+    UserNode(_graph, t, _pos),
+    script_func(nullptr), script_engine(nullptr), script_context(nullptr), enabled(false)
 {
-    num_outputs = 9;
-    num_inputs = 9;
+    num_inputs = num_slots;
+    num_outputs = num_slots;
     memset(code_buf, 0, sizeof(code_buf));
     sprintf(code_buf, SCRIPTNODE_EXAMPLE_CODE);
-    memset(inputs, 0, sizeof(inputs));
     user_size = ImVec2(250, 200);
     snprintf(node_name, 10, "Node %d", id);
     this->InitScripting();
     is_scalable = true;
 }
 
-void RoR::NodeGraphTool::ScriptNode::InitScripting()
+void RoR::NodeGraphTool::ScriptNodeCommon::InitScripting()
 {
     script_engine = AngelScript::asCreateScriptEngine(ANGELSCRIPT_VERSION);
     if (script_engine == nullptr)
@@ -1935,14 +1952,14 @@ void RoR::NodeGraphTool::ScriptNode::InitScripting()
         return;
     }
 
-    result = script_engine->RegisterGlobalFunction("void Write(int, float)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNode, Write), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
+    result = script_engine->RegisterGlobalFunction("void Write(int, float)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNodeCommon, Write), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
     if (result < 0)
     {
         graph->AddMessage("%s: failed to register function `Write`, res: %d", node_name, result);
         return;
     }
 
-    result = script_engine->RegisterGlobalFunction("float Read(int, int)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNode, Read), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
+    result = script_engine->RegisterGlobalFunction("float Read(int, int)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNodeCommon, Read), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
     if (result < 0)
     {
         graph->AddMessage("%s: failed to register function `Read`, res: %d", node_name, result);
@@ -1950,7 +1967,7 @@ void RoR::NodeGraphTool::ScriptNode::InitScripting()
     }
 }
 
-void RoR::NodeGraphTool::ScriptNode::Apply()
+void RoR::NodeGraphTool::ScriptNodeCommon::Apply()
 {
     AngelScript::asIScriptModule* module = script_engine->GetModule(nullptr, AngelScript::asGM_ALWAYS_CREATE);
     if (module == nullptr)
@@ -2004,22 +2021,26 @@ void RoR::NodeGraphTool::ScriptNode::Apply()
 }
 
         // Script functions
-float RoR::NodeGraphTool::ScriptNode::Read(int slot, int offset_mod)
+float RoR::NodeGraphTool::ScriptNodeCommon::Read(int slot, int offset_mod)
 {
-    if (slot < 0 || slot > (num_inputs - 1) || !graph->IsLinkAttached(inputs[slot]))
+    if (slot < 0 || slot > (num_inputs - 1))
         return 0.f;
 
-    return inputs[slot]->buff_src->Read(offset_mod);
+    Link* link = this->GetInputLink(slot);
+    if (! graph->IsLinkAttached(link))
+        return 0.f;
+
+    return link->buff_src->Read(offset_mod);
 }
 
-void RoR::NodeGraphTool::ScriptNode::Write(int slot, float val)
+void RoR::NodeGraphTool::ScriptNodeCommon::Write(int slot, float val)
 {
     if (slot < 0 || slot > (num_inputs - 1))
         return;
-    this->outputs[slot].Push(val);
+    this->GetOutputBuf(slot).Push(val);
 }
 
-bool RoR::NodeGraphTool::ScriptNode::Process()
+bool RoR::NodeGraphTool::ScriptNodeCommon::Process()
 {
     if (! enabled)
     {
@@ -2030,7 +2051,8 @@ bool RoR::NodeGraphTool::ScriptNode::Process()
     bool ready = true; // If completely disconnected, we're good to go. Otherwise, all inputs must be ready.
     for (int i=0; i<num_inputs; ++i)
     {
-        if ((graph->IsLinkAttached(inputs[i])) && (! inputs[i]->node_src->done))
+        Link* in_link = this->GetInputLink(i);
+        if ((graph->IsLinkAttached(in_link)) && (! in_link->node_src->done))
             ready = false;
     }
 
@@ -2062,26 +2084,37 @@ bool RoR::NodeGraphTool::ScriptNode::Process()
     return true;
 }
 
-void RoR::NodeGraphTool::ScriptNode::BindSrc(Link* link, int slot)
+void RoR::NodeGraphTool::ScriptNodeCommon::BindSrc(Link* link, int slot)
 {
-    assert(slot >= 0 && slot < num_outputs); // Check input
+    if(slot < 0 || slot >= num_outputs)
+    {
+        graph->AddMessage("ScriptNodeCommon::BindSrc(): bad slot: %d, ignoring...!!", slot);
+        return;
+    }
+    if(link == nullptr)
+    {
+        graph->AddMessage("ScriptNodeCommon::BindSrc(): bad slot: %d, ignoring...!!");
+        return;
+    }
     assert(link != nullptr); // Check input
     link->node_src = this;
-    link->buff_src = &outputs[slot];
+    link->buff_src = &this->GetOutputBuf(slot);
 }
 
-bool RoR::NodeGraphTool::ScriptNode::BindDst(Link* link, int slot)
+bool RoR::NodeGraphTool::ScriptNodeCommon::BindDst(Link* link, int slot)
 {
     const bool slot_ok = (slot >= 0 && slot < num_inputs);
     if (!slot_ok)
     {
-        this->graph->AddMessage("ScriptNode::BindDst(): bad slot number");
+        graph->AddMessage("ScriptNodeCommon::BindDst(): bad slot number: %d, ignoring..!!", slot);
         return false;
     }
 
-    if (inputs[slot] == nullptr)
+    Link*& in_link_ref = this->GetInputLink(slot);
+
+    if (in_link_ref == nullptr)
     {
-        inputs[slot] = link;
+        in_link_ref = link;
         link->node_dst = this;
         link->slot_dst = slot;
         return true;
@@ -2089,39 +2122,100 @@ bool RoR::NodeGraphTool::ScriptNode::BindDst(Link* link, int slot)
     return false;
 }
 
-void RoR::NodeGraphTool::ScriptNode::DetachLink(Link* link)
+void RoR::NodeGraphTool::ScriptNodeCommon::DetachLink(Link* link)
 {
     if (link->node_dst == this)
     {
-        graph->Assert(inputs[link->slot_dst] == link, "ScriptNode::DetachLink(): Discrepancy: inputs[link->slot_dst] != link "); // Check discrepancy
-        inputs[link->slot_dst] = nullptr;
+        int slot = link->slot_dst;
+        const bool slot_ok = (slot >= 0 && slot < num_inputs);
+        if (!slot_ok)
+        {
+            graph->AddMessage("ScriptNodeCommon::DetachLink(): bad slot number: %d, ignoring..!!", slot);
+            return;
+        }
+
+        Link*& input_ref = this->GetInputLink(slot);
+        if (input_ref != link)
+        {
+            graph->AddMessage("ScriptNodeCommon::DetachLink(): Discrepancy: inputs[link->slot_dst] != link "); // Check discrepancy
+            return;
+        }
+
+        input_ref = nullptr;
         link->node_dst = nullptr;
         link->slot_dst = -1;
     }
     else if (link->node_src == this)
     {
-        graph->Assert((link->buff_src != nullptr), "ScriptNode::DetachLink(): Discrepancy, buff_src is NULL"); // Check discrepancy
+        if (link->buff_src == nullptr)
+        {
+            graph->AddMessage("ScriptNodeCommon::DetachLink(): Discrepancy, buff_src is NULL"); // Check discrepancy
+            return;
+        }
+        
         link->buff_src = nullptr;
         link->node_src = nullptr;
     }
-    else graph->Assert(false,"ScriptNode::DetachLink() called on unrelated node");
+    else graph->AddMessage("ScriptNodeCommon::DetachLink() called on unrelated node");
 }
 
-void RoR::NodeGraphTool::ScriptNode::Draw()
+void RoR::NodeGraphTool::ScriptNodeCommon::Draw()
 {
     if (!graph->ClipTestNode(this))
         return;
     graph->DrawNodeBegin(this);
     const int flags = ImGuiInputTextFlags_AllowTabInput;
     const ImVec2 size = this->user_size;
-    ImGui::Text((this->enabled)? "Enabled" : "Disabled");
+    ImGui::Text("[#%d] Script%s", this->id, (this->enabled ? "" : " (off)"));
     ImGui::SameLine();
-    if (ImGui::SmallButton("Update"))
+    if (ImGui::SmallButton((this->enabled)?"Update":"Run"))
     {
         this->Apply();
     }
     ImGui::InputTextMultiline("##source", this->code_buf, IM_ARRAYSIZE(this->code_buf), size, flags);
     graph->DrawNodeFinalize(this);
+}
+
+// ------- ScriptNode subclasses impl. ---------
+
+RoR::NodeGraphTool::Link*& RoR::NodeGraphTool::ScriptNodeX12::GetInputLink(int slot)
+{
+    if (slot < 0 || slot >= num_inputs)
+    {
+        graph->AddMessage("ScriptNodeX12::GetInputLink()   bad slot:%d, num_slots:%d", slot, num_inputs);
+        return graph->dummy_link_ptr;
+    }
+    return inputs[slot];
+}
+
+RoR::NodeGraphTool::Link*& RoR::NodeGraphTool::ScriptNodeX24::GetInputLink(int slot)
+{
+    if (slot < 0 || slot >= num_inputs)
+    {
+        graph->AddMessage("ScriptNodeX24::GetInputLink()   bad slot:%d, num_slots:%d", slot, num_inputs);
+        return graph->dummy_link_ptr;
+    }
+    return inputs[slot];
+}
+
+RoR::NodeGraphTool::Buffer& RoR::NodeGraphTool::ScriptNodeX12::GetOutputBuf(int slot)
+{
+    if (slot < 0 || slot >= num_outputs)
+    {
+        graph->AddMessage("ScriptNodeX12::GetOutputBuf()   bad slot:%d, num_slots:%d", slot, num_outputs);
+        return graph->dummy_buf;
+    }
+    return outputs[slot];
+}
+
+RoR::NodeGraphTool::Buffer& RoR::NodeGraphTool::ScriptNodeX24::GetOutputBuf(int slot)
+{
+    if (slot < 0 || slot >= num_outputs)
+    {
+        graph->AddMessage("ScriptNodeX24::GetOutputBuf()   bad slot:%d, num_slots:%d", slot, num_outputs);
+        return graph->dummy_buf;
+    }
+    return outputs[slot];
 }
 
 // -------------------------------- MouseDragNode -----------------------------------
