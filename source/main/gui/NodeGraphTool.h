@@ -227,7 +227,6 @@ public:
         AngelScript::asIScriptContext* script_context;
         AngelScript::asIScriptEngine*  script_engine;
         AngelScript::asIScriptFunction* script_func;
-        char node_name[10];
         bool enabled; // Disables itself on script error
 
     protected:

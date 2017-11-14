@@ -466,7 +466,7 @@
             "user_size_y": 866.0,
             "id": 124,
             "type_id": 11,
-            "source_code": "\nvoid step()\n{\n  Vec3 fwdAxis; // Forward axis\n  fwdAxis   += ReadVec3(0, 0)-ReadVec3(3, 0);\n  fwdAxis   += ReadVec3(6, 0)-ReadVec3(9, 0);\n  fwdAxis   += ReadVec3(12,0)-ReadVec3(15,0);\n  fwdAxis   += ReadVec3(18,0)-ReadVec3(21,0);\n\n  WriteVec3(0, longiAxis/4.0); \n\n  Vec3 midpoint;\n  midpoint    += ReadVec3(0, 0)+ReadVec3(3, 0);\n  midpoint    += ReadVec3(6, 0)+ReadVec3(9, 0);\n  midpoint    += ReadVec3(12,0)+ReadVec3(15,0);\n  midpoint    += ReadVec3(18,0)+ReadVec3(21,0);\n\n  WriteVec3(3, midpoint/8.0);\n}"
+            "source_code": "\nvoid step()\n{\n  Vec3 fwdAxis; // Forward axis\n  fwdAxis   += ReadVec3(0, 0)-ReadVec3(3, 0);\n  fwdAxis   += ReadVec3(6, 0)-ReadVec3(9, 0);\n  fwdAxis   += ReadVec3(12,0)-ReadVec3(15,0);\n  fwdAxis   += ReadVec3(18,0)-ReadVec3(21,0);\n\n  WriteVec3(0, fwdAxis/4.0); \n\n  Vec3 midpoint;\n  midpoint    += ReadVec3(0, 0)+ReadVec3(3, 0);\n  midpoint    += ReadVec3(6, 0)+ReadVec3(9, 0);\n  midpoint    += ReadVec3(12,0)+ReadVec3(15,0);\n  midpoint    += ReadVec3(18,0)+ReadVec3(21,0);\n\n  WriteVec3(3, midpoint/8.0);\n}"
         },
         {
             "pos_x": 709.0,
@@ -513,15 +513,15 @@
             "source_code": "\nvoid step()\n{\n    Vec3 leftAxis;\n    leftAxis += ReadVec3(0,0);\n    leftAxis += ReadVec3(12,0);\n    leftAxis += ReadVec3(18,0);\n\n    WriteVec3(21, leftAxis/3.0);\n\n    Vec3 midpoint;\n    midpoint += ReadVec3(3, 0); //roof\n    midpoint += ReadVec3(5, 0); //midcage\n    midpoint += ReadVec3(21,0); //floor \n    \n    WriteVec3(18, midpoint/3.0);\n}"
         },
         {
-            "pos_x": 1742.0,
-            "pos_y": 1378.0,
+            "pos_x": 1702.0,
+            "pos_y": 1364.0,
             "arranged_pos_x": -2.0,
             "arranged_pos_y": -2.0,
-            "user_size_x": 254.0,
-            "user_size_y": 452.0,
+            "user_size_x": 334.0,
+            "user_size_y": 498.0,
             "id": 180,
             "type_id": 4,
-            "source_code": "int nPREV\n\nvoid step()\n{\n  Vec3 midpoint;\n  midpoint += ReadVec3(0,0);\n  midpoint += ReadVec3(9,0);\n  WriteVec3(0, midpoint);\n\n  Vec3 lastMid;\n  lastMid += ReadVec3(0,)\n}"
+            "source_code": "\nvoid step()\n{\n\n\n  Vec3 midpoint;\n  midpoint += ReadVec3(0,0);\n  midpoint += ReadVec3(9,0);\n  WriteVec3(0, midpoint);\n\n  Vec3 leftAxis = ReadVec3(3,0);\n  Vec3 fwdAxis  = ReadVec3(6,0);\n\n  Vec3 upAxis \n   = fwdAxis.CrossProduct(leftAxis);\n\n  Matrix3 m;\n\n  m.colX = fwdAxis.Normalize();\n  m.colY = leftAxis.Normalize();\n  m.colZ = upAxis.Normalize();\n\n  Write(11, m.GetYaw());\n}\n"
         },
         {
             "pos_x": 2118.0,
@@ -532,7 +532,7 @@
             "user_size_y": 200.0,
             "id": 181,
             "type_id": 4,
-            "source_code": "Vec3 centerAvg = ReadVec3(0,0);\n\nvoid step()\n{\n   SmoothCenterVec3(0, centerAvg);\n\n   // Position in meters\n   Write(0, centerAvg);\n}"
+            "source_code": "Vec3 centerAvg = ReadVec3(0,0);\n\nvoid step()\n{\n   SmoothCenterVec3(0, centerAvg);\n\n   // Position in meters\n   WriteVec3(0, centerAvg);\n}"
         },
         {
             "pos_x": 2524.0,
@@ -543,7 +543,7 @@
             "user_size_y": 252.0,
             "id": 182,
             "type_id": 4,
-            "source_code": "//output0: xyz velocity [(m/s)]\n\n // NOTE sim runs at 2kHz (=500 microsec.)\n //      offset \"-2\" = 1milisec sample (2*500 microsec)\n\nint veloOffs = -2*VeloIntervalMs;\ndouble veloMul = 1000.0/double(VeloIntervalMs);\nVec3 avgVelo = ReadVec3(0,0);\n\nvoid step()\n{\n   Vec3 curPos  = ReadVec3(0,0);\n   Vec3 prevPos = ReadVec3(0,veloOffs);\n   SmoothVeloVec3((curPos-prevPos)*veloMul, avgVelo);\n   Write(0, avgVelo);\n}"
+            "source_code": "//output0: xyz velocity [(m/s)]\n\n // NOTE sim runs at 2kHz (=500 microsec.)\n //      offset \"-2\" = 1milisec sample (2*500 microsec)\n\nint veloOffs = -2*VeloIntervalMs;\ndouble veloMul = 1000.0/double(VeloIntervalMs);\nVec3 avgVelo = ReadVec3(0,0);\n\nvoid step()\n{\n   Vec3 curPos  = ReadVec3(0,0);\n   Vec3 prevPos = ReadVec3(0,veloOffs);\n   SmoothVeloVec3((curPos-prevPos)*veloMul, avgVelo);\n   WriteVec3(0, avgVelo);\n}"
         },
         {
             "pos_x": 3128.0,
@@ -554,7 +554,17 @@
             "user_size_y": 200.0,
             "id": 183,
             "type_id": 4,
-            "source_code": "// Output 0: xyz accel [(m/s^2)]\n// NOTE: input is already m/s\n\n// 1 tick = 500 microsec\nint numTicks = 10;\n\ndouble dT = float(numTicks)\n\nvoid step()\n{\n    Write(0,Read(0,0));\n}"
+            "source_code": "// Output 0: xyz accel [(m/s^2)]\n// NOTE: input is already m/s\n\nvoid step()\n{\n   WriteVec3(0,\n      ReadVec3(0,0)\n      -ReadVec3(0,-1));\n}"
+        },
+        {
+            "pos_x": 2122.0,
+            "pos_y": 1770.0,
+            "arranged_pos_x": 136.0,
+            "arranged_pos_y": 780.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 254,
+            "type_id": 9
         }
     ],
     "links": [
@@ -789,24 +799,6 @@
         {
             "node_src_id": 46,
             "node_dst_id": 85,
-            "slot_src": 2,
-            "slot_dst": 2
-        },
-        {
-            "node_src_id": 89,
-            "node_dst_id": -2147483644,
-            "slot_src": 0,
-            "slot_dst": 0
-        },
-        {
-            "node_src_id": 89,
-            "node_dst_id": -2147483644,
-            "slot_src": 1,
-            "slot_dst": 1
-        },
-        {
-            "node_src_id": 89,
-            "node_dst_id": -2147483644,
             "slot_src": 2,
             "slot_dst": 2
         },
@@ -1533,12 +1525,6 @@
         {
             "node_src_id": 124,
             "node_dst_id": 180,
-            "slot_src": 1,
-            "slot_dst": 7
-        },
-        {
-            "node_src_id": 124,
-            "node_dst_id": 180,
             "slot_src": 2,
             "slot_dst": 8
         },
@@ -1655,6 +1641,36 @@
             "node_dst_id": 89,
             "slot_src": 1,
             "slot_dst": 1
+        },
+        {
+            "node_src_id": 183,
+            "node_dst_id": -2147483644,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 183,
+            "node_dst_id": -2147483644,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 183,
+            "node_dst_id": -2147483644,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 180,
+            "node_dst_id": 254,
+            "slot_src": 11,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 124,
+            "node_dst_id": 180,
+            "slot_src": 1,
+            "slot_dst": 7
         }
     ],
     "udp_pos_node": {
@@ -1668,8 +1684,8 @@
         "type_id": 7
     },
     "udp_acc_node": {
-        "pos_x": 3758.0,
-        "pos_y": 1260.0,
+        "pos_x": 3444.0,
+        "pos_y": 1642.0,
         "arranged_pos_x": -2.0,
         "arranged_pos_y": -2.0,
         "user_size_x": 0.0,
@@ -1688,7 +1704,7 @@
         "type_id": 7
     },
     "udp_velo_node": {
-        "pos_x": 3026.0,
+        "pos_x": 3032.0,
         "pos_y": 1502.0,
         "arranged_pos_x": -2.0,
         "arranged_pos_y": -2.0,
@@ -1697,5 +1713,5 @@
         "id": -2147483645,
         "type_id": 7
     },
-    "shared_script": "// Config\ndouble ReadingSmoothFactor = 0.2; // 0.2 = 100ms\ndouble CenterSmoothFactor = 0.1; // 0.1 = 50ms\ndouble VeloSmoothFactor = 0.1;\nint    VeloIntervalMs = 15;\n\n// --------------------------------------------------\n\nclass Vec3\n{\n    Vec3() {}\n\n    Vec3(double xx, double yy, double zz) { x=xx; y=yy; z=zz; }\n\n    double Len() { return sqrt(x*x + y*y + z*z); }\n\n\tVec3 Normalize()\n    {\n       double len = Len();\n       return Vec3(x/len, y/len, z/len);\n    }\n\n    Vec3 CrossProduct(Vec3 b)\n    {\n\t\treturn Vec3(y*b.z - z*b.y,\n        \t        z*b.x - x*b.z,\n            \t    x*b.y - y*b.x);\n    }\n\n    // overloaded operators\n    void opAssign(Vec3 rhs) { x=rhs.x; y=rhs.y; z=rhs.z; }\n\n    Vec3 opSub(Vec3 rhs) { return Vec3(x-rhs.x, y-rhs.y, z-rhs.z); }\n\n    Vec3 opAdd(Vec3 rhs) { return Vec3(x+rhs.x, y+rhs.y, z+rhs.z); }\n\n    Vec3 opNeg() { return Vec3(-x, -y, -z); }\n\n    Vec3 opMul(double s) { return Vec3(x*s, y*s, z*s); }\n\n    Vec3 opDiv(double s) { return Vec3(x/s, y/s, z/s); }\n\n    void opAddAssign(Vec3 rhs) { x=x*rhs.x; y=y*rhs.y; z=z*rhs.z; }\n\n    // Var\n    double x, y, z;\n}\n\nVec3 ReadVec3(int slot, int offs)\n{\n\treturn Vec3(Read(slot,  offs),\n                Read(slot+1,offs),\n                Read(slot+2,offs));\n}\n\n// Exponentially Weighted Moving Average (= 1st order IIR)\ndouble SmoothEWMA(double cur, double prev, double factor)\n{\n    return (factor*cur) + ((1.0-factor)*prev);\n}\n\nvoid SmoothVec3(Vec3 cur, Vec3& avg, double factor)\n{\n    avg.x = SmoothEWMA(cur.x, avg.x, factor);\n    avg.y = SmoothEWMA(cur.x, avg.y, factor);\n    avg.z = SmoothEWMA(cur.x, avg.z, factor);\n}\n\nvoid ReadSmoothVec3(int slot, Vec3& avg, double factor)\n{\n    Vec3 cur = ReadVec3(slot, 0);\n    avg.x = SmoothEWMA(cur.x, avg.x, factor);\n    avg.y = SmoothEWMA(cur.x, avg.y, factor);\n    avg.z = SmoothEWMA(cur.x, avg.z, factor);\n}\n\n/// calculates middle XYZ point between src1/src2 and writes it to dstSlot.\nvoid WriteMidXYZ(int dstSlot, int src1, int src2)\n{\n    Write(dstSlot,   (Read(src1,  0) + Read(src2,  0))/2.0); // X\n    Write(dstSlot+1, (Read(src1+1,0) + Read(src2+1,0))/2.0); // Y\n    Write(dstSlot+2, (Read(src1+2,0) + Read(src2+2,0))/2.0); // Z\n}\n\nfloat Pi = 3.1415927;\nfloat HalfPi = Pi/2.f;\n\nclass Matrix3\n{\n    Matrix3() {}\n\n\t// Var\n    Vec3 colX;   // column 1\n    Vec3 colY;   // column 2\n    Vec3 colZ;   // column 3\n}\n\nvoid WriteVec3(int slot, Vec3 v)\n{\n    Write(slot,  v.x);\n    Write(slot+1,v.y);\n    Write(slot+2,v.z);\n}\n\n// --------------------------------------------\n// Helpers\n\nvoid SmoothReadingVec3(int slot, Vec3& avg)\n{\n\tReadSmoothVec3(slot, avg, ReadingSmoothFactor);\n}\n\nvoid SmoothCenterVec3(int slot, Vec3& avg)\n{\n\tReadSmoothVec3(slot, avg, CenterSmoothFactor);\n}\n\nvoid SmoothVeloVec3(Vec3 in, Vec3& avg)\n{\n    SmoothVec3(in, avg);\n}\n\n\n\n"
+    "shared_script": "// Config\ndouble ReadingSmoothFactor = 0.2; // 0.2 = 100ms\ndouble CenterSmoothFactor = 0.1; // 0.1 = 50ms\ndouble VeloSmoothFactor = 0.1;\nint    VeloIntervalMs = 15;\n\n// --------------------------------------------------\n\nclass Vec3\n{\n    Vec3() {}\n\n    Vec3(double xx, double yy, double zz) { x=xx; y=yy; z=zz; }\n\n    double Len() { return sqrt(x*x + y*y + z*z); }\n\n\tVec3 Normalize()\n    {\n       double len = Len();\n       if (len == 0.0)\n           return Vec3(0,0,0);\n       else\n           return Vec3(x/len, y/len, z/len);\n    }\n\n    Vec3 CrossProduct(Vec3 b)\n    {\n\t\treturn Vec3(y*b.z - z*b.y,\n        \t        z*b.x - x*b.z,\n            \t    x*b.y - y*b.x);\n    }\n\n    // overloaded operators\n    void opAssign(Vec3 rhs) { x=rhs.x; y=rhs.y; z=rhs.z; }\n\n    Vec3 opSub(Vec3 rhs) { return Vec3(x-rhs.x, y-rhs.y, z-rhs.z); }\n\n    Vec3 opAdd(Vec3 rhs) { return Vec3(x+rhs.x, y+rhs.y, z+rhs.z); }\n\n    Vec3 opNeg() { return Vec3(-x, -y, -z); }\n\n    Vec3 opMul(double s) { return Vec3(x*s, y*s, z*s); }\n\n    Vec3 opDiv(double s) { return Vec3(x/s, y/s, z/s); }\n\n    void opAddAssign(Vec3 rhs) { x=x*rhs.x; y=y*rhs.y; z=z*rhs.z; }\n\n    // Var\n    double x, y, z;\n}\n\nVec3 ReadVec3(int slot, int offs)\n{\n\treturn Vec3(Read(slot,  offs),\n                Read(slot+1,offs),\n                Read(slot+2,offs));\n}\n\n// Exponentially Weighted Moving Average (= 1st order IIR)\ndouble SmoothEWMA(double cur, double prev, double factor)\n{\n    return (factor*cur) + ((1.0-factor)*prev);\n}\n\nvoid SmoothVec3(Vec3 cur, Vec3& avg, double factor)\n{\n    avg.x = SmoothEWMA(cur.x, avg.x, factor);\n    avg.y = SmoothEWMA(cur.x, avg.y, factor);\n    avg.z = SmoothEWMA(cur.x, avg.z, factor);\n}\n\nvoid ReadSmoothVec3(int slot, Vec3& avg, double factor)\n{\n    Vec3 cur = ReadVec3(slot, 0);\n    avg.x = SmoothEWMA(cur.x, avg.x, factor);\n    avg.y = SmoothEWMA(cur.x, avg.y, factor);\n    avg.z = SmoothEWMA(cur.x, avg.z, factor);\n}\n\n/// calculates middle XYZ point between src1/src2 and writes it to dstSlot.\nvoid WriteMidXYZ(int dstSlot, int src1, int src2)\n{\n    Write(dstSlot,   (Read(src1,  0) + Read(src2,  0))/2.0); // X\n    Write(dstSlot+1, (Read(src1+1,0) + Read(src2+1,0))/2.0); // Y\n    Write(dstSlot+2, (Read(src1+2,0) + Read(src2+2,0))/2.0); // Z\n}\n\nfloat Pi = 3.1415927;\nfloat HalfPi = Pi/2.f;\n\nclass Matrix3\n{\n    Matrix3() {}\n\n\t// Var\n    Vec3 colX;   // column 1\n    Vec3 colY;   // column 2\n    Vec3 colZ;   // column 3\n\n    // Yaw-pitch-roll, see http://planning.cs.uiuc.edu/node103.html\n    double GetYaw() { return atan2(colX.y, colX.x); }\n\n    double GetPitch()\n    {\n       return atan2(-colX.z, sqrt((colY.z*colY.z)+(colZ.z*colZ.z)));\n    }\n\n    // Special output for RORX\n    double GetYaw90DegClockwise() { return atan2(colX.x, colX.y); }\n}\n\nvoid WriteVec3(int slot, Vec3 v)\n{\n    Write(slot,  v.x);\n    Write(slot+1,v.y);\n    Write(slot+2,v.z);\n}\n\n// --------------------------------------------\n// Helpers\n\nvoid SmoothReadingVec3(int slot, Vec3& avg)\n{\n\tReadSmoothVec3(slot, avg, ReadingSmoothFactor);\n}\n\nvoid SmoothCenterVec3(int slot, Vec3& avg)\n{\n\tReadSmoothVec3(slot, avg, CenterSmoothFactor);\n}\n\nvoid SmoothVeloVec3(Vec3 cur, Vec3& avg)\n{\n    SmoothVec3(cur, avg, VeloSmoothFactor);\n}\n\n\n\n"
 }

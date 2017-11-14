@@ -1929,7 +1929,6 @@ RoR::NodeGraphTool::ScriptNodeCommon::ScriptNodeCommon(Type t, NodeGraphTool* _g
     memset(code_buf, 0, sizeof(code_buf));
     sprintf(code_buf, SCRIPTNODE_EXAMPLE_CODE);
     user_size = ImVec2(250, 200);
-    snprintf(node_name, 10, "Node %d", id);
     this->InitScripting();
     is_scalable = true;
 }
@@ -1939,7 +1938,7 @@ void RoR::NodeGraphTool::ScriptNodeCommon::InitScripting()
     script_engine = AngelScript::asCreateScriptEngine(ANGELSCRIPT_VERSION);
     if (script_engine == nullptr)
     {
-        graph->AddMessage("%s: failed to create scripting engine", node_name);
+        graph->AddMessage("Node %d: failed to create scripting engine", this->id);
         return;
     }
 
@@ -1948,21 +1947,21 @@ void RoR::NodeGraphTool::ScriptNodeCommon::InitScripting()
     int result = script_engine->SetMessageCallback(AngelScript::asMETHOD(NodeGraphTool, ScriptMessageCallback), graph, AngelScript::asCALL_THISCALL);
     if (result < 0)
     {
-        graph->AddMessage("%s: failed to register message callback function, res: %d", node_name, result);
+        graph->AddMessage("Node %d: failed to register message callback function, res: %d", this->id, result);
         return;
     }
 
     result = script_engine->RegisterGlobalFunction("void Write(int, float)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNodeCommon, Write), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
     if (result < 0)
     {
-        graph->AddMessage("%s: failed to register function `Write`, res: %d", node_name, result);
+        graph->AddMessage("Node %d: failed to register function `Write`, res: %d", this->id, result);
         return;
     }
 
     result = script_engine->RegisterGlobalFunction("float Read(int, int)", AngelScript::asMETHOD(RoR::NodeGraphTool::ScriptNodeCommon, Read), AngelScript::asCALL_THISCALL_ASGLOBAL, this);
     if (result < 0)
     {
-        graph->AddMessage("%s: failed to register function `Read`, res: %d", node_name, result);
+        graph->AddMessage("Node %d: failed to register function `Read`, res: %d", this->id, result);
         return;
     }
 }
@@ -1972,7 +1971,7 @@ void RoR::NodeGraphTool::ScriptNodeCommon::Apply()
     AngelScript::asIScriptModule* module = script_engine->GetModule(nullptr, AngelScript::asGM_ALWAYS_CREATE);
     if (module == nullptr)
     {
-        graph->AddMessage("%s: Failed to create module", node_name);
+        graph->AddMessage("Node %d: Failed to create module", this->id);
         module->Discard();
         return;
     }
@@ -1980,7 +1979,7 @@ void RoR::NodeGraphTool::ScriptNodeCommon::Apply()
     int result = module->AddScriptSection("local_body", code_buf, strlen(code_buf));
     if (result < 0)
     {
-        graph->AddMessage("%s: failed to `AddScriptSection() for local sourcecode`, res: %d", node_name, result);
+        graph->AddMessage("Node %d: failed to `AddScriptSection() for local sourcecode`, res: %d", this->id, result);
         module->Discard();
         return;
     }
@@ -1988,7 +1987,7 @@ void RoR::NodeGraphTool::ScriptNodeCommon::Apply()
     result = module->AddScriptSection("shared_body", graph->m_shared_script, strlen(graph->m_shared_script));
     if (result < 0)
     {
-        graph->AddMessage("%s: failed to `AddScriptSection() for shared sourcecode`, res: %d", node_name, result);
+        graph->AddMessage("Node %d: failed to `AddScriptSection() for shared sourcecode`, res: %d", this->id, result);
         module->Discard();
         return;
     }
@@ -1996,7 +1995,7 @@ void RoR::NodeGraphTool::ScriptNodeCommon::Apply()
     result = module->Build();
     if (result < 0)
     {
-        graph->AddMessage("%s: failed to compile the script.", node_name); // Details provided by script via message callback fn.
+        graph->AddMessage("Node %d: failed to compile the script.", this->id); // Details provided by script via message callback fn.
         module->Discard();
         return;
     }
@@ -2004,7 +2003,7 @@ void RoR::NodeGraphTool::ScriptNodeCommon::Apply()
     script_func = module->GetFunctionByDecl("void step()");
     if (script_func == nullptr)
     {
-        graph->AddMessage("%s: failed to `GetFunctionByDecl()`", node_name);
+        graph->AddMessage("Node %d: failed to `GetFunctionByDecl()`", this->id);
         module->Discard();
         return;
     }
@@ -2012,7 +2011,7 @@ void RoR::NodeGraphTool::ScriptNodeCommon::Apply()
     script_context = script_engine->CreateContext();
     if (script_context == nullptr)
     {
-        graph->AddMessage("%s: failed to `CreateContext()`", node_name);
+        graph->AddMessage("Node %d: failed to `CreateContext()`", this->id);
         module->Discard();
         return;
     }
@@ -2062,7 +2061,7 @@ bool RoR::NodeGraphTool::ScriptNodeCommon::Process()
     int prep_result = script_context->Prepare(script_func);
     if (prep_result < 0)
     {
-        graph->AddMessage("%s: failed to `Prepare()`, res: %d", node_name, prep_result);
+        graph->AddMessage("%s: failed to `Prepare()`, res: %d", this->id, prep_result);
         script_engine->ReturnContext(script_context);
         script_context = nullptr;
         enabled = false;
@@ -2073,7 +2072,7 @@ bool RoR::NodeGraphTool::ScriptNodeCommon::Process()
     int exec_result = script_context->Execute();
     if (exec_result != AngelScript::asEXECUTION_FINISHED)
     {
-        graph->AddMessage("%s: failed to `Execute()`, res: %d", node_name, exec_result);
+        graph->AddMessage("%s: failed to `Execute()`, res: %d", this->id, exec_result);
         script_engine->ReturnContext(script_context);
         script_context = nullptr;
         enabled = false;
