@@ -2061,7 +2061,7 @@ bool RoR::NodeGraphTool::ScriptNodeCommon::Process()
     int prep_result = script_context->Prepare(script_func);
     if (prep_result < 0)
     {
-        graph->AddMessage("%s: failed to `Prepare()`, res: %d", this->id, prep_result);
+        graph->AddMessage("Node %d: failed to `Prepare()`, return code: %d", this->id, prep_result);
         script_engine->ReturnContext(script_context);
         script_context = nullptr;
         enabled = false;
@@ -2072,7 +2072,7 @@ bool RoR::NodeGraphTool::ScriptNodeCommon::Process()
     int exec_result = script_context->Execute();
     if (exec_result != AngelScript::asEXECUTION_FINISHED)
     {
-        graph->AddMessage("%s: failed to `Execute()`, res: %d", this->id, exec_result);
+        graph->AddMessage("Node %d: failed to `Execute()`, return code: %d", this->id, exec_result);
         script_engine->ReturnContext(script_context);
         script_context = nullptr;
         enabled = false;
@@ -2264,7 +2264,7 @@ RoR::NodeGraphTool::RefImplDisplayNode::RefImplDisplayNode(NodeGraphTool* _graph
     num_inputs = 0;
     num_outputs = 0;
     user_size.x = 350.f;
-    user_size.y = 115.f;
+    user_size.y = 135.f;
     arranged_pos = Node::ARRANGE_EMPTY; // Enables arranging
 }
 
@@ -2323,6 +2323,8 @@ void RoR::NodeGraphTool::RefImplDisplayNode::Draw()
     ImGui::Text(" Position : %10d  %10df  %10df",     m_datagram.position_x, m_datagram.position_y, m_datagram.position_z);
     ImGui::Text("  ~");
     ImGui::Text(" Orient.  : %10.3f  %10.3f  %10.3f", m_datagram.orient.x, m_datagram.orient.y, m_datagram.orient.z);
+    //                       rrrrrrrrrr  pppppppppp  yyyyyyyyyy
+    ImGui::Text("              -Roll-      -Pitch-     -Yaw-");
     ImGui::Text("  ~");
     ImGui::Text(" Velocity : %10.3f  %10.3f  %10.3f", m_datagram.velocity.x, m_datagram.velocity.y, m_datagram.velocity.z);
     ImGui::Text("  ~");
