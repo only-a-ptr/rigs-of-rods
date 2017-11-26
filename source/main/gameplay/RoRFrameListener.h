@@ -54,7 +54,7 @@ public:
     bool   frameEnded            (const Ogre::FrameEvent& evt) override;
 
     // Actor management interface
-    size_t GetNumActors          () const                  { return m_beam_factory.getTruckCount(); }
+    size_t GetNumActors          () const                  { return m_beam_factory.countExistingActors(); }
     Beam*  GetActorById          (int actor_id)            { return m_beam_factory.getTruck(actor_id); }
     void   SetPlayerActorById    (int actor_id)            { m_beam_factory.setCurrentTruck(actor_id); } // TODO: Eliminate, use pointers ~ only_a_ptr, 06/2017
     void   SetPlayerActor        (Beam* actor)             { m_beam_factory.setCurrentTruck((actor == nullptr) ? -1 : actor->trucknum); }

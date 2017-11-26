@@ -1144,6 +1144,19 @@ Beam* BeamFactory::getCurrentTruck()
     return this->getTruck(m_current_truck);
 }
 
+int BeamFactory::countExistingActors() const
+{
+    int count = 0;
+    for (int t = 0; t < m_free_truck; t++)
+    {
+        if (m_trucks[t] != nullptr)
+        {
+            ++count;
+        }
+    }
+    return count;
+}
+
 Beam* BeamFactory::getTruck(int number)
 {
     if (number >= 0 && number < m_free_truck)

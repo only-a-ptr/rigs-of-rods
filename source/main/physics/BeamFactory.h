@@ -80,7 +80,8 @@ public:
     Beam** getTrucks() { return m_trucks; };
     int getPreviousTruckNumber() { return m_previous_truck; };
     int getCurrentTruckNumber() { return m_current_truck; };
-    int getTruckCount() const { return m_free_truck; };
+    int getTruckCount() const { return m_free_truck; }; /// CAUTION! Doesn't return actual number of actors, but internal counter state.
+    int countExistingActors() const; /// Retuns actual number of actors in the game
 
     void enterNextTruck();
     void enterPreviousTruck();
@@ -184,7 +185,7 @@ protected:
 
     int             m_num_cpu_cores;
     Beam*           m_trucks[MAX_TRUCKS];
-    int             m_free_truck;
+    int             m_free_truck; //!< Index to unused slot in `m_trucks` array - slots are not reused!
     int             m_previous_truck;
     int             m_current_truck;
     int             m_simulated_truck;
