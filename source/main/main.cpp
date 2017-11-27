@@ -281,26 +281,6 @@ int main(int argc, char *argv[])
             {
                 App::app_state.ApplyPending();
 
-                if (prev_app_state == AppState::SIMULATION)
-                {
-#ifdef USE_SOCKETW
-                    if (App::mp_state.GetActive() == MpState::CONNECTED)
-                    {
-                        RoR::Networking::Disconnect();
-                        App::GetGuiManager()->SetVisible_MpClientList(false);
-                    }
-#endif
-                    gEnv->cameraManager->OnReturnToMainMenu();
-                    /* Restore wallpaper */
-                    menu_wallpaper_widget->setVisible(true);
-
-#ifdef USE_MUMBLE
-                    auto* mumble = SoundScriptManager::getSingleton().GetMumble();
-                    if (mumble != nullptr)
-                        mumble->SetNonPositionalAudio();
-#endif // USE_MUMBLE
-                }
-
                 if (App::audio_menu_music.GetActive())
                 {
                     SoundScriptManager::getSingleton().createInstance("tracks/main_menu_tune", -1, nullptr);
@@ -322,7 +302,7 @@ int main(int argc, char *argv[])
             }
             else if (App::app_state.GetPending() == AppState::SIMULATION)
             {
-                {
+                { // Enclosing scope for RoRFrameListener
                     RoRFrameListener sim_controller(&force_feedback, &skidmark_conf);
                     if (sim_controller.SetupGameplayLoop())
                     {
@@ -331,32 +311,26 @@ int main(int argc, char *argv[])
                         App::SetSimController(&sim_controller);
                         sim_controller.EnterGameplayLoop();
                         App::SetSimController(nullptr);
+#ifdef USE_SOCKETW
+                        if (App::mp_state.GetActive() == MpState::CONNECTED)
+                        {
+                            RoR::Networking::Disconnect();
+                            App::GetGuiManager()->SetVisible_MpClientList(false);
+                        }
+#endif // USE_SOCKETW
+#ifdef USE_MUMBLE
+                        auto* mumble = SoundScriptManager::getSingleton().GetMumble();
+                        if (mumble != nullptr)
+                            mumble->SetNonPositionalAudio();
+#endif // USE_MUMBLE
+                        menu_wallpaper_widget->setVisible(true);
                     }
                     else
                     {
                         App::app_state.SetPending(AppState::MAIN_MENU);
                     }
                 }
-                gEnv->sceneManager->clearScene(); // Wipe the scene after RoRFrameListener was destroyed (->cleanups invoked)
-            }
-            else if (App::app_state.GetPending() == AppState::CHANGE_MAP)
-            {
-                //Sim -> change map -> sim
-                //                  -> back to menu
-
-                App::app_state.ApplyPending();
-                menu_wallpaper_widget->setVisible(true);
-
-                if (App::diag_preset_terrain.IsActiveEmpty())
-                {
-                    App::GetGuiManager()->GetMainSelector()->Show(LT_Terrain);
-                }
-                else
-                {
-                    App::GetGuiManager()->SetVisible_GameMainMenu(true);
-                }
-                //It's the same thing so..
-                main_obj.EnterMainMenuLoop();
+                gEnv->sceneManager->clearScene(); // Wipe the scene after RoRFrameListener was destroyed
             }
             prev_app_state = App::app_state.GetActive();
         } // End of app state loop
