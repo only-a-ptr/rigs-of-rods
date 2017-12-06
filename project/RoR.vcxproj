@@ -1,0 +1,625 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{1905FF05-3D68-3D74-93D7-2773D932DF50}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>RoR</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(SolutionDir)..\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoR.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">RoR</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Builds\rigs-of-rods-elsaco\bin\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoR.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">RoR</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\main\;$(SolutionDir)..\source\main\audio;$(SolutionDir)..\source\main\datatypes;$(SolutionDir)..\source\main\gameplay;$(SolutionDir)..\source\main\gameplay\ois;$(SolutionDir)..\source\main\gameplay\ois\linux;$(SolutionDir)..\source\main\gameplay\ois\Win32;$(SolutionDir)..\source\main\gfx;$(SolutionDir)..\source\main\gfx\camera;$(SolutionDir)..\source\main\gfx\dof;$(SolutionDir)..\source\main\gfx\hydrax;$(SolutionDir)..\source\main\gfx\particle;$(SolutionDir)..\source\main\gfx\procedural;$(SolutionDir)..\source\main\gui;$(SolutionDir)..\source\main\gui\imgui;$(SolutionDir)..\source\main\gui\mygui;$(SolutionDir)..\source\main\gui\panels;$(SolutionDir)..\source\main\network;$(SolutionDir)..\source\main\physics;$(SolutionDir)..\source\main\physics\air;$(SolutionDir)..\source\main\physics\collision;$(SolutionDir)..\source\main\physics\flex;$(SolutionDir)..\source\main\physics\threading;$(SolutionDir)..\source\main\physics\utils;$(SolutionDir)..\source\main\physics\water;$(SolutionDir)..\source\main\resources;$(SolutionDir)..\source\main\resources\rig_def_fileformat;$(SolutionDir)..\source\main\resources\otc_fileformat;$(SolutionDir)..\source\main\resources\terrn2_fileformat;$(SolutionDir)..\source\main\rig_editor;$(SolutionDir)..\source\main\rig_editor\rig_data;$(SolutionDir)..\source\main\scripting;$(SolutionDir)..\source\main\terrain;$(SolutionDir)..\source\main\terrain\map;$(SolutionDir)..\source\main\threadpool;$(SolutionDir)..\source\main\utils;$(SolutionDir)..\source\main\utils\profiler;$(SolutionDir)dependencies\include\OGRE;$(SolutionDir)dependencies\include;$(SolutionDir)dependencies\include\OGRE\Paging;$(SolutionDir)dependencies\include\OGRE\RTShaderSystem;$(SolutionDir)dependencies\include\OGRE\Terrain;$(SolutionDir)dependencies\include\OGRE\Overlay;$(SolutionDir)dependencies\include\OIS;$(SolutionDir)dependencies\include\AL;$(SolutionDir)..\source\main\..\angelscript_addons;$(SolutionDir)dependencies\include\MYGUI;$(SolutionDir)dependencies\include\Caelum;$(SolutionDir)dependencies\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4996;4251;4275;4099;4305;4244;4193</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <StringPooling>false</StringPooling>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_ANGELSCRIPT;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_MPLATFORM;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PrecompiledHeaderFile>$(SolutionDir)..\tools\windows\pch\Precompiled.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(SolutionDir)..\tools\windows\pch\Precompiled.h</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_ANGELSCRIPT;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;$(SolutionDir)..\source\main\.;$(SolutionDir)..\source\main\audio;$(SolutionDir)..\source\main\datatypes;$(SolutionDir)..\source\main\gameplay;$(SolutionDir)..\source\main\gameplay\ois;$(SolutionDir)..\source\main\gameplay\ois\linux;$(SolutionDir)..\source\main\gameplay\ois\Win32;$(SolutionDir)..\source\main\gfx;$(SolutionDir)..\source\main\gfx\camera;$(SolutionDir)..\source\main\gfx\dof;$(SolutionDir)..\source\main\gfx\hydrax;$(SolutionDir)..\source\main\gfx\particle;$(SolutionDir)..\source\main\gfx\procedural;$(SolutionDir)..\source\main\gui;$(SolutionDir)..\source\main\gui\imgui;$(SolutionDir)..\source\main\gui\mygui;$(SolutionDir)..\source\main\gui\panels;$(SolutionDir)..\source\main\network;$(SolutionDir)..\source\main\physics;$(SolutionDir)..\source\main\physics\air;$(SolutionDir)..\source\main\physics\collision;$(SolutionDir)..\source\main\physics\flex;$(SolutionDir)..\source\main\physics\threading;$(SolutionDir)..\source\main\physics\utils;$(SolutionDir)..\source\main\physics\water;$(SolutionDir)..\source\main\resources;$(SolutionDir)..\source\main\resources\rig_def_fileformat;$(SolutionDir)..\source\main\resources\terrn2_fileformat;$(SolutionDir)..\source\main\rig_editor;$(SolutionDir)..\source\main\rig_editor\rig_data;$(SolutionDir)..\source\main\scripting;$(SolutionDir)..\source\main\terrain;$(SolutionDir)..\source\main\terrain\map;$(SolutionDir)..\source\main\threadpool;$(SolutionDir)..\source\main\utils;$(SolutionDir)..\source\main\utils\profiler;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;$(SolutionDir)..\source\main\..\angelscript_addons;$(SolutionDir)..\source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\Caelum;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>
+      d:\projects\lib\DirectX_SDK_June2010\Include;
+      source\main\;
+      source\main\audio;
+      source\main\datatypes;
+      source\main\gameplay;$(SolutionDir)..\source\main\gameplay\ois;$(SolutionDir)..\source\main\gameplay\ois\linux;$(SolutionDir)..\source\main\gameplay\ois\Win32;$(SolutionDir)..\source\main\gfx;$(SolutionDir)..\source\main\gfx\camera;$(SolutionDir)..\source\main\gfx\dof;$(SolutionDir)..\source\main\gfx\hydrax;$(SolutionDir)..\source\main\gfx\particle;$(SolutionDir)..\source\main\gfx\procedural;$(SolutionDir)..\source\main\gui;$(SolutionDir)..\source\main\gui\imgui;$(SolutionDir)..\source\main\gui\mygui;$(SolutionDir)..\source\main\gui\panels;$(SolutionDir)..\source\main\network;$(SolutionDir)..\source\main\physics;$(SolutionDir)..\source\main\physics\air;$(SolutionDir)..\source\main\physics\collision;$(SolutionDir)..\source\main\physics\flex;$(SolutionDir)..\source\main\physics\threading;$(SolutionDir)..\source\main\physics\utils;$(SolutionDir)..\source\main\physics\water;$(SolutionDir)..\source\main\resources;$(SolutionDir)..\source\main\resources\rig_def_fileformat;$(SolutionDir)..\source\main\resources\terrn2_fileformat;$(SolutionDir)..\source\main\rig_editor;$(SolutionDir)..\source\main\rig_editor\rig_data;$(SolutionDir)..\source\main\scripting;$(SolutionDir)..\source\main\terrain;$(SolutionDir)..\source\main\terrain\map;$(SolutionDir)..\source\main\threadpool;$(SolutionDir)..\source\main\utils;$(SolutionDir)..\source\main\utils\profiler;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;source\main\..\angelscript_addons;source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\Caelum;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:X86</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;dinput8.lib;dxguid.lib;$(SolutionDir)dependencies\lib\Release\OIS.lib;$(SolutionDir)dependencies\lib\Release\OgreMain.lib;$(SolutionDir)dependencies\lib\Release\OgrePaging.lib;$(SolutionDir)dependencies\lib\Release\OgreRTShaderSystem.lib;$(SolutionDir)dependencies\lib\Release\OgreTerrain.lib;$(SolutionDir)dependencies\lib\Release\OgreOverlay.lib;$(SolutionDir)dependencies\lib\OpenAL32.lib;$(SolutionDir)dependencies\lib\libcurl_imp.lib;$(SolutionDir)dependencies\lib\Release\moFileReader.static.lib;$(SolutionDir)dependencies\lib\release\MyGUIEngine.lib;$(SolutionDir)dependencies\lib\release\MyGUI.OgrePlatform.lib;$(SolutionDir)dependencies\lib\SocketW.lib;$(SolutionDir)dependencies\lib\relwithdebinfo\enet.lib;$(SolutionDir)dependencies\lib\angelscript_2_31_2\MultiThreadedDLL\angelscript.lib;ws2_32.lib;winmm.lib;$(SolutionDir)dependencies\lib\Caelum.lib;$(SolutionDir)dependencies\lib\PagedGeometry.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
+      <FixedBaseAddress>true</FixedBaseAddress>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>RoR.dir/RelWithDebInfo/RoR.lib</ImportLibrary>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>false</OptimizeReferences>
+      <ProgramDataBaseFile>$(SolutionDir)..\bin\RoR.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\source\main\;$(SolutionDir)..\source\main\audio;$(SolutionDir)..\source\main\datatypes;$(SolutionDir)..\source\main\gameplay;$(SolutionDir)..\source\main\gameplay\ois;$(SolutionDir)..\source\main\gameplay\ois\linux;$(SolutionDir)..\source\main\gameplay\ois\Win32;$(SolutionDir)..\source\main\gfx;$(SolutionDir)..\source\main\gfx\camera;$(SolutionDir)..\source\main\gfx\dof;$(SolutionDir)..\source\main\gfx\hydrax;$(SolutionDir)..\source\main\gfx\particle;$(SolutionDir)..\source\main\gfx\procedural;$(SolutionDir)..\source\main\gui;$(SolutionDir)..\source\main\gui\imgui;$(SolutionDir)..\source\main\gui\mygui;$(SolutionDir)..\source\main\gui\panels;$(SolutionDir)..\source\main\network;$(SolutionDir)..\source\main\physics;$(SolutionDir)..\source\main\physics\air;$(SolutionDir)..\source\main\physics\collision;$(SolutionDir)..\source\main\physics\flex;$(SolutionDir)..\source\main\physics\threading;$(SolutionDir)..\source\main\physics\utils;$(SolutionDir)..\source\main\physics\water;$(SolutionDir)..\source\main\resources;$(SolutionDir)..\source\main\resources\rig_def_fileformat;$(SolutionDir)..\source\main\resources\otc_fileformat;$(SolutionDir)..\source\main\resources\terrn2_fileformat;$(SolutionDir)..\source\main\rig_editor;$(SolutionDir)..\source\main\rig_editor\rig_data;$(SolutionDir)..\source\main\scripting;$(SolutionDir)..\source\main\terrain;$(SolutionDir)..\source\main\terrain\map;$(SolutionDir)..\source\main\threadpool;$(SolutionDir)..\source\main\utils;$(SolutionDir)..\source\main\utils\profiler;$(SolutionDir)dependencies\include\OGRE;$(SolutionDir)dependencies\include;$(SolutionDir)dependencies\include\OGRE\Paging;$(SolutionDir)dependencies\include\OGRE\RTShaderSystem;$(SolutionDir)dependencies\include\OGRE\Terrain;$(SolutionDir)dependencies\include\OGRE\Overlay;$(SolutionDir)dependencies\include\OIS;$(SolutionDir)dependencies\include\AL;$(SolutionDir)..\source\main\..\angelscript_addons;$(SolutionDir)dependencies\include\MYGUI;$(SolutionDir)dependencies\include\Caelum;$(SolutionDir)dependencies\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4996;4251;4275;4099;4305;4244;4193</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_ANGELSCRIPT;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_MPLATFORM;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <PrecompiledHeaderFile>$(SolutionDir)..\tools\windows\pch\Precompiled.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(SolutionDir)..\tools\windows\pch\Precompiled.h</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;USE_MUMBLE;USE_MOFILEREADER;USE_MYGUI;USE_OPENAL;USE_SOCKETW;USE_ANGELSCRIPT;USE_CURL;USE_CAELUM;USE_PAGED;_CRT_SECURE_NO_WARNINGS;AS_USE_NAMESPACE;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;source\main\.;source\main\audio;source\main\datatypes;source\main\gameplay;source\main\gameplay\ois;source\main\gameplay\ois\linux;source\main\gameplay\ois\Win32;source\main\gfx;source\main\gfx\camera;source\main\gfx\dof;source\main\gfx\hydrax;source\main\gfx\particle;source\main\gfx\procedural;source\main\gui;source\main\gui\imgui;source\main\gui\mygui;source\main\gui\panels;source\main\network;source\main\physics;source\main\physics\air;source\main\physics\collision;source\main\physics\flex;source\main\physics\threading;source\main\physics\utils;source\main\physics\water;source\main\resources;source\main\resources\rig_def_fileformat;source\main\resources\terrn2_fileformat;source\main\rig_editor;source\main\rig_editor\rig_data;source\main\scripting;source\main\terrain;source\main\terrain\map;source\main\threadpool;source\main\utils;source\main\utils\profiler;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;source\main\..\angelscript_addons;source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\Caelum;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>d:\projects\lib\DirectX_SDK_June2010\Include;source\main\.;source\main\audio;source\main\datatypes;source\main\gameplay;source\main\gameplay\ois;source\main\gameplay\ois\linux;source\main\gameplay\ois\Win32;source\main\gfx;source\main\gfx\camera;source\main\gfx\dof;source\main\gfx\hydrax;source\main\gfx\particle;source\main\gfx\procedural;source\main\gui;source\main\gui\imgui;source\main\gui\mygui;source\main\gui\panels;source\main\network;source\main\physics;source\main\physics\air;source\main\physics\collision;source\main\physics\flex;source\main\physics\threading;source\main\physics\utils;source\main\physics\water;source\main\resources;source\main\resources\rig_def_fileformat;source\main\resources\terrn2_fileformat;source\main\rig_editor;source\main\rig_editor\rig_data;source\main\scripting;source\main\terrain;source\main\terrain\map;source\main\threadpool;source\main\utils;source\main\utils\profiler;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Paging;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\RTShaderSystem;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Terrain;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\OGRE\Overlay;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\AL;source\main\..\angelscript_addons;source\version_info;C:\Builds\rigs-of-rods-elsaco\source\version_info;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\MYGUI;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\Caelum;C:\Builds\ror-dependencies-upstream\Dependencies_Windows_Visual-Studio-14-2015\include\PagedGeometry;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PostBuildEvent>
+      <Message>	Copy resources to build directory</Message>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalOptions>%(AdditionalOptions)  /machine:X86</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;dinput8.lib;dxguid.lib;$(SolutionDir)dependencies\lib\Release\OIS.lib;$(SolutionDir)dependencies\lib\Release\OgreMain.lib;$(SolutionDir)dependencies\lib\Release\OgrePaging.lib;$(SolutionDir)dependencies\lib\Release\OgreRTShaderSystem.lib;$(SolutionDir)dependencies\lib\Release\OgreTerrain.lib;$(SolutionDir)dependencies\lib\Release\OgreOverlay.lib;$(SolutionDir)dependencies\lib\OpenAL32.lib;$(SolutionDir)dependencies\lib\libcurl_imp.lib;$(SolutionDir)dependencies\lib\Release\moFileReader.static.lib;$(SolutionDir)dependencies\lib\release\MyGUIEngine.lib;$(SolutionDir)dependencies\lib\release\MyGUI.OgrePlatform.lib;$(SolutionDir)dependencies\lib\SocketW.lib;$(SolutionDir)dependencies\lib\relwithdebinfo\enet.lib;$(SolutionDir)dependencies\lib\angelscript_2_31_2\MultiThreadedDLL\angelscript.lib;ws2_32.lib;winmm.lib;$(SolutionDir)dependencies\lib\Caelum.lib;$(SolutionDir)dependencies\lib\PagedGeometry.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>RoR.dir/Release/RoR.lib</ImportLibrary>
+      <LargeAddressAware>true</LargeAddressAware>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>$(SolutionDir)..\bin\RoR.pdb</ProgramDataBaseFile>
+      <SetChecksum>true</SetChecksum>
+      <SubSystem>Windows</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameSettings.cpp" />
+    <ClCompile Include="..\source\main\resources\otc_fileformat\OTCFileformat.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptany.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptarray.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptbuilder.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptdictionary.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scripthelper.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptmath.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptstdstring.cpp" />
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptstdstring_utils.cpp" />
+    <ClCompile Include="..\source\main\scripting\LocalStorage.cpp" />
+    <ClCompile Include="..\tools\windows\pch\Precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(SolutionDir)..\tools\windows\pch\Precompiled.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="..\source\main\Application.h" />
+    <ClInclude Include="..\source\main\ForwardDeclarations.h" />
+    <ClInclude Include="..\source\main\GlobalEnvironment.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameSettings.h" />
+    <ClInclude Include="..\source\main\MainMenu.h" />
+    <ClInclude Include="..\source\main\resources\otc_fileformat\OTCFileformat.h" />
+    <ClInclude Include="..\source\main\RoRPrerequisites.h" />
+    <ClInclude Include="..\source\main\audio\MumbleIntegration.h" />
+    <ClInclude Include="..\source\main\audio\Sound.h" />
+    <ClInclude Include="..\source\main\audio\SoundManager.h" />
+    <ClInclude Include="..\source\main\audio\SoundScriptManager.h" />
+    <ClInclude Include="..\source\main\datatypes\beam_t.h" />
+    <ClInclude Include="..\source\main\datatypes\node_t.h" />
+    <ClInclude Include="..\source\main\datatypes\rig_t.h" />
+    <ClInclude Include="..\source\main\datatypes\shock_t.h" />
+    <ClInclude Include="..\source\main\datatypes\wheel_t.h" />
+    <ClInclude Include="..\source\main\gameplay\AircraftSimulation.h" />
+    <ClInclude Include="..\source\main\gameplay\AutoPilot.h" />
+    <ClInclude Include="..\source\main\gameplay\BeamEngine.h" />
+    <ClInclude Include="..\source\main\gameplay\Character.h" />
+    <ClInclude Include="..\source\main\gameplay\CharacterFactory.h" />
+    <ClInclude Include="..\source\main\gameplay\ChatSystem.h" />
+    <ClInclude Include="..\source\main\gameplay\Landusemap.h" />
+    <ClInclude Include="..\source\main\gameplay\LandVehicleSimulation.h" />
+    <ClInclude Include="..\source\main\gameplay\OutProtocol.h" />
+    <ClInclude Include="..\source\main\gameplay\PositionStorage.h" />
+    <ClInclude Include="..\source\main\gameplay\ProceduralManager.h" />
+    <ClInclude Include="..\source\main\gameplay\Replay.h" />
+    <ClInclude Include="..\source\main\gameplay\Road.h" />
+    <ClInclude Include="..\source\main\gameplay\Road2.h" />
+    <ClInclude Include="..\source\main\gameplay\RoRFrameListener.h" />
+    <ClInclude Include="..\source\main\gameplay\SceneMouse.h" />
+    <ClInclude Include="..\source\main\gameplay\ScriptEvents.h" />
+    <ClInclude Include="..\source\main\gameplay\Scripting.h" />
+    <ClInclude Include="..\source\main\gameplay\SkinManager.h" />
+    <ClInclude Include="..\source\main\gameplay\TorqueCurve.h" />
+    <ClInclude Include="..\source\main\gameplay\VehicleAI.h" />
+    <ClInclude Include="..\source\main\gfx\AdvancedScreen.h" />
+    <ClInclude Include="..\source\main\gfx\ColoredTextAreaOverlayElement.h" />
+    <ClInclude Include="..\source\main\gfx\ColoredTextAreaOverlayElementFactory.h" />
+    <ClInclude Include="..\source\main\gfx\DecalManager.h" />
+    <ClInclude Include="..\source\main\gfx\DustManager.h" />
+    <ClInclude Include="..\source\main\gfx\DustPool.h" />
+    <ClInclude Include="..\source\main\gfx\EnvironmentMap.h" />
+    <ClInclude Include="..\source\main\gfx\GfxActor.h" />
+    <ClInclude Include="..\source\main\gfx\GlowMaterialListener.h" />
+    <ClInclude Include="..\source\main\gfx\HDRListener.h" />
+    <ClInclude Include="..\source\main\gfx\Heathaze.h" />
+    <ClInclude Include="..\source\main\gfx\HydraxWater.h" />
+    <ClInclude Include="..\source\main\gfx\IWater.h" />
+    <ClInclude Include="..\source\main\gfx\MovableText.h" />
+    <ClInclude Include="..\source\main\gfx\OgreSubsystem.h" />
+    <ClInclude Include="..\source\main\gfx\ShadowManager.h" />
+    <ClInclude Include="..\source\main\gfx\Skidmark.h" />
+    <ClInclude Include="..\source\main\gfx\SkyManager.h" />
+    <ClInclude Include="..\source\main\gfx\Water.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorCharacter.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorFixed.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorFree.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorIsometric.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorOrbit.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorStatic.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorVehicle.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorVehicleSpline.h" />
+    <ClInclude Include="..\source\main\gfx\camera\CameraManager.h" />
+    <ClInclude Include="..\source\main\gfx\camera\PerVehicleCameraContext.h" />
+    <ClInclude Include="..\source\main\gfx\dof\DepthOfFieldEffect.h" />
+    <ClInclude Include="..\source\main\gfx\dof\Lens.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\CfgFileManager.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\DecalsManager.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Enums.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\FFT.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\GodRaysManager.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\GPUNormalMapManager.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Help.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Hydrax.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Image.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\MaterialManager.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Mesh.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Module.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Noise.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Perlin.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Prerequisites.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\PressurePoint.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\ProjectedGrid.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\RadialGrid.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Real.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\RttManager.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\SimpleGrid.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\TextureManager.h" />
+    <ClInclude Include="..\source\main\gfx\hydrax\Wave.h" />
+    <ClInclude Include="..\source\main\gfx\particle\ExtinguishableFireAffector.h" />
+    <ClInclude Include="..\source\main\gfx\particle\ExtinguishableFireAffectorFactory.h" />
+    <ClInclude Include="..\source\main\gfx\particle\FireExtinguisherAffector.h" />
+    <ClInclude Include="..\source\main\gfx\particle\FireExtinguisherAffectorFactory.h" />
+    <ClInclude Include="..\source\main\gfx\particle\OgreParticleCustomParam.h" />
+    <ClInclude Include="..\source\main\gfx\particle\OgreShaderParticleRenderer.h" />
+    <ClInclude Include="..\source\main\gui\Dashboard.h" />
+    <ClInclude Include="..\source\main\gui\DashBoardManager.h" />
+    <ClInclude Include="..\source\main\gui\GUIInputManager.h" />
+    <ClInclude Include="..\source\main\gui\GUIManager.h" />
+    <ClInclude Include="..\source\main\gui\OverlayWrapper.h" />
+    <ClInclude Include="..\source\main\gui\RTTLayer.h" />
+    <ClInclude Include="..\source\main\gui\imgui\imgui.h" />
+    <ClInclude Include="..\source\main\gui\imgui\OgreImGui.h" />
+    <ClInclude Include="..\source\main\gui\imgui\imconfig.h" />
+    <ClInclude Include="..\source\main\gui\imgui\imgui_internal.h" />
+    <ClInclude Include="..\source\main\gui\imgui\stb_rect_pack.h" />
+    <ClInclude Include="..\source\main\gui\imgui\stb_textedit.h" />
+    <ClInclude Include="..\source\main\gui\imgui\stb_truetype.h" />
+    <ClInclude Include="..\source\main\gui\mygui\Attribute.h" />
+    <ClInclude Include="..\source\main\gui\mygui\BaseLayout.h" />
+    <ClInclude Include="..\source\main\gui\mygui\Dialog.h" />
+    <ClInclude Include="..\source\main\gui\mygui\GuiPanelBase.h" />
+    <ClInclude Include="..\source\main\gui\mygui\WrapsAttribute.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameConsole.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_LoadingWindow.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_FrictionSettings.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_TopMenubar.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_TextureToolWindow.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_DebugOptions.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_DebugOptionsLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameAbout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameAboutLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameChatBox.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameChatBoxLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameConsoleLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameMainMenu.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_GamePauseMenu.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_MainSelector.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_MainSelectorLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_MessageBox.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_MultiplayerSelector.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_MultiplayerClientList.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_OpenSaveFileDialog.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindow.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_SimUtils.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_SimUtilsLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_TeleportWindow.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_TeleportWindowLayout.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_VehicleDescription.h" />
+    <ClInclude Include="..\source\main\gui\panels\GUI_VehicleDescriptionLayout.h" />
+    <ClInclude Include="..\source\main\network\Network.h" />
+    <ClInclude Include="..\source\main\physics\ApproxMath.h" />
+    <ClInclude Include="..\source\main\physics\Beam.h" />
+    <ClInclude Include="..\source\main\physics\BeamData.h" />
+    <ClInclude Include="..\source\main\physics\BeamFactory.h" />
+    <ClInclude Include="..\source\main\physics\CmdKeyInertia.h" />
+    <ClInclude Include="..\source\main\physics\Differentials.h" />
+    <ClInclude Include="..\source\main\physics\RigSpawner.h" />
+    <ClInclude Include="..\source\main\physics\SlideNode.h" />
+    <ClInclude Include="..\source\main\physics\air\AeroEngine.h" />
+    <ClInclude Include="..\source\main\physics\air\AirBrake.h" />
+    <ClInclude Include="..\source\main\physics\air\Airfoil.h" />
+    <ClInclude Include="..\source\main\physics\air\TurboJet.h" />
+    <ClInclude Include="..\source\main\physics\air\TurboProp.h" />
+    <ClInclude Include="..\source\main\physics\collision\CartesianToTriangleTransform.h" />
+    <ClInclude Include="..\source\main\physics\collision\Collisions.h" />
+    <ClInclude Include="..\source\main\physics\collision\DynamicCollisions.h" />
+    <ClInclude Include="..\source\main\physics\collision\PointColDetector.h" />
+    <ClInclude Include="..\source\main\physics\collision\Triangle.h" />
+    <ClInclude Include="..\source\main\physics\flex\Flexable.h" />
+    <ClInclude Include="..\source\main\physics\flex\FlexAirfoil.h" />
+    <ClInclude Include="..\source\main\physics\flex\FlexBody.h" />
+    <ClInclude Include="..\source\main\physics\flex\FlexFactory.h" />
+    <ClInclude Include="..\source\main\physics\flex\FlexMesh.h" />
+    <ClInclude Include="..\source\main\physics\flex\FlexMeshWheel.h" />
+    <ClInclude Include="..\source\main\physics\flex\FlexObj.h" />
+    <ClInclude Include="..\source\main\physics\flex\Locator_t.h" />
+    <ClInclude Include="..\source\main\physics\utils\BeamStats.h" />
+    <ClInclude Include="..\source\main\physics\utils\RigLoadingProfiler.h" />
+    <ClInclude Include="..\source\main\physics\water\Buoyance.h" />
+    <ClInclude Include="..\source\main\physics\water\ScrewProp.h" />
+    <ClInclude Include="..\source\main\resources\CacheSystem.h" />
+    <ClInclude Include="..\source\main\resources\ContentManager.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_File.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Node.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Parser.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Prerequisites.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Regexes.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Serializer.h" />
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Validator.h" />
+    <ClInclude Include="..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h" />
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptany.h" />
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptarray.h" />
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptbuilder.h" />
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptdictionary.h" />
+    <ClInclude Include="..\source\main\scripting\as_addon\scripthelper.h" />
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptmath.h" />
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptstdstring.h" />
+    <ClInclude Include="..\source\main\scripting\LocalStorage.h" />
+    <ClInclude Include="..\source\main\terrain\IHeightFinder.h" />
+    <ClInclude Include="..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.h" />
+    <ClInclude Include="..\source\main\terrain\TerrainGeometryManager.h" />
+    <ClInclude Include="..\source\main\terrain\TerrainManager.h" />
+    <ClInclude Include="..\source\main\terrain\TerrainObjectManager.h" />
+    <ClInclude Include="..\source\main\terrain\map\SurveyMapEntity.h" />
+    <ClInclude Include="..\source\main\terrain\map\SurveyMapManager.h" />
+    <ClInclude Include="..\source\main\terrain\map\SurveyMapTextureCreator.h" />
+    <ClInclude Include="..\source\main\threadpool\ThreadPool.h" />
+    <ClInclude Include="..\source\main\utils\CollisionTools.h" />
+    <ClInclude Include="..\source\main\utils\ConfigFile.h" />
+    <ClInclude Include="..\source\main\utils\ErrorUtils.h" />
+    <ClInclude Include="..\source\main\utils\FileSystemInfo.h" />
+    <ClInclude Include="..\source\main\utils\ForceFeedback.h" />
+    <ClInclude Include="..\source\main\utils\IBehavior.h" />
+    <ClInclude Include="..\source\main\utils\ImprovedConfigFile.h" />
+    <ClInclude Include="..\source\main\utils\InputEngine.h" />
+    <ClInclude Include="..\source\main\utils\InterThreadStoreVector.h" />
+    <ClInclude Include="..\source\main\utils\Language.h" />
+    <ClInclude Include="..\source\main\utils\MeshObject.h" />
+    <ClInclude Include="..\source\main\utils\PlatformUtils.h" />
+    <ClInclude Include="..\source\main\utils\RoRWindowEventUtilities.h" />
+    <ClInclude Include="..\source\main\utils\Settings.h" />
+    <ClInclude Include="..\source\main\utils\SHA1.h" />
+    <ClInclude Include="..\source\main\utils\SimpleGlob.h" />
+    <ClInclude Include="..\source\main\utils\SimpleOpt.h" />
+    <ClInclude Include="..\source\main\utils\Singleton.h" />
+    <ClInclude Include="..\source\main\utils\Timer.h" />
+    <ClInclude Include="..\source\main\utils\Utils.h" />
+    <ClInclude Include="..\source\main\utils\WriteTextToTexture.h" />
+    <ClInclude Include="..\source\main\utils\ZeroedMemoryAllocator.h" />
+    <ClInclude Include="..\source\main\utils\profiler\Profiler.h" />
+    <ClInclude Include="..\source\main\utils\profiler\RigLoadingProfilerControl.h" />
+    <ClInclude Include="..\source\main\scripting\CBytecodeStream.h" />
+    <ClInclude Include="..\source\main\scripting\GameScript.h" />
+    <ClInclude Include="..\source\main\scripting\OgreAngelscript.h" />
+    <ClInclude Include="..\source\main\scripting\OgreScriptBuilder.h" />
+    <ClInclude Include="..\source\main\scripting\ScriptEngine.h" />
+    <ClCompile Include="..\source\main\main.cpp" />
+    <ClCompile Include="..\source\main\Application.cpp" />
+    <ClCompile Include="..\source\main\MainMenu.cpp" />
+    <ClCompile Include="..\source\main\audio\MumbleIntegration.cpp" />
+    <ClCompile Include="..\source\main\audio\Sound.cpp" />
+    <ClCompile Include="..\source\main\audio\SoundManager.cpp" />
+    <ClCompile Include="..\source\main\audio\SoundScriptManager.cpp" />
+    <ClCompile Include="..\source\main\gameplay\AircraftSimulation.cpp" />
+    <ClCompile Include="..\source\main\gameplay\AutoPilot.cpp" />
+    <ClCompile Include="..\source\main\gameplay\BeamEngine.cpp" />
+    <ClCompile Include="..\source\main\gameplay\Character.cpp" />
+    <ClCompile Include="..\source\main\gameplay\CharacterFactory.cpp" />
+    <ClCompile Include="..\source\main\gameplay\ChatSystem.cpp" />
+    <ClCompile Include="..\source\main\gameplay\Landusemap.cpp" />
+    <ClCompile Include="..\source\main\gameplay\LandVehicleSimulation.cpp" />
+    <ClCompile Include="..\source\main\gameplay\OutProtocol.cpp" />
+    <ClCompile Include="..\source\main\gameplay\PositionStorage.cpp" />
+    <ClCompile Include="..\source\main\gameplay\ProceduralManager.cpp" />
+    <ClCompile Include="..\source\main\gameplay\Replay.cpp" />
+    <ClCompile Include="..\source\main\gameplay\Road.cpp" />
+    <ClCompile Include="..\source\main\gameplay\Road2.cpp" />
+    <ClCompile Include="..\source\main\gameplay\RoRFrameListener.cpp" />
+    <ClCompile Include="..\source\main\gameplay\SceneMouse.cpp" />
+    <ClCompile Include="..\source\main\gameplay\SkinManager.cpp" />
+    <ClCompile Include="..\source\main\gameplay\TorqueCurve.cpp" />
+    <ClCompile Include="..\source\main\gameplay\VehicleAI.cpp" />
+    <ClCompile Include="..\source\main\gfx\ColoredTextAreaOverlayElement.cpp" />
+    <ClCompile Include="..\source\main\gfx\DecalManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\DustManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\DustPool.cpp" />
+    <ClCompile Include="..\source\main\gfx\EnvironmentMap.cpp" />
+    <ClCompile Include="..\source\main\gfx\GfxActor.cpp" />
+    <ClCompile Include="..\source\main\gfx\HDRListener.cpp" />
+    <ClCompile Include="..\source\main\gfx\Heathaze.cpp" />
+    <ClCompile Include="..\source\main\gfx\HydraxWater.cpp" />
+    <ClCompile Include="..\source\main\gfx\MovableText.cpp" />
+    <ClCompile Include="..\source\main\gfx\OgreSubsystem.cpp" />
+    <ClCompile Include="..\source\main\gfx\ShadowManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\Skidmark.cpp" />
+    <ClCompile Include="..\source\main\gfx\SkyManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\Water.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorCharacter.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorFixed.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorFree.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorIsometric.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorOrbit.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorStatic.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorVehicle.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp" />
+    <ClCompile Include="..\source\main\gfx\camera\CameraManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\dof\DepthOfFieldEffect.cpp" />
+    <ClCompile Include="..\source\main\gfx\dof\Lens.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\CfgFileManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\DecalsManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Enums.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\FFT.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\GodRaysManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\GPUNormalMapManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Help.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Hydrax.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Image.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\MaterialManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Mesh.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Module.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Noise.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Perlin.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Prerequisites.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\PressurePoint.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\ProjectedGrid.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\RadialGrid.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Real.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\RttManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\SimpleGrid.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\TextureManager.cpp" />
+    <ClCompile Include="..\source\main\gfx\hydrax\Wave.cpp" />
+    <ClCompile Include="..\source\main\gfx\particle\ExtinguishableFireAffector.cpp" />
+    <ClCompile Include="..\source\main\gfx\particle\FireExtinguisherAffector.cpp" />
+    <ClCompile Include="..\source\main\gfx\particle\OgreShaderParticleRenderer.cpp" />
+    <ClCompile Include="..\source\main\gui\Dashboard.cpp" />
+    <ClCompile Include="..\source\main\gui\DashBoardManager.cpp" />
+    <ClCompile Include="..\source\main\gui\GUIInputManager.cpp" />
+    <ClCompile Include="..\source\main\gui\GUIManager.cpp" />
+    <ClCompile Include="..\source\main\gui\OverlayWrapper.cpp" />
+    <ClCompile Include="..\source\main\gui\RTTLayer.cpp" />
+    <ClCompile Include="..\source\main\gui\imgui\imgui.cpp" />
+    <ClCompile Include="..\source\main\gui\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\source\main\gui\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\source\main\gui\imgui\OgreImGui.cpp" />
+    <ClCompile Include="..\source\main\gui\mygui\Dialog.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameConsole.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_LoadingWindow.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_FrictionSettings.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_TopMenubar.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_TextureToolWindow.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_DebugOptions.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_DebugOptionsLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameAbout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameAboutLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameChatBox.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameChatBoxLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameConsoleLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameMainMenu.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_GamePauseMenu.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_MainSelector.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_MainSelectorLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_MessageBox.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_MultiplayerSelector.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_MultiplayerClientList.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_SimUtils.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_SimUtilsLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_TeleportWindow.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_TeleportWindowLayout.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_VehicleDescription.cpp" />
+    <ClCompile Include="..\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp" />
+    <ClCompile Include="..\source\main\network\Network.cpp" />
+    <ClCompile Include="..\source\main\physics\Beam.cpp" />
+    <ClCompile Include="..\source\main\physics\BeamFactory.cpp" />
+    <ClCompile Include="..\source\main\physics\BeamForcesEuler.cpp" />
+    <ClCompile Include="..\source\main\physics\BeamSlideNode.cpp" />
+    <ClCompile Include="..\source\main\physics\CmdKeyInertia.cpp" />
+    <ClCompile Include="..\source\main\physics\Differentials.cpp" />
+    <ClCompile Include="..\source\main\physics\RigSpawner.cpp" />
+    <ClCompile Include="..\source\main\physics\RigSpawner_ProcessControl.cpp" />
+    <ClCompile Include="..\source\main\physics\SlideNode.cpp" />
+    <ClCompile Include="..\source\main\physics\air\AirBrake.cpp" />
+    <ClCompile Include="..\source\main\physics\air\Airfoil.cpp" />
+    <ClCompile Include="..\source\main\physics\air\TurboJet.cpp" />
+    <ClCompile Include="..\source\main\physics\air\TurboProp.cpp" />
+    <ClCompile Include="..\source\main\physics\collision\Collisions.cpp" />
+    <ClCompile Include="..\source\main\physics\collision\DynamicCollisions.cpp" />
+    <ClCompile Include="..\source\main\physics\collision\PointColDetector.cpp" />
+    <ClCompile Include="..\source\main\physics\flex\FlexAirfoil.cpp" />
+    <ClCompile Include="..\source\main\physics\flex\FlexBody.cpp" />
+    <ClCompile Include="..\source\main\physics\flex\FlexFactory.cpp" />
+    <ClCompile Include="..\source\main\physics\flex\FlexMesh.cpp" />
+    <ClCompile Include="..\source\main\physics\flex\FlexMeshWheel.cpp" />
+    <ClCompile Include="..\source\main\physics\flex\FlexObj.cpp" />
+    <ClCompile Include="..\source\main\physics\utils\BeamStats.cpp" />
+    <ClCompile Include="..\source\main\physics\water\Buoyance.cpp" />
+    <ClCompile Include="..\source\main\physics\water\ScrewProp.cpp" />
+    <ClCompile Include="..\source\main\resources\CacheSystem.cpp" />
+    <ClCompile Include="..\source\main\resources\ContentManager.cpp" />
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_File.cpp" />
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Node.cpp" />
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Parser.cpp" />
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.cpp" />
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Serializer.cpp" />
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp" />
+    <ClCompile Include="..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.cpp" />
+    <ClCompile Include="..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.cpp" />
+    <ClCompile Include="..\source\main\terrain\TerrainGeometryManager.cpp" />
+    <ClCompile Include="..\source\main\terrain\TerrainManager.cpp" />
+    <ClCompile Include="..\source\main\terrain\TerrainObjectManager.cpp" />
+    <ClCompile Include="..\source\main\terrain\map\SurveyMapEntity.cpp" />
+    <ClCompile Include="..\source\main\terrain\map\SurveyMapManager.cpp" />
+    <ClCompile Include="..\source\main\terrain\map\SurveyMapTextureCreator.cpp" />
+    <ClCompile Include="..\source\main\utils\CollisionTools.cpp" />
+    <ClCompile Include="..\source\main\utils\ConfigFile.cpp" />
+    <ClCompile Include="..\source\main\utils\ErrorUtils.cpp" />
+    <ClCompile Include="..\source\main\utils\ForceFeedback.cpp" />
+    <ClCompile Include="..\source\main\utils\InputEngine.cpp" />
+    <ClCompile Include="..\source\main\utils\Language.cpp" />
+    <ClCompile Include="..\source\main\utils\MeshObject.cpp" />
+    <ClCompile Include="..\source\main\utils\PlatformUtils.cpp" />
+    <ClCompile Include="..\source\main\utils\RoRWindowEventUtilities.cpp" />
+    <ClCompile Include="..\source\main\utils\Settings.cpp" />
+    <ClCompile Include="..\source\main\utils\SHA1.cpp" />
+    <ClCompile Include="..\source\main\utils\Utils.cpp" />
+    <ClCompile Include="..\source\main\utils\WriteTextToTexture.cpp" />
+    <ClCompile Include="..\source\main\utils\profiler\Profiler.cpp" />
+    <ClCompile Include="..\source\main\scripting\CBytecodeStream.cpp" />
+    <ClCompile Include="..\source\main\scripting\GameScript.cpp" />
+    <ClCompile Include="..\source\main\scripting\OgreAngelscript.cpp" />
+    <ClCompile Include="..\source\main\scripting\OgreScriptBuilder.cpp" />
+    <ClCompile Include="..\source\main\scripting\ScriptEngine.cpp" />
+    <ResourceCompile Include="..\source\main\icon.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,1461 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\main\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\MainMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\audio\MumbleIntegration.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\audio\Sound.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\audio\SoundManager.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\audio\SoundScriptManager.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\AircraftSimulation.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\AutoPilot.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\BeamEngine.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\Character.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\CharacterFactory.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\ChatSystem.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\Landusemap.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\LandVehicleSimulation.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\OutProtocol.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\PositionStorage.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\ProceduralManager.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\Replay.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\Road.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\Road2.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\RoRFrameListener.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\SceneMouse.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\SkinManager.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\TorqueCurve.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gameplay\VehicleAI.cpp">
+      <Filter>Source Files\gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\ColoredTextAreaOverlayElement.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\DecalManager.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\DustManager.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\DustPool.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\EnvironmentMap.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\GfxActor.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\HDRListener.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\Heathaze.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\HydraxWater.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\MovableText.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\OgreSubsystem.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\ShadowManager.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\Skidmark.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\SkyManager.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\Water.cpp">
+      <Filter>Source Files\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorCharacter.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorFixed.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorFree.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorIsometric.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorOrbit.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorStatic.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorVehicle.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraBehaviorVehicleSpline.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\camera\CameraManager.cpp">
+      <Filter>Source Files\gfx\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\dof\DepthOfFieldEffect.cpp">
+      <Filter>Source Files\gfx\dof</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\dof\Lens.cpp">
+      <Filter>Source Files\gfx\dof</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\CfgFileManager.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\DecalsManager.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Enums.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\FFT.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\GodRaysManager.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\GPUNormalMapManager.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Help.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Hydrax.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Image.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\MaterialManager.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Mesh.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Module.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Noise.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Perlin.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Prerequisites.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\PressurePoint.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\ProjectedGrid.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\RadialGrid.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Real.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\RttManager.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\SimpleGrid.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\TextureManager.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\hydrax\Wave.cpp">
+      <Filter>Source Files\gfx\hydrax</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\particle\ExtinguishableFireAffector.cpp">
+      <Filter>Source Files\gfx\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\particle\FireExtinguisherAffector.cpp">
+      <Filter>Source Files\gfx\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gfx\particle\OgreShaderParticleRenderer.cpp">
+      <Filter>Source Files\gfx\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\Dashboard.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\DashBoardManager.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\GUIInputManager.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\GUIManager.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\OverlayWrapper.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\RTTLayer.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\imgui\imgui.cpp">
+      <Filter>Source Files\gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\imgui\imgui_demo.cpp">
+      <Filter>Source Files\gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\imgui\imgui_draw.cpp">
+      <Filter>Source Files\gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\imgui\OgreImGui.cpp">
+      <Filter>Source Files\gui\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\mygui\Dialog.cpp">
+      <Filter>Source Files\gui\mygui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameConsole.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_LoadingWindow.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_FrictionSettings.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_TopMenubar.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_TextureToolWindow.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_DebugOptions.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_DebugOptionsLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameAbout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameAboutLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameChatBox.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameChatBoxLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameConsoleLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameMainMenu.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GamePauseMenu.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_MainSelector.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_MainSelectorLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_MessageBox.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_MultiplayerSelector.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_MultiplayerClientList.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_OpenSaveFileDialog.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindow.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_SimUtils.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_SimUtilsLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_TeleportWindow.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_TeleportWindowLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_VehicleDescription.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_VehicleDescriptionLayout.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\network\Network.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\Beam.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\BeamFactory.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\BeamForcesEuler.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\BeamSlideNode.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\CmdKeyInertia.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\Differentials.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\RigSpawner.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\RigSpawner_ProcessControl.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\SlideNode.cpp">
+      <Filter>Source Files\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\air\AirBrake.cpp">
+      <Filter>Source Files\physics\air</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\air\Airfoil.cpp">
+      <Filter>Source Files\physics\air</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\air\TurboJet.cpp">
+      <Filter>Source Files\physics\air</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\air\TurboProp.cpp">
+      <Filter>Source Files\physics\air</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\collision\Collisions.cpp">
+      <Filter>Source Files\physics\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\collision\DynamicCollisions.cpp">
+      <Filter>Source Files\physics\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\collision\PointColDetector.cpp">
+      <Filter>Source Files\physics\collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\flex\FlexAirfoil.cpp">
+      <Filter>Source Files\physics\flex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\flex\FlexBody.cpp">
+      <Filter>Source Files\physics\flex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\flex\FlexFactory.cpp">
+      <Filter>Source Files\physics\flex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\flex\FlexMesh.cpp">
+      <Filter>Source Files\physics\flex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\flex\FlexMeshWheel.cpp">
+      <Filter>Source Files\physics\flex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\flex\FlexObj.cpp">
+      <Filter>Source Files\physics\flex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\utils\BeamStats.cpp">
+      <Filter>Source Files\physics\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\water\Buoyance.cpp">
+      <Filter>Source Files\physics\water</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\physics\water\ScrewProp.cpp">
+      <Filter>Source Files\physics\water</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\CacheSystem.cpp">
+      <Filter>Source Files\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\ContentManager.cpp">
+      <Filter>Source Files\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_File.cpp">
+      <Filter>Source Files\resources\rig_def_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Node.cpp">
+      <Filter>Source Files\resources\rig_def_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Parser.cpp">
+      <Filter>Source Files\resources\rig_def_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.cpp">
+      <Filter>Source Files\resources\rig_def_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Serializer.cpp">
+      <Filter>Source Files\resources\rig_def_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\rig_def_fileformat\RigDef_Validator.cpp">
+      <Filter>Source Files\resources\rig_def_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.cpp">
+      <Filter>Source Files\resources\terrn2_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.cpp">
+      <Filter>Source Files\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\terrain\TerrainGeometryManager.cpp">
+      <Filter>Source Files\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\terrain\TerrainManager.cpp">
+      <Filter>Source Files\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\terrain\TerrainObjectManager.cpp">
+      <Filter>Source Files\terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\terrain\map\SurveyMapEntity.cpp">
+      <Filter>Source Files\terrain\map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\terrain\map\SurveyMapManager.cpp">
+      <Filter>Source Files\terrain\map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\terrain\map\SurveyMapTextureCreator.cpp">
+      <Filter>Source Files\terrain\map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\CollisionTools.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\ConfigFile.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\ErrorUtils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\ForceFeedback.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\InputEngine.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\Language.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\MeshObject.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\PlatformUtils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\RoRWindowEventUtilities.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\Settings.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\SHA1.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\Utils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\WriteTextToTexture.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\utils\profiler\Profiler.cpp">
+      <Filter>Source Files\utils\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\CBytecodeStream.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\GameScript.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\OgreAngelscript.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\OgreScriptBuilder.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\ScriptEngine.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\gui\panels\GUI_GameSettings.cpp">
+      <Filter>Source Files\gui\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptarray.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptbuilder.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptdictionary.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptmath.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scripthelper.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\resources\otc_fileformat\OTCFileformat.cpp">
+      <Filter>Source Files\resources\otc_fileformat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptstdstring.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptstdstring_utils.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\as_addon\scriptany.cpp">
+      <Filter>Source Files\scripting\as_addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\main\scripting\LocalStorage.cpp">
+      <Filter>Source Files\scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tools\windows\pch\Precompiled.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\main\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\ForwardDeclarations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\GlobalEnvironment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\MainMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\RoRPrerequisites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\audio\MumbleIntegration.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\audio\Sound.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\audio\SoundManager.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\audio\SoundScriptManager.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\datatypes\beam_t.h">
+      <Filter>Header Files\datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\datatypes\node_t.h">
+      <Filter>Header Files\datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\datatypes\rig_t.h">
+      <Filter>Header Files\datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\datatypes\shock_t.h">
+      <Filter>Header Files\datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\datatypes\wheel_t.h">
+      <Filter>Header Files\datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\AircraftSimulation.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\AutoPilot.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\BeamEngine.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\Character.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\CharacterFactory.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\ChatSystem.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\Landusemap.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\LandVehicleSimulation.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\OutProtocol.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\PositionStorage.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\ProceduralManager.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\Replay.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\Road.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\Road2.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\RoRFrameListener.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\SceneMouse.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\ScriptEvents.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\Scripting.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\SkinManager.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\TorqueCurve.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gameplay\VehicleAI.h">
+      <Filter>Header Files\gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\AdvancedScreen.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\ColoredTextAreaOverlayElement.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\ColoredTextAreaOverlayElementFactory.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\DecalManager.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\DustManager.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\DustPool.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\EnvironmentMap.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\GfxActor.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\GlowMaterialListener.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\HDRListener.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\Heathaze.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\HydraxWater.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\IWater.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\MovableText.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\OgreSubsystem.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\ShadowManager.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\Skidmark.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\SkyManager.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\Water.h">
+      <Filter>Header Files\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorCharacter.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorFixed.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorFree.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorIsometric.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorOrbit.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorStatic.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorVehicle.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorVehicleCineCam.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraBehaviorVehicleSpline.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\CameraManager.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\camera\PerVehicleCameraContext.h">
+      <Filter>Header Files\gfx\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\dof\DepthOfFieldEffect.h">
+      <Filter>Header Files\gfx\dof</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\dof\Lens.h">
+      <Filter>Header Files\gfx\dof</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\CfgFileManager.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\DecalsManager.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Enums.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\FFT.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\GodRaysManager.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\GPUNormalMapManager.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Help.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Hydrax.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Image.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\MaterialManager.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Mesh.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Module.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Noise.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Perlin.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Prerequisites.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\PressurePoint.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\ProjectedGrid.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\RadialGrid.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Real.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\RttManager.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\SimpleGrid.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\TextureManager.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\hydrax\Wave.h">
+      <Filter>Header Files\gfx\hydrax</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\particle\ExtinguishableFireAffector.h">
+      <Filter>Header Files\gfx\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\particle\ExtinguishableFireAffectorFactory.h">
+      <Filter>Header Files\gfx\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\particle\FireExtinguisherAffector.h">
+      <Filter>Header Files\gfx\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\particle\FireExtinguisherAffectorFactory.h">
+      <Filter>Header Files\gfx\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\particle\OgreParticleCustomParam.h">
+      <Filter>Header Files\gfx\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gfx\particle\OgreShaderParticleRenderer.h">
+      <Filter>Header Files\gfx\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\Dashboard.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\DashBoardManager.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\GUIInputManager.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\GUIManager.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\OverlayWrapper.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\RTTLayer.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\imgui\imgui.h">
+      <Filter>Header Files\gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\imgui\OgreImGui.h">
+      <Filter>Header Files\gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\imgui\imconfig.h">
+      <Filter>Header Files\gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\imgui\imgui_internal.h">
+      <Filter>Header Files\gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\imgui\stb_rect_pack.h">
+      <Filter>Header Files\gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\imgui\stb_textedit.h">
+      <Filter>Header Files\gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\imgui\stb_truetype.h">
+      <Filter>Header Files\gui\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\mygui\Attribute.h">
+      <Filter>Header Files\gui\mygui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\mygui\BaseLayout.h">
+      <Filter>Header Files\gui\mygui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\mygui\Dialog.h">
+      <Filter>Header Files\gui\mygui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\mygui\GuiPanelBase.h">
+      <Filter>Header Files\gui\mygui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\mygui\WrapsAttribute.h">
+      <Filter>Header Files\gui\mygui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameConsole.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_LoadingWindow.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_FrictionSettings.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_TopMenubar.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_TextureToolWindow.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_DebugOptions.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_DebugOptionsLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameAbout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameAboutLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameChatBox.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameChatBoxLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameConsoleLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameMainMenu.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GamePauseMenu.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_MainSelector.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_MainSelectorLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_MessageBox.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_MultiplayerSelector.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_MultiplayerClientList.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_OpenSaveFileDialog.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindow.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_RigSpawnerReportWindowLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_SimUtils.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_SimUtilsLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_TeleportWindow.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_TeleportWindowLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_VehicleDescription.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_VehicleDescriptionLayout.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\network\Network.h">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\ApproxMath.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\Beam.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\BeamData.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\BeamFactory.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\CmdKeyInertia.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\Differentials.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\RigSpawner.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\SlideNode.h">
+      <Filter>Header Files\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\air\AeroEngine.h">
+      <Filter>Header Files\physics\air</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\air\AirBrake.h">
+      <Filter>Header Files\physics\air</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\air\Airfoil.h">
+      <Filter>Header Files\physics\air</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\air\TurboJet.h">
+      <Filter>Header Files\physics\air</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\air\TurboProp.h">
+      <Filter>Header Files\physics\air</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\collision\CartesianToTriangleTransform.h">
+      <Filter>Header Files\physics\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\collision\Collisions.h">
+      <Filter>Header Files\physics\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\collision\DynamicCollisions.h">
+      <Filter>Header Files\physics\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\collision\PointColDetector.h">
+      <Filter>Header Files\physics\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\collision\Triangle.h">
+      <Filter>Header Files\physics\collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\Flexable.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\FlexAirfoil.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\FlexBody.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\FlexFactory.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\FlexMesh.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\FlexMeshWheel.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\FlexObj.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\flex\Locator_t.h">
+      <Filter>Header Files\physics\flex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\utils\BeamStats.h">
+      <Filter>Header Files\physics\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\utils\RigLoadingProfiler.h">
+      <Filter>Header Files\physics\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\water\Buoyance.h">
+      <Filter>Header Files\physics\water</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\physics\water\ScrewProp.h">
+      <Filter>Header Files\physics\water</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\CacheSystem.h">
+      <Filter>Header Files\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\ContentManager.h">
+      <Filter>Header Files\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_File.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Node.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Parser.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Prerequisites.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Regexes.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_SequentialImporter.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Serializer.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\rig_def_fileformat\RigDef_Validator.h">
+      <Filter>Header Files\resources\rig_def_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\terrn2_fileformat\Terrn2Fileformat.h">
+      <Filter>Header Files\resources\terrn2_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\IHeightFinder.h">
+      <Filter>Header Files\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\OgreTerrainPSSMMaterialGenerator.h">
+      <Filter>Header Files\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\TerrainGeometryManager.h">
+      <Filter>Header Files\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\TerrainManager.h">
+      <Filter>Header Files\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\TerrainObjectManager.h">
+      <Filter>Header Files\terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\map\SurveyMapEntity.h">
+      <Filter>Header Files\terrain\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\map\SurveyMapManager.h">
+      <Filter>Header Files\terrain\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\terrain\map\SurveyMapTextureCreator.h">
+      <Filter>Header Files\terrain\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\threadpool\ThreadPool.h">
+      <Filter>Header Files\threadpool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\CollisionTools.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\ConfigFile.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\ErrorUtils.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\FileSystemInfo.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\ForceFeedback.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\IBehavior.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\ImprovedConfigFile.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\InputEngine.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\InterThreadStoreVector.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\Language.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\MeshObject.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\PlatformUtils.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\RoRWindowEventUtilities.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\Settings.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\SHA1.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\SimpleGlob.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\SimpleOpt.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\Singleton.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\Timer.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\Utils.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\WriteTextToTexture.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\ZeroedMemoryAllocator.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\profiler\Profiler.h">
+      <Filter>Header Files\utils\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\utils\profiler\RigLoadingProfilerControl.h">
+      <Filter>Header Files\utils\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\CBytecodeStream.h">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\GameScript.h">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\OgreAngelscript.h">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\OgreScriptBuilder.h">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\ScriptEngine.h">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\gui\panels\GUI_GameSettings.h">
+      <Filter>Header Files\gui\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\resources\otc_fileformat\OTCFileformat.h">
+      <Filter>Header Files\resources\otc_fileformat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptdictionary.h">
+      <Filter>Header Files\scripting\as_addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptmath.h">
+      <Filter>Header Files\scripting\as_addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptarray.h">
+      <Filter>Header Files\scripting\as_addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptbuilder.h">
+      <Filter>Header Files\scripting\as_addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\as_addon\scripthelper.h">
+      <Filter>Header Files\scripting\as_addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptstdstring.h">
+      <Filter>Header Files\scripting\as_addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\as_addon\scriptany.h">
+      <Filter>Header Files\scripting\as_addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\main\scripting\LocalStorage.h">
+      <Filter>Header Files\scripting</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\source\main\icon.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files\gfx\camera">
+      <UniqueIdentifier>{28842965-FCAC-33A4-964F-DFA12753F3E8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gfx\dof">
+      <UniqueIdentifier>{F7B5136A-96CF-349E-A843-AB5745049173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gfx\hydrax">
+      <UniqueIdentifier>{3C2D6B37-FCDA-3414-93C3-899295933867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gfx\particle">
+      <UniqueIdentifier>{3CA30AE7-BBF9-3FEB-B1FB-0DD4D45F1198}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{7C8E6ECC-2CA7-380B-A88F-2C3B2E73D6F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4E9AFAED-EC3C-3F2D-858F-578F2DFCD6A7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics\air">
+      <UniqueIdentifier>{5416D78F-BE2C-3B8C-9797-6EC488D68434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics\collision">
+      <UniqueIdentifier>{FE531092-80C3-387A-B270-625F635211D0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics\flex">
+      <UniqueIdentifier>{FAA7F15D-4266-39D5-B1E6-80F545C548CB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics\utils">
+      <UniqueIdentifier>{D7F30465-C642-3623-9E3E-4F5F204425C8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics\water">
+      <UniqueIdentifier>{B4F29A89-5C88-3A05-833D-E26BBDA346F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{17FFF6E0-597F-32EB-89A7-29E6679399D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gameplay">
+      <UniqueIdentifier>{9F3F9090-E7F5-3E4B-B049-CBC692E875CC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gfx">
+      <UniqueIdentifier>{EAB64715-40FD-340B-AB85-A290946C7595}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui">
+      <UniqueIdentifier>{BEBD5CFF-512A-375F-BAF5-B707796BC212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\network">
+      <UniqueIdentifier>{A1F8B1FE-49C7-3BF3-BCBE-9047FDFEEBD2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\physics">
+      <UniqueIdentifier>{335281DD-1243-3E33-8543-BC6CA7B08F5D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\resources">
+      <UniqueIdentifier>{38BE55E1-15E1-3DC0-B7C4-FF24D28E0B28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\terrain">
+      <UniqueIdentifier>{07D2216D-E4C1-376C-9392-9A7881114535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{DD82AE2A-4CBD-3CF5-B453-07D2FF690D8C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scripting">
+      <UniqueIdentifier>{7C078103-EBC1-34C9-B914-41A355ED1C2A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\resources\otc_fileformat">
+      <UniqueIdentifier>{1E223886-737F-3E64-BB93-7ED67F599D32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\resources\rig_def_fileformat">
+      <UniqueIdentifier>{A1399306-BF70-3723-A826-95799611A84C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\resources\terrn2_fileformat">
+      <UniqueIdentifier>{28F3A2DB-F41E-3B34-8ACD-0C55B2165D8A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gfx\camera">
+      <UniqueIdentifier>{0AC0E129-AB7B-3772-8197-4FD69E84679F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gfx\dof">
+      <UniqueIdentifier>{EEC97CDA-5172-3BC4-BBC9-9C4DCCA15B29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gfx\hydrax">
+      <UniqueIdentifier>{68846EDE-F032-3346-BBB4-42C9CE482F6F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gfx\particle">
+      <UniqueIdentifier>{0AF50C3C-C416-36E6-B4D5-4F902A8DC91D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\imgui">
+      <UniqueIdentifier>{CC3D3C78-25E4-3F4C-88E8-5D5EBB554432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\mygui">
+      <UniqueIdentifier>{56960817-4A89-3017-A057-2E72A9129D7C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\panels">
+      <UniqueIdentifier>{762B1D72-D19F-3111-B752-6C3ADAD9DA8E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils\profiler">
+      <UniqueIdentifier>{4F90F0F8-C8F6-3202-84CB-42AF47243294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\terrain\map">
+      <UniqueIdentifier>{8EE16989-58AD-3987-B7AF-B6C5FE668FBD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils\profiler">
+      <UniqueIdentifier>{3BD6B5AA-23D6-36CC-9DAA-A0CFEB0C84DA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\terrain\map">
+      <UniqueIdentifier>{BEF95B84-D16F-385D-B91E-DCCAB1B36374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{CEEECDDC-84A9-3D89-80BF-70C946E3F112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\datatypes">
+      <UniqueIdentifier>{3EFF09C5-3D01-398E-A202-03355827FE3F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gameplay">
+      <UniqueIdentifier>{35A2FCE1-7E62-3225-ADB0-84BA56D7CC66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gfx">
+      <UniqueIdentifier>{09113FBE-735D-3B8C-8B87-7565BD89FD13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui">
+      <UniqueIdentifier>{34D4AB82-9FA1-3CE9-8F33-D7251D6A1FD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\network">
+      <UniqueIdentifier>{658B9AEC-F6A8-3DE3-87C4-B02811FAA2D7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics">
+      <UniqueIdentifier>{096CA13E-6844-3327-B99B-35AFAFD391DA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\resources">
+      <UniqueIdentifier>{6905CEFB-7EC5-3F3C-AD1F-F7DE7F645FD4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\terrain">
+      <UniqueIdentifier>{C99A99E9-7377-31DA-8221-A453A88C05BE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\threadpool">
+      <UniqueIdentifier>{94821945-2869-301D-839F-F1BD44B51833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{9665CF3C-1DD7-370A-8598-5650D56C96AF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scripting">
+      <UniqueIdentifier>{99B38EC7-0F8A-3C22-990C-717C5E372A7D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\imgui">
+      <UniqueIdentifier>{A4BDF0FE-596A-3CE7-ADBB-36100566041D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\mygui">
+      <UniqueIdentifier>{E0009C44-D64D-3970-9A70-4DBD72875F59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\panels">
+      <UniqueIdentifier>{61495EC8-F22E-33F5-8E28-CEE53089AEC7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics\air">
+      <UniqueIdentifier>{449E42B1-4B14-3B6C-8B39-93D0AD33745E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics\collision">
+      <UniqueIdentifier>{12D73180-D261-32D3-81AE-D173EA178C6F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics\flex">
+      <UniqueIdentifier>{68FA003B-7473-3C44-9BF6-15D988086030}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics\utils">
+      <UniqueIdentifier>{7D8C75D5-2250-3D9B-9AFB-587EFA4FE018}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\physics\water">
+      <UniqueIdentifier>{4A86A345-8CBD-36C6-8B00-D21F689CD0F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\resources\otc_fileformat">
+      <UniqueIdentifier>{2412B3E0-CD80-3E35-AC5C-FC2E32708E2D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\resources\rig_def_fileformat">
+      <UniqueIdentifier>{094309D2-AD94-3E3C-88C8-F2F81DDC62A8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\resources\terrn2_fileformat">
+      <UniqueIdentifier>{3B944135-BE79-3C01-90AE-BE8BCD98F421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scripting\as_addons">
+      <UniqueIdentifier>{5a7ff0fc-9802-4db8-9db1-0cc07fd1f30b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scripting\as_addons">
+      <UniqueIdentifier>{523a359e-ba64-4b84-a5a5-08d767be59a3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
