@@ -662,7 +662,7 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
             object_index = (object_index - 1 + (int)object_list.size()) % object_list.size();
             update = true;
         }
-        if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_RESCUE_TRUCK))
+        if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_MOTIONFEEDER_TOGGLE))
         {
             UTFString axis = _L("ry");
             if (terrain_editing_rotation_axis == 0)
@@ -1159,15 +1159,6 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
                             RoR::App::GetOverlayWrapper()->showPressureOverlay(false);
                     }
 
-                    if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_RESCUE_TRUCK, 0.5f) && !mp_connected && curr_truck->driveable != AIRPLANE)
-                    {
-                        if (!m_beam_factory.enterRescueTruck())
-                        {
-                            RoR::App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE, _L("No rescue truck found!"), "warning.png");
-                            RoR::App::GetGuiManager()->PushNotification("Notice:", _L("No rescue truck found!"));
-                        }
-                    }
-
                     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_TRUCK_TOGGLE_VIDEOCAMERA, 0.5f))
                     {
                         if (curr_truck->GetGfxActor()->GetVideoCamState() == GfxActor::VideoCamState::VCSTATE_DISABLED)
@@ -1438,6 +1429,18 @@ bool RoRFrameListener::UpdateInputEvents(float dt)
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_TRUCK_DESCRIPTION) && curr_truck)
     {
         gui_man->SetVisible_VehicleDescription(! gui_man->IsVisible_VehicleDescription());
+    }
+
+    if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_MOTIONFEEDER_TOGGLE))
+    {
+        if (App::sim_motionfeeder_mode.GetActive() == MotionFeederMode::EDITABLE)
+        {
+            App::sim_motionfeeder_mode.SetPending(MotionFeederMode::HIDDEN);
+        }
+        else // HIDDEN or LOCKED
+        {
+            App::sim_motionfeeder_mode.SetPending(MotionFeederMode::EDITABLE);
+        }
     }
 
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_HIDE_GUI))

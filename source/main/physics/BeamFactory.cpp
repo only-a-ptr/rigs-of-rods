@@ -34,9 +34,10 @@
 #include "DynamicCollisions.h"
 #include "GUIManager.h"
 #include "GUI_TopMenubar.h"
+#include "InputEngine.h"
 #include "Language.h"
 #include "MainMenu.h"
-
+#include "NodeGraphTool.h"
 #include "Network.h"
 #include "PointColDetector.h"
 #include "RigLoadingProfiler.h"
@@ -1031,6 +1032,25 @@ void BeamFactory::update(float dt)
     gEnv->mrTime += dt;
 
     this->SyncWithSimThread();
+
+#ifdef USE_MPLATFORM // TODO: Shouldn't really be here, but needs to run while sim is halted.
+    if (App::sim_motionfeeder_mode.GetPending() != App::sim_motionfeeder_mode.GetActive())
+    {
+        App::sim_motionfeeder_mode.ApplyPending();
+        // Important because this mode disables input processing
+        // without it, event state gets stuck, causing endless mode looping.
+        App::GetInputEngine()->resetKeys();
+    }
+
+    if (App::sim_motionfeeder_mode.GetActive() == MotionFeederMode::EDITABLE)
+    {
+        RoR::App::GetGuiManager()->GetMotionFeeder()->Draw(App::GetSimController()->GetMPlatformLastSendResult());
+    }
+    else if (App::sim_motionfeeder_mode.GetActive() == MotionFeederMode::LOCKED)
+    {
+        RoR::App::GetGuiManager()->GetMotionFeeder()->DrawLockedMode();
+    }
+#endif
 
     this->UpdateSleepingState(dt);
 

@@ -77,6 +77,14 @@ enum class SimGearboxMode
 };
 const char* EnumToStr(SimGearboxMode v);
 
+enum class MotionFeederMode // MotionFeeder (motion simulator input tool) mode
+{
+    HIDDEN, ///< regular simulation
+    EDITABLE, /// < Node graph is editable; all other input is disabled to avoid interference.
+    LOCKED ///< Node graph is frozen, only sliders/checkboxes are editable. Other inputs are enabled.
+};
+const char* EnumToStr(MotionFeederMode v);
+
 enum class GfxShadowType
 {
     NONE,
@@ -335,6 +343,7 @@ extern GVarPod<int>            sim_replay_length;
 extern GVarPod<int>            sim_replay_stepping;
 extern GVarPod<bool>           sim_position_storage;
 extern GVarEnum<SimGearboxMode>sim_gearbox_mode;
+extern GVarEnum<MotionFeederMode>sim_motionfeeder_mode;
 
 // Multiplayer
 extern GVarEnum<MpState>       mp_state;

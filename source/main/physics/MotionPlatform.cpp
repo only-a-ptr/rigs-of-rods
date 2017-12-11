@@ -24,6 +24,7 @@
 #include "Application.h"
 #include "Beam.h"
 #include "GUIManager.h"
+#include "NodeGraphTool.h"
 
 #include <math.h>
 
@@ -38,7 +39,9 @@ const float  UPDATES_PER_SEC        = static_cast<float>(MPLATFORM_SEND_RATE);
 MotionPlatform::MotionPlatform():
     m_socket(ENET_SOCKET_NULL),
     m_elapsed_time(0),
-    m_last_update_time(0)
+    m_last_update_time(0),
+    m_last_send_result(0),
+    m_connected(false)
 {
     memset(&m_addr_remote, 0, sizeof(ENetAddress));
     memset(&m_addr_local , 0, sizeof(ENetAddress));
@@ -69,10 +72,7 @@ bool MotionPlatform::MPlatformConnect()
     // Proof-of-concept mode: hardcode everything!
     m_addr_local.host = ENET_HOST_ANY;
     m_addr_local.port = 43000;
-    const char IP[] = {char(192),char(168),char(223),char(101)};
-    // 
     m_addr_remote.host = ENET_HOST_TO_NET_32(0x7F000001); // = 127.0.0.1 localhost
-        //ENET_HOST_TO_NET_32 (0xC0A8DF65); //(reinterpret_cast<int>(IP));//
     m_addr_remote.port = 4123;
 
     if (enet_socket_bind(m_socket, &m_addr_local) != 0)
@@ -86,6 +86,8 @@ bool MotionPlatform::MPlatformConnect()
     m_last_update_time = 0;
 
     LOG("[RoR|MotionPlatform] Connected");
+
+    m_connected = true;
     return true;
 }
 
@@ -94,17 +96,46 @@ void MotionPlatform::MPlatformDisconnect()
     enet_socket_shutdown(m_socket, ENET_SOCKET_SHUTDOWN_READ_WRITE);
     this->DeleteSocket();
     LOG("[RoR|MotionPlatform] Disconnected");
+    m_connected = false;
 }
 
-void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (2000hz)
+void MotionPlatform::MPlatformUpdate(Beam* actor) // Called per physics tick (2000hz)
 {
     m_elapsed_time += 500;
+
+    NodeGraphTool* feeder = App::GetGuiManager()->GetMotionFeeder();
+    feeder->PhysicsTick(actor);
+
     if ((m_elapsed_time - m_last_update_time) < SEND_INTERVAL_MICROSEC)
     {
         return;
     }
 
-    UdpElsaco1 datagram;
+    RoR::NodeGraphTool::RefImplDisplayNode* demo_node = feeder->GetDemoNode();
+    if (demo_node != nullptr)
+    {
+        demo_node->CalcUdpPacket(
+            m_elapsed_time,
+            actor->GetCamcoordCenterPos(0),  // Any vehicle has camera[0] + cinecam[0]
+            actor->GetCamcoordRearPos(0),
+            actor->GetCamcoordLeftPos(0),
+            actor->GetCinecamPos(0)); // Proof of concept: hardcoded to "cinecam" method
+
+        if (demo_node->IsUdpEnabled())
+        {
+            // Send data
+            ENetBuffer buf;
+            buf.data       = static_cast<void*>(&demo_node->GetDatagram());
+            buf.dataLength = sizeof(DatagramDboxRorx);
+
+            // `enet_socket_send()` (Win32 implmentation) returns number of bytes sent on success, 0 on WSAEWOULDBLOCK and -1 on error.
+            m_last_send_result = enet_socket_send(m_socket, &m_addr_remote, &buf, 1);
+
+            return;
+        }
+    }
+
+    DatagramDboxRorx datagram;
     datagram._unused    = Ogre::Vector3::ZERO;
     datagram.game       = reinterpret_cast<int32_t>(MPLATFORM_GAME_ID);
     datagram.time_milis = m_elapsed_time/1000; // microsec -> milisec
@@ -112,52 +143,33 @@ void MotionPlatform::MPlatformUpdate(Beam* vehicle) // Called per physics tick (
     // ## OGRE engine coords: Right-handed; X is right, Y is up (screen-like), Z is back
     // ## Motion plat. coords: Z is up, Y/X is mixed.
 
-    // Readings
-    Ogre::Vector3 cinecam_pos  = vehicle->GetCinecamPos(0); // Proof of concept: hardcoded to "cinecam" method
-    Ogre::Vector3 coord_center = vehicle->GetCamcoordCenterPos(0); // Any vehicle has camera[0] + cinecam[0]
-    Ogre::Vector3 roll_axis    = -(vehicle->GetCamcoordRearPos(0) - coord_center);
-    Ogre::Vector3 pitch_axis   = -(vehicle->GetCamcoordLeftPos(0) - coord_center);
-    Ogre::Vector3 yaw_axis     = pitch_axis.crossProduct(roll_axis);
-
-    datagram.position_x = static_cast<int32_t>((cinecam_pos.x  * 10000.f) * UPDATES_PER_SEC);
-    datagram.position_y = static_cast<int32_t>((-cinecam_pos.z * 10000.f) * UPDATES_PER_SEC);
-    datagram.position_z = static_cast<int32_t>((cinecam_pos.y  * 10000.f) * UPDATES_PER_SEC);
+    // NOTE: The output must be in (meters*10000*60) --- mistake from proof-of-concept
+    datagram.position_x = static_cast<int32_t>((feeder->udp_position_node.Capture(0)));
+    datagram.position_y = static_cast<int32_t>((feeder->udp_position_node.Capture(1)));
+    datagram.position_z = static_cast<int32_t>((feeder->udp_position_node.Capture(2)));
 
     // Orientation
-    Ogre::Matrix3 orient_mtx;
-    orient_mtx.FromAxes(pitch_axis, yaw_axis, roll_axis);
-    Ogre::Radian yaw, pitch, roll;
-    orient_mtx.ToEulerAnglesYXZ(yaw, roll, pitch);
-    datagram.orient.x = pitch.valueRadians();
-    datagram.orient.y = roll.valueRadians();
-    datagram.orient.z = yaw.valueRadians();
+    datagram.orient.x = feeder->udp_orient_node.Capture(0); // Roll
+    datagram.orient.y = feeder->udp_orient_node.Capture(1); // Pitch (range 0-1.0: mistake from proof-of-concept)
+    datagram.orient.z = feeder->udp_orient_node.Capture(2); // Yaw.
 
     // Velocity
-    Ogre::Vector3 ogre_velocity = (cinecam_pos - m_last_cinecam_pos) * UPDATES_PER_SEC;
-    datagram.velocity.x = ogre_velocity.x;
-    datagram.velocity.y = -ogre_velocity.z;
-    datagram.velocity.z = ogre_velocity.y;
+    datagram.velocity.x = feeder->udp_velocity_node.Capture(0); // Must be transformed to (m/s) by MotionFeeder
+    datagram.velocity.y = feeder->udp_velocity_node.Capture(1); // Must be transformed to (m/s) by MotionFeeder
+    datagram.velocity.z = feeder->udp_velocity_node.Capture(2); // Must be transformed to (m/s) by MotionFeeder
 
     // Acceleration
-    Ogre::Vector3 ogre_accel = (ogre_velocity - m_last_velocity) * UPDATES_PER_SEC;
-    datagram.accel.x = ogre_accel.x;
-    datagram.accel.y = -ogre_accel.z;
-    datagram.accel.z = ogre_accel.y;
+    datagram.accel.x = feeder->udp_accel_node.Capture(0); // Must be transformed to (m/s^2) by MotionFeeder
+    datagram.accel.y = feeder->udp_accel_node.Capture(1); // Must be transformed to (m/s^2) by MotionFeeder
+    datagram.accel.z = feeder->udp_accel_node.Capture(2); // Must be transformed to (m/s^2) by MotionFeeder
 
     // Send data
     ENetBuffer buf;
     buf.data       = static_cast<void*>(&datagram);
-    buf.dataLength = sizeof(UdpElsaco1);
-    if (enet_socket_send(m_socket, &m_addr_remote, &buf, 1) != 0)
-    {
-        LOG("[RoR|MotionPlatform] Failed to send data!");
-    }
+    buf.dataLength = sizeof(DatagramDboxRorx);
 
-    // Remember values
-    m_last_update_time  = m_elapsed_time;
-    m_last_cinecam_pos  = cinecam_pos;
-    m_last_orient_euler = datagram.orient;
-    m_last_velocity     = ogre_velocity;
+    // `enet_socket_send()` (Win32 implmentation) returns number of bytes sent on success, 0 on WSAEWOULDBLOCK and -1 on error.
+    m_last_send_result = enet_socket_send(m_socket, &m_addr_remote, &buf, 1);
 }
 
 #endif // USE_MPLATFORM

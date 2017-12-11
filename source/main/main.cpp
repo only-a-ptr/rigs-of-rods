@@ -308,7 +308,7 @@ int main(int argc, char *argv[])
                             RoR::Networking::Disconnect();
                             App::GetGuiManager()->SetVisible_MpClientList(false);
                         }
-#endif // USE_SOCKETW
+#endif
 #ifdef USE_MUMBLE
                         auto* mumble = SoundScriptManager::getSingleton().GetMumble();
                         if (mumble != nullptr)
@@ -320,6 +320,7 @@ int main(int argc, char *argv[])
                     {
                         App::app_state.SetPending(AppState::MAIN_MENU);
                     }
+                    // Cleanups invoked here (RoRFrameListener goes out of scope)
                 }
                 gEnv->sceneManager->clearScene(); // Wipe the scene after RoRFrameListener was destroyed
             }

@@ -88,6 +88,7 @@ public:
 
 #ifdef USE_MPLATFORM
     inline void  UpdateMotionPlatform  (Beam* vehicle) { m_motion_platform.MPlatformUpdate(vehicle); }
+    inline int  GetMPlatformLastSendResult()           { return m_motion_platform.GetLastSendResult(); }
 #endif
 
 private:

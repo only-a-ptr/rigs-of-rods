@@ -251,7 +251,7 @@ enum events
     EV_COMMON_REPLAY_FAST_BACKWARD,
     EV_COMMON_REPLAY_FAST_FORWARD,
     EV_COMMON_REPLAY_FORWARD,
-    EV_COMMON_RESCUE_TRUCK, //!< teleport to rescue truck
+    EV_COMMON_MOTIONFEEDER_TOGGLE, //!< show/hide MotionFeeder tool
     EV_COMMON_RESET_TRUCK, //!< reset truck to original starting position
     EV_COMMON_ROPELOCK, //!< connect hook node to a node in close proximity
     EV_COMMON_SAVE_TERRAIN, //!< save terrain mesh to file

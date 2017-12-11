@@ -118,7 +118,6 @@ void GUIManager::SetVisible_TeleportWindow      (bool v) { m_impl->panel_Telepor
 void GUIManager::SetVisible_LoadingWindow       (bool v) { m_impl->panel_LoadingWindow      .SetVisible(v); }
 void GUIManager::SetVisible_Console             (bool v) { m_impl->panel_GameConsole        .SetVisible(v); }
 void GUIManager::SetVisible_GameSettings        (bool v) { m_impl->panel_GameSettings       .SetVisible(v); }
-void GUIManager::SetVisible_MotionFeeder        (bool v) { m_impl->panel_MotionFeeder       .SetVisible(v); }
 
 bool GUIManager::IsVisible_GameMainMenu         () { return m_impl->panel_GameMainMenu       .IsVisible(); }
 bool GUIManager::IsVisible_GameAbout            () { return m_impl->panel_GameAbout          .IsVisible(); }
@@ -247,7 +246,6 @@ void GUIManager::DrawSimulationGui(float dt)
     if (App::app_state.GetActive() == AppState::SIMULATION)
     {
         m_impl->panel_TopMenubar.Update();
-        m_impl->panel_MotionFeeder.Draw();
 
         if (App::sim_state.GetActive() == SimState::PAUSED)
         {
@@ -397,6 +395,7 @@ void GUIManager::ReflectGameState()
         m_impl->panel_SpawnerReport      .SetVisible(false);
         m_impl->panel_SimUtils           .SetBaseVisible(false);
         m_impl->panel_MpClientList       .SetVisible(mp_state == MpState::CONNECTED);
+        App::sim_motionfeeder_mode.SetActive(MotionFeederMode::HIDDEN);
         return;
     }
     if (app_state == AppState::SIMULATION)

@@ -1014,10 +1014,10 @@ eventInfo_t eventInfo[] = {
         _L("repair truck")
     },
     {
-        "COMMON_RESCUE_TRUCK",
-        EV_COMMON_RESCUE_TRUCK,
+        "COMMON_MOTIONFEEDER_TOGGLE",
+        EV_COMMON_MOTIONFEEDER_TOGGLE,
         "Keyboard EXPL+R",
-        _L("teleport to rescue truck")
+        _L("Show motion platform tool")
     },
     {
         "COMMON_RESET_TRUCK",

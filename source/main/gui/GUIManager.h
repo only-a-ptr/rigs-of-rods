@@ -81,14 +81,12 @@ public:
     void SetVisible_TeleportWindow      (bool visible);
     void SetVisible_LoadingWindow       (bool visible);
     void SetVisible_Console             (bool visible);
-    void SetVisible_MotionFeeder        (bool visible);
 
     // GUI IsVisible*()
     bool IsVisible_GameMainMenu         ();
     bool IsVisible_GameAbout            ();
     bool IsVisible_GameSettings         ();
     bool IsVisible_DebugOptions         ();
-    bool IsVisible_MessageBox           ();
     bool IsVisible_MultiplayerSelector  ();
     bool IsVisible_MpClientList         ();
     bool IsVisible_MainSelector         ();

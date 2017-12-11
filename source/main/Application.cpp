@@ -90,6 +90,7 @@ static RoRFrameListener* g_sim_controller;
  GVarPod<int>             sim_replay_stepping     ("sim_replay_stepping",     "Replay Steps per second",   1000,                    1000);
  GVarPod<bool>            sim_position_storage    ("sim_position_storage",    "Position Storage",          false,                   false);
  GVarEnum<SimGearboxMode> sim_gearbox_mode        ("sim_gearbox_mode",        "GearboxMode",               SimGearboxMode::AUTO,    SimGearboxMode::AUTO);
+ GVarEnum<MotionFeederMode>sim_motionfeeder_mode  ("sim_motionfeeder_mode",   nullptr,                     MotionFeederMode::HIDDEN,MotionFeederMode::HIDDEN);
 
 // Multiplayer
  GVarEnum<MpState>        mp_state                ("mp_state",                nullptr,                     MpState::DISABLED,       MpState::DISABLED);
@@ -335,6 +336,17 @@ const char* EnumToStr(SimGearboxMode v)
     case SimGearboxMode::MANUAL_STICK : return "MANUAL_STICK";
     case SimGearboxMode::MANUAL_RANGES: return "MANUAL_RANGES";
     default                           : return "~invalid~";
+    }
+}
+
+const char* EnumToStr(MotionFeederMode v)
+{
+    switch (v)
+    {
+    case MotionFeederMode::HIDDEN         : return "HIDDEN";
+    case MotionFeederMode::EDITABLE       : return "EDITABLE";
+    case MotionFeederMode::LOCKED         : return "LOCKED";
+    default                               : return "~invalid~";
     }
 }
 

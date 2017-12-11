@@ -243,9 +243,16 @@ void RoR::GUI::TopMenubar::Update()
                 m_open_menu = TopMenu::TOPMENU_NONE;
             }
 
-            if (ImGui::Button("MotionFeeder"))
+            if (ImGui::Button("Motion platform"))
             {
-                App::GetGuiManager()->SetVisible_MotionFeeder(true);
+                if (App::sim_motionfeeder_mode.GetActive() == MotionFeederMode::EDITABLE)
+                {
+                    App::sim_motionfeeder_mode.SetPending(MotionFeederMode::HIDDEN);
+                }
+                else // HIDDEN or LOCKED
+                {
+                    App::sim_motionfeeder_mode.SetPending(MotionFeederMode::EDITABLE);
+                }
                 m_open_menu = TopMenu::TOPMENU_NONE;
             }
 
