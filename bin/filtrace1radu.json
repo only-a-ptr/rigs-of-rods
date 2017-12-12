@@ -1,0 +1,110 @@
+{
+    "nodes": [
+        {
+            "pos_x": 48.0,
+            "pos_y": 49.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 140.0,
+            "user_size_y": 48.0,
+            "id": 0,
+            "type_id": 2,
+            "amplitude": 1.0,
+            "frequency": 1.0,
+            "noise_max": 15
+        },
+        {
+            "pos_x": 268.0,
+            "pos_y": 193.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 216.0,
+            "user_size_y": 214.0,
+            "id": 3,
+            "type_id": 4,
+            "source_code": "float coef = 0.02;\nfloat a1 = 0;\n\nvoid step() {\nfloat a0 = Read(0,0);\nfloat z = \n    a1 + coef* (a0 - a1);\nWrite(0,z);\na1 = z;\n}"
+        },
+        {
+            "pos_x": 562.0,
+            "pos_y": 45.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 250.0,
+            "user_size_y": 85.0,
+            "id": 1,
+            "type_id": 5,
+            "scale": 2.200000047683716
+        },
+        {
+            "pos_x": 560.0,
+            "pos_y": 190.0,
+            "arranged_pos_x": -1.0,
+            "arranged_pos_y": -1.0,
+            "user_size_x": 250.0,
+            "user_size_y": 85.0,
+            "id": 2,
+            "type_id": 5,
+            "scale": 2.200000047683716
+        }
+    ],
+    "links": [
+        {
+            "node_src_id": 0,
+            "node_dst_id": 1,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 3,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 2,
+            "slot_src": 0,
+            "slot_dst": 0
+        }
+    ],
+    "udp_pos_node": {
+        "pos_x": -122.0,
+        "pos_y": -232.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": 0,
+        "type_id": 7
+    },
+    "udp_acc_node": {
+        "pos_x": -48.0,
+        "pos_y": -362.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": 0,
+        "type_id": 7
+    },
+    "udp_orient_node": {
+        "pos_x": -162.0,
+        "pos_y": -158.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": 0,
+        "type_id": 7
+    },
+    "udp_velo_node": {
+        "pos_x": -94.0,
+        "pos_y": -286.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": 0,
+        "type_id": 7
+    }
+}

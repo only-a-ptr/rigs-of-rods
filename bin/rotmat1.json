@@ -1,0 +1,524 @@
+{
+    "nodes": [
+        {
+            "pos_x": 102.0,
+            "pos_y": 99.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 0,
+            "type_id": 1,
+            "softbody_node_id": 6
+        },
+        {
+            "pos_x": 104.0,
+            "pos_y": 227.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 1,
+            "type_id": 1,
+            "softbody_node_id": 10
+        },
+        {
+            "pos_x": 314.0,
+            "pos_y": 49.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 326.0,
+            "user_size_y": 370.0,
+            "id": 2,
+            "type_id": 4,
+            "source_code": "// ----------- ROTMAT.JSON -------------\n//      V1 - first working code ever!\n// Manual impl. of rotation matrix\n\n// Cinecam: mid:6, back: 10, left: 7\n\nvoid step() {\n    Vec3 mid_pos = ReadVec3(0,0);\n    Vec3 back_pos = ReadVec3(3,0);\n    Vec3 left_pos = ReadVec3(6,0);\n\n    Vec3 forward = (mid_pos - back_pos);\n    Vec3 left = (left_pos - mid_pos);\n    Vec3 up = forward.CrossProduct(left);\n\n    Matrix3 m;\n    m.colX = (-forward).Normalize();\n    m.colY = left.Normalize();\n    m.colZ = up.Normalize();\n\n    WriteVec3(0, m.colX);\n    WriteVec3(3, m.colY);\n    WriteVec3(6, m.colZ);\n}"
+        },
+        {
+            "pos_x": 108.0,
+            "pos_y": 357.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 3,
+            "type_id": 1,
+            "softbody_node_id": 7
+        },
+        {
+            "pos_x": 758.0,
+            "pos_y": 28.0,
+            "arranged_pos_x": 208.0,
+            "arranged_pos_y": 728.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 4,
+            "type_id": 9
+        },
+        {
+            "pos_x": 758.0,
+            "pos_y": 74.0,
+            "arranged_pos_x": 208.0,
+            "arranged_pos_y": 760.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 5,
+            "type_id": 9
+        },
+        {
+            "pos_x": 758.0,
+            "pos_y": 112.0,
+            "arranged_pos_x": 208.0,
+            "arranged_pos_y": 788.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 6,
+            "type_id": 9
+        },
+        {
+            "pos_x": 820.0,
+            "pos_y": 150.0,
+            "arranged_pos_x": 314.0,
+            "arranged_pos_y": 726.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 7,
+            "type_id": 9
+        },
+        {
+            "pos_x": 818.0,
+            "pos_y": 190.0,
+            "arranged_pos_x": 314.0,
+            "arranged_pos_y": 758.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 8,
+            "type_id": 9
+        },
+        {
+            "pos_x": 816.0,
+            "pos_y": 234.0,
+            "arranged_pos_x": 312.0,
+            "arranged_pos_y": 786.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 9,
+            "type_id": 9
+        },
+        {
+            "pos_x": 854.0,
+            "pos_y": 278.0,
+            "arranged_pos_x": 424.0,
+            "arranged_pos_y": 724.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 10,
+            "type_id": 9
+        },
+        {
+            "pos_x": 852.0,
+            "pos_y": 320.0,
+            "arranged_pos_x": 424.0,
+            "arranged_pos_y": 756.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 11,
+            "type_id": 9
+        },
+        {
+            "pos_x": 850.0,
+            "pos_y": 358.0,
+            "arranged_pos_x": 424.0,
+            "arranged_pos_y": 784.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 12,
+            "type_id": 9
+        },
+        {
+            "pos_x": 769.0,
+            "pos_y": 415.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 358.0,
+            "user_size_y": 348.0,
+            "id": 14,
+            "type_id": 4,
+            "source_code": "\nvoid step() {\n   Vec3 colX = ReadVec3(0,0);\n   Vec3 colY = ReadVec3(3,0);\n   Vec3 colZ = ReadVec3(6,0);\n\n  float yaw = atan2(colX.y, colX.x);\n  float pitch=atan2(-colX.z,\n       sqrt((colY.z*colY.z)+(colZ.z*colZ.z)));\n  float roll = atan2(colY.z, colZ.z);\n  \n  // post-process for RORX\n\n  float yawRot90Clockwise \n            = atan2(colX.x, colX.y);\n\n  float val1 = -roll;\n  float val2 = (pitch/HalfPi)*-1.0;\n  float val3 = -yawRot90Clockwise;//yaw;\n\n  Write (0,val1);\n  Write (1,val2);\n  Write (2,val3);\n}"
+        },
+        {
+            "pos_x": 1267.0,
+            "pos_y": 330.0,
+            "arranged_pos_x": 933.0,
+            "arranged_pos_y": 244.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 18,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1275.0,
+            "pos_y": 366.0,
+            "arranged_pos_x": 1047.0,
+            "arranged_pos_y": 244.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 19,
+            "type_id": 9
+        },
+        {
+            "pos_x": 1275.0,
+            "pos_y": 404.0,
+            "arranged_pos_x": 1163.0,
+            "arranged_pos_y": 244.0,
+            "user_size_x": 100.0,
+            "user_size_y": 30.0,
+            "id": 20,
+            "type_id": 9
+        },
+        {
+            "pos_x": 113.0,
+            "pos_y": -245.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 0.0,
+            "user_size_y": 0.0,
+            "id": 21,
+            "type_id": 1,
+            "softbody_node_id": 6
+        },
+        {
+            "pos_x": 375.0,
+            "pos_y": -339.0,
+            "arranged_pos_x": -2.0,
+            "arranged_pos_y": -2.0,
+            "user_size_x": 310.0,
+            "user_size_y": 268.0,
+            "id": 22,
+            "type_id": 4,
+            "source_code": "\nvoid step() \n{\n   Vec3 mid_pos = ReadVec3(0,0);\n   Vec3 udp_pos = mid_pos*10000.f*60.f;\n   WriteVec3(0, udp_pos);\n\n   Vec3 prev_pos = ReadVec3(0,-33);\n   Vec3 velo = (mid_pos - prev_pos);\n   WriteVec3(3, velo);\n\n   Vec3 prev2_pos = ReadVec3(0,-67);\n   Vec3 prev_velo = (prev_pos - prev2_pos);\n   Vec3 acc = (velo - prev_velo);\n   WriteVec3(6, acc);\n}"
+        },
+        {
+            "pos_x": 1196.0,
+            "pos_y": 580.0,
+            "arranged_pos_x": 940.0,
+            "arranged_pos_y": 108.0,
+            "user_size_x": 350.0,
+            "user_size_y": 115.0,
+            "id": 23,
+            "type_id": 3
+        }
+    ],
+    "links": [
+        {
+            "node_src_id": 0,
+            "node_dst_id": 2,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 2,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 0,
+            "node_dst_id": 2,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 2,
+            "slot_src": 2,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 2,
+            "slot_src": 1,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 2,
+            "slot_src": 0,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 2,
+            "slot_src": 1,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 3,
+            "node_dst_id": 2,
+            "slot_src": 2,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 1,
+            "node_dst_id": 2,
+            "slot_src": 0,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 4,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 5,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 6,
+            "slot_src": 2,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 7,
+            "slot_src": 3,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 8,
+            "slot_src": 4,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 9,
+            "slot_src": 5,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 12,
+            "slot_src": 8,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 11,
+            "slot_src": 7,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 10,
+            "slot_src": 6,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 3,
+            "slot_dst": 3
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 4,
+            "slot_dst": 4
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 5,
+            "slot_dst": 5
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 6,
+            "slot_dst": 6
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 7,
+            "slot_dst": 7
+        },
+        {
+            "node_src_id": 2,
+            "node_dst_id": 14,
+            "slot_src": 8,
+            "slot_dst": 8
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": -2147483643,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": -2147483643,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": -2147483643,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 18,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 19,
+            "slot_src": 1,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 14,
+            "node_dst_id": 20,
+            "slot_src": 2,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 21,
+            "node_dst_id": 22,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 21,
+            "node_dst_id": 22,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 21,
+            "node_dst_id": 22,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483646,
+            "slot_src": 0,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483646,
+            "slot_src": 1,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483646,
+            "slot_src": 2,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483645,
+            "slot_src": 3,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483645,
+            "slot_src": 4,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483645,
+            "slot_src": 5,
+            "slot_dst": 2
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483644,
+            "slot_src": 6,
+            "slot_dst": 0
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483644,
+            "slot_src": 7,
+            "slot_dst": 1
+        },
+        {
+            "node_src_id": 22,
+            "node_dst_id": -2147483644,
+            "slot_src": 8,
+            "slot_dst": 2
+        }
+    ],
+    "udp_pos_node": {
+        "pos_x": 867.0,
+        "pos_y": -337.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483646,
+        "type_id": 7
+    },
+    "udp_acc_node": {
+        "pos_x": 865.0,
+        "pos_y": -161.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483644,
+        "type_id": 7
+    },
+    "udp_orient_node": {
+        "pos_x": 1263.0,
+        "pos_y": 454.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483643,
+        "type_id": 7
+    },
+    "udp_velo_node": {
+        "pos_x": 865.0,
+        "pos_y": -247.0,
+        "arranged_pos_x": -2.0,
+        "arranged_pos_y": -2.0,
+        "user_size_x": 0.0,
+        "user_size_y": 0.0,
+        "id": -2147483645,
+        "type_id": 7
+    },
+    "shared_script": "class Vec3\n{\n    Vec3() {}\n\n    Vec3(float xx, float yy, float zz) { x=xx; y=yy; z=zz; }\n\n    float Len() { return sqrt(x*x + y*y + z*z); }\n\n\tVec3 Normalize()\n    {\n       float len = Len();\n       return Vec3(x/len, y/len, z/len);\n    }\n\n    Vec3 CrossProduct(Vec3 b)\n    {\n\t\treturn Vec3(y*b.z - z*b.y,\n        \t        z*b.x - x*b.z,\n            \t    x*b.y - y*b.x);\n    }\n\n    // overloaded operators\n    void opAssign(Vec3 rhs) { x=rhs.x; y=rhs.y; z=rhs.z; }\n\n    Vec3 opSub(Vec3 rhs) { return Vec3(x-rhs.x, y-rhs.y, z-rhs.z); }\n\n    Vec3 opNeg() { return Vec3(-x, -y, -z); }\n\n    Vec3 opMul(float s) { return Vec3(x*s, y*s, z*s); }\n\n    // Var\n    float x, y, z;\n}\n\nfloat Pi = 3.1415927;\nfloat HalfPi = Pi/2.f;\n\nclass Matrix3\n{\n    Matrix3() {}\n\n\t// Var\n    Vec3 colX;   // column 1\n    Vec3 colY;   // column 2\n    Vec3 colZ;   // column 3\n}\n\nVec3 ReadVec3(int slot, int offs)\n{\n\treturn Vec3(Read(slot,  offs),\n                Read(slot+1,offs),\n                Read(slot+2,offs));\n}\n\nvoid WriteVec3(int slot, Vec3 v)\n{\n    Write(slot,  v.x);\n    Write(slot+1,v.y);\n    Write(slot+2,v.z);\n}"
+}
