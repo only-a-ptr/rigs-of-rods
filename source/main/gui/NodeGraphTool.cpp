@@ -5,6 +5,7 @@
 #include "BeamFactory.h"
 #include "as_addon/scriptmath.h" // Part of codebase; located in "/source/main/scripting/as_addon"
 #include "MotionPlatform.h"
+#include "Win32DirectInput.h"
 
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
@@ -33,6 +34,7 @@ RoR::NodeGraphTool::NodeGraphTool():
     m_link_mouse_src(nullptr),
     m_link_mouse_dst(nullptr),
     m_demo_node(nullptr),
+    m_ffb_const_node(nullptr),
     m_hovered_slot_node(nullptr),
     m_hovered_node(nullptr),
     m_context_menu_node(nullptr),
@@ -125,6 +127,7 @@ void RoR::NodeGraphTool::Draw(int net_send_state)
 {
     // Create a window
     bool is_open = true;
+    ImGui::SetNextWindowSize(ImVec2(1050.f, 600.f), ImGuiSetCond_FirstUseEver);
     ImGui::Begin("MotionFeeder", &is_open);
     if (!is_open)
     {
@@ -771,6 +774,16 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
                 if (ImGui::MenuItem("Delete"))
                 {
                     this->DetachAndDeleteNode(m_context_menu_node);
+                    //Special cases
+                    if (m_context_menu_node == m_demo_node)
+                    {
+                        m_demo_node = nullptr; // deleted by 'DetachAndDeleteNode()' above.
+                    }
+                    else if (m_context_menu_node == m_ffb_const_node)
+                    {
+                        m_ffb_const_node = nullptr; // deleted by 'DetachAndDeleteNode()' above.
+                    }
+                    // Done
                     m_context_menu_node = nullptr;
                 }
             }
@@ -791,6 +804,13 @@ void RoR::NodeGraphTool::DrawNodeGraphPane()
             {
                 m_demo_node = new RefImplDisplayNode         (this, scene_pos);
                 m_nodes.push_back(m_demo_node);
+            }
+
+            // Special - only 1 instance allowed
+            if ((m_ffb_const_node == nullptr) && ImGui::MenuItem("FFb: const force"))
+            {
+                m_ffb_const_node = new FFbConstNode         (this, scene_pos);
+                m_nodes.push_back(m_ffb_const_node);
             }
 
             ImGui::Text("-- Fetch UDP node --");
@@ -2250,7 +2270,7 @@ void RoR::NodeGraphTool::MouseDragNode::DetachLink(Link* link)
 // -------------------------------- RefImplDisplayNode -----------------------------------
 
 RoR::NodeGraphTool::RefImplDisplayNode::RefImplDisplayNode(NodeGraphTool* _graph, ImVec2 _pos):
-    UserNode(_graph, Type::MOUSE, _pos), m_udp_enabled(false)
+    UserNode(_graph, Type::DISPLAY_REF_IMPL, _pos), m_udp_enabled(false)
 {
     num_inputs = 0;
     num_outputs = 0;
@@ -2345,4 +2365,97 @@ void RoR::NodeGraphTool::RefImplDisplayNode::DrawLockedMode()
     ImGui::Text(" Velocity : %10.3f  %10.3f  %10.3f", m_datagram.velocity.x, m_datagram.velocity.y, m_datagram.velocity.z);
     ImGui::SetCursorPos(ImVec2(this->arranged_pos.x, this->arranged_pos.y+(Y_SPACING*4.f)));
     ImGui::Text(" Accel.   : %10.3f  %10.3f  %10.3f", m_datagram.accel.x, m_datagram.accel.y, m_datagram.accel.z);
+}
+
+// -------------------------------- Forcefeedback - Const force node -----------------------------------
+
+RoR::NodeGraphTool::FFbConstNode::FFbConstNode(NodeGraphTool* _graph, ImVec2 _pos):
+    UserNode(_graph, Type::FFB_CONST, _pos), m_status(Status::WORKING), m_force_input(nullptr)
+{
+    num_inputs = 1;
+    num_outputs = 0;
+    arranged_pos = Node::ARRANGE_DISABLED;
+    if (!Win32DI::IsFFbAvailable())
+    {
+        m_status = Status::NO_DEVICE;
+    }
+    else if (!Win32DI::CreateFFbConstEffect())
+    {
+        m_status = Status::INIT_FAILED;
+    }
+}
+
+void RoR::NodeGraphTool::FFbConstNode::Draw()
+{
+    if (!graph->ClipTestNode(this))
+        return;
+    graph->DrawNodeBegin(this);
+    ImGui::Text("FFB const force");
+    ImGui::Text("-------");
+    switch (m_status)
+    {
+    case Status::WORKING:      ImGui::Text("Ready");          break;
+    case Status::INIT_FAILED:  ImGui::Text("Init failed");    break;
+    case Status::UPDATE_FAILED:ImGui::Text("Update failed");  break;
+    case Status::NO_DEVICE:    ImGui::Text("Not available");  break;
+    default:                   ImGui::Text("Internal error"); break;
+    }
+    graph->DrawNodeFinalize(this);
+}
+
+bool RoR::NodeGraphTool::FFbConstNode::BindDst(Link* link, int slot)
+{
+    const bool slot_ok = (slot >= 0 && slot < num_inputs);
+    if (!slot_ok)
+    {
+        graph->AddMessage("FfbConstNode::BindDst(): bad slot number: %d, ignoring..!!", slot);
+        return false;
+    }
+
+    if (m_force_input == nullptr)
+    {
+        m_force_input = link;
+        link->node_dst = this;
+        link->slot_dst = slot;
+        return true;
+    }
+    return false;
+}
+
+void RoR::NodeGraphTool::FFbConstNode::DetachLink(Link* link)
+{
+    if (link->node_src == this)
+    {
+        graph->AddMessage("DEBUG: FfbConstNode::DetachLink() discrepancy - this node has no outputs!");
+        return;
+    }
+
+    if (link->node_dst == this)
+    {
+        graph->Assert(this->m_force_input == link, "FfbConstNode::DetachLink() discrepancy in link: node_dst attached, link_in not");
+        link->node_dst = nullptr;
+        link->slot_dst = -1;
+        m_force_input = nullptr;
+    }
+    else graph->AddMessage("DEBUG: FfbConstNode::DetachLink() called with unrelated link");
+}
+
+bool RoR::NodeGraphTool::FFbConstNode::Process()
+{
+    if (m_status != Status::WORKING || !graph->IsLinkAttached(m_force_input))
+    {
+        return true; // Nothing to do.
+    }
+
+    if (m_force_input->node_src->done)
+    {
+        return false; // Waiting for input node to process.
+    }
+
+    int force = static_cast<int>(m_force_input->buff_src->Read());
+    if (!Win32DI::UpdateFFbConstEffect(force))
+    {
+        m_status = Status::UPDATE_FAILED;
+    }
+    return true;
 }

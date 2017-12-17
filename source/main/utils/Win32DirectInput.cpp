@@ -53,9 +53,14 @@ struct DI_ENUM_CONTEXT
 
 struct Controller
 {
+    Controller():
+        num_ffb_axes(0)
+    {}
+
     DIJOYSTATE2 state;
     LPDIRECTINPUTDEVICE8 device;
     std::string name;
+    int num_ffb_axes;
 };
 
 #define LOGSTREAM Ogre::LogManager::getSingleton().stream() << "[RoR|Win32DirectInput] "
@@ -65,6 +70,8 @@ static HWND                    s_hwnd;
 static LPDIRECTINPUT8          s_dinput = nullptr;
 static std::vector<Controller> s_controllers;
 static std::vector<std::string> s_device_list;
+static Controller*             s_ffb_controller = nullptr;
+LPDIRECTINPUTEFFECT            s_ffb_constforce_effect = nullptr;
 
 bool Init(const char* hwnd_str)
 {
@@ -106,7 +113,7 @@ bool Init(const char* hwnd_str)
                                          EnumJoysticksCallback,
                                          &enumContext, DIEDFL_ATTACHEDONLY ) ) )
     {
-        LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Failed to enumerate devices; HRESULT: " << hr;
+        LOGSTREAM << "ERROR: Failed to enumerate devices; HRESULT: " << hr;
         return false;
     }
 
@@ -127,7 +134,7 @@ bool Init(const char* hwnd_str)
         // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
         if( FAILED( hr = con.device->SetDataFormat( &c_dfDIJoystick2 ) ) )
         {
-            LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Device \"" << con.name <<"\", failed to `SetDataFormat()`; HRESULT: " << hr;
+            LOGSTREAM << "ERROR: Device \"" << con.name <<"\", failed to `SetDataFormat()`; HRESULT: " << hr;
             continue;
         }
 
@@ -135,7 +142,7 @@ bool Init(const char* hwnd_str)
         // interact with the system and with other DInput applications.
         if( FAILED( hr = con.device->SetCooperativeLevel( s_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND ) ) )
         {
-            LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Device \"" << con.name <<"\", failed to `SetCooperativeLevel()`; HRESULT: " << hr;
+            LOGSTREAM << "ERROR: Device \"" << con.name <<"\", failed to `SetCooperativeLevel()`; HRESULT: " << hr;
             return false;
         }
 
@@ -144,10 +151,27 @@ bool Init(const char* hwnd_str)
         // values property for discovered axes.
         if( FAILED( hr = con.device->EnumObjects( EnumObjectsCallback, ( VOID* )&con, DIDFT_ALL ) ) )
         {
-            LOGSTREAM << "[RoR|Win32DirectInput] ERROR: Device \"" << con.name <<"\", failed to `EnumObjects()`; HRESULT: " << hr;
+            LOGSTREAM << "ERROR: Device \"" << con.name <<"\", failed to `EnumObjects()`; HRESULT: " << hr;
             return false;
         }
 
+        if (con.num_ffb_axes > 0)
+        {
+            if (s_ffb_controller == nullptr || s_ffb_controller->num_ffb_axes < con.num_ffb_axes)
+            {
+                s_ffb_controller = &con;
+            }
+        }
+    }
+
+    if (s_ffb_controller != nullptr)
+    {
+        LOGSTREAM << "Force feedback device found: \""
+            << s_ffb_controller->name << "\" (" << s_ffb_controller->num_ffb_axes << " axes).";
+    }
+    else
+    {
+        LOGSTREAM << "Force feedback not available";
     }
 
     return true;
@@ -256,9 +280,6 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
 {
     Controller* con = static_cast<Controller*>(pContext);
 
-    static int nSliderCount = 0;  // Number of returned slider controls
-    static int nPOVCount = 0;     // Number of returned POV controls
-
     // For axes that are returned, set the DIPROP_RANGE property for the
     // enumerated axis in order to scale min/max values.
     if( pdidoi->dwType & DIDFT_AXIS )
@@ -279,6 +300,10 @@ BOOL CALLBACK EnumObjectsCallback( const DIDEVICEOBJECTINSTANCE* pdidoi,
             return DIENUM_STOP;
         }
 
+        if (pdidoi->dwFlags & DIDOI_FFACTUATOR)
+        {
+            ++con->num_ffb_axes;
+        }
     }
 
     return DIENUM_CONTINUE;
@@ -310,6 +335,88 @@ bool Update()
 
         // Get the input's device state
         con.device->GetDeviceState( sizeof( DIJOYSTATE2 ), &con.state );
+    }
+
+    return true;
+}
+
+// Force feedback
+bool IsFFbAvailable()
+{
+    return s_ffb_controller != nullptr;
+}
+
+bool CreateFFbConstEffect()
+{
+    // This application needs only one effect: Applying raw forces.
+    DWORD rgdwAxes[2] = { DIJOFS_X, DIJOFS_Y };
+    LONG rglDirection[2] = { 0, 0 };
+    DICONSTANTFORCE cf = { 0 };
+
+    DIEFFECT eff;
+    ZeroMemory( &eff, sizeof( eff ) );
+    eff.dwSize = sizeof( DIEFFECT );
+    eff.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
+    eff.dwDuration = INFINITE;
+    eff.dwSamplePeriod = 0;
+    eff.dwGain = DI_FFNOMINALMAX;
+    eff.dwTriggerButton = DIEB_NOTRIGGER;
+    eff.dwTriggerRepeatInterval = 0;
+    eff.cAxes = 1;
+    eff.rgdwAxes = rgdwAxes;
+    eff.rglDirection = rglDirection;
+    eff.lpEnvelope = 0;
+    eff.cbTypeSpecificParams = sizeof( DICONSTANTFORCE );
+    eff.lpvTypeSpecificParams = &cf;
+    eff.dwStartDelay = 0;
+
+    // Create the prepared effect
+    HRESULT hr = s_ffb_controller->device->CreateEffect( GUID_ConstantForce, &eff, &s_ffb_constforce_effect, nullptr );
+
+    if (hr < 0)
+    {
+        LOGSTREAM << "Failed to create force feedback 'ConstantForce' effect, CreateEffect() returned: " << hr;
+        return false;
+    }
+
+    if (s_ffb_constforce_effect == nullptr)
+    {
+        LOGSTREAM << "Failed to create force feedback 'ConstantForce' effect - effect handle is NULL";
+        return false;
+    }
+
+    return true;
+}
+
+bool UpdateFFbConstEffect(int magnitude)
+{
+    // Modifying an effect is basically the same as creating a new one, except
+    // you need only specify the parameters you are modifying
+    LONG rglDirection[2] = { 0, 0 };
+
+    // If only one force feedback axis, then apply only one direction and keep the direction at zero
+    DICONSTANTFORCE cf;
+    cf.lMagnitude = magnitude;
+    rglDirection[0] = 0;
+
+    DIEFFECT eff;
+    ZeroMemory( &eff, sizeof( eff ) );
+    eff.dwSize = sizeof( DIEFFECT );
+    eff.dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
+    eff.cAxes = 1;
+    eff.rglDirection = rglDirection;
+    eff.lpEnvelope = 0;
+    eff.cbTypeSpecificParams = sizeof( DICONSTANTFORCE );
+    eff.lpvTypeSpecificParams = &cf;
+    eff.dwStartDelay = 0;
+
+    // Now set the new parameters and start the effect immediately.
+    HRESULT hr = s_ffb_constforce_effect->SetParameters( &eff, DIEP_DIRECTION | DIEP_TYPESPECIFICPARAMS | DIEP_START );
+
+    if (hr < 0)
+    {
+        LOGSTREAM << "Failed to update force feedback constant force, SetParameters() returned: " << hr;
+        return false;
     }
 
     return true;

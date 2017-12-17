@@ -121,7 +121,22 @@ public:
     struct Node ///< Any node. Doesn't auto-assign ID; allows for special cases like mousedrag-node and UDP-nodes.
     {
         /// IMPORTANT - serialized as `int` to JSON files = add new items at the end!
-        enum class Type    { INVALID, READING, GENERATOR, MOUSE, SCRIPTx12, DISPLAY, UDP_ORIENT, UDP, DISPLAY_2D, DISPLAY_NUM, DISPLAY_REF_IMPL, SCRIPTx24 };
+        enum class Type
+        {
+            INVALID,
+            READING,
+            GENERATOR,
+            MOUSE,
+            SCRIPTx12,
+            DISPLAY,
+            UDP_ORIENT,
+            UDP,
+            DISPLAY_2D,
+            DISPLAY_NUM,
+            DISPLAY_REF_IMPL,
+            SCRIPTx24,
+            FFB_CONST //!< Force feedback - constant force
+        };
 
         static const ImVec2 ARRANGE_DISABLED;
         static const ImVec2 ARRANGE_EMPTY;
@@ -382,6 +397,26 @@ public:
         Ogre::Matrix3 m_last_orient_matrix;
     };
 
+    /// Forcefeedback - constant force
+    struct FFbConstNode: UserNode
+    {
+        enum class Status { WORKING, NO_DEVICE, INIT_FAILED, UPDATE_FAILED };
+
+        FFbConstNode(NodeGraphTool* nodegraph, ImVec2 _pos);
+
+        //           Process() override                          --- Nothing to do here.
+        virtual void BindSrc(Link* link, int slot) override         { graph->AddMessage("DEBUG: Called FfbConstNode::BindSrc() - node has no outputs!"); }
+        virtual bool BindDst(Link* link, int slot) override;
+        virtual void DetachLink(Link* link) override;
+        virtual void Draw() override;
+        virtual bool Process() override;                            ///< @return false if waiting for data, true if processed/nothing to process.
+        virtual void DrawLockedMode() override                      {}
+
+    private:
+        Status m_status;
+        Link*  m_force_input;
+    };
+
 
     // Debugging dummies
     Link*   dummy_link_ptr;
@@ -469,6 +504,7 @@ private:
     int                     m_free_id;
     bool                    m_mouse_arrange_show;  ///< Show all arrangement boxes for preview.
     RefImplDisplayNode*     m_demo_node;
+    FFbConstNode*           m_ffb_const_node;
 
     // Mouse dragging context - see function `DetermineActiveDragType()`
     Node*                   m_mouse_move_node;     ///< Node with mouse drag in progress.

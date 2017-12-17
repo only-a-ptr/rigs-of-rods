@@ -24,6 +24,11 @@ namespace Win32DI // DirectInput wrapper
     JoyState    GetState(size_t index);
     std::string GetName(size_t index);
     size_t      GetNumControllers();
+
+    // Force feedback
+    bool        IsFFbAvailable();
+    bool        CreateFFbConstEffect();
+    bool        UpdateFFbConstEffect(int force);
 };
 
 #endif // _WIN32
