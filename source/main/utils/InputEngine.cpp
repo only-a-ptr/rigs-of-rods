@@ -1812,6 +1812,7 @@ InputEngine::InputEngine() :
       m_num_joysticks(0)
     , m_inputs_changed(true)
     , m_forcefeedback(nullptr)
+    , m_forcefeedback_joystick(nullptr)
     , m_input_manager(nullptr)
     , m_keyboard(nullptr)
     , m_mouse(nullptr)
@@ -1945,9 +1946,13 @@ void InputEngine::SetupInputDevices()
 
             //create force feedback too
             //here, we take the first device we can get, but we could take a device index
-            if (!m_forcefeedback)
+            if (m_forcefeedback == nullptr)
             {
                 m_forcefeedback = (OIS::ForceFeedback*)joy->queryInterface(OIS::Interface::ForceFeedback);
+                if (m_forcefeedback != nullptr)
+                {
+                    m_forcefeedback_joystick = joy;
+                }
             }
 
             LOG("[RoR|Input] Created device \"" + free_device.second + "\"");

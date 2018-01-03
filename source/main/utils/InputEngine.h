@@ -532,6 +532,7 @@ public:
     void completeMissingEvents();
     int getNumJoysticks() { return m_num_joysticks; };
     OIS::ForceFeedback* getForceFeedbackDevice() { return m_forcefeedback; };
+    OIS::JoyStick* getForceFeedbackController() { return m_forcefeedback_joystick; };
 
     void SetKeyboardListener(OIS::KeyListener* keyboard_listener);
 
@@ -588,6 +589,7 @@ private:
     OIS::JoyStickState  m_joy_state[MAX_JOYSTICKS];
     int                 m_num_joysticks;
     OIS::ForceFeedback* m_forcefeedback;
+    OIS::JoyStick*      m_forcefeedback_joystick;
     int                 m_unique_counter;
 
     std::map<int, bool> m_key_state; // this stores the key/button/axis values

@@ -1,0 +1,47 @@
+; Elsaco motion-sim wheel
+; -----------------------
+; http://motion-sim.cz/new/?page=home&article=19&menu=68
+; Manufactured by Elsaco s.r.o, Kolin, Czech Republic
+;
+;	Vendor: Sim WheelPRO SWP1
+;	VendorMapFilename: Sim_WheelPRO_SWP1.map
+;	Axes: 6 (The wheel axis = 3, others give fixed output)
+;	Sliders: 0
+;	POV/HATs: 1
+;	Buttons: 32 (Arrows: right=2, down=0, left=1, right=3, middle=12)
+;               (Left side: top=5, bottom left=6, bottom right=4)
+;               (Right side: bottom(gray)=7, top(red)=9, mid(yellow)=8)
+;               (Paddles: left=11, right=10)
+;	Vector3: 0
+
+; See http://docs.rigsofrods.org/gameplay/controls-config/ for reference
+
+; ==== VEHICLE ====
+; Wheel
+TRUCK_STEER_LEFT               JoystickAxis         0 3 LOWER+DEADZONE=0.01
+TRUCK_STEER_RIGHT              JoystickAxis         0 3 UPPER+DEADZONE=0.01
+
+; Buttons
+TRUCK_SHIFT_DOWN               JoystickButton       0 11           
+TRUCK_SHIFT_UP                 JoystickButton       0 10  
+TRUCK_BLINK_LEFT               JoystickButton       0 1 
+TRUCK_BLINK_RIGHT              JoystickButton       0 3
+TRUCK_STARTER                  JoystickButton       0 9   
+TRUCK_TOGGLE_CONTACT           JoystickButton       0 8
+TRUCK_PARKING_BRAKE            JoystickButton       0 0 
+
+TRUCK_HORN                     JoystickButton       0 12
+TRUCK_TOGGLE_AXLE_LOCK         JoystickButton       0 14 
+
+; ==== COMMON ====
+COMMON_ENTER_OR_EXIT_TRUCK     JoystickButton       0 20 
+COMMON_LOCK                    JoystickButton       0 4 
+COMMON_TOGGLE_TRUCK_LIGHTS     JoystickButton       0 6  
+
+; ===== CHARACTER =====
+CHARACTER_BACKWARDS            JoystickPov          0 0 South
+CHARACTER_FORWARD              JoystickPov          0 0 North
+CHARACTER_LEFT                 JoystickPov          0 0 West
+CHARACTER_RIGHT                JoystickPov          0 0 East
+CHARACTER_JUMP                 JoystickButton       0 10  
+CHARACTER_RUN                  JoystickButton       0 11  

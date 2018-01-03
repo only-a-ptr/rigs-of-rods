@@ -26,7 +26,10 @@
 #include "RoRPrerequisites.h"
 
 #include <OISForceFeedback.h>
+#include <OISJoyStick.h>
 #include <OgreString.h>
+
+#include <string>
 
 namespace RoR {
 
@@ -34,19 +37,23 @@ void ForceFeedback::Setup()
 {
     using namespace Ogre;
     m_device = App::GetInputEngine()->getForceFeedbackDevice();
-    LOG(String("ForceFeedback: ")+TOSTRING(m_device->getFFAxesNumber())+" axe(s)");
+    LogFormat("[RoR|ForceFeedback] Using device '%s' with %d axes",
+        App::GetInputEngine()->getForceFeedbackController()->vendor().c_str(), m_device->getFFAxesNumber());
     const OIS::ForceFeedback::SupportedEffectList& supEffects = m_device->getSupportedEffects();
     if (supEffects.size() > 0)
     {
-        LOG("ForceFeedback: supported effects:");
+        Str<2000> msg("[RoR|ForceFeedback] supported effects: ");
         OIS::ForceFeedback::SupportedEffectList::const_iterator efit;
-#ifdef OISHEAD
         for (efit=supEffects.begin(); efit!=supEffects.end(); ++efit)
-            LOG(String("ForceFeedback: ")+OIS::Effect::getEffectTypeName(efit->second));
-#endif //OISHEAD
+        {
+            msg << OIS::Effect::getEffectTypeName(efit->second) << ", ";
+        }
+        Log(msg);
     }
     else
-    LOG("ForceFeedback: no supported effect found!");
+    {
+        Log("[RoR|ForceFeedback] no supported effect found!");
+    }
     m_device->setAutoCenterMode(false);
     m_device->setMasterGain(0.0);
 
