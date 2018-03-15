@@ -1523,7 +1523,9 @@ void RoRFrameListener::TeleportPlayer(RoR::Terrn2Telepoint* telepoint)
     if (m_beam_factory.getCurrentTruck() != nullptr)
         return; // Player could enter truck while Teleport-GUI is visible
 
+    // TODO: Moving the avatar shouldn't be forced ad-hoc like this, but scheduled and processed once per frame/simstep when avatar is updated. ~only_a_ptr, 03/2018
     gEnv->player->setPosition(telepoint->position);
+    //FUTURE   m_macro_manager.RecordTeleportToTelepoint(telepoint->name.c_str());
 }
 
 void RoRFrameListener::TeleportPlayerXZ(float x, float z)
@@ -1532,7 +1534,10 @@ void RoRFrameListener::TeleportPlayerXZ(float x, float z)
         return; // Player could enter truck while Teleport-GUI is visible
 
     float y = gEnv->terrainManager->getHeightFinder()->getHeightAt(x, z);
-    gEnv->player->setPosition(Ogre::Vector3(x, y, z));
+    // TODO: Moving the avatar shouldn't be forced ad-hoc like this, but scheduled and processed once per frame/simstep when avatar is updated. ~only_a_ptr, 03/2018
+    Ogre::Vector3 dst_pos(x, y, z);
+    gEnv->player->setPosition(dst_pos);
+    //FUTURE   m_macro_manager.RecordTeleportToPosition(dst_pos);
 }
 
 void RoRFrameListener::FinalizeTruckSpawning(Beam* local_truck, Beam* previous_truck)

@@ -1297,6 +1297,12 @@ void BeamFactory::UpdatePhysicsSimulation()
             continue;
         m_trucks[t]->postUpdatePhysics(m_physics_steps * PHYSICS_DT);
     }
+
+    RoR::MacroManager& macroman = RoR::App::GetSimController()->GetMacroManager();
+    if (macroman.IsRecording())
+    {
+        macroman.AdvanceTime(m_physics_steps);
+    }
 }
 
 void BeamFactory::SyncWithSimThread()

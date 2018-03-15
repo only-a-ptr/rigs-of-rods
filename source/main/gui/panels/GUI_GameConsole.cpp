@@ -270,6 +270,8 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
 
         putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_HELP, _L("spawnobject <odef name> - spawn a object at the player position"), "script_go.png");
 
+        putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_HELP, _L("macro <command> <name> - Record or play back macroscripts"), "script_go.png");
+
         putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_TITLE, _L("Tips:"), "help.png");
         putMessage(CONSOLE_MSGTYPE_INFO, CONSOLE_HELP, _L("- use Arrow Up/Down Keys in the InputBox to reuse old messages"), "information.png");
         return;
@@ -438,6 +440,14 @@ void Console::eventCommandAccept(MyGUI::Edit* _sender)
         }
 
         return;
+    }
+    else if ((args[0] == "macro") && is_appstate_sim)
+    {
+        const size_t num_args = args.size();
+        const char* macro_cmd = (num_args > 1) ? args[1].c_str() : nullptr;
+        const char* macro_arg = (num_args > 2) ? args[2].c_str() : nullptr;
+
+        App::GetSimController()->GetMacroManager().ProcessConsole(macro_cmd, macro_arg); // Writes answers/results to console
     }
     else
     {

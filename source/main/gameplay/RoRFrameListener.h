@@ -25,6 +25,7 @@
 #include "CharacterFactory.h"
 #include "EnvironmentMap.h"
 #include "ForceFeedback.h"
+#include "Macros.h"
 #include "RoRPrerequisites.h"
 
 
@@ -79,8 +80,9 @@ public:
     bool   SetupGameplayLoop     ();
     void   EnterGameplayLoop     ();
 
-    RoR::BeamFactory*           GetBeamFactory  ()         { return &m_beam_factory; } // TODO: Eliminate this. All operations upon actors should be done through above methods. ~ only_a_ptr, 06/2017
-    RoR::SkidmarkConfig*        GetSkidmarkConf ()         { return m_skidmark_conf; }
+    RoR::BeamFactory*            GetBeamFactory()          { return &m_beam_factory; } // TODO: Eliminate this. All operations upon actors should be done through above methods. ~ only_a_ptr, 06/2017
+    RoR::SkidmarkConfig*         GetSkidmarkConf()         { return m_skidmark_conf; }
+    RoR::MacroManager&           GetMacroManager()         { return m_macro_manager; }
 
 private:
 
@@ -106,6 +108,7 @@ private:
     RoR::BeamFactory         m_beam_factory;
     RoR::CharacterFactory    m_character_factory;
     RoR::GfxEnvmap           m_gfx_envmap;
+    RoR::MacroManager        m_macro_manager;
     HeatHaze*                m_heathaze;
     RoR::SkidmarkConfig*     m_skidmark_conf;
     Ogre::Real               m_time_until_next_toggle; ///< just to stop toggles flipping too fast
