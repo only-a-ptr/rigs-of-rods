@@ -815,7 +815,7 @@ void Actor::DetermineLinkedActors() //TODO: Refactor this - logic iterating over
     }
 }
 
-int Actor::getWheelNodeCount()
+int Actor::getWheelNodeCount() const
 {
     return m_wheel_node_count;
 }
@@ -4305,7 +4305,7 @@ float Actor::getSteeringAngle()
     return ar_hydro_dir_command;
 }
 
-std::string Actor::GetActorDesignName()
+std::string const & Actor::GetActorDesignName() const
 {
     return ar_design_name;
 }

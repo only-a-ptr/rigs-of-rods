@@ -23,6 +23,8 @@
 
 #include "Application.h"
 #include "DustPool.h"
+#include "GUIManager.h"
+#include "GUI_SimUtils.h"
 #include "Heathaze.h"
 #include "OverlayWrapper.h"
 #include "RoRFrameListener.h" // SimController
@@ -223,6 +225,9 @@ void RoR::GfxScene::UpdateScene(float dt_sec)
     if (player_gfx_actor != nullptr)
     {
         player_gfx_actor->UpdateVideoCameras(dt_sec);
+
+        // GUI; Vehicle info
+        App::GetGuiManager()->GetSimUtils()->DrawSimUtilsGui(player_gfx_actor);
 
         // The old-style render-to-texture dashboard (based on OGRE overlays)
         if (m_simbuf.simbuf_player_actor->ar_driveable == TRUCK && m_simbuf.simbuf_player_actor->ar_engine != nullptr)

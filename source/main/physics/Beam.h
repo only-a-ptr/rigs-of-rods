@@ -139,7 +139,7 @@ public:
     int               getAxleLockCount();
     Ogre::Vector3     getGForces();
     float             getSteeringAngle();
-    std::string       GetActorDesignName();
+    std::string const& GetActorDesignName() const;
     std::string       GetActorFileName();
     int               GetActorType();
     int               GetNumActiveConnectedBeams(int nodeid);     //!< Returns the number of active (non bounded) beams connected to a node
@@ -148,7 +148,7 @@ public:
     void              UnmuteAllSounds();
     float             getTotalMass(bool withLocked=true);
     void              recalc_masses();
-    int               getWheelNodeCount();
+    int               getWheelNodeCount() const;
     void              setMass(float m);
     bool              getBrakeLightVisible();
     bool              getReverseLightVisible();            //!< Tells if the reverse-light is currently lit.

@@ -169,11 +169,11 @@ private:
     int            m_engine_turbo_mode;     //!< Engine attribute
     bool           m_engine_is_running;     //!< Engine state
     char           m_engine_type;           //!< Engine attribute {'t' = truck (default), 'c' = car}
-    float          m_braking_torque;        //!< Engine
+    float          m_braking_torque;        //!< Engine attribute
     float          m_cur_acc;               //!< Engine
     float          m_cur_engine_rpm;        //!< Engine
     float          m_diff_ratio;            //!< Engine
-    float          m_engine_torque;         //!< Engine
+    float          m_engine_torque;         //!< Engine attribute
     float          m_hydropump_state;       //!< Engine
     float          m_idle_rpm;              //!< Engine attribute
     float          m_min_idle_mixture;      //!< Engine attribute

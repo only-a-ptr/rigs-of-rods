@@ -41,6 +41,7 @@
 #include "Language.h"
 #include "GUIManager.h"
 #include "Application.h"
+#include "OgreImGui.h"
 #include "OgreSubsystem.h"
 #include "Beam.h"
 
@@ -160,6 +161,125 @@ void CLASS::FrameStepSimGui(float dt)
     }
 }
 
+void CLASS::DrawSimUtilsGui(RoR::GfxActor* actorx) //!< New 08/2018; uses DearIMGUI
+{
+    if (!m_actor_info_visible)
+    {
+        return;
+    }
+
+    // TODO: Localize all! See https://github.com/RigsOfRods/rigs-of-rods/issues/1269
+    ImGui::Begin(actorx->FetchActorDesignName().c_str());
+    if (m_stats.ast_health < 1.0f)
+    {
+        const float value = static_cast<float>( Round((1.0f - m_stats.ast_health) * 100.0f, 2) );
+        ImGui::Text("%s%f%%", "Vehicle health: ", value);
+    }
+    else if (m_stats.ast_health >= 1.0f) //When this condition is true, it means that health is at 0% which means 100% of destruction.
+    {
+        ImGui::Text("%s100%%", "Vehicle destruction: ");
+    }
+
+    const int num_beams_i = actorx->FetchNumBeams();
+    const float num_beams_f = static_cast<float>(num_beams_i);
+    ImGui::Text("%s%d", "Beam count: ", num_beams_i);
+
+    const float broken_pct = static_cast<float>( Round((float)m_stats.ast_broken_beams / num_beams_f, 2) * 100.0f );
+    ImGui::Text("%s%d (%f%%)", "Broken beams count: ", m_stats.ast_broken_beams, broken_pct);
+
+    const float deform_pct = static_cast<float>( Round((float)m_stats.ast_deformed_beams / num_beams_f * 100.0f) );
+    ImGui::Text("%s%d (%f%%)", "Deformed beams count: ", m_stats.ast_deformed_beams, deform_pct);
+
+    const float avg_deform = static_cast<float>( Round((float)m_stats.ast_avg_deform / num_beams_f, 4) * 100.0f );
+    ImGui::Text("%s%f", "Average deformation: ", avg_deform);
+
+    const float avg_stress = 1.f - (float)m_stats.ast_beam_stress / num_beams_f;
+    ImGui::Text("%s%+08.0f", "Average stress: ", avg_stress);
+
+    ImGui::NewLine();
+
+    const int num_nodes = actorx->FetchNumNodes();
+    const int num_wheelnodes = actorx->FetchNumWheelNodes();
+    ImGui::Text("%s%d (%s%d)", "Node count: ", num_nodes, "wheels: ", num_wheelnodes);
+
+    ImGui::Text("%s%8.2f kg (%.2f tons)", "Total mass: ", m_stats.ast_mass, m_stats.ast_mass / 1000.0f);
+
+    ImGui::NewLine();
+
+    const float n0_velo_len   = actorx->GetSimDataBuffer().simbuf_node0_velo.length();
+    if ((actorx->GetAttributes().xa_has_engine) && (actorx->GetAttributes().xa_driveable == TRUCK))
+    {
+        const double PI = 3.14159265358979323846;
+
+        const float max_rpm       = actorx->GetAttributes().xa_engine_max_rpm;
+        const float torque        = actorx->GetAttributes().xa_engine_torque;
+        const float turbo_psi     = actorx->GetSimDataBuffer().simbuf_engine_turbo_psi;
+        const float cur_rpm       = actorx->GetSimDataBuffer().simbuf_engine_rpm;
+        const float wheel_speed   = actorx->GetSimDataBuffer().simbuf_wheel_speed;
+        
+        ImGui::Text("%s%f / %f", "Engine RPM: ", cur_rpm, max_rpm); // TODO: Port coloring from removed MyGUI panel (use Git history) ~ only_a_ptr, 08/2018
+
+        const float currentKw = (((cur_rpm * (torque + ((turbo_psi * 6.8) * torque) / 100) * ( PI / 30)) / 1000));
+        ImGui::Text("%s%fKw (%fhp)", "Current power: ", static_cast<float>(Round(currentKw)), static_cast<float>(Round(currentKw *1.34102209)));
+
+        ImGui::Text("%s%d", "Current gear: ", actorx->GetSimDataBuffer().simbuf_gear);
+
+        float velocityKPH = wheel_speed * 3.6f;
+        float velocityMPH = wheel_speed * 2.23693629f;
+        float carSpeedKPH = n0_velo_len * 3.6f;
+        float carSpeedMPH = n0_velo_len * 2.23693629f;
+
+        // apply a deadzone ==> no flickering +/-
+        if (fabs(wheel_speed) < 1.0f)
+        {
+            velocityKPH = velocityMPH = 0.0f;
+        }
+        if (fabs(n0_velo_len) < 1.0f)
+        {
+            carSpeedKPH = carSpeedMPH = 0.0f;
+        }
+
+        ImGui::Text("%s%fKm/h (%f mph)", "Wheel speed: ", Round(velocityKPH), Round(velocityMPH)); // TODO: Port coloring from removed MyGUI panel (use Git history) ~ only_a_ptr, 08/2018
+        ImGui::Text("%s%fKm/h (%f mph)", "Vehicle speed: ", Round(carSpeedKPH), Round(carSpeedMPH));
+    }
+    else
+    {
+        float speedKN = n0_velo_len * 1.94384449f;
+        ImGui::Text("%s%f kn (%f Km/h; %f mph)", "Current speed: ", Round(speedKN), Round(speedKN * 1.852), Round(speedKN * 1.151));
+
+        if (actorx->GetAttributes().xa_driveable == AIRPLANE)
+        {
+            const float altitude = actorx->GetSimNodeBuffer()[0].AbsPosition.y / 30.48 * 100;
+            ImGui::Text("%s%f feet (%f meters)", "Altitude: ", Round(altitude), Round(altitude * 0.30480));
+
+            int engine_num = 1; // UI; count from 1
+            for (GfxActor::SimBuffer::AeroEngineSB& ae: actorx->GetSimDataBuffer().simbuf_aeroengines)
+            {
+                if (ae.simbuf_ae_turboprop) // Turboprop or pistonprop
+                {
+                    ImGui::Text("Engine #%d: %f RPM", engine_num, ae.simbuf_ae_rpm);
+                }
+                else
+                {
+                    ImGui::Text("Engine #%d: %f%", engine_num, ae.simbuf_ae_rpm);
+                }
+                ++engine_num;
+            }
+        }
+        else if (actorx->GetAttributes().xa_driveable == BOAT)
+        {
+            int engine_num = 1; // UI; count from 1
+            for (GfxActor::SimBuffer::ScrewPropSB& screw: actorx->GetSimDataBuffer().simbuf_screwprops)
+            {
+                ImGui::Text("Engine #%d: %f%", engine_num, screw.simbuf_sp_throttle);
+                ++engine_num;
+            }            
+        }      
+    }
+
+    ImGui::End(); 
+}
+
 void CLASS::UpdateStats(float dt, Actor* actor)
 {
     if (!MAIN_WIDGET->getVisible())
@@ -178,6 +298,8 @@ void CLASS::UpdateStats(float dt, Actor* actor)
     else
         m_fpscounter_box->setVisible(false);
 
+
+
     if (m_actor_info_visible && actor != nullptr)
     {
         if (!m_truckinfo_box->getVisible())
@@ -191,7 +313,7 @@ void CLASS::UpdateStats(float dt, Actor* actor)
         beam_t* beam = actor->ar_beams;
         float average_deformation = 0.0f;
         float beamstress = 0.0f;
-        float current_deformation = 0.0f;
+//OLD         float current_deformation = 0.0f;
         float mass = actor->getTotalMass();
         int beambroken = 0;
         int beamdeformed = 0;
@@ -203,7 +325,7 @@ void CLASS::UpdateStats(float dt, Actor* actor)
                 beambroken++;
             }
             beamstress += beam->stress;
-            current_deformation = fabs(beam->L - beam->refL);
+            float current_deformation = fabs(beam->L - beam->refL);
             if (fabs(current_deformation) > 0.0001f && beam->bm_type != BEAM_HYDRO)
             {
                 beamdeformed++;
@@ -221,6 +343,12 @@ void CLASS::UpdateStats(float dt, Actor* actor)
             //When this condition is true, it means that health is at 0% which means 100% of destruction.
             m_actor_stats_str = m_actor_stats_str + MainThemeColor + _L("Vehicle destruction: ") + WhiteColor + U("100%") + "\n";
         }
+        m_stats.ast_health = health;
+        m_stats.ast_broken_beams = beambroken;
+        m_stats.ast_deformed_beams = beamdeformed;
+        m_stats.ast_beam_stress = beamstress;
+        m_stats.ast_mass = mass;
+        m_stats.ast_avg_deform = average_deformation;
 
         m_actor_stats_str = m_actor_stats_str + MainThemeColor + _L("Beam count: ") + WhiteColor + TOUTFSTRING(actor->ar_num_beams) + "\n";
         m_actor_stats_str = m_actor_stats_str + MainThemeColor + _L("Broken beams count: ") + WhiteColor + TOUTFSTRING(beambroken) + U(" (") + TOUTFSTRING(Round((float)beambroken / (float)actor->ar_num_beams, 2) * 100.0f) + U("%)") + "\n";

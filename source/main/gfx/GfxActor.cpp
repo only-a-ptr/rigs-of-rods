@@ -98,15 +98,18 @@ RoR::GfxActor::GfxActor(Actor* actor, std::string ogre_resource_group,
     m_attr.xa_camera0_pos_node  = 0;
     m_attr.xa_camera0_roll_node = 0;
     m_attr.xa_has_autopilot = (actor->ar_autopilot != nullptr);
+    m_attr.xa_has_engine = (actor->ar_engine != nullptr);
+    m_attr.xa_driveable = actor->ar_driveable;
     if (actor->ar_num_cameras > 0)
     {
         m_attr.xa_camera0_pos_node  = actor->ar_camera_node_pos[0];
         m_attr.xa_camera0_roll_node = actor->ar_camera_node_roll[0];
     }
-    if (actor->ar_engine != nullptr)
+    if (m_attr.xa_has_engine)
     {
         m_attr.xa_num_gears = actor->ar_engine->getNumGears();
         m_attr.xa_engine_max_rpm = actor->ar_engine->getMaxRPM();
+        m_attr.xa_engine_torque  = actor->ar_engine->getEngineTorque();
     }
 }
 
@@ -1109,6 +1112,7 @@ void RoR::GfxActor::UpdateSimDataBuffer()
         dst.simbuf_ae_throttle   = src->getThrottle();
         dst.simbuf_ae_rpm        = src->getRPM();
         dst.simbuf_ae_rpmpc      = src->getRPMpc();
+        dst.simbuf_ae_rpm        = src->getRPM();
         dst.simbuf_ae_turboprop  = (src->getType() == AeroEngine::AEROENGINE_TYPE_TURBOPROP);
         dst.simbuf_ae_ignition   = src->getIgnition();
         dst.simbuf_ae_failed     = src->isFailed();
@@ -2587,3 +2591,8 @@ void RoR::GfxActor::SetAllMeshesVisible(bool visible)
     this->SetPropsVisible(visible);
     this->SetFlexbodyVisible(visible);
 }
+
+std::string const& RoR::GfxActor::FetchActorDesignName() const                { return m_actor->GetActorDesignName(); }
+int                RoR::GfxActor::FetchNumBeams      () const                 { return m_actor->ar_num_beams; }
+int                RoR::GfxActor::FetchNumNodes      () const                 { return m_actor->ar_num_nodes; }
+int                RoR::GfxActor::FetchNumWheelNodes () const                 { return m_actor->getWheelNodeCount(); }

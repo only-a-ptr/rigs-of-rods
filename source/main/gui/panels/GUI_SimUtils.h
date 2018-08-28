@@ -44,6 +44,17 @@ namespace GUI {
 class SimUtils: public SimUtilsLayout
 {
 public:
+
+    struct ActorStats
+    {
+        float ast_health;
+        int   ast_broken_beams;
+        int   ast_deformed_beams;
+        float ast_beam_stress;
+        float ast_mass; //!< Kilograms (Kg)
+        float ast_avg_deform;
+    };
+
     SimUtils();
     ~SimUtils();
 
@@ -57,6 +68,7 @@ public:
 
     void UpdateStats(float dt, Actor* actor); //different from Framestep!
     void FrameStepSimGui(float dt);
+    void DrawSimUtilsGui(RoR::GfxActor* actorx); //!< New; uses DearIMGUI
 
     void PushNotification(Ogre::String Title, Ogre::String text);
     void HideNotificationBox();
@@ -81,6 +93,7 @@ private:
     Ogre::UTFString BlueColor; // colour key shortcut
 
     std::string  m_actor_stats_str;
+    ActorStats   m_stats;
     float        m_notifi_box_alpha; //!< Animated
     long         m_last_notifi_push_time;
     bool         m_notifications_disabled;
