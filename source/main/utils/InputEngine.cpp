@@ -1046,12 +1046,6 @@ eventInfo_t eventInfo[] = {
         _L("toggle particle cannon")
     },
     {
-        "COMMON_TOGGLE_MAT_DEBUG",
-        EV_COMMON_TOGGLE_MAT_DEBUG,
-        "",
-        _L("debug purpose - dont use")
-    },
-    {
         "COMMON_TOGGLE_RENDER_MODE",
         EV_COMMON_TOGGLE_RENDER_MODE,
         "Keyboard E",

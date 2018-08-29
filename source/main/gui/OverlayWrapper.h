@@ -50,7 +50,6 @@ public:
     };
 
     void showDashboardOverlays(bool show, Actor *actor);
-    void showDebugOverlay(int mode);
     void showPressureOverlay(bool show);
 
     void windowResized();
@@ -92,7 +91,6 @@ protected:
     struct VisibleOverlays
     {
         static const int DIRECTION_ARROW              = BITMASK(1);
-        static const int DEBUG_FPS_MEMORY             = BITMASK(2);
         static const int RACING                       = BITMASK(4);
         static const int TRUCK_TIRE_PRESSURE_OVERLAY  = BITMASK(5);
     };
@@ -102,7 +100,6 @@ protected:
     void resizePanel(Ogre::OverlayElement *oe);
     void reposPanel(Ogre::OverlayElement *oe);
     void placeNeedle(Ogre::SceneNode *node, float x, float y, float len);
-    void updateStats(bool detailed=false);
 
     Ogre::Overlay *loadOverlay(Ogre::String name, bool autoResizeRation=true);
     Ogre::OverlayElement *loadOverlayElement(Ogre::String name);
@@ -128,7 +125,6 @@ protected:
 
     // Misc
     Ogre::Overlay *m_direction_arrow_overlay;
-    Ogre::Overlay *m_debug_fps_memory_overlay;
     Ogre::Overlay *m_racing_overlay;
 
     // -------------------------------------------------------------

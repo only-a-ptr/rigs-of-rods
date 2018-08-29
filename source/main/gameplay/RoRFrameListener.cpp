@@ -137,7 +137,6 @@ SimController::SimController(RoR::ForceFeedback* ff, RoR::SkidmarkConfig* skid_c
     m_reload_box(0),
     m_reload_dir(Quaternion::IDENTITY),
     m_reload_pos(Vector3::ZERO),
-    m_stats_on(0),
     m_time(0),
     m_time_until_next_toggle(0),
     m_advanced_vehicle_repair(false),
@@ -1424,19 +1423,7 @@ void SimController::UpdateInputEvents(float dt)
 
     if ((simRUNNING(s) || simPAUSED(s) || simEDITOR(s)) && RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_TOGGLE_STATS))
     {
-        gui_man->GetSimUtils()->SetFPSBoxVisible(! gui_man->GetSimUtils()->IsFPSBoxVisible());
-    }
-
-    if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_TOGGLE_MAT_DEBUG))
-    {
-        if (m_stats_on == 0)
-            m_stats_on = 2;
-        else if (m_stats_on == 1)
-            m_stats_on = 2;
-        else if (m_stats_on == 2)
-            m_stats_on = 0;
-        if (RoR::App::GetOverlayWrapper())
-            RoR::App::GetOverlayWrapper()->showDebugOverlay(m_stats_on);
+        gui_man->GetSimUtils()->CycleRenderStatModes();
     }
 
     if (RoR::App::GetInputEngine()->getEventBoolValueBounce(EV_COMMON_OUTPUT_POSITION) && (simRUNNING(s) || simPAUSED(s) || simEDITOR(s)))
@@ -2142,11 +2129,6 @@ void SimController::EnterGameplayLoop()
         RoR::App::GetOgreSubsystem()->GetOgreRoot()->addFrameListener(&App::GetGuiManager()->GetImGui());
         RoR::App::GetOgreSubsystem()->GetOgreRoot()->renderOneFrame();
         RoR::App::GetOgreSubsystem()->GetOgreRoot()->removeFrameListener(&App::GetGuiManager()->GetImGui());
-
-        if (m_stats_on && RoR::App::GetOverlayWrapper())
-        {
-            RoR::App::GetOverlayWrapper()->updateStats();
-        }
 
 #ifdef USE_SOCKETW
         if ((App::mp_state.GetActive() == MpState::CONNECTED) && RoR::Networking::CheckError())

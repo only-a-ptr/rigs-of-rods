@@ -338,7 +338,6 @@ void GUIManager::hideGUI(bool hidden)
     if (hidden)
     {
         m_impl->panel_SimUtils.HideNotificationBox();
-        m_impl->panel_SimUtils.SetFPSBoxVisible(false);
         m_impl->panel_SimUtils.SetActorInfoBoxVisible(false);
         m_impl->panel_ChatBox.Hide();
     }

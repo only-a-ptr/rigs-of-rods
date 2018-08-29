@@ -45,6 +45,8 @@ class SimUtils: public SimUtilsLayout
 {
 public:
 
+    enum class RenderStatsMode { HIDDEN, COMPACT, FULL };
+
     struct ActorStats
     {
         float ast_health;
@@ -61,8 +63,7 @@ public:
     void SetBaseVisible(bool v);
     bool IsBaseVisible();
 
-    void SetFPSBoxVisible(bool v);
-    bool IsFPSBoxVisible() { return m_fps_box_visible; }
+    void CycleRenderStatModes();
 
     void SetActorInfoBoxVisible(bool v);
 
@@ -75,6 +76,9 @@ public:
     void DisableNotifications(bool disabled);
 
 private:
+
+    void DrawVehicleInfoPanel(RoR::GfxActor* actorx);
+    void DrawRendererStatsPanel();
 
     // taken from truckHUD.h (now removed). TODO: Cleanup
     std::map<int, float> maxNegLatG;
@@ -97,8 +101,8 @@ private:
     float        m_notifi_box_alpha; //!< Animated
     long         m_last_notifi_push_time;
     bool         m_notifications_disabled;
-    bool         m_fps_box_visible;
     bool         m_actor_info_visible;
+    RenderStatsMode m_render_stats_mode;
 };
 
 } // namespace GUI

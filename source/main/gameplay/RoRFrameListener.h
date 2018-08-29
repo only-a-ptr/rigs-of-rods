@@ -135,7 +135,6 @@ private:
     Ogre::Real               m_time_until_next_toggle; //!< just to stop toggles flipping too fast
     float                    m_last_simulation_speed;  //!< previously used time ratio between real time (evt.timeSinceLastFrame) and physics time ('dt' used in calcPhysics)
     bool                     m_is_pace_reset_pressed;
-    int                      m_stats_on;
     float                    m_netcheck_gui_timer;
     collision_box_t*         m_reload_box;
     double                   m_time;

@@ -168,8 +168,6 @@ int OverlayWrapper::init()
     m_direction_arrow_overlay->show();
     m_direction_arrow_overlay->hide();
 
-    m_debug_fps_memory_overlay = loadOverlay("Core/DebugOverlay", false);
-
     OverlayElement* vere = loadOverlayElement("Core/RoRVersionString");
     if (vere)
         vere->setCaption("Rigs of Rods version " + String(ROR_VERSION_STRING));
@@ -366,23 +364,6 @@ void OverlayWrapper::update(float dt)
         mTimeUntilNextToggle -= dt;
 }
 
-void OverlayWrapper::showDebugOverlay(int mode)
-{
-    if (!m_debug_fps_memory_overlay)
-        return;
-
-    if (mode > 0)
-    {
-        m_debug_fps_memory_overlay->show();
-        BITMASK_SET_1(m_visible_overlays, VisibleOverlays::DEBUG_FPS_MEMORY);
-    }
-    else
-    {
-        m_debug_fps_memory_overlay->hide();
-        BITMASK_SET_0(m_visible_overlays, VisibleOverlays::DEBUG_FPS_MEMORY);
-    }
-}
-
 void OverlayWrapper::showPressureOverlay(bool show)
 {
     if (m_truck_pressure_overlay)
@@ -440,73 +421,6 @@ void OverlayWrapper::showDashboardOverlays(bool show, Actor* actor)
         m_marine_dashboard_overlay->hide();
 
         m_machine_dashboard_overlay->hide();
-    }
-}
-
-void OverlayWrapper::updateStats(bool detailed)
-{
-    static UTFString currFps = _L("Current FPS: ");
-    static UTFString avgFps = _L("Average FPS: ");
-    static UTFString bestFps = _L("Best FPS: ");
-    static UTFString worstFps = _L("Worst FPS: ");
-    static UTFString tris = _L("Triangle Count: ");
-    const RenderTarget::FrameStats& stats = win->getStatistics();
-
-    // update stats when necessary
-    try
-    {
-        OverlayElement* guiAvg = OverlayManager::getSingleton().getOverlayElement("Core/AverageFps");
-        OverlayElement* guiCurr = OverlayManager::getSingleton().getOverlayElement("Core/CurrFps");
-        OverlayElement* guiBest = OverlayManager::getSingleton().getOverlayElement("Core/BestFps");
-        OverlayElement* guiWorst = OverlayManager::getSingleton().getOverlayElement("Core/WorstFps");
-
-        guiAvg->setCaption(avgFps + TOUTFSTRING(stats.avgFPS));
-        guiCurr->setCaption(currFps + TOUTFSTRING(stats.lastFPS));
-        guiBest->setCaption(bestFps + TOUTFSTRING(stats.bestFPS) + U(" ") + TOUTFSTRING(stats.bestFrameTime) + U(" ms"));
-        guiWorst->setCaption(worstFps + TOUTFSTRING(stats.worstFPS) + U(" ") + TOUTFSTRING(stats.worstFrameTime) + U(" ms"));
-
-        OverlayElement* guiTris = OverlayManager::getSingleton().getOverlayElement("Core/NumTris");
-        UTFString triss = tris + TOUTFSTRING(stats.triangleCount);
-        if (stats.triangleCount > 1000000)
-            triss = tris + TOUTFSTRING(stats.triangleCount/1000000.0f) + U(" M");
-        else if (stats.triangleCount > 1000)
-            triss = tris + TOUTFSTRING(stats.triangleCount/1000.0f) + U(" k");
-        guiTris->setCaption(triss);
-
-        // create some memory texts
-        UTFString memoryText;
-        if (TextureManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("Textures: ") + formatBytes(TextureManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(TextureManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (CompositorManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("Compositors: ") + formatBytes(CompositorManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(CompositorManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (FontManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("Fonts: ") + formatBytes(FontManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(FontManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (GpuProgramManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("GPU Program: ") + formatBytes(GpuProgramManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(GpuProgramManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (HighLevelGpuProgramManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("HL GPU Program: ") + formatBytes(HighLevelGpuProgramManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(HighLevelGpuProgramManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (MaterialManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("Materials: ") + formatBytes(MaterialManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(MaterialManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (MeshManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("Meshes: ") + formatBytes(MeshManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(MeshManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (SkeletonManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("Skeletons: ") + formatBytes(SkeletonManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(SkeletonManager::getSingleton().getMemoryBudget()) + U("\n");
-        if (MaterialManager::getSingleton().getMemoryUsage() > 1)
-            memoryText = memoryText + _L("Materials: ") + formatBytes(MaterialManager::getSingleton().getMemoryUsage()) + U(" / ") + formatBytes(MaterialManager::getSingleton().getMemoryBudget()) + U("\n");
-        memoryText = memoryText + U("\n");
-
-        OverlayElement* memoryDbg = OverlayManager::getSingleton().getOverlayElement("Core/MemoryText");
-        memoryDbg->setCaption(memoryText);
-
-        float sumMem = TextureManager::getSingleton().getMemoryUsage() + CompositorManager::getSingleton().getMemoryUsage() + FontManager::getSingleton().getMemoryUsage() + GpuProgramManager::getSingleton().getMemoryUsage() + HighLevelGpuProgramManager::getSingleton().getMemoryUsage() + MaterialManager::getSingleton().getMemoryUsage() + MeshManager::getSingleton().getMemoryUsage() + SkeletonManager::getSingleton().getMemoryUsage() + MaterialManager::getSingleton().getMemoryUsage();
-        String sumMemoryText = _L("Memory (Ogre): ") + formatBytes(sumMem) + U("\n");
-
-        OverlayElement* memorySumDbg = OverlayManager::getSingleton().getOverlayElement("Core/CurrMemory");
-        memorySumDbg->setCaption(sumMemoryText);
-    }
-    catch (...)
-    {
-        // ignore
     }
 }
 
@@ -1213,7 +1127,6 @@ void OverlayWrapper::TemporarilyHideAllOverlays(Actor* current_vehicle)
 {
     m_racing_overlay->hide();
     m_direction_arrow_overlay->hide();
-    m_debug_fps_memory_overlay->hide();
 
     showDashboardOverlays(false, current_vehicle);
 }
@@ -1227,10 +1140,6 @@ void OverlayWrapper::RestoreOverlaysVisibility(Actor* current_vehicle)
     else if (BITMASK_IS_1(m_visible_overlays, VisibleOverlays::DIRECTION_ARROW))
     {
         m_direction_arrow_overlay->show();
-    }
-    else if (BITMASK_IS_1(m_visible_overlays, VisibleOverlays::DEBUG_FPS_MEMORY))
-    {
-        m_debug_fps_memory_overlay->show();
     }
 
     showDashboardOverlays(true, current_vehicle);

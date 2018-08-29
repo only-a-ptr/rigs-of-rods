@@ -55,7 +55,8 @@ using namespace GUI;
 #define CLASS        SimUtils
 #define MAIN_WIDGET  ((MyGUI::Window*)mMainWidget)
 
-CLASS::CLASS()
+CLASS::CLASS():
+    m_render_stats_mode(SimUtils::RenderStatsMode::HIDDEN)
 {
     //Usefull
     MainThemeColor = U("#FF7D02");
@@ -71,7 +72,6 @@ CLASS::CLASS()
 
     m_actor_stats_str = "";
 
-    m_fps_box_visible = false;
     m_actor_info_visible = false;
 
     m_notifi_box_alpha = 1.0f;
@@ -88,7 +88,6 @@ void CLASS::SetBaseVisible(bool v)
 {
     if (!v)
     {
-        this->SetFPSBoxVisible(false);
         this->SetActorInfoBoxVisible(false);
         this->HideNotificationBox();
     }
@@ -100,10 +99,14 @@ bool CLASS::IsBaseVisible()
     return MAIN_WIDGET->getVisible();
 }
 
-void CLASS::SetFPSBoxVisible(bool v)
+void SimUtils::CycleRenderStatModes()
 {
-    m_fps_box_visible = v;
-    m_fpscounter_box->setVisible(v);
+    switch (m_render_stats_mode)
+    {
+    case RenderStatsMode::HIDDEN:   m_render_stats_mode = RenderStatsMode::COMPACT;  return;
+    case RenderStatsMode::COMPACT:  m_render_stats_mode = RenderStatsMode::FULL;     return;
+    case RenderStatsMode::FULL:     m_render_stats_mode = RenderStatsMode::HIDDEN;   return;
+    }
 }
 
 void CLASS::SetActorInfoBoxVisible(bool v)
@@ -163,11 +166,19 @@ void CLASS::FrameStepSimGui(float dt)
 
 void CLASS::DrawSimUtilsGui(RoR::GfxActor* actorx) //!< New 08/2018; uses DearIMGUI
 {
-    if (!m_actor_info_visible)
+    if (m_actor_info_visible)
     {
-        return;
+        this->DrawVehicleInfoPanel(actorx);
     }
 
+    if (m_render_stats_mode == RenderStatsMode::FULL) // TODO: Remake the FPS box in DearIMGUI, too! ~ only_a_ptr, 08/2018
+    {
+        this->DrawRendererStatsPanel();
+    }
+}
+
+void SimUtils::DrawVehicleInfoPanel(RoR::GfxActor* actorx)
+{
     // TODO: Localize all! See https://github.com/RigsOfRods/rigs-of-rods/issues/1269
     ImGui::Begin(actorx->FetchActorDesignName().c_str());
     if (m_stats.ast_health < 1.0f)
@@ -280,12 +291,29 @@ void CLASS::DrawSimUtilsGui(RoR::GfxActor* actorx) //!< New 08/2018; uses DearIM
     ImGui::End(); 
 }
 
+void SimUtils::DrawRendererStatsPanel()
+{
+    // TODO: Localize all! See https://github.com/RigsOfRods/rigs-of-rods/issues/1269
+    ImGui::Begin("Memory stats [usage / budget]");
+
+    ImGui::Text("Textures: %uB / %uB",       Ogre::TextureManager::getSingleton().getMemoryUsage(),             Ogre::TextureManager::getSingleton().getMemoryBudget());
+    ImGui::Text("Compositor: %uB / %uB",     Ogre::CompositorManager::getSingleton().getMemoryUsage(),          Ogre::CompositorManager::getSingleton().getMemoryBudget());
+    ImGui::Text("Fonts: %uB / %uB",          Ogre::FontManager::getSingleton().getMemoryUsage(),                Ogre::FontManager::getSingleton().getMemoryBudget());
+    ImGui::Text("GPU program: %uB / %uB",    Ogre::GpuProgramManager::getSingleton().getMemoryUsage(),          Ogre::GpuProgramManager::getSingleton().getMemoryBudget());
+    ImGui::Text("HL GPU program: %uB / %uB", Ogre::HighLevelGpuProgramManager::getSingleton().getMemoryUsage(), Ogre::HighLevelGpuProgramManager::getSingleton().getMemoryBudget());
+    ImGui::Text("Materials: %uB / %uB",      Ogre::MaterialManager::getSingleton().getMemoryUsage(),            Ogre::MaterialManager::getSingleton().getMemoryBudget());
+    ImGui::Text("Meshes: %uB / %uB",         Ogre::MeshManager::getSingleton().getMemoryUsage(),                Ogre::MeshManager::getSingleton().getMemoryBudget());
+    ImGui::Text("Skeletons: %uB / %uB",      Ogre::SkeletonManager::getSingleton().getMemoryUsage(),            Ogre::SkeletonManager::getSingleton().getMemoryBudget());
+
+    ImGui::End();
+}
+
 void CLASS::UpdateStats(float dt, Actor* actor)
 {
     if (!MAIN_WIDGET->getVisible())
         return;
 
-    if (m_fps_box_visible)
+    if (m_render_stats_mode != RenderStatsMode::HIDDEN)
     {
         const Ogre::RenderTarget::FrameStats& stats = App::GetOgreSubsystem()->GetRenderWindow()->getStatistics();
         m_cur_fps->setCaptionWithReplacing(_L("Current FPS: ") + TOUTFSTRING(stats.lastFPS));
