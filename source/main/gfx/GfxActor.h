@@ -190,6 +190,11 @@ public:
             float simbuf_ab_ratio;
         };
 
+        struct WingSB
+        {
+            float simbuf_wing_aoa;
+        };
+
         std::unique_ptr<NodeData>   simbuf_nodes;
         Ogre::Vector3               simbuf_pos;
         Ogre::Vector3               simbuf_node0_velo;
@@ -205,6 +210,10 @@ public:
         float                       simbuf_engine_crankfactor;
         float                       simbuf_engine_turbo_psi;
         float                       simbuf_engine_accel;
+        float                       simbuf_engine_clutch_torque;
+        float                       simbuf_engine_clutch_force;
+        bool                        simbuf_engine_has_contact;
+        bool                        simbuf_engine_is_running;
         bool                        simbuf_beaconlight_active;
         float                       simbuf_hydro_dir_state; // State of steering actuator ('hydro'), for steeringwheel display
         float                       simbuf_hydro_aileron_state;
@@ -215,19 +224,29 @@ public:
         std::vector<CommandKeySB>   simbuf_commandkey;
         std::vector<AeroEngineSB>   simbuf_aeroengines;
         std::vector<AirbrakeSB>     simbuf_airbrakes;
+        std::vector<WingSB>         simbuf_wings;
         DiffType                    simbuf_diff_type;
         bool                        simbuf_parking_brake;
         float                       simbuf_brake;
         float                       simbuf_clutch;
         int                         simbuf_aero_flap_state;
         int                         simbuf_airbrake_state;
-        float                       simbuf_wing4_aoa;
         bool                        simbuf_headlight_on;
         Ogre::Vector3               simbuf_direction; //!< Output of `Actor::getDirection()`
         int                         simbuf_autopilot_heading;
         bool                        simbuf_autopilot_ils_available;
         float                       simbuf_autopilot_ils_vdev;
         float                       simbuf_autopilot_ils_hdev;
+        bool                        simbuf_has_locked_hooks;
+        bool                        simbuf_hydraulics_ready;
+        bool                        simbuf_cab_lights_on;
+        bool                        simbuf_antilockbrake_enabled;
+        bool                        simbuf_antilockbrake_active;
+        bool                        simbuf_tractioncontrol_enabled;
+        bool                        simbuf_tractioncontrol_active;
+        bool                        simbuf_any_tie_tied; // TODO: this is silly, keeping for consistence ~ only_a_ptr, 08/2018
+        float                       simbuf_odometer_total;
+        float                       simbuf_odometer_user;
     };
 
     struct Attributes    //!< Actor visual attributes
@@ -258,6 +277,7 @@ public:
     void                      SetVideoCamState   (VideoCamState state);
     void                      UpdateVideoCameras (float dt_sec);
     void                      UpdateParticles    (float dt_sec);
+    void                      UpdateDashBoards   (float dt_sec);
     void                      AddRod             (int beam_index, int node1_index, int node2_index, const char* material_name, bool visible, float diameter_meters);
     void                      UpdateRods         ();
     void                      SetRodsVisible     (bool visible);

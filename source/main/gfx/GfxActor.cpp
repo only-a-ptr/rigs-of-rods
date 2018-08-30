@@ -90,6 +90,7 @@ RoR::GfxActor::GfxActor(Actor* actor, std::string ogre_resource_group,
     m_simbuf.simbuf_aeroengines.resize(actor->ar_num_aeroengines);
     m_simbuf.simbuf_commandkey.resize(MAX_COMMANDS + 10);
     m_simbuf.simbuf_airbrakes.resize(actor->ar_num_airbrakes);
+    m_simbuf.simbuf_wings.resize(actor->ar_num_wings);
 
     // Attributes
     m_attr.xa_speedo_highest_kph = actor->ar_speedo_max_kph; // TODO: Remove the attribute from Actor altogether ~ only_a_ptr, 05/2018
@@ -1062,6 +1063,16 @@ void RoR::GfxActor::UpdateSimDataBuffer()
     m_simbuf.simbuf_headlight_on = m_actor->ar_lights != 0;
     m_simbuf.simbuf_direction = m_actor->getDirection();
     m_simbuf.simbuf_node0_velo = m_actor->ar_nodes[0].Velocity;
+    m_simbuf.simbuf_has_locked_hooks = m_actor->HasLockedHooks();
+    m_simbuf.simbuf_hydraulics_ready = m_actor->ar_engine_hydraulics_ready;
+    m_simbuf.simbuf_cab_lights_on = m_actor->ar_lights;
+    m_simbuf.simbuf_antilockbrake_enabled = m_actor->alb_mode != 0;
+    m_simbuf.simbuf_antilockbrake_active = m_actor->m_antilockbrake != 0;
+    m_simbuf.simbuf_tractioncontrol_enabled = m_actor->tc_mode != 0;
+    m_simbuf.simbuf_tractioncontrol_active = m_actor->m_tractioncontrol != 0;
+    m_simbuf.simbuf_any_tie_tied = m_actor->isTied();
+    m_simbuf.simbuf_odometer_total = m_actor->m_odometer_total;
+    m_simbuf.simbuf_odometer_user = m_actor->m_odometer_user;
     if (m_simbuf.simbuf_net_username != m_actor->m_net_username)
     {
         m_simbuf.simbuf_net_username = m_actor->m_net_username;
@@ -1090,6 +1101,10 @@ void RoR::GfxActor::UpdateSimDataBuffer()
         m_simbuf.simbuf_engine_turbo_psi= m_actor->ar_engine->GetTurboPsi(); 
         m_simbuf.simbuf_engine_accel    = m_actor->ar_engine->GetAcceleration();
         m_simbuf.simbuf_clutch          = m_actor->ar_engine->GetClutch();
+        m_simbuf.simbuf_engine_has_contact = m_actor->ar_engine->HasStarterContact();
+        m_simbuf.simbuf_engine_is_running  = m_actor->ar_engine->IsRunning();
+        m_simbuf.simbuf_engine_clutch_torque = m_actor->ar_engine->GetTorque();
+        m_simbuf.simbuf_engine_clutch_force  = m_actor->ar_engine->GetClutchForce();
     }
     if (m_actor->m_num_axles > 0)
     {
@@ -1126,13 +1141,9 @@ void RoR::GfxActor::UpdateSimDataBuffer()
     }
 
     // Wings
-    if (m_actor->ar_num_wings > 4)
+    for (int i = 0; i < m_actor->ar_num_wings; ++i)
     {
-        m_simbuf.simbuf_wing4_aoa = m_actor->ar_wings[4].fa->aoa;
-    }
-    else
-    {
-        m_simbuf.simbuf_wing4_aoa = 0.f;
+        m_simbuf.simbuf_wings[i].simbuf_wing_aoa = m_actor->ar_wings[i].fa->aoa;
     }
 
     // Autopilot
@@ -2077,7 +2088,11 @@ void RoR::GfxActor::CalcPropAnimation(const int flag_state, float& cstate, int& 
     //AOA
     if (flag_state & ANIM_FLAG_AOA)
     {
-        float aoa = m_simbuf.simbuf_wing4_aoa / 25.f;
+        float aoa = 0.f;
+        if (m_simbuf.simbuf_wings.size() >= 4)
+        {
+            aoa = m_simbuf.simbuf_wings[3].simbuf_wing_aoa;
+        }
         if ((node0_velo.length() * 1.9438) < 10.0f)
             aoa = 0;
         cstate -= aoa;

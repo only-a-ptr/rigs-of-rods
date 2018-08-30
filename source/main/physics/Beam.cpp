@@ -628,7 +628,6 @@ void Actor::CalcNetwork()
     else
         SOUND_STOP(ar_instance_id, SS_TRIG_REVERSE_GEAR);
 
-    updateDashBoards(tratio);
 }
 
 bool Actor::AddTyrePressure(float v)
@@ -3620,7 +3619,7 @@ bool Actor::isTied()
     return false;
 }
 
-bool Actor::isLocked()
+bool Actor::HasLockedHooks()
 {
     for (std::vector<hook_t>::iterator it = ar_hooks.begin(); it != ar_hooks.end(); it++)
         if (it->hk_locked == LOCKED)
@@ -3628,37 +3627,32 @@ bool Actor::isLocked()
     return false;
 }
 
-void Actor::updateDashBoards(float dt)
+void RoR::GfxActor::UpdateDashBoards(float dt) // TODO: Temporary code location, move it to GfxActor.cpp ~ only_a_ptr, 08/2018
 {
-    if (!ar_dashboard)
-        return;
-    // some temp vars
-    Vector3 dir;
+    DashBoardManager* dashboard = m_actor->ar_dashboard;
 
     // engine and gears
-    if (ar_engine)
+    if (m_attr.xa_has_engine)
     {
         // gears first
-        int gear = ar_engine->GetGear();
-        ar_dashboard->setInt(DD_ENGINE_GEAR, gear);
+        dashboard->setInt(DD_ENGINE_GEAR, m_simbuf.simbuf_gear);
 
-        int numGears = (int)ar_engine->getNumGears();
-        ar_dashboard->setInt(DD_ENGINE_NUM_GEAR, numGears);
+        dashboard->setInt(DD_ENGINE_NUM_GEAR, m_attr.xa_num_gears);
 
         String str = String();
 
         // now construct that classic gear string
-        if (gear > 0)
-            str = TOSTRING(gear) + "/" + TOSTRING(numGears);
-        else if (gear == 0)
+        if (m_simbuf.simbuf_gear > 0)
+            str = TOSTRING(m_simbuf.simbuf_gear) + "/" + TOSTRING(m_attr.xa_num_gears);
+        else if (m_simbuf.simbuf_gear == 0)
             str = String("N");
         else
             str = String("R");
 
-        ar_dashboard->setChar(DD_ENGINE_GEAR_STRING, str.c_str());
+        dashboard->setChar(DD_ENGINE_GEAR_STRING, str.c_str());
 
         // R N D 2 1 String
-        int cg = ar_engine->getAutoShift();
+        const int cg = m_simbuf.simbuf_autoshift;
         if (cg != EngineSim::MANUALMODE)
         {
             str = ((cg == EngineSim::REAR) ? "#ffffff" : "#868686") + String("R\n");
@@ -3672,62 +3666,64 @@ void Actor::updateDashBoards(float dt)
             //str = "#b8b8b8M\na\nn\nu\na\nl";
             str = "#b8b8b8M\na\nn\nu";
         }
-        ar_dashboard->setChar(DD_ENGINE_AUTOGEAR_STRING, str.c_str());
+        dashboard->setChar(DD_ENGINE_AUTOGEAR_STRING, str.c_str());
 
         // autogears
-        int autoGear = ar_engine->getAutoShift();
-        ar_dashboard->setInt(DD_ENGINE_AUTO_GEAR, autoGear);
+        dashboard->setInt(DD_ENGINE_AUTO_GEAR, m_simbuf.simbuf_autoshift);
 
         // clutch
-        float clutch = ar_engine->GetClutch();
-        ar_dashboard->setFloat(DD_ENGINE_CLUTCH, clutch);
+        dashboard->setFloat(DD_ENGINE_CLUTCH, m_simbuf.simbuf_clutch);
 
         // accelerator
-        float acc = ar_engine->GetAcceleration();
-        ar_dashboard->setFloat(DD_ACCELERATOR, acc);
+        dashboard->setFloat(DD_ACCELERATOR, m_simbuf.simbuf_engine_accel);
 
         // RPM
-        float rpm = ar_engine->GetEngineRpm();
-        ar_dashboard->setFloat(DD_ENGINE_RPM, rpm);
+        dashboard->setFloat(DD_ENGINE_RPM, m_simbuf.simbuf_engine_rpm);
 
         // turbo
-        float turbo = ar_engine->GetTurboPsi() * 3.34f; // MAGIC :/
-        ar_dashboard->setFloat(DD_ENGINE_TURBO, turbo);
+        float turbo = m_simbuf.simbuf_engine_turbo_psi * 3.34f; // MAGIC :/
+        dashboard->setFloat(DD_ENGINE_TURBO, turbo);
 
         // ignition
-        bool ign = (ar_engine->HasStarterContact() && !ar_engine->IsRunning());
-        ar_dashboard->setBool(DD_ENGINE_IGNITION, ign);
+        bool ign = (m_simbuf.simbuf_engine_has_contact && !m_simbuf.simbuf_engine_is_running);
+        dashboard->setBool(DD_ENGINE_IGNITION, ign);
 
         // battery
-        bool batt = (ar_engine->HasStarterContact() && !ar_engine->IsRunning());
-        ar_dashboard->setBool(DD_ENGINE_BATTERY, batt);
+        bool batt = (m_simbuf.simbuf_engine_has_contact && !m_simbuf.simbuf_engine_is_running);
+        dashboard->setBool(DD_ENGINE_BATTERY, batt);
 
         // clutch warning
-        bool cw = (fabs(ar_engine->GetTorque()) >= ar_engine->GetClutchForce() * 10.0f);
-        ar_dashboard->setBool(DD_ENGINE_CLUTCH_WARNING, cw);
+        bool cw = (fabs(m_simbuf.simbuf_engine_clutch_torque) >= m_simbuf.simbuf_engine_clutch_force * 10.0f);
+        dashboard->setBool(DD_ENGINE_CLUTCH_WARNING, cw);
     }
 
     // brake
-    float dash_brake = ar_brake / ar_brake_force;
-    ar_dashboard->setFloat(DD_BRAKE, dash_brake);
+    float dash_brake = m_simbuf.simbuf_brake / m_attr.xa_brake_force;
+    dashboard->setFloat(DD_BRAKE, dash_brake);
 
     // speedo
-    float velocity = ar_nodes[0].Velocity.length();
+    float velocity = m_simbuf.simbuf_node0_velo.length();
 
-    if (ar_camera_node_pos[0] >= 0 && ar_camera_node_dir[0] >= 0)
+    GfxActor::NodeData* nodes = this->GetSimNodeBuffer();
+    // TODO: Urgh... yet ANOTHER per-frame check "was the 'cameras' in Truckfile set up correctly?".
+    //       First, such vehicle shouldn't be even allowed to spawn in the first place.
+    //       Second, abusing 'node 0' as generic source of velocity and 'camera 0' as generic 'frame of reference' is a widespread bad practice
+    //         ... we need an actual universal 'frame of reference' defined in truckfile
+    //         ~ only_a_ptr, 08/2018
+    if (m_actor->ar_camera_node_pos[0] >= 0 && m_actor->ar_camera_node_dir[0] >= 0)
     {
-        Vector3 hdir = (ar_nodes[ar_camera_node_pos[0]].RelPosition - ar_nodes[ar_camera_node_dir[0]].RelPosition).normalisedCopy();
-        velocity = hdir.dotProduct(ar_nodes[0].Velocity);
+        Vector3 hdir = (nodes[m_actor->ar_camera_node_pos[0]].AbsPosition - nodes[m_actor->ar_camera_node_dir[0]].AbsPosition).normalisedCopy();
+        velocity = hdir.dotProduct(m_simbuf.simbuf_node0_velo);
     }
     float speed_kph = velocity * 3.6f;
-    ar_dashboard->setFloat(DD_ENGINE_SPEEDO_KPH, speed_kph);
+    dashboard->setFloat(DD_ENGINE_SPEEDO_KPH, speed_kph);
     float speed_mph = velocity * 2.23693629f;
-    ar_dashboard->setFloat(DD_ENGINE_SPEEDO_MPH, speed_mph);
+    dashboard->setFloat(DD_ENGINE_SPEEDO_MPH, speed_mph);
 
     // roll
-    if (this->IsNodeIdValid(ar_camera_node_pos[0])) // TODO: why check this on each update when it cannot change after spawn?
+    if (m_actor->IsNodeIdValid(m_actor->ar_camera_node_pos[0])) // TODO: why check this on each update when it cannot change after spawn?
     {
-        dir = ar_nodes[ar_camera_node_pos[0]].RelPosition - ar_nodes[ar_camera_node_roll[0]].RelPosition;
+        Vector3 dir = nodes[m_actor->ar_camera_node_pos[0]].AbsPosition - nodes[m_actor->ar_camera_node_roll[0]].AbsPosition;
         dir.normalise();
         float angle = asin(dir.dotProduct(Vector3::UNIT_Y));
         if (angle < -1)
@@ -3736,24 +3732,28 @@ void Actor::updateDashBoards(float dt)
             angle = 1;
 
         float f = Radian(angle).valueDegrees();
-        ar_dashboard->setFloat(DD_ROLL, f);
+        dashboard->setFloat(DD_ROLL, f);
     }
+
+    /* Disabled while doing AsyncScene refactor. TODO: research what the 'certainly not working' comment below means, and fix it. ~ only_a_ptr, 08/2018
 
     // active shocks / roll correction
     if (this->ar_has_active_shocks)
     {
         // TOFIX: certainly not working:
         float roll_corr = - m_stabilizer_shock_ratio * 10.0f;
-        ar_dashboard->setFloat(DD_ROLL_CORR, roll_corr);
+        dashboard->setFloat(DD_ROLL_CORR, roll_corr);
 
         bool corr_active = (m_stabilizer_shock_request > 0);
-        ar_dashboard->setBool(DD_ROLL_CORR_ACTIVE, corr_active);
+        dashboard->setBool(DD_ROLL_CORR_ACTIVE, corr_active);
     }
 
+    */
+
     // pitch
-    if (this->IsNodeIdValid(ar_camera_node_pos[0]))
+    if (m_actor->IsNodeIdValid(m_actor->ar_camera_node_pos[0]))
     {
-        dir = ar_nodes[ar_camera_node_pos[0]].RelPosition - ar_nodes[ar_camera_node_dir[0]].RelPosition;
+        Vector3 dir = nodes[m_actor->ar_camera_node_pos[0]].AbsPosition - nodes[m_actor->ar_camera_node_dir[0]].AbsPosition;
         dir.normalise();
         float angle = asin(dir.dotProduct(Vector3::UNIT_Y));
         if (angle < -1)
@@ -3762,139 +3762,140 @@ void Actor::updateDashBoards(float dt)
             angle = 1;
 
         float f = Radian(angle).valueDegrees();
-        ar_dashboard->setFloat(DD_PITCH, f);
+        dashboard->setFloat(DD_PITCH, f);
     }
 
     // parking brake
-    bool pbrake = (ar_parking_brake > 0);
-    ar_dashboard->setBool(DD_PARKINGBRAKE, pbrake);
+    bool pbrake = (m_simbuf.simbuf_parking_brake > 0);
+    dashboard->setBool(DD_PARKINGBRAKE, pbrake);
 
     // locked lamp
-    bool locked = isLocked();
-    ar_dashboard->setBool(DD_LOCKED, locked);
+    dashboard->setBool(DD_LOCKED, m_simbuf.simbuf_has_locked_hooks);
 
     // low pressure lamp
-    bool low_pres = !ar_engine_hydraulics_ready;
-    ar_dashboard->setBool(DD_LOW_PRESSURE, low_pres);
+    bool low_pres = !m_simbuf.simbuf_hydraulics_ready;
+    dashboard->setBool(DD_LOW_PRESSURE, low_pres);
 
     // lights
-    bool lightsOn = (ar_lights > 0);
-    ar_dashboard->setBool(DD_LIGHTS, lightsOn);
+    dashboard->setBool(DD_LIGHTS, m_simbuf.simbuf_cab_lights_on);
 
     // Traction Control
-    if (tc_present)
+    if (m_actor->tc_present)
     {
         int dash_tc_mode = 1; // 0 = not present, 1 = off, 2 = on, 3 = active
-        if (tc_mode)
+        if (m_simbuf.simbuf_tractioncontrol_enabled)
         {
-            if (m_tractioncontrol)
+            if (m_simbuf.simbuf_tractioncontrol_active)
                 dash_tc_mode = 3;
             else
                 dash_tc_mode = 2;
         }
-        ar_dashboard->setInt(DD_TRACTIONCONTROL_MODE, dash_tc_mode);
+        dashboard->setInt(DD_TRACTIONCONTROL_MODE, dash_tc_mode);
     }
 
     // Anti Lock Brake
-    if (alb_present)
+    if (m_actor->alb_present)
     {
         int dash_alb_mode = 1; // 0 = not present, 1 = off, 2 = on, 3 = active
-        if (alb_mode)
+        if (m_simbuf.simbuf_antilockbrake_enabled)
         {
-            if (m_antilockbrake)
+            if (m_simbuf.simbuf_antilockbrake_active)
                 dash_alb_mode = 3;
             else
                 dash_alb_mode = 2;
         }
-        ar_dashboard->setInt(DD_ANTILOCKBRAKE_MODE, dash_alb_mode);
+        dashboard->setInt(DD_ANTILOCKBRAKE_MODE, dash_alb_mode);
     }
 
     // load secured lamp
     int ties_mode = 0; // 0 = not locked, 1 = prelock, 2 = lock
-    if (isTied())
+    if (m_simbuf.simbuf_any_tie_tied)
     {
-        if (fabs(ar_command_key[0].commandValue) > 0.000001f)
+        if (fabs(m_simbuf.simbuf_commandkey[0].simbuf_cmd_value) > 0.000001f)
             ties_mode = 1;
         else
             ties_mode = 2;
     }
-    ar_dashboard->setInt(DD_TIES_MODE, ties_mode);
+    dashboard->setInt(DD_TIES_MODE, ties_mode);
 
     // Boat things now: screwprops and alike
-    if (ar_num_screwprops)
+    if (m_simbuf.simbuf_screwprops.size() > 0)
     {
         // the throttle and rudder
-        for (int i = 0; i < ar_num_screwprops && i < DD_MAX_SCREWPROP; i++)
+        int i = 0;
+        for (auto& screw: m_simbuf.simbuf_screwprops)
         {
-            float throttle = ar_screwprops[i]->getThrottle();
-            ar_dashboard->setFloat(DD_SCREW_THROTTLE_0 + i, throttle);
+            dashboard->setFloat(DD_SCREW_THROTTLE_0 + i, screw.simbuf_sp_throttle);
 
-            float steering = ar_screwprops[i]->getRudder();
-            ar_dashboard->setFloat(DD_SCREW_STEER_0 + i, steering);
+            dashboard->setFloat(DD_SCREW_STEER_0 + i, screw.simbuf_sp_rudder);
+            ++i;
         }
 
         // water depth display, only if we have a screw prop at least
-        if (this->IsNodeIdValid(ar_camera_node_pos[0])) // TODO: Check cam. nodes once on spawn! They never change --> no reason to repeat the check. ~only_a_ptr, 06/2017
+        if (m_actor->IsNodeIdValid(m_actor->ar_camera_node_pos[0])) // TODO: Check cam. nodes once on spawn! They never change --> no reason to repeat the check. ~only_a_ptr, 06/2017
         {
             // position
-            Vector3 dir = ar_nodes[ar_camera_node_pos[0]].RelPosition - ar_nodes[ar_camera_node_dir[0]].RelPosition;
+            Vector3 dir = nodes[m_actor->ar_camera_node_pos[0]].AbsPosition - nodes[m_actor->ar_camera_node_dir[0]].AbsPosition;
             dir.normalise();
 
-            int low_node = getLowestNode();
+            int low_node = m_actor->ar_lowest_node;
             if (low_node != -1)
             {
-                Vector3 pos = ar_nodes[low_node].AbsPosition;
+                Vector3 pos = nodes[low_node].AbsPosition;
                 float depth = pos.y - App::GetSimTerrain()->GetHeightAt(pos.x, pos.z);
-                ar_dashboard->setFloat(DD_WATER_DEPTH, depth);
+                dashboard->setFloat(DD_WATER_DEPTH, depth);
             }
         }
 
         // water speed
-        if (this->IsNodeIdValid(ar_camera_node_pos[0]))
+        if (m_actor->IsNodeIdValid(m_actor->ar_camera_node_pos[0]))
         {
-            Vector3 hdir = ar_nodes[ar_camera_node_pos[0]].RelPosition - ar_nodes[ar_camera_node_dir[0]].RelPosition;
+            Vector3 hdir = nodes[m_actor->ar_camera_node_pos[0]].AbsPosition - nodes[m_actor->ar_camera_node_dir[0]].AbsPosition;
             hdir.normalise();
-            float knots = hdir.dotProduct(ar_nodes[ar_camera_node_pos[0]].Velocity) * 1.9438f; // 1.943 = m/s in knots/s
-            ar_dashboard->setFloat(DD_WATER_SPEED, knots);
+            float knots = hdir.dotProduct(m_simbuf.simbuf_node0_velo) * 1.9438f; // 1.943 = m/s in knots/s
+            dashboard->setFloat(DD_WATER_SPEED, knots);
         }
     }
 
     // now airplane things, aeroengines, etc.
-    if (ar_num_aeroengines)
+    if (!m_simbuf.simbuf_aeroengines.empty())
     {
-        for (int i = 0; i < ar_num_aeroengines && i < DD_MAX_AEROENGINE; i++)
+        int i = 0;
+        for (auto& ae: m_simbuf.simbuf_aeroengines)
         {
-            float throttle = ar_aeroengines[i]->getThrottle();
-            ar_dashboard->setFloat(DD_AEROENGINE_THROTTLE_0 + i, throttle);
+            float throttle = ae.simbuf_ae_throttle;
+            dashboard->setFloat(DD_AEROENGINE_THROTTLE_0 + i, throttle);
 
-            bool failed = ar_aeroengines[i]->isFailed();
-            ar_dashboard->setBool(DD_AEROENGINE_FAILED_0 + i, failed);
+            bool failed =  ae.simbuf_ae_throttle;
+            dashboard->setBool(DD_AEROENGINE_FAILED_0 + i, failed);
 
-            float pcent = ar_aeroengines[i]->getRPMpc();
-            ar_dashboard->setFloat(DD_AEROENGINE_RPM_0 + i, pcent);
+            float pcent = ae.simbuf_ae_rpmpc;
+            dashboard->setFloat(DD_AEROENGINE_RPM_0 + i, pcent);
+
+            ++i;
         }
     }
 
     // wings stuff, you dont need an aeroengine
-    if (ar_num_wings)
+    if (!m_simbuf.simbuf_wings.empty())
     {
-        for (int i = 0; i < ar_num_wings && i < DD_MAX_WING; i++)
+        for (int i = 0; i < m_actor->ar_num_wings && i < DD_MAX_WING; i++)
         {
             // Angle of Attack (AOA)
-            float aoa = ar_wings[i].fa->aoa;
-            ar_dashboard->setFloat(DD_WING_AOA_0 + i, aoa);
+            float aoa = m_simbuf.simbuf_wings[i].simbuf_wing_aoa;
+            dashboard->setFloat(DD_WING_AOA_0 + i, aoa);
         }
     }
 
     // some things only activate when a wing or an aeroengine is present
-    if (ar_num_wings || ar_num_aeroengines)
+    if (!m_simbuf.simbuf_wings.empty() || !m_simbuf.simbuf_aeroengines.empty())
     {
         //airspeed
         {
-            float ground_speed_kt = ar_nodes[0].Velocity.length() * 1.9438f; // 1.943 = m/s in knots/s
+            float ground_speed_kt = m_simbuf.simbuf_node0_velo.length() * 1.9438f; // 1.943 = m/s in knots/s
 
             //tropospheric model valid up to 11.000m (33.000ft)
-            float altitude = ar_nodes[0].AbsPosition.y;
+            float altitude = nodes[0].AbsPosition.y;
             //float sea_level_temperature = 273.15 + 15.0; //in Kelvin // MAGICs D:
             float sea_level_pressure = 101325; //in Pa
             //float airtemperature        = sea_level_temperature - altitude * 0.0065f; //in Kelvin
@@ -3902,167 +3903,62 @@ void Actor::updateDashBoards(float dt)
             float airdensity = airpressure * 0.0000120896f; //1.225 at sea level
 
             float knots = ground_speed_kt * sqrt(airdensity / 1.225f); //KIAS
-            ar_dashboard->setFloat(DD_AIRSPEED, knots);
+            dashboard->setFloat(DD_AIRSPEED, knots);
         }
 
         // altimeter (height above ground)
         {
-            float alt = ar_nodes[0].AbsPosition.y * 1.1811f; // MAGIC
-            ar_dashboard->setFloat(DD_ALTITUDE, alt);
+            float alt = nodes[0].AbsPosition.y * 1.1811f; // MAGIC
+            dashboard->setFloat(DD_ALTITUDE, alt);
 
             char altc[11];
-            sprintf(altc, "%03u", (int)(ar_nodes[0].AbsPosition.y / 30.48f)); // MAGIC
-            ar_dashboard->setChar(DD_ALTITUDE_STRING, altc);
+            sprintf(altc, "%03u", (int)(nodes[0].AbsPosition.y / 30.48f)); // MAGIC
+            dashboard->setChar(DD_ALTITUDE_STRING, altc);
         }
     }
 
-    ar_dashboard->setFloat(DD_ODOMETER_TOTAL, m_odometer_total);
-    ar_dashboard->setFloat(DD_ODOMETER_USER, m_odometer_user);
+    dashboard->setFloat(DD_ODOMETER_TOTAL, m_simbuf.simbuf_odometer_total);
+    dashboard->setFloat(DD_ODOMETER_USER, m_simbuf.simbuf_odometer_user);
 
     // set the features of this vehicle once
-    if (!m_hud_features_ok)
+    // TODO: why not do this once on spawn?? ~ only_a_ptr, 08/2018
+    if (!m_actor->m_dashboard_initialized) // TODO: quick and hacky, refactor it!  ~ only_a_ptr, 08/2018
     {
-        bool hasEngine = (ar_engine != nullptr);
+        bool hasEngine = m_attr.xa_has_engine;
         bool hasturbo = false;
         bool autogearVisible = false;
 
         if (hasEngine)
         {
-            hasturbo = ar_engine->HasTurbo();
-            autogearVisible = (ar_engine->getAutoShift() != EngineSim::MANUALMODE);
+            hasturbo = m_actor->ar_engine->HasTurbo();// TODO: quick and hacky, refactor it!  ~ only_a_ptr, 08/2018
+            autogearVisible = m_simbuf.simbuf_autoshift;
         }
 
-        ar_dashboard->setEnabled(DD_ENGINE_TURBO, hasturbo);
-        ar_dashboard->setEnabled(DD_ENGINE_GEAR, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_NUM_GEAR, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_GEAR_STRING, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_AUTO_GEAR, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_CLUTCH, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_RPM, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_IGNITION, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_BATTERY, hasEngine);
-        ar_dashboard->setEnabled(DD_ENGINE_CLUTCH_WARNING, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_TURBO, hasturbo);
+        dashboard->setEnabled(DD_ENGINE_GEAR, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_NUM_GEAR, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_GEAR_STRING, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_AUTO_GEAR, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_CLUTCH, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_RPM, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_IGNITION, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_BATTERY, hasEngine);
+        dashboard->setEnabled(DD_ENGINE_CLUTCH_WARNING, hasEngine);
 
-        ar_dashboard->setEnabled(DD_TRACTIONCONTROL_MODE, tc_present);
-        ar_dashboard->setEnabled(DD_ANTILOCKBRAKE_MODE, alb_present);
-        ar_dashboard->setEnabled(DD_TIES_MODE, !ar_ties.empty());
-        ar_dashboard->setEnabled(DD_LOCKED, !ar_hooks.empty());
+        dashboard->setEnabled(DD_TRACTIONCONTROL_MODE, m_actor->tc_present);
+        dashboard->setEnabled(DD_ANTILOCKBRAKE_MODE, m_actor->alb_present);
+        dashboard->setEnabled(DD_TIES_MODE, !m_actor->ar_ties.empty());
+        dashboard->setEnabled(DD_LOCKED, !m_actor->ar_hooks.empty());
 
-        ar_dashboard->setEnabled(DD_ENGINE_AUTOGEAR_STRING, autogearVisible);
+        dashboard->setEnabled(DD_ENGINE_AUTOGEAR_STRING, autogearVisible);
 
-        ar_dashboard->updateFeatures();
-        m_hud_features_ok = true;
+        dashboard->updateFeatures();
+        m_actor->m_dashboard_initialized = true;
     }
 
     // TODO: compass value
 
-#if 0
-    // ADI - attitude director indicator
-    //roll
-	Vector3 rollv=curr_truck->ar_nodes[curr_truck->ar_camera_node_pos[0]].RelPosition-curr_truck->ar_nodes[curr_truck->ar_camera_node_roll[0]].RelPosition;
-	rollv.normalise();
-	float rollangle=asin(rollv.dotProduct(Vector3::UNIT_Y));
-
-    //pitch
-	Vector3 dirv=curr_truck->ar_nodes[curr_truck->ar_camera_node_pos[0]].RelPosition-curr_truck->ar_nodes[curr_truck->ar_camera_node_dir[0]].RelPosition;
-	dirv.normalise();
-	float pitchangle=asin(dirv.dotProduct(Vector3::UNIT_Y));
-	Vector3 upv=dirv.crossProduct(-rollv);
-	if (upv.y<0) rollangle=3.14159-rollangle;
-	RoR::App::GetOverlayWrapper()->adibugstexture->setTextureRotate(Radian(-rollangle));
-	RoR::App::GetOverlayWrapper()->aditapetexture->setTextureVScroll(-pitchangle*0.25);
-	RoR::App::GetOverlayWrapper()->aditapetexture->setTextureRotate(Radian(-rollangle));
-
-    // HSI - Horizontal Situation Indicator
-	Vector3 idir=curr_truck->ar_nodes[curr_truck->ar_camera_node_pos[0]].RelPosition-curr_truck->ar_nodes[curr_truck->ar_camera_node_dir[0]].RelPosition;
-    //			idir.normalise();
-	float dirangle=atan2(idir.dotProduct(Vector3::UNIT_X), idir.dotProduct(-Vector3::UNIT_Z));
-	RoR::App::GetOverlayWrapper()->hsirosetexture->setTextureRotate(Radian(dirangle));
-	if (curr_truck->autopilot)
-	{
-		RoR::App::GetOverlayWrapper()->hsibugtexture->setTextureRotate(Radian(dirangle)-Degree(curr_truck->autopilot->heading));
-		float vdev=0;
-		float hdev=0;
-		curr_truck->autopilot->getRadioFix(localizers, free_localizer, &vdev, &hdev);
-		if (hdev>15) hdev=15;
-		if (hdev<-15) hdev=-15;
-		RoR::App::GetOverlayWrapper()->hsivtexture->setTextureUScroll(-hdev*0.02);
-		if (vdev>15) vdev=15;
-		if (vdev<-15) vdev=-15;
-		RoR::App::GetOverlayWrapper()->hsihtexture->setTextureVScroll(-vdev*0.02);
-	}
-
-    // VVI - Vertical Velocity Indicator
-	float vvi=curr_truck->ar_nodes[0].Velocity.y*196.85;
-	if (vvi<1000.0 && vvi>-1000.0) angle=vvi*0.047;
-	if (vvi>1000.0 && vvi<6000.0) angle=47.0+(vvi-1000.0)*0.01175;
-	if (vvi>6000.0) angle=105.75;
-	if (vvi<-1000.0 && vvi>-6000.0) angle=-47.0+(vvi+1000.0)*0.01175;
-	if (vvi<-6000.0) angle=-105.75;
-	RoR::App::GetOverlayWrapper()->vvitexture->setTextureRotate(Degree(-angle+90.0));
-
-
-	if (curr_truck->aeroengines[0]->getType() == AeroEngine::AEROENGINE_TYPE_TURBOPROP)
-	{
-		Turboprop *tp=(Turboprop*)curr_truck->aeroengines[0];
-    //pitch
-		RoR::App::GetOverlayWrapper()->airpitch1texture->setTextureRotate(Degree(-tp->pitch*2.0));
-    //torque
-		pcent=100.0*tp->indicated_torque/tp->max_torque;
-		if (pcent<60.0) angle=-5.0+pcent*1.9167;
-		else if (pcent<110.0) angle=110.0+(pcent-60.0)*4.075;
-		else angle=314.0;
-		RoR::App::GetOverlayWrapper()->airtorque1texture->setTextureRotate(Degree(-angle));
-	}
-
-	if (ftp>1 && curr_truck->aeroengines[1]->getType()==AeroEngine::AEROENGINE_TYPE_TURBOPROP)
-	{
-		Turboprop *tp=(Turboprop*)curr_truck->aeroengines[1];
-    //pitch
-		RoR::App::GetOverlayWrapper()->airpitch2texture->setTextureRotate(Degree(-tp->pitch*2.0));
-    //torque
-		pcent=100.0*tp->indicated_torque/tp->max_torque;
-		if (pcent<60.0) angle=-5.0+pcent*1.9167;
-		else if (pcent<110.0) angle=110.0+(pcent-60.0)*4.075;
-		else angle=314.0;
-		RoR::App::GetOverlayWrapper()->airtorque2texture->setTextureRotate(Degree(-angle));
-	}
-
-	if (ftp>2 && curr_truck->aeroengines[2]->getType()==AeroEngine::AEROENGINE_TYPE_TURBOPROP)
-	{
-		Turboprop *tp=(Turboprop*)curr_truck->aeroengines[2];
-    //pitch
-		RoR::App::GetOverlayWrapper()->airpitch3texture->setTextureRotate(Degree(-tp->pitch*2.0));
-    //torque
-		pcent=100.0*tp->indicated_torque/tp->max_torque;
-		if (pcent<60.0) angle=-5.0+pcent*1.9167;
-		else if (pcent<110.0) angle=110.0+(pcent-60.0)*4.075;
-		else angle=314.0;
-		RoR::App::GetOverlayWrapper()->airtorque3texture->setTextureRotate(Degree(-angle));
-	}
-
-	if (ftp>3 && curr_truck->aeroengines[3]->getType()==AeroEngine::AEROENGINE_TYPE_TURBOPROP)
-	{
-		Turboprop *tp=(Turboprop*)curr_truck->aeroengines[3];
-    //pitch
-		RoR::App::GetOverlayWrapper()->airpitch4texture->setTextureRotate(Degree(-tp->pitch*2.0));
-    //torque
-		pcent=100.0*tp->indicated_torque/tp->max_torque;
-		if (pcent<60.0) angle=-5.0+pcent*1.9167;
-		else if (pcent<110.0) angle=110.0+(pcent-60.0)*4.075;
-		else angle=314.0;
-		RoR::App::GetOverlayWrapper()->airtorque4texture->setTextureRotate(Degree(-angle));
-	}
-
-    //starters
-	if (curr_truck->aeroengines[0]->getIgnition()) RoR::App::GetOverlayWrapper()->engstarto1->setMaterialName("tracks/engstart-on"); else RoR::App::GetOverlayWrapper()->engstarto1->setMaterialName("tracks/engstart-off");
-	if (ftp>1 && curr_truck->aeroengines[1]->getIgnition()) RoR::App::GetOverlayWrapper()->engstarto2->setMaterialName("tracks/engstart-on"); else RoR::App::GetOverlayWrapper()->engstarto2->setMaterialName("tracks/engstart-off");
-	if (ftp>2 && curr_truck->aeroengines[2]->getIgnition()) RoR::App::GetOverlayWrapper()->engstarto3->setMaterialName("tracks/engstart-on"); else RoR::App::GetOverlayWrapper()->engstarto3->setMaterialName("tracks/engstart-off");
-	if (ftp>3 && curr_truck->aeroengines[3]->getIgnition()) RoR::App::GetOverlayWrapper()->engstarto4->setMaterialName("tracks/engstart-on"); else RoR::App::GetOverlayWrapper()->engstarto4->setMaterialName("tracks/engstart-off");
-}
-
-#endif //0
-    ar_dashboard->update(dt);
+    dashboard->update(dt);
 }
 
 Vector3 Actor::getGForces()
@@ -4161,7 +4057,7 @@ Actor::Actor(
     , ar_has_active_shocks(false)
     , ar_rotators(nullptr), ar_num_rotators(0)
     , ar_wings(nullptr), ar_num_wings(0)
-    , m_hud_features_ok(false)
+    , m_dashboard_initialized(false)
     , ar_aileron(0)
     , m_avionic_chatter_timer(11.0f) // some pseudo random number,  doesn't matter
     , m_beacon_light_is_active(false)

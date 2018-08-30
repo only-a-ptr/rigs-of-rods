@@ -67,7 +67,7 @@ public:
     float          GetClutchForce();
     float          GetCrankFactor();
     float          GetSmoke();
-    float          GetTorque();
+    float          GetTorque();                  //!< Current output ('clutch') torque
     float          GetTurboPsi();
     RoR::SimGearboxMode GetAutoShiftMode();
     void           SetEngineRpm(float rpm);      //!< Set current engine RPM.

@@ -238,6 +238,9 @@ void RoR::GfxScene::UpdateScene(float dt_sec)
         {
             RoR::App::GetOverlayWrapper()->UpdateAerialHUD(player_gfx_actor);
         }
+
+        // Modern dashboards (XML .layout definitions)
+        player_gfx_actor->UpdateDashBoards(dt_sec);
     }
 
     App::GetSimController()->GetSceneMouse().UpdateVisuals();

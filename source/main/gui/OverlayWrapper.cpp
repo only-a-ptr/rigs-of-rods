@@ -848,7 +848,11 @@ void OverlayWrapper::UpdateAerialHUD(RoR::GfxActor* gfx_actor)
     airspeedtexture->setTextureRotate(Degree(-angle));
 
     // AOA
-    angle = simbuf.simbuf_wing4_aoa;
+    angle = 0.f;
+    if (simbuf.simbuf_wings.size() >= 4)
+    {
+        angle = simbuf.simbuf_wings[3].simbuf_wing_aoa;
+    }
     if (kt < 10.0)
         angle = 0;
     float absangle = angle;

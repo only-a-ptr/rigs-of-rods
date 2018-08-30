@@ -164,8 +164,7 @@ public:
     bool              getSlideNodesLockInstant();
     void              sendStreamData();
     bool              isTied();
-    bool              isLocked(); 
-    void              updateDashBoards(float dt);
+    bool              HasLockedHooks();
     void              updateBoundingBox(); 
     void              calculateAveragePosition();
     void              checkAndMovePhysicsOrigin();
@@ -182,7 +181,7 @@ public:
     PointColDetector* IntraPointCD()                    { return m_intra_point_col_detector; }
     PointColDetector* InterPointCD()                    { return m_inter_point_col_detector; }
     RoR::GfxActor*    GetGfxActor()                     { return m_gfx_actor.get(); }
-    void              RequestUpdateHudFeatures()        { m_hud_features_ok = false; }
+    void              RequestUpdateHudFeatures()        { m_dashboard_initialized = false; }
     Ogre::Vector3     getNodePosition(int nodeNumber);     //!< Returns world position of node
     Ogre::Real        getMinimalCameraRadius();
     Replay*           getReplay();
@@ -487,10 +486,10 @@ private:
     std::unique_ptr<Buoyance> m_buoyance;      //!< Physics
     RoR::SkinDef*     m_used_skin;             //!< Spawner context (TODO: remove!)
     RoR::Skidmark*    m_skid_trails[MAX_WHEELS*2];
-    int               m_antilockbrake;
-    int               m_tractioncontrol;
+    int               m_antilockbrake;         //!< Active? (1/0)
+    int               m_tractioncontrol;       //!< Active? (1/0)
 
-    bool m_hud_features_ok:1;      //!< Gfx state; Are HUD features matching actor's capabilities?
+    bool m_dashboard_initialized:1;      //!< Gfx state; Are dashboards configured to match actor capabilities?
     bool m_slidenodes_locked:1;    //!< Physics state; Are SlideNodes locked?
     bool m_blinker_autoreset:1;    //!< Gfx state; We're steering - when we finish, the blinker should turn off
     bool m_net_brake_light:1;

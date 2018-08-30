@@ -1346,10 +1346,6 @@ void ActorManager::UpdateActors(Actor* player_actor, float dt)
 
     if (simulated_actor != nullptr)
     {
-        if ((player_actor != nullptr) && (simulated_actor == player_actor))
-        {
-            simulated_actor->updateDashBoards(dt);
-        }
         if (!simulated_actor->ReplayStep())
         {
             simulated_actor->ForceFeedbackStep(m_physics_steps);
