@@ -2985,8 +2985,6 @@ void Actor::updateVisual(float dt)
     ar_hydro_rudder_command = autorudder;
     ar_hydro_elevator_command = autoelevator;
 
-    m_gfx_actor->UpdateRods();
-
     m_gfx_actor->UpdateDebugView();
 }
 

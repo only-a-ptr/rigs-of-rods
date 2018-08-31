@@ -920,11 +920,12 @@ void RoR::GfxActor::UpdateRods()
 {
     // TODO: Apply visibility updates from a queue (to be implemented!)
     // fulltext-label: QUEUE_VIS_CHANGE
+    NodeData* nodes = this->GetSimNodeBuffer();
 
     for (Rod& rod: m_rods)
     {
-        Ogre::Vector3 pos1 = m_actor->ar_nodes[rod.rod_node1].AbsPosition;
-        Ogre::Vector3 pos2 = m_actor->ar_nodes[rod.rod_node2].AbsPosition;
+        Ogre::Vector3 pos1 = nodes[rod.rod_node1].AbsPosition;
+        Ogre::Vector3 pos2 = nodes[rod.rod_node2].AbsPosition;
 
         // Classic method
         float beam_diameter = static_cast<float>(rod.rod_diameter_mm) * 0.001;
