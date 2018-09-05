@@ -1561,13 +1561,6 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
         if (!prop.scene_node)
             continue;
 
-        // -- quick ugly port from `Actor::NotifyCameraChanged()`~ 06/2018
-        const bool mo_visible = (prop.cameramode == -2 || prop.cameramode == m_simbuf.simbuf_cur_cinecam);
-        if (prop.mo != nullptr)
-        {
-            prop.mo->setVisible(mo_visible);
-        }
-
         // -- quick ugly port from `Actor::updateProps()` --- ~ 06/2018
         Vector3 diffX = nodes[prop.nodex].AbsPosition - nodes[prop.noderef].AbsPosition;
         Vector3 diffY = nodes[prop.nodey].AbsPosition - nodes[prop.noderef].AbsPosition;
@@ -2565,4 +2558,17 @@ void RoR::GfxActor::SetAllMeshesVisible(bool visible)
     this->SetWheelsVisible(visible);
     this->SetPropsVisible(visible);
     this->SetFlexbodyVisible(visible);
+}
+
+void RoR::GfxActor::NotifyActorCameraChanged()
+{
+    for (prop_t& prop: m_props)
+    {
+        // -- quick ugly port from `Actor::NotifyCameraChanged()`~ 06/2018
+        const bool mo_visible = (prop.cameramode == -2 || prop.cameramode == m_simbuf.simbuf_cur_cinecam);
+        if (prop.mo != nullptr)
+        {
+            prop.mo->setVisible(mo_visible);
+        }
+    }
 }

@@ -301,6 +301,8 @@ public:
     void                 UpdatePropAnimations(const float dt_sec);
     void                 UpdateFlares        (float dt_sec, bool is_player);
 
+    void                 NotifyActorCameraChanged();
+
 private:
 
     static Ogre::Quaternion SpecialGetRotationTo(const Ogre::Vector3& src, const Ogre::Vector3& dest);

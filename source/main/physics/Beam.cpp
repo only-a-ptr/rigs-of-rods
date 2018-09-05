@@ -3596,8 +3596,7 @@ void Actor::NotifyActorCameraChanged()
 #endif // USE_OPENAL
 
     // NOTE: Prop visibility now updated in GfxActor::UpdateProps() ~ only_a_ptr, 06/2018
-
-
+    this->GetGfxActor()->NotifyActorCameraChanged();
 }
 
 //Returns the number of active (non bounded) beams connected to a node
