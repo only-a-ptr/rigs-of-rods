@@ -25,6 +25,7 @@
 
 #include "Application.h"
 #include "BeamData.h"
+#include "GameScript.h" // class ScriptActor
 #include "GfxActor.h"
 #include "PerVehicleCameraContext.h"
 #include "RigDef_Prerequisites.h"
@@ -173,9 +174,11 @@ public:
     RoR::SkinDef*     GetUsedSkin() const               { return m_used_skin; }
     Ogre::Vector3     getVelocity() const               { return m_avg_node_velocity; }; //!< average actor velocity, calculated using the actor positions of the last two frames
 #ifdef USE_ANGELSCRIPT
-    // we have to add this to be able to use the class as reference inside scripts
+    // Legacy interface, original comment: we have to add this to be able to use the class as reference inside scripts
     void              addRef()                          {};
     void              release()                         {};
+    // Native interface
+    RoR::ScriptObjectPtr<RoR::ScriptActor> GetScriptActor() { return m_script_actor; }
 #endif
 
     // -------------------- Public data -------------------- //
@@ -413,6 +416,7 @@ private:
     std::vector<std::shared_ptr<Task>> m_flexbody_tasks;   //!< Gfx state
     std::shared_ptr<RigDef::File>      m_definition;
     std::unique_ptr<RoR::GfxActor>     m_gfx_actor;
+    RoR::ScriptObjectPtr<RoR::ScriptActor>  m_script_actor;
     RoR::PerVehicleCameraContext       m_camera_context;
     Ogre::String                       m_section_config;
     std::vector<SlideNode>             m_slidenodes;       //!< all the SlideNodes available on this actor

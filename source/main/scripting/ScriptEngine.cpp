@@ -385,6 +385,36 @@ void ScriptEngine::init()
     result = engine->RegisterGlobalProperty("GameScriptClass game", gamescript); MYASSERT(result>=0);
     //result = engine->RegisterGlobalProperty("CacheSystemClass cache", &CacheSystem::getSingleton()); MYASSERT(result>=0);
 
+
+    // ########## New interface, see https://github.com/RigsOfRods/rigs-of-rods/issues/1558
+    //    Angelscript doesn't support showing/hiding resitered interface, only group-based removal, See https://www.angelcode.com/angelscript/sdk/docs/manual/doc_adv_dynamic_config.html
+    //    We need different APIs in different situations, so we need to use multiple asScriptEngine-s
+
+    // Script virtual machine for simulation (physics) timestep
+    m_engine_sim = AngelScript::asCreateScriptEngine(ANGELSCRIPT_VERSION);
+    m_engine_sim->SetMessageCallback(AngelScript::asMETHOD(ScriptEngine,msgCallback), this, AngelScript::asCALL_THISCALL);
+    AngelScript::RegisterStdString(m_engine_sim);
+    //AngelScript::RegisterStdStringUtils(m_engine_sim); 
+    // TODO: fails with
+    ////////  13:14:54: System function (1, 6): Error = Expected identifier
+    ////////  13:14:54: System function (1, 6): Error = Instead found '<'
+    ////////  13:14:54:  (0, 0): Error = Failed in call to function 'RegisterObjectMethod' with 'string' and 'array<string>@ split(const string &in) const' (Code: -10)
+    
+    AngelScript::RegisterScriptMath(m_engine_sim);
+    m_engine_sim->RegisterGlobalFunction("void log(const string &in)", AngelScript::asFUNCTION(logString), AngelScript::asCALL_CDECL);
+    registerOgreObjects(m_engine_sim);
+    RoR::RegisterScriptSimStepInterface(m_engine_sim);
+
+    // Script virtual machine for framestep logic (asynchronous with simulation)
+    m_engine_frame = AngelScript::asCreateScriptEngine(ANGELSCRIPT_VERSION);
+    m_engine_frame->SetMessageCallback(AngelScript::asMETHOD(ScriptEngine,msgCallback), this, AngelScript::asCALL_THISCALL);
+    AngelScript::RegisterStdString(m_engine_frame);
+    //AngelScript::RegisterStdStringUtils(m_engine_frame);
+    AngelScript::RegisterScriptMath(m_engine_frame);
+    m_engine_frame->RegisterGlobalFunction("void log(const string &in)", AngelScript::asFUNCTION(logString), AngelScript::asCALL_CDECL);
+    registerOgreObjects(m_engine_frame);
+    RoR::RegisterScriptFrameStepInterface(m_engine_frame);
+
     SLOG("Type registrations done. If you see no error above everything should be working");
 }
 

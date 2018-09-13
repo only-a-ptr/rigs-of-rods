@@ -31,6 +31,101 @@
 
 #include <angelscript.h>
 
+namespace RoR {
+
+/// Base for all RoR objects exported to AngelScript virtual machine
+class ScriptObject
+{
+public:
+    ScriptObject(): m_refcount(0) {}
+    virtual ~ScriptObject() {}
+
+    void            AddRef()              { m_refcount++; }
+    void            Release()
+    {
+        --m_refcount;
+        if (m_refcount == 0)
+        {
+            delete this; // Commit suicide!
+                // This is awful but required by AngelScript: https://www.angelcode.com/angelscript/sdk/docs/manual/doc_reg_basicref.html#doc_reg_basicref_2
+                // Also it's legitimate by C++ standard: https://stackoverflow.com/a/3150965
+                // ... as long as we have a virtual destructor: https://stackoverflow.com/a/8599332
+        }
+    }
+    size_t          GetRefCount() const   { return m_refcount; }
+
+private:
+    size_t m_refcount;
+};
+
+template <typename T> class ScriptObjectPtr
+{
+public:
+    ScriptObjectPtr(T* ptr): m_ptr(ptr)   { ptr->AddRef(); }
+
+    ScriptObjectPtr(): m_ptr(nullptr) {}
+
+    ~ScriptObjectPtr()
+    {
+        if (m_ptr != nullptr)
+        {
+            size_t orig_refcount = m_ptr->GetRefCount();
+            m_ptr->Release(); // Decrement refcount
+            if (orig_refcount == 1)
+            {
+                // The object has deleted itself (see `RoR::ScriptObject::Release()`), nullify our pointer.
+                m_ptr = nullptr;
+            }
+        }
+    }
+
+    T* Get() { return m_ptr; }
+
+private:
+    T* m_ptr;
+};
+
+/// Proxy to Actor, only to be used within simulation timestep
+class ScriptActor: public ScriptObject
+{
+public:
+    ScriptActor(Actor* a): m_actor(a) {}
+
+    bool            IsAlive() const                                    { return m_actor != nullptr; }
+    void            Kill()                                             { m_actor = nullptr; }
+
+    uint16_t        GetNumNodes() const;
+    Ogre::Vector3   GetNodePosition(uint16_t idx) const;
+    Ogre::Vector3   GetNodeVelocity(uint16_t idx) const;
+    Ogre::Vector3   GetNodeForces(uint16_t idx) const;
+    void            SetNodeForces(uint16_t idx, Ogre::Vector3 forces);
+
+private:
+    Actor* m_actor;
+};
+
+/// Proxy to GfxActor, only to be used within per-frame scene updates
+class ScriptGfxActor: public ScriptObject 
+{
+public:
+    ScriptGfxActor(GfxActor* gfx_actor): m_gfx_actor(gfx_actor) {}
+
+    bool            IsAlive() const                                    { return m_gfx_actor != nullptr; }
+    void            Kill()                                             { m_gfx_actor = nullptr; }
+
+    Ogre::Vector3   GetNodePosition(uint16_t idx) const;
+
+private:
+    GfxActor* m_gfx_actor;
+};
+
+void RegisterScriptCommonInterface(AngelScript::asIScriptEngine* engine);
+void RegisterScriptSimStepInterface(AngelScript::asIScriptEngine* engine);
+void RegisterScriptFrameStepInterface(AngelScript::asIScriptEngine* engine);
+
+} // namespace RoR
+
+
 struct curlMemoryStruct
 {
     char* memory;

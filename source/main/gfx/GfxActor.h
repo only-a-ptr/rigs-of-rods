@@ -28,6 +28,7 @@
 
 #include "Differentials.h"
 #include "ForwardDeclarations.h"
+#include "GameScript.h"
 #include "ThreadPool.h" // class Task
 
 #include <OgreAxisAlignedBox.h>
@@ -307,6 +308,7 @@ public:
     inline DebugViewType      GetDebugView       () const                 { return m_debug_view; }
     SimBuffer &               GetSimDataBuffer   ()                       { return m_simbuf; }
     NodeData*                 GetSimNodeBuffer   ()                       { return m_simbuf.simbuf_nodes.get(); }
+    RoR::ScriptObjectPtr<RoR::ScriptGfxActor> GetScriptGfxActor()         { return m_script_gfx_actor; }
     void                      SetSurveyMapEntity (SurveyMapEntity* e)     { m_survey_map_entity = e; }
     SurveyMapEntity*          GetSurveyMapEntity ()                       { return m_survey_map_entity; }
     std::set<GfxActor*>       GetLinkedGfxActors ()                       { return m_linked_gfx_actors; }
@@ -350,6 +352,7 @@ private:
     Ogre::SceneNode*            m_rods_parent_scenenode;
     std::vector<std::shared_ptr<Task>> m_flexwheel_tasks;
     std::vector<std::shared_ptr<Task>> m_flexbody_tasks;
+    ScriptObjectPtr<ScriptGfxActor>    m_script_gfx_actor;
     bool                        m_beaconlight_active;
     float                       m_prop_anim_crankfactor_prev;
     float                       m_prop_anim_shift_timer;

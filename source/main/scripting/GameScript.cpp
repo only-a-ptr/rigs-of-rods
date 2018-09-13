@@ -859,3 +859,112 @@ float GameScript::getAvgFPS()
 {
     return App::GetOgreSubsystem()->GetRenderWindow()->getStatistics().avgFPS;
 }
+
+    // TODO: Add errror checking using script exceptions
+    //      https://www.angelcode.com/angelscript/sdk/docs/manual/classas_i_script_context.html#a4ed608208cafdebe5676df079e27d392
+
+uint16_t        RoR::ScriptActor::GetNumNodes() const                                { return m_actor->GetNumNodes(); }
+Ogre::Vector3   RoR::ScriptActor::GetNodePosition(uint16_t idx) const                { return m_actor->ar_nodes[idx].AbsPosition; }
+Ogre::Vector3   RoR::ScriptActor::GetNodeVelocity(uint16_t idx) const                { return m_actor->ar_nodes[idx].Velocity; }
+Ogre::Vector3   RoR::ScriptActor::GetNodeForces(uint16_t idx) const                  { return m_actor->ar_nodes[idx].Forces; }
+void            RoR::ScriptActor::SetNodeForces(uint16_t idx, Ogre::Vector3 forces)  { m_actor->ar_nodes[idx].Forces = forces; }
+
+Ogre::Vector3   RoR::ScriptGfxActor::GetNodePosition(uint16_t idx) const             { return m_gfx_actor->GetSimNodeBuffer()[idx].AbsPosition; }
+
+// ********** Global script functions **********
+
+ScriptActor* GetPlayerScriptActor()
+{
+    return RoR::App::GetSimController()->GetPlayerActor()->GetScriptActor().Get();
+}
+
+ScriptActor* GetPlayerScriptGfxActor()
+{
+    return RoR::App::GetSimController()->GetGfxScene().GetSimDataBuffer().simbuf_player_actor->GetScriptActor().Get();
+}
+
+void AddScriptFrameCallback(AngelScript::asIScriptFunction* fn)
+{
+    ScriptEngine::getSingleton().AddFrameCallback(fn);
+}
+
+void RemoveScriptFrameCallback(AngelScript::asIScriptFunction* fn)
+{
+    ScriptEngine::getSingleton().RemoveFrameCallback(fn);
+}
+
+void AddScriptSimStepCallback(AngelScript::asIScriptFunction* fn)
+{
+    ScriptEngine::getSingleton().AddSimStepCallback(fn);
+}
+
+void RemoveScriptSimStepCallback(AngelScript::asIScriptFunction* fn)
+{
+    ScriptEngine::getSingleton().RemoveSimStepCallback(fn);
+}
+
+void RoR::RegisterScriptCommonInterface(AngelScript::asIScriptEngine* engine)
+{
+    engine->SetDefaultNamespace("RoR");
+    ScriptRegHelper helper(engine);
+
+    // TODO: Access to GVars!
+}
+
+void RoR::RegisterScriptSimStepInterface(AngelScript::asIScriptEngine* engine)
+{
+    engine->SetDefaultNamespace("RoR");
+    ScriptRegHelper helper(engine);
+
+    // Actor class
+
+    helper.RegObject("Actor", sizeof(ScriptActor), AngelScript::asOBJ_REF);
+    helper.RegBehaviour(AngelScript::asBEHAVE_ADDREF,  "void f()", AngelScript::asMETHOD(ScriptActor, AddRef));
+    helper.RegBehaviour(AngelScript::asBEHAVE_RELEASE, "void f()", AngelScript::asMETHOD(ScriptActor, Release));
+
+    helper.RegMethod("bool     IsAlive()",                   AngelScript::asMETHOD(ScriptActor, IsAlive));
+    helper.RegMethod("uint16   GetNumNodes()",               AngelScript::asMETHOD(ScriptActor, GetNumNodes));
+    helper.RegMethod("vector3  GetNodePosition(uint16 idx)", AngelScript::asMETHOD(ScriptActor, GetNodePosition));
+    helper.RegMethod("vector3  GetNodeVelocity(uint16 idx)", AngelScript::asMETHOD(ScriptActor, GetNodeVelocity));
+    helper.RegMethod("vector3  GetNodeForces(uint16 idx)",   AngelScript::asMETHOD(ScriptActor, GetNodeForces));
+    helper.RegMethod("void     SetNodeForces(uint16 idx, vector3 forces)", AngelScript::asMETHOD(ScriptActor, SetNodeForces));
+
+    // Global defs
+
+    helper.RegFuncdef("void SIM_CALLBACK_FUNC()");
+
+    // Global functions
+
+    helper.RegFunction("Actor@ GetPlayerActor()",                           AngelScript::asFUNCTION(GetPlayerScriptActor));
+    helper.RegFunction("void   AddSimStepCallback(SIM_CALLBACK_FUNC@)",     AngelScript::asFUNCTION(AddScriptSimStepCallback));
+    helper.RegFunction("void   RemoveSimStepCallback(SIM_CALLBACK_FUNC@)",  AngelScript::asFUNCTION(RemoveScriptSimStepCallback));
+
+    engine->SetDefaultNamespace(nullptr);
+}
+
+void RoR::RegisterScriptFrameStepInterface(AngelScript::asIScriptEngine* engine)
+{
+    engine->SetDefaultNamespace("RoR");
+    ScriptRegHelper helper(engine);
+
+    // GfxActor class
+
+    helper.RegObject("GfxActor", sizeof(ScriptGfxActor), AngelScript::asOBJ_REF);
+    helper.RegBehaviour(AngelScript::asBEHAVE_ADDREF,  "void f()", AngelScript::asMETHOD(ScriptGfxActor, AddRef));
+    helper.RegBehaviour(AngelScript::asBEHAVE_RELEASE, "void f()", AngelScript::asMETHOD(ScriptGfxActor, Release));
+
+    helper.RegMethod("bool     IsAlive()",                   AngelScript::asMETHOD(ScriptGfxActor, IsAlive));
+    helper.RegMethod("vector3  GetNodePosition(uint16 idx)", AngelScript::asMETHOD(ScriptGfxActor, GetNodePosition));
+
+    // Global defs
+
+    helper.RegFuncdef("void FRAME_CALLBACK_FUNC(float dt_sec)");
+
+    // Global functions
+
+    helper.RegFunction("GfxActor@ GetPlayerGfxActor()",                   AngelScript::asFUNCTION(GetPlayerScriptGfxActor));
+    helper.RegFunction("void  AddFrameCallback(FRAME_CALLBACK_FUNC@)",    AngelScript::asFUNCTION(AddScriptFrameCallback));
+    helper.RegFunction("void  RemoveFrameCallback(FRAME_CALLBACK_FUNC@)", AngelScript::asFUNCTION(RemoveScriptFrameCallback));
+
+    engine->SetDefaultNamespace(nullptr);
+}

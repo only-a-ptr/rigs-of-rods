@@ -108,6 +108,8 @@ RoR::GfxActor::GfxActor(Actor* actor, std::string ogre_resource_group,
         m_attr.xa_num_gears = actor->ar_engine->getNumGears();
         m_attr.xa_engine_max_rpm = actor->ar_engine->getMaxRPM();
     }
+
+    m_script_gfx_actor = ScriptObjectPtr<ScriptGfxActor>(new ScriptGfxActor(this));
 }
 
 RoR::GfxActor::~GfxActor()

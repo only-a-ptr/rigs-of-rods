@@ -4450,6 +4450,8 @@ Actor::Actor(
     , ar_last_fuzzy_ground_model(nullptr)
     , m_transfer_case(nullptr)
 {
+
+    m_script_actor = RoR::ScriptObjectPtr<RoR::ScriptActor>(new RoR::ScriptActor(this));
 }
 
 float Actor::getSteeringAngle()

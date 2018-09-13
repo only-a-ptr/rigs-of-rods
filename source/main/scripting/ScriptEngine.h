@@ -37,6 +37,8 @@
 #include "scriptdictionary/scriptdictionary.h"
 #include "scriptbuilder/scriptbuilder.h"
 
+#include <unordered_set>
+
 /**
  * @file ScriptEngine.h
  * @version 0.1.0
@@ -143,10 +145,19 @@ public:
     inline void SLOG(const char* msg) { this->scriptLog->logMessage(msg); } ///< Replacement of macro
     inline void SLOG(std::string msg) { this->scriptLog->logMessage(msg); } ///< Replacement of macro
 
+    void AddFrameCallback      (AngelScript::asIScriptFunction* fn) { m_frame_callbacks.insert(fn); }
+    void RemoveFrameCallback   (AngelScript::asIScriptFunction* fn) { m_frame_callbacks.erase(fn); }
+    void AddSimStepCallback    (AngelScript::asIScriptFunction* fn) { m_sim_callbacks.insert(fn); }
+    void RemoveSimStepCallback (AngelScript::asIScriptFunction* fn) { m_sim_callbacks.erase(fn); }
+
 protected:
 
     Collisions* coll;
-    AngelScript::asIScriptEngine* engine; //!< instance of the scripting engine
+    AngelScript::asIScriptEngine* engine; //!< instance of the scripting engine - legacy framestep logic
+    AngelScript::asIScriptEngine* m_engine_sim; //!< instance of the scripting engine - simulation timestep
+    std::unordered_set<AngelScript::asIScriptFunction*> m_sim_callbacks;
+    AngelScript::asIScriptEngine* m_engine_frame; //!< instance of the scripting engine - framestep logic (asynchronous with simulation)
+    std::unordered_set<AngelScript::asIScriptFunction*> m_frame_callbacks;
     AngelScript::asIScriptContext* context; //!< context in which all scripting happens
     AngelScript::asIScriptFunction* frameStepFunctionPtr; //!< script function pointer to the frameStep function
     AngelScript::asIScriptFunction* eventCallbackFunctionPtr; //!< script function pointer to the event callback function
@@ -170,6 +181,101 @@ protected:
      * @param msg arguments that contain details about the crash
      */
     void msgCallback(const AngelScript::asSMessageInfo* msg);
+
+private:
+    template <typename T> void EraseItem(std::vector<T>& vec, T item)
+    {
+        vec.erase(std::remove(vec.begin(), vec.end(), item), vec.end()); // From https://stackoverflow.com/a/39944
+    }
+};
+
+// ================================================================================================
+//     Registration helper class
+// ================================================================================================
+
+class ScriptRegException: public std::runtime_error
+{
+public:
+    ScriptRegException(const char* msg): std::runtime_error(msg) {}
+};
+
+class ScriptRegHelper
+{
+public:
+    ScriptRegHelper(AngelScript::asIScriptEngine* e): m_engine(e), m_obj_name(nullptr) {}
+
+    void SetActiveObject(const char* name)
+    {
+        m_obj_name = name;
+    }
+
+    void SetNamespace(const char* name)
+    {
+        int res = m_engine->SetDefaultNamespace(name);
+        if (res < AngelScript::asSUCCESS)
+        {
+            throw ScriptRegException("SetDefaultNamespace() failed"); // TODO: more descriptive!
+        }
+    }
+
+    void RegObject(const char* name, size_t size, AngelScript::asDWORD flags)
+    {
+        int res = m_engine->RegisterObjectType(name, static_cast<int>(size), flags);
+        if (res < AngelScript::asSUCCESS)
+        {
+            throw ScriptRegException("RegisterObjectType() failed"); // TODO: more descriptive!
+        }
+        this->SetActiveObject(name);
+    }
+
+    void RegBehaviour(AngelScript::asEBehaviours behav, const char* decl, const AngelScript::asSFuncPtr & ptr, AngelScript::asDWORD flags = AngelScript::asCALL_THISCALL)
+    {
+        int res = m_engine->RegisterObjectBehaviour(m_obj_name, behav, decl, ptr, flags);
+        if (res < AngelScript::asSUCCESS)
+        {
+            throw ScriptRegException("RegisterObjectBehaviour() failed"); // TODO: more descriptive!
+        }
+    }
+
+    void RegConstructor(const char* decl, const AngelScript::asSFuncPtr & ptr)
+    {
+        this->RegBehaviour(AngelScript::asBEHAVE_CONSTRUCT, decl, ptr);
+    }
+
+    void RegDestructor(const char* decl, const AngelScript::asSFuncPtr & ptr)
+    {
+        this->RegBehaviour(AngelScript::asBEHAVE_DESTRUCT, decl, ptr);
+    }
+
+    void RegMethod(const char* decl, const AngelScript::asSFuncPtr & ptr, AngelScript::asDWORD flags = AngelScript::asCALL_THISCALL)
+    {
+        int res = m_engine->RegisterObjectMethod(m_obj_name, decl, ptr, flags);
+        if (res < AngelScript::asSUCCESS)
+        {
+            throw ScriptRegException("RegisterObjectMethod() failed"); // TODO: more descriptive!
+        }
+    }
+
+    void RegFunction(const char* name, const AngelScript::asSFuncPtr & ptr, AngelScript::asDWORD flags = AngelScript::asCALL_CDECL)
+    {
+        int res = m_engine->RegisterGlobalFunction(name, ptr, flags);
+        if (res < AngelScript::asSUCCESS)
+        {
+            throw ScriptRegException("RegisterGlobalFunction() failed"); // TODO: more descriptive!
+        }
+    }
+
+    void RegFuncdef(const char* name)
+    {
+        int res = m_engine->RegisterFuncdef(name);
+        if (res < AngelScript::asSUCCESS)
+        {
+            throw ScriptRegException("RegisterFuncdef() failed"); // TODO: more descriptive!
+        }
+    }
+private:
+    AngelScript::asIScriptEngine* m_engine;
+    const char*                   m_obj_name;
 };
 
 #endif // USE_ANGELSCRIPT
