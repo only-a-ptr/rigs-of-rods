@@ -1576,12 +1576,6 @@ void SimController::UpdateSimulation(float dt)
     }
 #endif // USE_OPENAL
 
-    if ((simRUNNING(s) || simEDITOR(s)) && !simPAUSED(s))
-    {
-        m_actor_manager.UpdateAirbrakeInput(dt);
-        m_actor_manager.UpdateActorVisuals(dt, m_player_actor); // update visual - antishaking
-    }
-
     this->UpdateInputEvents(dt);
 
     // CAUTION: 'updateEvents' might have changed 'm_player_actor'
@@ -1621,6 +1615,8 @@ void SimController::UpdateSimulation(float dt)
 
             m_gfx_scene.BufferSimulationData();
 
+            m_actor_manager.UpdateAirbrakeInput(dt);
+            m_actor_manager.UpdateActorVisuals(dt, m_player_actor); // Needs to happen after BufferSimulationData()
             m_actor_manager.UpdateActors(m_player_actor, dt); // *** Start new physics tasks. No reading from Actor N/B beyond this point.
         }
     }
