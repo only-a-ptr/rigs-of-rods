@@ -6897,9 +6897,7 @@ void ActorSpawner::FinalizeGfxSetup()
     // Process rods (beam visuals)
     for (BeamVisualsTicket& bv: m_beam_visuals_queue)
     {
-        int node1 = m_actor->ar_beams[bv.beam_index].p1->pos;
-        int node2 = m_actor->ar_beams[bv.beam_index].p2->pos;
-        m_actor->m_gfx_actor->AddRod(bv.beam_index, node1, node2, bv.material_name.c_str(), bv.visible, bv.diameter);
+        m_actor->m_gfx_actor->AddRod(bv.beam_index, bv.material_name.c_str(), bv.visible, bv.diameter);
     }
 
     //add the cab visual

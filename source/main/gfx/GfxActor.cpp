@@ -879,7 +879,7 @@ void RoR::GfxActor::CycleDebugViews()
     }
 }
 
-void RoR::GfxActor::AddRod(int beam_index,  int node1_index, int node2_index, const char* material_name, bool visible, float diameter_meters)
+void RoR::GfxActor::AddRod(int beam_index, const char* material_name, bool visible, float diameter_meters)
 {
     try
     {
@@ -902,8 +902,6 @@ void RoR::GfxActor::AddRod(int beam_index,  int node1_index, int node2_index, co
         rod.rod_diameter_mm = uint16_t(diameter_meters * 1000.f);
 
         rod.rod_beam_index = static_cast<uint16_t>(beam_index);
-        rod.rod_node1 = static_cast<uint16_t>(node1_index);
-        rod.rod_node2 = static_cast<uint16_t>(node2_index);
 
         m_rods.push_back(rod);
     }
@@ -920,16 +918,26 @@ void RoR::GfxActor::UpdateRods()
 
     for (Rod& rod: m_rods)
     {
-        Ogre::Vector3 pos1 = m_actor->ar_nodes[rod.rod_node1].AbsPosition;
-        Ogre::Vector3 pos2 = m_actor->ar_nodes[rod.rod_node2].AbsPosition;
+        int i = rod.rod_beam_index;
+        if (m_actor->ar_beams[i].bm_disabled || m_actor->ar_beams[i].bm_broken)
+        {
+            rod.rod_scenenode->setVisible(false, /*cascade=*/ false);
+        }
+        else if (m_actor->ar_beams[i].bm_type != BEAM_VIRTUAL)
+        {
+            rod.rod_scenenode->setVisible(true, /*cascade=*/ false);
 
-        // Classic method
-        float beam_diameter = static_cast<float>(rod.rod_diameter_mm) * 0.001;
-        float beam_length = pos1.distance(pos2);
+            Ogre::Vector3 pos1 = m_actor->ar_beams[i].p1->AbsPosition;
+            Ogre::Vector3 pos2 = m_actor->ar_beams[i].p2->AbsPosition;
 
-        rod.rod_scenenode->setPosition(pos1.midPoint(pos2));
-        rod.rod_scenenode->setScale(beam_diameter, beam_length, beam_diameter);
-        rod.rod_scenenode->setOrientation(GfxActor::SpecialGetRotationTo(Ogre::Vector3::UNIT_Y, (pos1 - pos2)));
+            // Classic method
+            float beam_diameter = static_cast<float>(rod.rod_diameter_mm) * 0.001;
+            float beam_length = pos1.distance(pos2);
+
+            rod.rod_scenenode->setPosition(pos1.midPoint(pos2));
+            rod.rod_scenenode->setScale(beam_diameter, beam_length, beam_diameter);
+            rod.rod_scenenode->setOrientation(GfxActor::SpecialGetRotationTo(Ogre::Vector3::UNIT_Y, (pos1 - pos2)));
+        }
     }
 }
 

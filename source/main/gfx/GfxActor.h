@@ -136,8 +136,6 @@ public:
         Ogre::SceneNode* rod_scenenode;
         uint16_t         rod_beam_index;  //!< Index of the associated `beam_t` instance; assumes Actor has at most 65536 beams (RoR doesn't have a soft limit now, but until v0.4.8 it was 5000 beams).
         uint16_t         rod_diameter_mm; //!< Diameter in millimeters
-        uint16_t         rod_node1;       //!< Node index - assumes the Actor has at most 65536 nodes (RoR doesn't have a soft limit now, but until v0.4.8 it was 1000 nodes).
-        uint16_t         rod_node2;       //!< Node index - assumes the Actor has at most 65536 nodes (RoR doesn't have a soft limit now, but until v0.4.8 it was 1000 nodes).
     };
 
     struct WheelGfx
@@ -255,7 +253,7 @@ public:
     void                      SetVideoCamState   (VideoCamState state);
     void                      UpdateVideoCameras (float dt_sec);
     void                      UpdateParticles    (float dt_sec);
-    void                      AddRod             (int beam_index, int node1_index, int node2_index, const char* material_name, bool visible, float diameter_meters);
+    void                      AddRod             (int beam_index, const char* material_name, bool visible, float diameter_meters);
     void                      UpdateRods         ();
     void                      SetRodsVisible     (bool visible);
     void                      ScaleActor         (Ogre::Vector3 relpos, float ratio);
