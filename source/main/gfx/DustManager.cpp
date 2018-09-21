@@ -315,7 +315,17 @@ void RoR::GfxScene::RemoveGfxActor(RoR::GfxActor* remove_me)
         if (*itor == remove_me)
         {
             m_all_gfx_actors.erase(itor);
-            return;
+            break;
+        }
+    }
+    itor = m_live_gfx_actors.begin();
+    endi = m_live_gfx_actors.end();
+    for (; itor != endi; ++itor)
+    {
+        if (*itor == remove_me)
+        {
+            m_live_gfx_actors.erase(itor);
+            break;
         }
     }
 }
