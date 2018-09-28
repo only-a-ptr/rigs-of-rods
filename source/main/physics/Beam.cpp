@@ -1295,14 +1295,6 @@ String Actor::getAxleLockName()
     return m_axles[0]->GetDifferentialTypeName();
 }
 
-void Actor::RequestActorReset(bool keepPosition)
-{
-    if (keepPosition)
-        m_reset_request = REQUEST_RESET_ON_SPOT;
-    else
-        m_reset_request = REQUEST_RESET_ON_INIT_POS;
-}
-
 void Actor::RequestRotation(float rotation)
 {
     m_rotation_request += rotation;
@@ -1334,7 +1326,7 @@ Ogre::Vector3 Actor::GetRotationCenter()
     return rotation_center;
 }
 
-void Actor::SyncReset()
+void Actor::SyncReset(bool reset_position)
 {
     ar_hydro_dir_state = 0.0;
     ar_hydro_aileron_state = 0.0;
@@ -1433,7 +1425,7 @@ void Actor::SyncReset()
 
     this->GetGfxActor()->ResetFlexbodies();
     // reset on spot with backspace
-    if (m_reset_request != REQUEST_RESET_ON_INIT_POS)
+    if (!reset_position)
     {
         this->ResetAngle(cur_rot);
         this->ResetPosition(cur_position.x, cur_position.z, false, yPos);
@@ -1448,15 +1440,6 @@ void Actor::SyncReset()
     }
 
     this->resetSlideNodes();
-
-    if (m_reset_request != REQUEST_RESET_ON_SPOT)
-    {
-        m_reset_request = REQUEST_RESET_NONE;
-    }
-    else
-    {
-        m_reset_request = REQUEST_RESET_FINAL;
-    }
 }
 
 bool Actor::ReplayStep()
@@ -1554,11 +1537,6 @@ void Actor::HandleInputEvents(float dt)
         m_translation_request = 0.0f;
         updateBoundingBox();
         calculateAveragePosition();
-    }
-
-    if (m_reset_request)
-    {
-        SyncReset();
     }
 }
 
@@ -4151,7 +4129,6 @@ Actor::Actor(
     , m_hide_own_net_label(BSETTING("HideOwnNetLabel", false))
     , m_cinecam_is_rotation_center(false)
     , m_preloaded_with_terrain(preloaded_with_terrain)
-    , m_reset_request(REQUEST_RESET_NONE)
     , ar_net_source_id(0)
     , m_spawn_rotation(0.0)
     , ar_net_stream_id(0)

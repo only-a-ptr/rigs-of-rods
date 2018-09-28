@@ -164,7 +164,11 @@ void Actor::calcForcesEulerCompute(int step, int num_steps)
         tBoundingBox.getMinimum().y + tBoundingBox.getMaximum().y +
         tBoundingBox.getMinimum().z + tBoundingBox.getMaximum().z, -1e9, 1e9))
     {
-        m_reset_request = REQUEST_RESET_ON_INIT_POS; // actor exploded, schedule reset
+        ActorModifyRequest rq; // actor exploded, schedule reset
+        rq.amr_actor = this;
+        rq.amr_type = ActorModifyRequest::Type::RESET_ON_INIT_POS;
+        App::GetSimController()->QueueActorModify(rq);
+
         return; // return early to avoid propagating invalid values
     }
 
@@ -1238,8 +1242,6 @@ void Actor::calcForcesEulerCompute(int step, int num_steps)
 
 bool Actor::CalcForcesEulerPrepare()
 {
-    if (m_reset_request)
-        return false;
     if (ar_sim_state != Actor::SimState::LOCAL_SIMULATED)
         return false;
 
