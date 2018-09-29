@@ -91,8 +91,6 @@ void ActorSpawner::Setup(
     int cache_entry_number
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     m_actor = rig;
     m_file = file;
     m_cache_entry_number = cache_entry_number;
@@ -218,8 +216,6 @@ void ActorSpawner::CalcMemoryRequirements(ActorMemoryRequirements& req, RigDef::
 
 void ActorSpawner::InitializeRig()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     ActorMemoryRequirements req;
     for (auto module: m_selected_modules) // _Root_ module is included
     {
@@ -413,8 +409,6 @@ void ActorSpawner::InitializeRig()
 
 void ActorSpawner::FinalizeRig()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     // we should post-process the torque curve if existing
     if (m_actor->ar_engine)
     {
@@ -526,8 +520,6 @@ void ActorSpawner::FinalizeRig()
 
 void ActorSpawner::WashCalculator()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     //we will compute wash
     int w,p;
     for (p=0; p<m_actor->ar_num_aeroengines; p++)
@@ -569,8 +561,6 @@ void ActorSpawner::WashCalculator()
 
 void ActorSpawner::ProcessTurbojet(RigDef::Turbojet & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int front,back,ref;
     front = GetNodeIndexOrThrow(def.front_node);
     back  = GetNodeIndexOrThrow(def.back_node);
@@ -629,8 +619,6 @@ void ActorSpawner::ComposeName(RoR::Str<100>& str, const char* type, int number,
 
 void ActorSpawner::ProcessScrewprop(RigDef::Screwprop & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (! CheckScrewpropLimit(1))
     {
         return;
@@ -654,8 +642,6 @@ void ActorSpawner::ProcessScrewprop(RigDef::Screwprop & def)
 
 void ActorSpawner::ProcessFusedrag(RigDef::Fusedrag & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     //parse fusedrag
     int front_node_idx = GetNodeIndexOrThrow(def.front_node);
     float width = 1.f;
@@ -706,8 +692,6 @@ void ActorSpawner::BuildAerialEngine(
     float pitch
     )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int aeroengine_index = m_actor->ar_num_aeroengines;
 
     Turboprop *turbo_prop = new Turboprop(
@@ -753,8 +737,6 @@ void ActorSpawner::BuildAerialEngine(
 
 void ActorSpawner::ProcessTurboprop2(RigDef::Turboprop2 & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int p3_node_index = (def.blade_tip_nodes[2].IsValidAnyState()) ? GetNodeIndexOrThrow(def.blade_tip_nodes[2]) : -1;
     int p4_node_index = (def.blade_tip_nodes[3].IsValidAnyState()) ? GetNodeIndexOrThrow(def.blade_tip_nodes[3]) : -1;
     int couple_node_index = (def.couple_node.IsValidAnyState()) ? GetNodeIndexOrThrow(def.couple_node) : -1;
@@ -776,8 +758,6 @@ void ActorSpawner::ProcessTurboprop2(RigDef::Turboprop2 & def)
 
 void ActorSpawner::ProcessPistonprop(RigDef::Pistonprop & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int p3_node_index = (def.blade_tip_nodes[2].IsValidAnyState()) ? GetNodeIndexOrThrow(def.blade_tip_nodes[2]) : -1;
     int p4_node_index = (def.blade_tip_nodes[3].IsValidAnyState()) ? GetNodeIndexOrThrow(def.blade_tip_nodes[3]) : -1;
     int couple_node_index = (def.couple_node.IsValidAnyState()) ? GetNodeIndexOrThrow(def.couple_node) : -1;
@@ -799,8 +779,6 @@ void ActorSpawner::ProcessPistonprop(RigDef::Pistonprop & def)
 
 void ActorSpawner::ProcessAirbrake(RigDef::Airbrake & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (! CheckAirBrakeLimit(1))
     {
         return;
@@ -829,8 +807,6 @@ void ActorSpawner::ProcessAirbrake(RigDef::Airbrake & def)
 
 void ActorSpawner::ProcessWing(RigDef::Wing & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_first_wing_index != -1) && (m_actor->ar_wings[m_actor->ar_num_wings - 1].fa == nullptr))
     {
         this->AddMessage(Message::TYPE_ERROR, "Unable to process wing, previous wing has no Airfoil");
@@ -1094,16 +1070,12 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
 
 float ActorSpawner::ComputeWingArea(Ogre::Vector3 const & ref, Ogre::Vector3 const & x, Ogre::Vector3 const & y, Ogre::Vector3 const & aref)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     return (((x-ref).crossProduct(y-ref)).length()+((x-aref).crossProduct(y-aref)).length())*0.5f;
 }
 
 void ActorSpawner::ProcessSoundSource2(RigDef::SoundSource2 & def)
 {
 #ifdef USE_OPENAL
-    SPAWNER_PROFILE_SCOPED();
-
     int mode = (def.mode == RigDef::SoundSource2::MODE_CINECAM) ? def.cinecam_index : def.mode;
     int node_index = FindNodeIndex(def.node);
     if (node_index == -1)
@@ -1121,7 +1093,6 @@ void ActorSpawner::ProcessSoundSource2(RigDef::SoundSource2 & def)
 
 void ActorSpawner::AddSoundSourceInstance(Actor *vehicle, Ogre::String const & sound_script_name, int node_index, int type)
 {
-    SPAWNER_PROFILE_SCOPED();
 #ifdef USE_OPENAL
     AddSoundSource(vehicle, SoundScriptManager::getSingleton().createInstance(sound_script_name, vehicle->ar_instance_id, nullptr), node_index);
 #endif // USE_OPENAL
@@ -1129,8 +1100,6 @@ void ActorSpawner::AddSoundSourceInstance(Actor *vehicle, Ogre::String const & s
 
 void ActorSpawner::AddSoundSource(Actor *vehicle, SoundScriptInstance *sound_script, int node_index, int type)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (! CheckSoundScriptLimit(vehicle, 1))
     {
         return;
@@ -1150,8 +1119,6 @@ void ActorSpawner::AddSoundSource(Actor *vehicle, SoundScriptInstance *sound_scr
 void ActorSpawner::ProcessSoundSource(RigDef::SoundSource & def)
 {
 #ifdef USE_OPENAL
-    SPAWNER_PROFILE_SCOPED();
-
     AddSoundSource(
             m_actor,
             SoundScriptManager::getSingleton().createInstance(def.sound_script_name, m_actor->ar_instance_id), 
@@ -1163,8 +1130,6 @@ void ActorSpawner::ProcessSoundSource(RigDef::SoundSource & def)
 
 void ActorSpawner::ProcessCameraRail(RigDef::CameraRail & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     auto itor = def.nodes.begin();
     auto end  = def.nodes.end();
     for(; itor != end; ++itor)
@@ -1180,8 +1145,6 @@ void ActorSpawner::ProcessCameraRail(RigDef::CameraRail & def)
 
 void ActorSpawner::ProcessExtCamera(RigDef::ExtCamera & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     m_actor->ar_extern_camera_mode = def.mode;
     if (def.node.IsValidAnyState())
     {
@@ -1191,8 +1154,6 @@ void ActorSpawner::ProcessExtCamera(RigDef::ExtCamera & def)
 
 void ActorSpawner::ProcessGuiSettings(RigDef::GuiSettings & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     // Currently unused (was relevant to overlay-based HUD): def.tacho_material; def.speedo_material;
 
     if (! def.help_material.empty())
@@ -1223,8 +1184,6 @@ void ActorSpawner::ProcessFixedNode(RigDef::Node::Ref node_ref)
 
 void ActorSpawner::ProcessExhaust(RigDef::Exhaust & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     // parse exhausts
     if (m_actor->m_disable_smoke)
     {
@@ -1300,8 +1259,6 @@ std::string ActorSpawner::GetSubmeshGroundmodelName()
 
 void ActorSpawner::ProcessSubmesh(RigDef::Submesh & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (! CheckSubmeshLimit(1))
     {
         return;
@@ -1505,8 +1462,6 @@ void ActorSpawner::ProcessSubmesh(RigDef::Submesh & def)
 
 void ActorSpawner::ProcessFlexbody(std::shared_ptr<RigDef::Flexbody> def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     // Collect nodes
     std::vector<unsigned int> node_indices;
     bool nodes_found = true;
@@ -1564,8 +1519,6 @@ void ActorSpawner::ProcessFlexbody(std::shared_ptr<RigDef::Flexbody> def)
 
 void ActorSpawner::ProcessProp(RigDef::Prop & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     prop_t prop;
     int prop_index = m_props.size();
     memset(&prop, 0, sizeof(prop_t));
@@ -2070,8 +2023,6 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
 
 void ActorSpawner::ProcessFlare2(RigDef::Flare2 & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (m_actor->m_flares_mode == GfxFlaresMode::NONE) { return; }
 
     int blink_delay = def.blink_delay_milis;
@@ -2225,8 +2176,6 @@ void ActorSpawner::ProcessFlare2(RigDef::Flare2 & def)
 
 Ogre::MaterialPtr ActorSpawner::InstantiateManagedMaterial(Ogre::String const & source_name, Ogre::String const & clone_name)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     Ogre::MaterialPtr src_mat = RoR::OgreSubsystem::GetMaterialByName(source_name);
     if (src_mat.isNull())
     {
@@ -2241,8 +2190,6 @@ Ogre::MaterialPtr ActorSpawner::InstantiateManagedMaterial(Ogre::String const & 
 
 void ActorSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (m_managed_materials.find(def.name) != m_managed_materials.end())
     {
         this->AddMessage(Message::TYPE_ERROR, "Duplicate managed material name: '" + def.name + "'. Ignoring definition...");
@@ -2368,8 +2315,6 @@ void ActorSpawner::ProcessManagedMaterial(RigDef::ManagedMaterial & def)
 
 void ActorSpawner::ProcessCollisionBox(RigDef::CollisionBox & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     auto itor = def.nodes.begin();
     auto end  = def.nodes.end();
     for ( ; itor != end; ++itor)
@@ -2389,8 +2334,6 @@ void ActorSpawner::ProcessCollisionBox(RigDef::CollisionBox & def)
 
 bool ActorSpawner::AssignWheelToAxle(int & _out_axle_wheel, node_t *axis_node_1, node_t *axis_node_2)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     for (int i = 0; i < m_actor->ar_num_wheels; i++)
     {
         wheel_t & wheel = m_actor->ar_wheels[i];
@@ -2407,8 +2350,6 @@ bool ActorSpawner::AssignWheelToAxle(int & _out_axle_wheel, node_t *axis_node_1,
 
 void ActorSpawner::ProcessAxle(RigDef::Axle & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (! CheckAxleLimit(1))
     {
         return;
@@ -2471,16 +2412,12 @@ void ActorSpawner::ProcessAxle(RigDef::Axle & def)
 
 void ActorSpawner::ProcessSpeedLimiter(RigDef::SpeedLimiter & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     m_actor->sl_enabled     = def.is_enabled;
     m_actor->sl_speed_limit = def.max_speed;
 }
 
 void ActorSpawner::ProcessCruiseControl(RigDef::CruiseControl & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     m_actor->cc_target_speed_lower_limit = def.min_speed;
     if (m_actor->cc_target_speed_lower_limit <= 0.f)
     {
@@ -2493,8 +2430,6 @@ void ActorSpawner::ProcessCruiseControl(RigDef::CruiseControl & def)
 
 void ActorSpawner::ProcessTorqueCurve(RigDef::TorqueCurve & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (m_actor->ar_engine == nullptr)
     {
         AddMessage(Message::TYPE_WARNING, "Section 'torquecurve' found but no 'engine' defined, skipping...");
@@ -2520,8 +2455,6 @@ void ActorSpawner::ProcessTorqueCurve(RigDef::TorqueCurve & def)
 
 void ActorSpawner::ProcessParticle(RigDef::Particle & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (App::gfx_particles_mode.GetActive() != 1)
     {
         return;
@@ -2561,8 +2494,6 @@ void ActorSpawner::ProcessParticle(RigDef::Particle & def)
 
 void ActorSpawner::ProcessRopable(RigDef::Ropable & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     ropable_t ropable;
     ropable.node = GetNodePointerOrThrow(def.node);
     ropable.group = def.group;
@@ -2573,8 +2504,6 @@ void ActorSpawner::ProcessRopable(RigDef::Ropable & def)
 
 void ActorSpawner::ProcessTie(RigDef::Tie & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t & node_1 = GetNodeOrThrow(def.root_node);
     node_t & node_2 = GetNode( (node_1.pos == 0) ? 1 : 0 );
 
@@ -2612,8 +2541,6 @@ void ActorSpawner::ProcessTie(RigDef::Tie & def)
 
 void ActorSpawner::ProcessRope(RigDef::Rope & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t & root_node = GetNodeOrThrow(def.root_node);
     node_t & end_node = GetNodeOrThrow(def.end_node);
 
@@ -2639,8 +2566,6 @@ void ActorSpawner::ProcessRope(RigDef::Rope & def)
 
 void ActorSpawner::ProcessRailGroup(RigDef::RailGroup & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     RailGroup* rail_group = this->CreateRail(def.node_list);
     rail_group->rg_id = def.id;
     if (rail_group != nullptr)
@@ -2651,8 +2576,6 @@ void ActorSpawner::ProcessRailGroup(RigDef::RailGroup & def)
 
 void ActorSpawner::ProcessSlidenode(RigDef::SlideNode & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t & node = GetNodeOrThrow(def.slide_node);
     SlideNode slide_node(& node, nullptr);
     slide_node.SetCorThreshold(def.tolerance);
@@ -2727,8 +2650,6 @@ void ActorSpawner::ProcessSlidenode(RigDef::SlideNode & def)
 
 int ActorSpawner::FindNodeIndex(RigDef::Node::Ref & node_ref, bool silent /* Default: false */)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     std::pair<unsigned int, bool> result = GetNodeIndex(node_ref, /* quiet */ true);
     if (result.second)
     {
@@ -2751,8 +2672,6 @@ bool ActorSpawner::CollectNodesFromRanges(
     std::vector<unsigned int> & out_node_indices
     )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     std::vector<RigDef::Node::Range>::iterator itor = node_ranges.begin();
     for ( ; itor != node_ranges.end(); itor++)
     {
@@ -2820,8 +2739,6 @@ bool ActorSpawner::CollectNodesFromRanges(
 
 RailGroup *ActorSpawner::CreateRail(std::vector<RigDef::Node::Range> & node_ranges)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     // Collect nodes
     std::vector<unsigned int> node_indices;
     this->CollectNodesFromRanges(node_ranges, node_indices);
@@ -2868,8 +2785,6 @@ RailGroup *ActorSpawner::CreateRail(std::vector<RigDef::Node::Range> & node_rang
 
 beam_t *ActorSpawner::FindBeamInRig(unsigned int node_a_index, unsigned int node_b_index)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t *node_a = & m_actor->ar_nodes[node_a_index];
     node_t *node_b = & m_actor->ar_nodes[node_b_index];
 
@@ -2888,8 +2803,6 @@ beam_t *ActorSpawner::FindBeamInRig(unsigned int node_a_index, unsigned int node
 
 void ActorSpawner::ProcessHook(RigDef::Hook & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* Find the node */
     node_t *node = GetNodePointer(def.node);
     if (node ==  nullptr)
@@ -2970,8 +2883,6 @@ void ActorSpawner::ProcessHook(RigDef::Hook & def)
 
 void ActorSpawner::ProcessLockgroup(RigDef::Lockgroup & lockgroup)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     auto itor = lockgroup.nodes.begin();
     auto end  = lockgroup.nodes.end();
     for (; itor != end; ++itor)
@@ -2982,8 +2893,6 @@ void ActorSpawner::ProcessLockgroup(RigDef::Lockgroup & lockgroup)
 
 void ActorSpawner::ProcessTrigger(RigDef::Trigger & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     shock_t & shock = this->GetFreeShock();
 
     // Disable trigger on startup? (default enabled)
@@ -3146,8 +3055,6 @@ void ActorSpawner::ProcessTrigger(RigDef::Trigger & def)
 
 void ActorSpawner::ProcessContacter(RigDef::Node::Ref & node_ref)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int node_index = GetNodeIndexOrThrow(node_ref);
     m_actor->ar_contacters[m_actor->ar_num_contacters].nodeid = node_index;
     m_actor->ar_num_contacters++;
@@ -3155,8 +3062,6 @@ void ActorSpawner::ProcessContacter(RigDef::Node::Ref & node_ref)
 
 void ActorSpawner::ProcessRotator(RigDef::Rotator & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     rotator_t & rotator = m_actor->ar_rotators[m_actor->ar_num_rotators];
 
     rotator.angle = 0;
@@ -3188,8 +3093,6 @@ void ActorSpawner::ProcessRotator(RigDef::Rotator & def)
 
 void ActorSpawner::ProcessRotator2(RigDef::Rotator2 & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     rotator_t & rotator = m_actor->ar_rotators[m_actor->ar_num_rotators];
 
     rotator.angle = 0;
@@ -3234,8 +3137,6 @@ void ActorSpawner::_ProcessKeyInertia(
     int extend_key
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (key_inertia != nullptr)
     {
         /* Handle placeholders */
@@ -3290,8 +3191,6 @@ void ActorSpawner::_ProcessKeyInertia(
 
 void ActorSpawner::ProcessCommand(RigDef::Command2 & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int beam_index = m_actor->ar_num_beams;
     int node_1_index = FindNodeIndex(def.nodes[0]);
     int node_2_index = FindNodeIndex(def.nodes[1]);
@@ -3366,8 +3265,6 @@ void ActorSpawner::ProcessCommand(RigDef::Command2 & def)
 
 void ActorSpawner::ProcessAnimator(RigDef::Animator & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (m_actor->m_hydro_inertia != nullptr)
     {
         if (def.inertia_defaults->start_delay_factor > 0 && def.inertia_defaults->stop_delay_factor > 0)
@@ -3532,8 +3429,6 @@ beam_t & ActorSpawner::AddBeam(
     int detacher_group
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* Init */
     beam_t & beam = GetAndInitFreeBeam(node_1, node_2);
     beam.detacher_group = detacher_group;
@@ -3554,15 +3449,11 @@ beam_t & ActorSpawner::AddBeam(
 
 void ActorSpawner::SetBeamStrength(beam_t & beam, float strength)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     beam.strength = strength;
 }
 
 void ActorSpawner::ProcessHydro(RigDef::Hydro & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     bool invisible = false;
     unsigned int hydro_flags = 0;
 
@@ -3665,8 +3556,6 @@ void ActorSpawner::ProcessHydro(RigDef::Hydro & def)
 
 void ActorSpawner::ProcessShock2(RigDef::Shock2 & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t & node_1 = GetNode(def.nodes[0]);
     node_t & node_2 = GetNode(def.nodes[1]);
     float short_bound = def.short_bound;
@@ -3748,8 +3637,6 @@ void ActorSpawner::ProcessShock2(RigDef::Shock2 & def)
 
 void ActorSpawner::ProcessShock(RigDef::Shock & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t & node_1 = GetNode(def.nodes[0]);
     node_t & node_2 = GetNode(def.nodes[1]);
     float short_bound = def.short_bound;
@@ -3811,8 +3698,6 @@ void ActorSpawner::FetchAxisNodes(
     RigDef::Node::Ref const & axis_node_2_id
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     axis_node_1 = GetNodePointer(axis_node_1_id);
     axis_node_2 = GetNodePointer(axis_node_2_id);
 
@@ -3830,8 +3715,6 @@ void ActorSpawner::FetchAxisNodes(
 
 void ActorSpawner::ProcessFlexBodyWheel(RigDef::FlexBodyWheel & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int base_node_index = m_actor->ar_num_nodes;
     wheel_t & wheel = m_actor->ar_wheels[m_actor->ar_num_wheels];
 
@@ -4113,8 +3996,6 @@ void ActorSpawner::ProcessMeshWheel(RigDef::MeshWheel & meshwheel_def)
         return;
     }
 
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int base_node_index = m_actor->ar_num_nodes;
     node_t *axis_node_1 = GetNodePointer(meshwheel_def.nodes[0]);
     node_t *axis_node_2 = GetNodePointer(meshwheel_def.nodes[1]);
@@ -4165,8 +4046,6 @@ void ActorSpawner::ProcessMeshWheel(RigDef::MeshWheel & meshwheel_def)
 
 void ActorSpawner::ProcessMeshWheel2(RigDef::MeshWheel & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int base_node_index = m_actor->ar_num_nodes;
     node_t *axis_node_1 = GetNodePointer(def.nodes[0]);
     node_t *axis_node_2 = GetNodePointer(def.nodes[1]);
@@ -4241,8 +4120,6 @@ void ActorSpawner::BuildMeshWheelVisuals(
     bool rim_reverse
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     try
     {
         FlexMeshWheel* flexmesh_wheel = m_flex_factory.CreateFlexMeshWheel(
@@ -4287,8 +4164,6 @@ unsigned int ActorSpawner::BuildWheelObjectAndNodes(
     float wheel_width       /* Default: -1.f */
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     wheel_t & wheel = m_actor->ar_wheels[m_actor->ar_num_wheels];
 
     /* Axis */
@@ -4401,23 +4276,17 @@ unsigned int ActorSpawner::BuildWheelObjectAndNodes(
 
 void ActorSpawner::AdjustNodeBuoyancy(node_t & node, RigDef::Node & node_def, std::shared_ptr<RigDef::NodeDefaults> defaults)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int options = (defaults->options | node_def.options); // Merge flags
     node.buoyancy = BITMASK_IS_1(options, RigDef::Node::OPTION_b_EXTRA_BUOYANCY) ? 10000.f : m_actor->m_dry_mass/15.f;
 }
 
 void ActorSpawner::AdjustNodeBuoyancy(node_t & node, std::shared_ptr<RigDef::NodeDefaults> defaults)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node.buoyancy = BITMASK_IS_1(defaults->options, RigDef::Node::OPTION_b_EXTRA_BUOYANCY) ? 10000.f : m_actor->m_dry_mass/15.f;
 }
 
 int ActorSpawner::FindLowestNodeInRig()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int lowest_node_index = 0;
     float lowest_y = m_actor->ar_nodes[0].AbsPosition.y;
 
@@ -4436,8 +4305,6 @@ int ActorSpawner::FindLowestNodeInRig()
 
 int ActorSpawner::FindLowestContactingNodeInRig()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int lowest_node_index = FindLowestNodeInRig();
     float lowest_y = std::numeric_limits<float>::max();
 
@@ -4469,15 +4336,6 @@ void ActorSpawner::BuildWheelBeams(
     float max_extension // = 0.f
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-    
-#ifdef DEBUG_TRUCKPARSER2013
-    // DEBUG
-    std::stringstream msg;
-    msg << "==== BEAMS ====";
-    // END DEBUG
-#endif
-
     /* Find out where to connect rigidity node */
     bool rigidity_beam_side_1 = false;
     node_t *rigidity_node = nullptr;
@@ -4511,49 +4369,18 @@ void ActorSpawner::BuildWheelBeams(
         AddWheelBeam(inner_ring_node, next_inner_ring_node, rim_spring, rim_damping, beam_defaults);
         AddWheelBeam(inner_ring_node, next_outer_ring_node, rim_spring, rim_damping, beam_defaults);
 
-#ifdef DEBUG_TRUCKPARSER2013
-        // TRUCK PARSER 2013 DEBUG
-        int modifier = 0;
-        msg<<"\nDBG\tBounded: ";
-        msg<<"["<<axis_node_1->pos + modifier<<" "<<outer_ring_node->pos + modifier<<"] ";
-        msg<<"["<<axis_node_2->pos + modifier<<" "<<inner_ring_node->pos + modifier<<"] ";
-        msg<<"["<<axis_node_2->pos + modifier<<" "<<outer_ring_node->pos + modifier<<"] ";
-        msg<<"["<<axis_node_1->pos + modifier<<" "<<inner_ring_node->pos + modifier<<"]";
-        //reinforcement
-        msg<<"\nDBG\tReinforcement: ";
-        msg<<"["<<outer_ring_node->pos + modifier<<" "<<inner_ring_node->pos      + modifier<<"] ";
-        msg<<"["<<outer_ring_node->pos + modifier<<" "<<next_outer_ring_node->pos + modifier<<"] ";
-        msg<<"["<<inner_ring_node->pos + modifier<<" "<<next_inner_ring_node->pos + modifier<<"] ";
-        msg<<"["<<inner_ring_node->pos + modifier<<" "<<next_outer_ring_node->pos + modifier<<"] ";
-        // END
-#endif
-
         /* Rigidity beams */
         if (rigidity_node != nullptr)
         {
             node_t *target_node = (rigidity_beam_side_1) ? outer_ring_node : inner_ring_node;
             unsigned int beam_index = AddWheelBeam(rigidity_node, target_node, tyre_spring, tyre_damping, beam_defaults, -1.f, -1.f, BEAM_VIRTUAL);
             m_actor->ar_beams[beam_index].bm_type = BEAM_VIRTUAL;
-
-#ifdef DEBUG_TRUCKPARSER2013
-            // DEBUG
-            msg<<"\nDBG\tRigidityBeam: ["<<rigidity_node->pos + modifier<<" "<<target_node->pos + modifier<<"] ";
-            msg<<((rigidity_beam_side_1) ? "(outer)" : "(inner)");
-            // END
-#endif
         }
     }
-#ifdef DEBUG_TRUCKPARSER2013
-    // TRUCK PARSER 2013 DEBUG
-    LOG(msg.str());
-    // END
-#endif
 }
 
 unsigned int ActorSpawner::AddWheel(RigDef::Wheel & wheel_def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int base_node_index = m_actor->ar_num_nodes;
     node_t *axis_node_1 = GetNodePointer(wheel_def.nodes[0]);
     node_t *axis_node_2 = GetNodePointer(wheel_def.nodes[1]);
@@ -4622,139 +4449,8 @@ void ActorSpawner::CreateWheelSkidmarks(unsigned int wheel_index)
         RoR::App::GetSimController()->GetSkidmarkConf(), &m_actor->ar_wheels[wheel_index], m_particles_parent_scenenode, 300, 20);
 }
 
-#if 0 // refactored into pieces
-unsigned int ActorSpawner::AddWheel(RigDef::Wheel & wheel_def)
-{
-    /* Check capacity */
-    CheckNodeLimit(wheel_def.num_rays * 2);
-    CheckBeamLimit(wheel_def.num_rays * 8);
-
-    unsigned int base_node_index = m_actor->ar_num_nodes;
-    wheel_t & wheel = m_actor->ar_wheels[m_actor->ar_num_wheels];
-
-    /* Enforce the "second node must have a larger Z coordinate than the first" constraint */
-    unsigned int axis_nodes[2];
-    if (GetNode(wheel_def.nodes[0]).RelPosition.z < GetNode(wheel_def.nodes[1]).RelPosition.z)
-    {
-        axis_nodes[0] = GetNodeIndexOrThrow(wheel_def.nodes[0]);
-        axis_nodes[1] = GetNodeIndexOrThrow(wheel_def.nodes[1]);
-    }
-    else
-    {
-        axis_nodes[0] = GetNodeIndexOrThrow(wheel_def.nodes[1]);
-        axis_nodes[1] = GetNodeIndexOrThrow(wheel_def.nodes[0]);
-    }
-    node_t & axis_node_1 = m_actor->ar_nodes[axis_nodes[0]];
-    node_t & axis_node_2 = m_actor->ar_nodes[axis_nodes[1]];
-
-    Ogre::Vector3 axis_vector = axis_node_2.RelPosition - axis_node_1.RelPosition;
-    axis_vector.normalise();
-    Ogre::Vector3 ray_vector = axis_vector.perpendicular() * wheel_def.radius;
-    Ogre::Quaternion ray_rotator = Ogre::Quaternion(Ogre::Degree(-360.f / wheel_def.num_rays * 2), axis_vector);
-
-    /* Nodes */
-    for (unsigned int i = 0; i < wheel_def.num_rays; i++)
-    {
-        /* Outer ring */
-        Ogre::Vector3 ray_point = axis_node_1.RelPosition + ray_vector;
-        ray_vector = ray_rotator * ray_vector;
-
-        node_t & outer_node = GetFreeNode();
-        InitNode(outer_node, ray_point, wheel_def.node_defaults);
-        outer_node.mass    = wheel_def.mass / (2.f * wheel_def.num_rays);
-        outer_node.iswheel = (m_actor->ar_num_wheels * 2) + 1;
-        outer_node.id      = -1; // Orig: hardcoded (BTS_WHEELS)
-        outer_node.wheelid = m_actor->ar_num_wheels;
-
-        contacter_t & contacter = m_actor->ar_contacters[m_actor->ar_num_contacters];
-        contacter.nodeid        = outer_node.pos; /* Node index */
-        m_actor->ar_num_contacters++;
-
-        /* Inner ring */
-        ray_point = axis_node_2.RelPosition + ray_vector;
-        ray_vector = ray_rotator * ray_vector;
-
-        node_t & inner_node = GetFreeNode();
-        InitNode(inner_node, ray_point, wheel_def.node_defaults);
-        inner_node.mass    = wheel_def.mass / (2.f * wheel_def.num_rays);
-        inner_node.iswheel = (m_actor->ar_num_wheels * 2) + 2;
-        inner_node.id      = -1; // Orig: hardcoded (BTS_WHEELS)
-        inner_node.wheelid = m_actor->ar_num_wheels; 
-
-        contacter_t & contacter = m_actor->ar_contacters[m_actor->ar_num_contacters];
-        contacter.nodeid        = inner_node.pos; /* Node index */
-        m_actor->ar_num_contacters++;
-
-        /* Wheel object */
-        wheel.ar_nodes[i * 2] = & outer_node;
-        wheel.ar_nodes[(i * 2) + 1] = & inner_node;
-    }
-
-    /* Beams */
-    for (unsigned int i = 0; i < wheel_def.num_rays; i++)
-    {
-        /* Bounded */
-        unsigned int outer_ring_node_index = base_node_index + (i * 2);
-        node_t *outer_ring_node = & m_actor->ar_nodes[outer_ring_node_index];
-        node_t *inner_ring_node = & m_actor->ar_nodes[outer_ring_node_index + 1];
-        
-        unsigned int beam_index = SectionWheelsAddBeam(wheel_def, & axis_node_1, outer_ring_node);
-        GetBeam(beam_index).shortbound = 0.66f;
-        GetBeam(beam_index).longbound = 0.0f;
-        beam_index = SectionWheelsAddBeam(wheel_def, & axis_node_2, inner_ring_node);
-        GetBeam(beam_index).shortbound = 0.66f;
-        GetBeam(beam_index).longbound = 0.0f;
-        SectionWheelsAddBeam(wheel_def, & axis_node_2, outer_ring_node);
-        SectionWheelsAddBeam(wheel_def, & axis_node_1, inner_ring_node);
-
-        /* Reinforcement */
-        unsigned int next_outer_ring_node_index = base_node_index + (((i + 1) % wheel_def.num_rays) * 2);
-        node_t *next_outer_ring_node = & m_actor->ar_nodes[next_outer_ring_node_index];
-        node_t *next_inner_ring_node = & m_actor->ar_nodes[next_outer_ring_node_index + 1];
-
-        SectionWheelsAddBeam(wheel_def, outer_ring_node, inner_ring_node);
-        SectionWheelsAddBeam(wheel_def, outer_ring_node, next_outer_ring_node);
-        SectionWheelsAddBeam(wheel_def, inner_ring_node, next_inner_ring_node);
-        SectionWheelsAddBeam(wheel_def, inner_ring_node, next_outer_ring_node);
-    }
-
-    /* Wheel object */
-    wheel.braked    = wheel_def.braking;
-    wheel.propulsed = wheel_def.propulsion;
-    wheel.nbnodes   = 2 * wheel_def.num_rays;
-    wheel.refnode0  = & axis_node_1;
-    wheel.refnode1  = & axis_node_2;
-    wheel.radius    = wheel_def.radius;
-    wheel.width     = axis_vector.length(); /* wheel_def.width is ignored. */
-    wheel.arm       = GetNodePointer(wheel_def.reference_arm_node);
-
-    if (wheel_def.propulsion != RigDef::Wheels::PROPULSION_NONE)
-    {
-        /* for inter-differential locking */
-        m_actor->m_num_proped_wheels++;
-        m_actor->m_proped_wheel_pairs[m_actor->m_num_proped_wheels] = m_actor->ar_num_wheels;
-    }
-    if (wheel_def.braking != RigDef::Wheels::BRAKING_NO)
-    {
-        m_actor->m_num_braked_wheels++;
-    }
-
-    /* Find near attach */
-    Ogre::Real length_1 = (axis_node_1.RelPosition - wheel.arm->RelPosition).length();
-    Ogre::Real length_2 = (axis_node_2.RelPosition - wheel.arm->RelPosition).length();
-    wheel.near_attach = & ((length_1 < length_2) ? axis_node_1 : axis_node_2);
-
-    /* Advance */
-    unsigned int wheel_index = m_actor->ar_num_wheels;
-    m_actor->ar_num_wheels++;
-    return wheel_index;
-}
-#endif
-
 unsigned int ActorSpawner::AddWheel2(RigDef::Wheel2 & wheel_2_def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int base_node_index = m_actor->ar_num_nodes;
     wheel_t & wheel = m_actor->ar_wheels[m_actor->ar_num_wheels];
     node_t *axis_node_1 = GetNodePointer(wheel_2_def.nodes[0]);
@@ -5001,8 +4697,6 @@ void ActorSpawner::CreateWheelVisuals(
     float rim_ratio
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     wheel_t & wheel = m_actor->ar_wheels[wheel_index];
 
     try
@@ -5049,8 +4743,6 @@ unsigned int ActorSpawner::AddWheelBeam(
     int type                 /* Default: BEAM_INVISIBLE */
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int index = m_actor->ar_num_beams;
     beam_t & beam = AddBeam(*node_1, *node_2, beam_defaults, DEFAULT_DETACHER_GROUP); 
     beam.bm_type = type;
@@ -5069,8 +4761,6 @@ unsigned int ActorSpawner::AddWheelBeam(
 
 unsigned int ActorSpawner::AddWheelRimBeam(RigDef::Wheel2 & wheel_2_def, node_t *node_1, node_t *node_2)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int beam_index = _SectionWheels2AddBeam(wheel_2_def, node_1, node_2);
     beam_t & beam = GetBeam(beam_index);
     beam.k = wheel_2_def.rim_springiness;
@@ -5080,8 +4770,6 @@ unsigned int ActorSpawner::AddWheelRimBeam(RigDef::Wheel2 & wheel_2_def, node_t 
 
 unsigned int ActorSpawner::AddTyreBeam(RigDef::Wheel2 & wheel_2_def, node_t *node_1, node_t *node_2)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int beam_index = _SectionWheels2AddBeam(wheel_2_def, node_1, node_2);
     beam_t & beam = GetBeam(beam_index);
     beam.k = wheel_2_def.tyre_springiness;
@@ -5095,8 +4783,6 @@ unsigned int ActorSpawner::AddTyreBeam(RigDef::Wheel2 & wheel_2_def, node_t *nod
 
 unsigned int ActorSpawner::_SectionWheels2AddBeam(RigDef::Wheel2 & wheel_2_def, node_t *node_1, node_t *node_2)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int index = m_actor->ar_num_beams;
     beam_t & beam = GetFreeBeam();
     InitBeam(beam, node_1, node_2);
@@ -5108,8 +4794,6 @@ unsigned int ActorSpawner::_SectionWheels2AddBeam(RigDef::Wheel2 & wheel_2_def, 
 
 void ActorSpawner::ProcessWheel2(RigDef::Wheel2 & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     unsigned int node_base_index = m_actor->ar_num_nodes;
     unsigned int wheel_index = AddWheel2(def);
     m_wheel_visuals_queue.push_back(WheelVisualsTicket(wheel_index, node_base_index, &def));
@@ -5122,8 +4806,6 @@ void ActorSpawner::ProcessWheel(RigDef::Wheel & def)
 
 void ActorSpawner::ProcessWheelDetacher(RigDef::WheelDetacher & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (def.wheel_id > m_actor->ar_num_wheels - 1)
     {
         AddMessage(Message::TYPE_ERROR, std::string("Invalid wheel_id: ") + TOSTRING(def.wheel_id));
@@ -5135,8 +4817,6 @@ void ActorSpawner::ProcessWheelDetacher(RigDef::WheelDetacher & def)
 
 void ActorSpawner::ProcessTractionControl(RigDef::TractionControl & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* #1: regulating_force */
     float force = def.regulation_force;
     if (force < 0.f || force > 20.f)
@@ -5171,8 +4851,6 @@ void ActorSpawner::ProcessTractionControl(RigDef::TractionControl & def)
 
 void ActorSpawner::ProcessAntiLockBrakes(RigDef::AntiLockBrakes & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* #1: regulating_force */
     float force = def.regulation_force;
     if (force < 0.f || force > 20.f)
@@ -5206,8 +4884,6 @@ void ActorSpawner::ProcessAntiLockBrakes(RigDef::AntiLockBrakes & def)
 
 void ActorSpawner::ProcessBrakes(RigDef::Brakes & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     m_actor->ar_brake_force = def.default_braking_force;
     m_actor->m_handbrake_force = 2.f * m_actor->ar_brake_force;
     if (def.parking_brake_force != -1.f)
@@ -5242,8 +4918,6 @@ void ActorSpawner::ProcessEngturbo(RigDef::Engturbo & def)
 
 void ActorSpawner::ProcessEngoption(RigDef::Engoption & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* Is this a land vehicle? */
     if (m_actor->ar_engine == nullptr)
     {
@@ -5279,8 +4953,6 @@ void ActorSpawner::ProcessEngoption(RigDef::Engoption & def)
 
 void ActorSpawner::ProcessEngine(RigDef::Engine & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* Process it */
     m_actor->ar_driveable = TRUCK;
 
@@ -5310,8 +4982,6 @@ void ActorSpawner::ProcessEngine(RigDef::Engine & def)
 
 void ActorSpawner::ProcessHelp()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     SetCurrentKeyword(RigDef::File::KEYWORD_HELP);
     unsigned int material_count = 0;
 
@@ -5338,8 +5008,6 @@ void ActorSpawner::ProcessHelp()
 
 void ActorSpawner::ProcessAuthors()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     SetCurrentKeyword(RigDef::File::KEYWORD_FILEFORMATVERSION);
 
     std::vector<RigDef::Author>::iterator author_itor = m_file->authors.begin();
@@ -5361,8 +5029,6 @@ void ActorSpawner::ProcessAuthors()
 
 unsigned int ActorSpawner::GetNodeIndexOrThrow(RigDef::Node::Ref const & node_ref)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     std::pair<unsigned int, bool> result = GetNodeIndex(node_ref);
     if (! result.second)
     {
@@ -5375,15 +5041,11 @@ unsigned int ActorSpawner::GetNodeIndexOrThrow(RigDef::Node::Ref const & node_re
 
 node_t & ActorSpawner::GetNodeOrThrow(RigDef::Node::Ref const & node_ref)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     return m_actor->ar_nodes[GetNodeIndexOrThrow(node_ref)];
 }
 
 void ActorSpawner::ProcessCamera(RigDef::Camera & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* Center node */
     if (def.center_node.IsValidAnyState())
     {
@@ -5423,8 +5085,6 @@ void ActorSpawner::ProcessCamera(RigDef::Camera & def)
 
 node_t* ActorSpawner::GetBeamNodePointer(RigDef::Node::Ref const & node_ref)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t* node = GetNodePointer(node_ref);
     if (node != nullptr)
     {
@@ -5435,8 +5095,6 @@ node_t* ActorSpawner::GetBeamNodePointer(RigDef::Node::Ref const & node_ref)
 
 void ActorSpawner::ProcessBeam(RigDef::Beam & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     // Nodes
     node_t* ar_nodes[] = {nullptr, nullptr};
     ar_nodes[0] = GetBeamNodePointer(def.nodes[0]);
@@ -5487,8 +5145,6 @@ void ActorSpawner::ProcessBeam(RigDef::Beam & def)
 
 void ActorSpawner::SetBeamDeformationThreshold(beam_t & beam, std::shared_ptr<RigDef::BeamDefaults> beam_defaults)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /*
     ---------------------------------------------------------------------------
         Old parser logic
@@ -5615,8 +5271,6 @@ void ActorSpawner::SetBeamDeformationThreshold(beam_t & beam, std::shared_ptr<Ri
 
 void ActorSpawner::CreateBeamVisuals(beam_t const & beam, int beam_index, bool visible, std::shared_ptr<RigDef::BeamDefaults> const& beam_defaults)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     //Set material
     std::string material_name = beam_defaults->beam_material_name;
     if (beam.bm_type == BEAM_HYDRO)
@@ -5629,8 +5283,6 @@ void ActorSpawner::CreateBeamVisuals(beam_t const & beam, int beam_index, bool v
 
 void ActorSpawner::CalculateBeamLength(beam_t & beam)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     float beam_length = (beam.p1->RelPosition - beam.p2->RelPosition).length();
     beam.L = beam_length;
     beam.refL = beam_length;
@@ -5638,8 +5290,6 @@ void ActorSpawner::CalculateBeamLength(beam_t & beam)
 
 void ActorSpawner::InitBeam(beam_t & beam, node_t *node_1, node_t *node_2)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     beam.p1 = node_1;
     beam.p2 = node_2;
 
@@ -5649,8 +5299,6 @@ void ActorSpawner::InitBeam(beam_t & beam, node_t *node_1, node_t *node_2)
 
 void ActorSpawner::AddMessage(ActorSpawner::Message::Type type,	Ogre::String const & text)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* Add message to report */
     m_messages.push_back(Message(type, text, m_current_keyword));
 
@@ -5685,8 +5333,6 @@ void ActorSpawner::AddMessage(ActorSpawner::Message::Type type,	Ogre::String con
 
 std::pair<unsigned int, bool> ActorSpawner::GetNodeIndex(RigDef::Node::Ref const & node_ref, bool quiet /* Default: false */)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (!node_ref.IsValidAnyState())
     {
         if (! quiet)
@@ -5731,8 +5377,6 @@ std::pair<unsigned int, bool> ActorSpawner::GetNodeIndex(RigDef::Node::Ref const
 
 node_t* ActorSpawner::GetNodePointer(RigDef::Node::Ref const & node_ref)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     std::pair<unsigned int, bool> result = GetNodeIndex(node_ref);
     if (result.second)
     {
@@ -5746,8 +5390,6 @@ node_t* ActorSpawner::GetNodePointer(RigDef::Node::Ref const & node_ref)
 
 node_t* ActorSpawner::GetNodePointerOrThrow(RigDef::Node::Ref const & node_ref)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t *node = GetNodePointer(node_ref);
     if (node == nullptr)
     {
@@ -5760,8 +5402,6 @@ node_t* ActorSpawner::GetNodePointerOrThrow(RigDef::Node::Ref const & node_ref)
 
 std::pair<unsigned int, bool> ActorSpawner::AddNode(RigDef::Node::Id & id)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (!id.IsValid())
     {
         std::stringstream msg;
@@ -5802,8 +5442,6 @@ std::pair<unsigned int, bool> ActorSpawner::AddNode(RigDef::Node::Id & id)
 
 void ActorSpawner::ProcessNode(RigDef::Node & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     std::pair<unsigned int, bool> inserted_node = AddNode(def.id);
     if (! inserted_node.second)
     {
@@ -5918,14 +5556,6 @@ void ActorSpawner::ProcessNode(RigDef::Node & def)
     nfx.nx_no_particles = BITMASK_IS_1(options, RigDef::Node::OPTION_p_NO_PARTICLES);
     nfx.nx_no_sparks    = BITMASK_IS_1(options, RigDef::Node::OPTION_f_NO_SPARKS);
     m_gfx_nodes.push_back(nfx);
-
-#ifdef DEBUG_TRUCKPARSER2013
-    // DEBUG
-    std::stringstream msg;
-    msg<<"DBG ProcessNode() pos="<<node.pos<<", id="<<node.id << ", X=" << node.AbsPosition.x << ", Y=" << node.AbsPosition.y << ", Z=" << node.AbsPosition.z;
-    LOG(msg.str());
-    // END
-#endif
 }
 
 void ActorSpawner::AddExhaust(
@@ -5935,8 +5565,6 @@ void ActorSpawner::AddExhaust(
         Ogre::String *user_material_name
     )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if (m_actor->m_disable_smoke)
     {
         return;
@@ -5992,8 +5620,6 @@ void ActorSpawner::AddExhaust(
 
 bool ActorSpawner::AddModule(Ogre::String const & module_name)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     auto result = m_file->user_modules.find(module_name);
 
     if (result != m_file->user_modules.end())
@@ -6008,8 +5634,6 @@ bool ActorSpawner::AddModule(Ogre::String const & module_name)
 
 void ActorSpawner::ProcessCinecam(RigDef::Cinecam & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     // Node
     Ogre::Vector3 node_pos = m_spawn_position + def.position;
     node_t & camera_node = GetAndInitFreeNode(node_pos);
@@ -6039,8 +5663,6 @@ void ActorSpawner::ProcessCinecam(RigDef::Cinecam & def)
 
 void ActorSpawner::InitNode(node_t & node, Ogre::Vector3 const & position)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     /* Position */
     node.AbsPosition = position;
     node.RelPosition = position - m_actor->ar_origin;
@@ -6055,8 +5677,6 @@ void ActorSpawner::InitNode(
     std::shared_ptr<RigDef::NodeDefaults> node_defaults
 )
 {
-    SPAWNER_PROFILE_SCOPED();
-
     InitNode(node, position);
     node.friction_coef = node_defaults->friction;
     node.volume_coef = node_defaults->volume;
@@ -6065,8 +5685,6 @@ void ActorSpawner::InitNode(
 
 void ActorSpawner::ProcessGlobals(RigDef::Globals & def)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     m_actor->m_dry_mass = def.dry_mass;
     m_actor->m_load_mass = def.cargo_mass;
 
@@ -6095,8 +5713,6 @@ void ActorSpawner::ProcessGlobals(RigDef::Globals & def)
 
 bool ActorSpawner::CheckParticleLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_actor->ar_num_custom_particles + count) > MAX_CPARTICLES)
     {
         std::stringstream msg;
@@ -6109,8 +5725,6 @@ bool ActorSpawner::CheckParticleLimit(unsigned int count)
 
 bool ActorSpawner::CheckAxleLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_actor->m_num_axles + count) > MAX_WHEELS/2)
     {
         std::stringstream msg;
@@ -6123,8 +5737,6 @@ bool ActorSpawner::CheckAxleLimit(unsigned int count)
 
 bool ActorSpawner::CheckSubmeshLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_oldstyle_cab_submeshes.size() + count) > MAX_SUBMESHES)
     {
         std::stringstream msg;
@@ -6137,8 +5749,6 @@ bool ActorSpawner::CheckSubmeshLimit(unsigned int count)
 
 bool ActorSpawner::CheckTexcoordLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-    
     if ((m_oldstyle_cab_texcoords.size() + count) > MAX_TEXCOORDS)
     {
         std::stringstream msg;
@@ -6152,9 +5762,6 @@ bool ActorSpawner::CheckTexcoordLimit(unsigned int count)
 /* Static version */
 bool ActorSpawner::CheckSoundScriptLimit(Actor *vehicle, unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
-    //return CheckSoundScriptLimit(m_actor, count);
     if ((vehicle->ar_num_soundsources + count) > MAX_SOUNDSCRIPTS_PER_TRUCK)
     {
         std::stringstream msg;
@@ -6167,8 +5774,6 @@ bool ActorSpawner::CheckSoundScriptLimit(Actor *vehicle, unsigned int count)
 
 bool ActorSpawner::CheckCabLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_actor->ar_num_cabs + count) > MAX_CABS)
     {
         std::stringstream msg;
@@ -6181,8 +5786,6 @@ bool ActorSpawner::CheckCabLimit(unsigned int count)
 
 bool ActorSpawner::CheckCameraRailLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_actor->ar_num_camera_rails + count) > MAX_CAMERARAIL)
     {
         std::stringstream msg;
@@ -6195,8 +5798,6 @@ bool ActorSpawner::CheckCameraRailLimit(unsigned int count)
 
 bool ActorSpawner::CheckAirBrakeLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_actor->ar_num_airbrakes + count) > MAX_AIRBRAKES)
     {
         std::stringstream msg;
@@ -6209,8 +5810,6 @@ bool ActorSpawner::CheckAirBrakeLimit(unsigned int count)
 
 bool ActorSpawner::CheckAeroEngineLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_actor->ar_num_aeroengines + count) > MAX_AEROENGINES)
     {
         std::stringstream msg;
@@ -6223,8 +5822,6 @@ bool ActorSpawner::CheckAeroEngineLimit(unsigned int count)
 
 bool ActorSpawner::CheckScrewpropLimit(unsigned int count)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     if ((m_actor->ar_num_screwprops + count) > MAX_SCREWPROPS)
     {
         std::stringstream msg;
@@ -6242,8 +5839,6 @@ node_t &ActorSpawner:: GetNode(unsigned int node_index)
 
 void ActorSpawner::InitNode(unsigned int node_index, Ogre::Vector3 const & position)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     InitNode(m_actor->ar_nodes[node_index], position);
 }
 
@@ -6254,8 +5849,6 @@ beam_t & ActorSpawner::GetBeam(unsigned int index)
 
 node_t & ActorSpawner::GetFreeNode()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t & node = m_actor->ar_nodes[m_actor->ar_num_nodes];
     node.pos = m_actor->ar_num_nodes;
     m_actor->ar_num_nodes++;
@@ -6264,8 +5857,6 @@ node_t & ActorSpawner::GetFreeNode()
 
 beam_t & ActorSpawner::GetFreeBeam()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     beam_t & beam = m_actor->ar_beams[m_actor->ar_num_beams];
     m_actor->ar_num_beams++;
     return beam;
@@ -6273,8 +5864,6 @@ beam_t & ActorSpawner::GetFreeBeam()
 
 shock_t & ActorSpawner::GetFreeShock()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     shock_t & shock = m_actor->ar_shocks[m_actor->ar_num_shocks];
     m_actor->ar_num_shocks++;
     return shock;
@@ -6282,8 +5871,6 @@ shock_t & ActorSpawner::GetFreeShock()
 
 beam_t & ActorSpawner::GetAndInitFreeBeam(node_t & node_1, node_t & node_2)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     beam_t & beam = GetFreeBeam();
     beam.p1 = & node_1;
     beam.p2 = & node_2;
@@ -6292,8 +5879,6 @@ beam_t & ActorSpawner::GetAndInitFreeBeam(node_t & node_1, node_t & node_2)
 
 node_t & ActorSpawner::GetAndInitFreeNode(Ogre::Vector3 const & position)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     node_t & node = GetFreeNode();
     InitNode(node, position);
     return node;
@@ -6311,8 +5896,6 @@ void ActorSpawner::SetBeamDamping(beam_t & beam, float damping)
 
 void ActorSpawner::RecalculateBoundingBoxes(Actor *rig)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     Ogre::Vector3 node_0_pos = rig->ar_nodes[0].AbsPosition;
     rig->ar_bounding_box.setExtents(
         node_0_pos.x, node_0_pos.y, node_0_pos.z, 
@@ -6359,8 +5942,6 @@ void ActorSpawner::RecalculateBoundingBoxes(Actor *rig)
 
 void ActorSpawner::SetupDefaultSoundSources(Actor *vehicle)
 {
-    SPAWNER_PROFILE_SCOPED();
-
     int trucknum = vehicle->ar_instance_id;
     int ar_exhaust_pos_node = vehicle->ar_exhaust_pos_node;
 
@@ -6521,8 +6102,6 @@ void ActorSpawner::SetupDefaultSoundSources(Actor *vehicle)
 
 void ActorSpawner::UpdateCollcabContacterNodes()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     for (int i=0; i<m_actor->ar_num_collcabs; i++)
     {
         int tmpv = m_actor->ar_collcabs[i] * 3;
@@ -6534,8 +6113,6 @@ void ActorSpawner::UpdateCollcabContacterNodes()
 
 std::string ActorSpawner::ProcessMessagesToString()
 {
-    SPAWNER_PROFILE_SCOPED();
-
     std::stringstream report;
 
     auto itor = m_messages.begin();
