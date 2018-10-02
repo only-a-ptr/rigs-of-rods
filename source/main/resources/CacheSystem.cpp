@@ -236,13 +236,13 @@ CacheSystem::CacheValidityState CacheSystem::IsCacheValid()
 {
     String cfgfilename = getCacheConfigFilename(false);
     ImprovedConfigFile cfg;
-    if (!resourceExistsInAllGroups(cfgfilename))
+    if (!resourceExistsInAllGroups(cfgfilename)) // TODO: seriously? all groups? we know exactly where it is!
     {
         LOG("unable to load config file: "+cfgfilename);
         return CACHE_NEEDS_UPDATE_FULL;
     }
 
-    String group = ResourceGroupManager::getSingleton().findGroupContainingResource(cfgfilename);
+    String group = ResourceGroupManager::getSingleton().findGroupContainingResource(cfgfilename); // TODO: seriously? we just located it a few lines back!
     DataStreamPtr stream = ResourceGroupManager::getSingleton().openResource(cfgfilename, group);
     cfg.load(stream, "\t:=", false);
     String shaone = cfg.GetString("shaone");
@@ -263,12 +263,12 @@ CacheSystem::CacheValidityState CacheSystem::IsCacheValid()
     return CACHE_VALID;
 }
 
-void CacheSystem::logBadTruckAttrib(const String& line, CacheEntry& t)
-{
+void CacheSystem::logBadTruckAttrib(const String& line, CacheEntry& t) // TODO: JSON is preferable
+{ 
     LOG("Bad Mod attribute line: " + line + " in mod " + t.dname);
 }
 
-void CacheSystem::parseModAttribute(const String& line, CacheEntry& t)
+void CacheSystem::parseModAttribute(const String& line, CacheEntry& t) // TODO: JSON is preferable. also, how many of the below attributes are filled in and meaningfully used?
 {
     Ogre::StringVector params = StringUtil::split(line, "\x09\x0a=,");
     String& attrib = params[0];
@@ -824,13 +824,13 @@ bool CacheSystem::loadCache()
 
     String cfgfilename = getCacheConfigFilename(false);
 
-    if (!resourceExistsInAllGroups(cfgfilename))
+    if (!resourceExistsInAllGroups(cfgfilename)) // this is sick (see below)
     {
         LOG("unable to load config file: "+cfgfilename);
         return false;
     }
 
-    String group = ResourceGroupManager::getSingleton().findGroupContainingResource(String(cfgfilename));
+    String group = ResourceGroupManager::getSingleton().findGroupContainingResource(String(cfgfilename)); // this is sick (see above)
     DataStreamPtr stream = ResourceGroupManager::getSingleton().openResource(cfgfilename, group);
 
     LOG("CacheSystem::loadCache");
@@ -1001,7 +1001,15 @@ int CacheSystem::incrementalCacheUpdate()
         if (!found)
         {
             loading_win->setProgress(40, _L("incremental check: processing changed zips\n") + Utils::SanitizeUtf8String(it->fname));
-            loadSingleZip(*it);
+             // MERCY!
+            // OK, wait a second.... so we first stuff ALL user content to OGRE resourcesystem (forcing OGRe to parse materials and stuff... see `CacheSystem::filenamesSHA1()` and where it's used) just to generate SHA and find out cache is out of date.
+            // Then we <ahem>mercifully</ahem> go ZIP by ZIP (always stuffing it to OGRE resource system, forcing [again!!] material parsing and stuff....) just to call `parseFilesOneRG()` in each one, which effectively
+            //     filters out truckfiles + terrnfiles and passes them to `addFile()`. 
+            // HINT: we should register custom OGRE::Resourcemanager which wwe already do for *.skin, see gameplay/SkinManager.h|cpp (file is placed stupidly BTW)
+            // HINT2: Instead of parsing truckfiles/terrnfiles/skins immediately, how about buffering a list and parsing them later, in the background while player is already in menu :wink:
+            // 
+            // ~ only_a_ptr, 10/2018
+            loadSingleZip(*it); 
             reloaded_zips.push_back(it->dirname);
         }
     }
@@ -1318,7 +1326,7 @@ Ogre::String CacheSystem::formatEntry(int counter, CacheEntry t)
 
 void CacheSystem::writeGeneratedCache()
 {
-    String path = getCacheConfigFilename(true);
+    String path = getCacheConfigFilename(true); // TODO: Write using OGRE stream! then we won't need this crummy  getCacheConfigFilename() helper
     LOG("writing cache to file ("+path+")...");
 
     FILE* f = fopen(path.c_str(), "w");
@@ -1419,10 +1427,10 @@ void CacheSystem::addFile(String filename, String archiveType, String archiveDir
 
     //read first line
     CacheEntry entry;
-    if (!resourceExistsInAllGroups(filename))
+    if (!resourceExistsInAllGroups(filename)) // seriously?? search fulltext for  MERCY! please to see why this is utterly pointless. ~ only_a_ptr, 10/2018
         return;
 
-    String group = ResourceGroupManager::getSingleton().findGroupContainingResource(filename);
+    String group = ResourceGroupManager::getSingleton().findGroupContainingResource(filename); // again? Please shoot me now. ~ only_a_ptr, 10/2018
     if (ResourceGroupManager::getSingleton().resourceExists(group, filename))
     {
         try
@@ -1947,18 +1955,18 @@ void CacheSystem::checkForNewFiles(Ogre::String ext)
     StringVector sv = ResourceGroupManager::getSingleton().getResourceGroups();
     for (StringVector::iterator it = sv.begin(); it != sv.end(); ++it)
     {
-        FileInfoListPtr files = ResourceGroupManager::getSingleton().findResourceFileInfo(*it, fname);
+        FileInfoListPtr files = ResourceGroupManager::getSingleton().findResourceFileInfo(*it, fname); /// Is it just me or would RoR work signifficantly better if all this %*#*@ was just deleted? ~ only_a_ptr, 10/2018
         for (FileInfoList::iterator iterFiles = files->begin(); iterFiles != files->end(); ++iterFiles)
         {
             String fn = iterFiles->filename.c_str();
-            if (!isFileInEntries(fn))
+            if (!isFileInEntries(fn)) // oh yes, this is super important... we only care about terrnfiles and truckfiles, but we also track the ZIPs just so we can manually go ZIP by ZIP when we could just implement OGre::ResourceListener and discover (and check for updated/new) everything the first time. ~ only_a_ptr, 10/2018
             {
                 if (iterFiles->archive->getType() == "Zip")
                 LOG("- " + fn + " is new (in zip)");
                 else
                 LOG("- " + fn + " is new");
                 newFiles++;
-                addFile(*iterFiles, ext);
+                addFile(*iterFiles, ext); // I give up ~ only_a_ptr, 10/2018
             }
         }
     }
@@ -2288,7 +2296,7 @@ void CacheSystem::loadSingleZip(String zippath, int cfactor, bool unload, bool o
     // use general group?
     if (!ownGroup)
     {
-        rgname = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+        rgname = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME; // Nooooo!
     }
 
     try

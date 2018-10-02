@@ -326,7 +326,7 @@ void ContentManager::exploreZipFolders(Ogre::String rg)
     // DO NOT initialize ...
 }
 
-void ContentManager::exploreFolders(Ogre::String rg)
+void ContentManager::exploreFolders(Ogre::String rg) // TODO: is it just me or does this basically hand-implement recursive parsing, which is already available as a flag in OGRE 1.9+ ?? ~ only_a_ptr, 10/2018
 {
     ResourceGroupManager& rgm = ResourceGroupManager::getSingleton();
 
