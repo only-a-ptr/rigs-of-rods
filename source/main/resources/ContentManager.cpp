@@ -262,7 +262,7 @@ bool ContentManager::OnApplicationStartup(void)
     //:cake:  https://www.ogre3d.org/docs/api/1.9/class_ogre_1_1_resource_group_listener.html
 
     std::unique_ptr<TestRGListener> modcache_rg_listener = std::unique_ptr<TestRGListener>(new TestRGListener()); 
-    std::unique_ptr<TruckfileResourceManager> truckfile_mgr =  std::unique_ptr<TruckfileResourceManager>(new TruckfileResourceManager());  // registers itself
+    std::unique_ptr<TruckfileScriptLoader> truckfile_loader =  std::unique_ptr<TruckfileScriptLoader>(new TruckfileScriptLoader());  // registers itself
     ResourceGroupManager::getSingleton().addResourceGroupListener(modcache_rg_listener.get());
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "vehicles", "FileSystem", "VehicleFolders");
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "terrains", "FileSystem", "TerrainFolders");
@@ -286,7 +286,7 @@ bool ContentManager::OnApplicationStartup(void)
 
     LanguageEngine::getSingleton().postSetup();
      ResourceGroupManager::getSingleton().removeResourceGroupListener(modcache_rg_listener.get());
-     truckfile_mgr.reset(); // unregisters self
+     truckfile_loader.reset(); // unregisters self
 
     return true;
 }

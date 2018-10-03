@@ -32,92 +32,56 @@
 
 namespace RoR {
 
-    // Inspired by *.skin handler in "gameplay/SkinManager.h|cpp" 
-    // TODO: maybe Ogre:::ScriptLoader would be enough? See "SoundScriptManager.h"
+    // Inspired by *.soundscript handler - See "SoundScriptManager.h"
     //   ~ only_a_ptr, 10/2018
-    class TruckfileResourceManager: public Ogre::ResourceManager
+    class TruckfileScriptLoader: public Ogre::ScriptLoader
     {
     public:
-        TruckfileResourceManager()
+        TruckfileScriptLoader()
         {
-            // This makes the magic come true
-            mScriptPatterns.push_back("*.machine");
-            mScriptPatterns.push_back("*.fixed");
-            mScriptPatterns.push_back("*.truck");
-            mScriptPatterns.push_back("*.car");
-            mScriptPatterns.push_back("*.boat");
-            mScriptPatterns.push_back("*.airplane");
-            mScriptPatterns.push_back("*.trailer");
-            mScriptPatterns.push_back("*.load");
-            mScriptPatterns.push_back("*.train");
+            // for OGRE to recognize
+            m_filename_patterns.push_back("*.machine");
+            m_filename_patterns.push_back("*.fixed");
+            m_filename_patterns.push_back("*.truck");
+            m_filename_patterns.push_back("*.car");
+            m_filename_patterns.push_back("*.boat");
+            m_filename_patterns.push_back("*.airplane");
+            m_filename_patterns.push_back("*.trailer");
+            m_filename_patterns.push_back("*.load");
+            m_filename_patterns.push_back("*.train");
 
-            mResourceType = "RoR Softbody actors";
-            Ogre::ResourceGroupManager::getSingleton()._registerScriptLoader(this); // TODO: maybe Ogre:::ScriptLoader would be enough? See "SoundScriptManager.h"   ~ only_a_ptr, 10/2018
-            Ogre::ResourceGroupManager::getSingleton()._registerResourceManager(mResourceType, this);
+
+            Ogre::ResourceGroupManager::getSingleton()._registerScriptLoader(this); 
         }
 
-        virtual ~TruckfileResourceManager()
+        virtual ~TruckfileScriptLoader()
         {
-            Ogre::ResourceGroupManager::getSingleton()._unregisterResourceManager(mResourceType);
             Ogre::ResourceGroupManager::getSingleton()._unregisterScriptLoader(this);
         }
 
-        // == Ogre::ResourceManager interface functions ==
+    // ===== Ogre::ScriptLoader interface =====
 
-        Ogre::Resource* createImpl(const Ogre::String& name, Ogre::ResourceHandle handle,
-            const Ogre::String& group, bool isManual, Ogre::ManualResourceLoader* loader,
-            const Ogre::NameValuePairList* params) override
+        const Ogre::StringVector& getScriptPatterns(void) const override
         {
-            return nullptr; // Not used
+            return m_filename_patterns;
         }
+
         void parseScript(Ogre::DataStreamPtr& stream, const Ogre::String& groupName) override
         {
-            RoR::LogFormat("[RoR| -- content DB -- ] Ogre::ResourceManager::parseScript() >> filename '%s', group name '%s'", stream->getName().c_str(), groupName.c_str());
+            RoR::LogFormat("[RoR| -- content DB -- ] Ogre::ScriptLoader::parseScript() >> filename '%s', group name '%s'", stream->getName().c_str(), groupName.c_str());
         }
-        void reloadUnreferencedResources(bool reloadableOnly = true) override {}
-        void unloadUnreferencedResources(bool reloadableOnly = true) override {}
-        void unload     (const Ogre::String& name) override {}
-        void unload     (Ogre::ResourceHandle handle) override {}
-        void unloadAll  (bool reloadableOnly = true) override {}
-    
-        void remove     (Ogre::ResourcePtr& r) override {}
-        void remove     (const Ogre::String& name) override{}
-        void remove     (Ogre::ResourceHandle handle) override{}
-        void removeAll  () override{}
-        void reloadAll  (bool reloadableOnly = true) override{}  
+
+        Ogre::Real getLoadingOrder(void) const override { return 0.f;  } // whatever!
+
+    private:
+         Ogre::StringVector m_filename_patterns;
     };
 
 class TestRGListener: public Ogre::ResourceGroupListener
 {
 public:
     // experimental prototype, DO NOT MERGE!  ~ only_a_ptr, 10/2018
-    TestRGListener(): m_loading_vehicles(false) {}
-
-    virtual void resourceGroupPrepareStarted(const Ogre::String& groupName, size_t resourceCount) override
-    {
-        // --------
-        // TO BE DISCOVERED: what does this callback mean? I thought it was when 'initializeResourceGroup()' is called, but apparently not.   ~ only_a_ptr, 10/2018
-        // --------
-        RoR::LogFormat("[RoR| -- content DB -- ] resourceGroupPrepareStarted: %s", groupName.c_str());
-        if (groupName == "VehicleFolders")
-        {
-            RoR::Log("[RoR| -- content DB -- ] Loading vehicles!");
-            m_loading_vehicles = true; // TO BE DISCOVERED: is it sequential like this?   ~ only_a_ptr, 10/2018
-        }
-    }
-
-    virtual void resourceGroupPrepareEnded(const Ogre::String& groupName) override
-    {
-        // --------
-        // TO BE DISCOVERED: what does this callback mean? I thought it was when 'initializeResourceGroup()' returns, but apparently not.   ~ only_a_ptr, 10/2018
-        // --------
-        RoR::LogFormat("[RoR| -- content DB -- ] resourceGroupPrepareEnded: %s", groupName.c_str());
-        if (groupName == "VehicleFolders")
-        {
-            RoR::Log("[RoR| -- content DB -- ] Done loading vehicles!");
-            m_loading_vehicles = false; // TO BE DISCOVERED: is it sequential like this?  ~ only_a_ptr, 10/2018
-        }
-    }
+    TestRGListener() {}
 
     virtual void scriptParseStarted(const Ogre::String& scriptName, bool& skipThisScript) override
     {
@@ -144,9 +108,6 @@ public:
 
     virtual void scriptParseEnded(const Ogre::String& scriptName, bool skipped) override {}
 
-private:
-
-    bool m_loading_vehicles; // TO BE DISCOVERED: is it sequential? ~ only_a_ptr, 10/2018
 };
 
 class ContentManager : public Ogre::ResourceLoadingListener, public ZeroedMemoryAllocator
