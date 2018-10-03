@@ -49,9 +49,6 @@ namespace RoR {
             m_filename_patterns.push_back("*.trailer");
             m_filename_patterns.push_back("*.load");
             m_filename_patterns.push_back("*.train");
-
-
-            Ogre::ResourceGroupManager::getSingleton()._registerScriptLoader(this); 
         }
 
         virtual ~TruckfileScriptLoader()
@@ -77,17 +74,21 @@ namespace RoR {
          Ogre::StringVector m_filename_patterns;
     };
 
-class TestRGListener: public Ogre::ResourceGroupListener
+class UserContentRGListener: public Ogre::ResourceGroupListener
 {
 public:
     // experimental prototype, DO NOT MERGE!  ~ only_a_ptr, 10/2018
-    TestRGListener() {}
+    UserContentRGListener() {}
 
     virtual void scriptParseStarted(const Ogre::String& scriptName, bool& skipThisScript) override
     {
         // NOTE: yes, this works the way you'd expect, when 'initializeResourceGroup()' is running.
         RoR::LogFormat("[RoR| -- content DB -- ] ScriptParseStarted: %s", scriptName.c_str());
-        skipThisScript = false; // TODO: Skip OGRE materials+programs, but not RoR content
+
+
+        skipThisScript = 
+            Ogre::StringUtil::match(scriptName, "*.material", false) ||
+            Ogre::StringUtil::match(scriptName, "*.program", false);
     }
 
     virtual void resourceGroupScriptingStarted(const Ogre::String& groupName, size_t scriptCount) override {}
@@ -167,7 +168,7 @@ public:
 protected:
 
     void exploreFolders(Ogre::String rg);
-    void exploreZipFolders(Ogre::String rg);
+    void RecurseArchives(Ogre::String const & rg, Ogre::String const & pattern);
 
     // implementation for resource loading listener
     Ogre::DataStreamPtr resourceLoading(const Ogre::String& name, const Ogre::String& group, Ogre::Resource* resource);

@@ -257,19 +257,40 @@ bool ContentManager::OnApplicationStartup(void)
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "packs"   , "FileSystem", "Packs", true);
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "mods"    , "FileSystem", "Packs", true);
 
-    // stuff to try here instead of "CacheSystem.h|cpp"
-    //:yum: https://www.ogre3d.org/docs/api/1.9/class_ogre_1_1_resource_group_listener.html#aec5baaa909c2c43aeeb50f73c66a4433
-    //:cake:  https://www.ogre3d.org/docs/api/1.9/class_ogre_1_1_resource_group_listener.html
 
-    std::unique_ptr<TestRGListener> modcache_rg_listener = std::unique_ptr<TestRGListener>(new TestRGListener()); 
-    std::unique_ptr<TruckfileScriptLoader> truckfile_loader =  std::unique_ptr<TruckfileScriptLoader>(new TruckfileScriptLoader());  // registers itself
-    ResourceGroupManager::getSingleton().addResourceGroupListener(modcache_rg_listener.get());
-    ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "vehicles", "FileSystem", "VehicleFolders");
+
+    // ================================ loading user content ================================
+    UserContentRGListener usercontent_rg_listener;
+    ResourceGroupManager::getSingleton().addResourceGroupListener(&usercontent_rg_listener); // disable parsing scripts we don't need like OGRE materials
+
+
+
+    // ------------------------------- loading 'Vehicles' directory -----------------------------------
+    const Ogre::String USER_CONTENT_RG_VEHICLES = "VehicleFolders";
+
+
+
+    // 1. Create the resource group
+    ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "vehicles", "FileSystem", USER_CONTENT_RG_VEHICLES, true); // recursive=true
+    // 2. Manually recurse contained ZIP archives
+    this->RecurseArchives(USER_CONTENT_RG_VEHICLES, "*.zip");
+    // 3. Register custom content processor
+    TruckfileScriptLoader truckfile_sl;
+    Ogre::ResourceGroupManager::getSingleton()._registerScriptLoader(&truckfile_sl); 
+    // 4. scan the resources
+    ResourceGroupManager::getSingleton().initialiseResourceGroup(USER_CONTENT_RG_VEHICLES);
+    // 5/ clean up
+    Ogre::ResourceGroupManager::getSingleton()._unregisterScriptLoader(&truckfile_sl); 
+    
+    // ------------------------------- finished 'Vehicles' directory -----------------------------------
+
+    ResourceGroupManager::getSingleton().removeResourceGroupListener(&usercontent_rg_listener);
+
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "terrains", "FileSystem", "TerrainFolders");
 
-    exploreFolders("VehicleFolders"); //  calls 'initialiseResourceGroup()'
-    exploreFolders("TerrainFolders"); //  calls 'initialiseResourceGroup()'
-    exploreZipFolders("Packs"); // this is required for skins to work
+  //  exploreFolders("VehicleFolders"); //  calls 'initialiseResourceGroup()'
+  //  exploreFolders("TerrainFolders"); //  calls 'initialiseResourceGroup()'
+  //TEMPORARILY  exploreZipFolders("Packs"); // this is required for skins to work
 
     LOG("RoR|ContentManager: Calling initialiseAllResourceGroups() - Content");
     try
@@ -285,8 +306,8 @@ bool ContentManager::OnApplicationStartup(void)
     }
 
     LanguageEngine::getSingleton().postSetup();
-     ResourceGroupManager::getSingleton().removeResourceGroupListener(modcache_rg_listener.get());
-     truckfile_loader.reset(); // unregisters self
+
+     
 
     return true;
 }
@@ -319,20 +340,17 @@ bool ContentManager::resourceCollision(Ogre::Resource* resource, Ogre::ResourceM
     return false;
 }
 
-void ContentManager::exploreZipFolders(Ogre::String rg)
+void ContentManager::RecurseArchives(Ogre::String const & rg, Ogre::String const & pattern)
 {
-    ResourceGroupManager& rgm = ResourceGroupManager::getSingleton();
-
-    FileInfoListPtr files = rgm.findResourceFileInfo(rg, "*.skinzip"); //search for skins
-    FileInfoList::iterator iterFiles = files->begin();
-    for (; iterFiles != files->end(); ++iterFiles)
+    FileInfoListPtr files = Ogre::ResourceGroupManager::getSingleton().findResourceFileInfo(rg, pattern);
+    for (auto file: *files)
     {
-        if (!iterFiles->archive)
-            continue;
-        String fullpath = iterFiles->archive->getName() + PATH_SLASH;
-        rgm.addResourceLocation(fullpath + iterFiles->filename, "Zip", rg);
+        if (file.archive != nullptr)
+        {
+            Ogre::String fullpath = file.archive->getName() + PATH_SLASH + file.filename;
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(fullpath, "Zip", rg);
+        }
     }
-    // DO NOT initialize ...
 }
 
 void ContentManager::exploreFolders(Ogre::String rg) // TODO: is it just me or does this basically hand-implement recursive parsing, which is already available as a flag in OGRE 1.9+ ?? ~ only_a_ptr, 10/2018
