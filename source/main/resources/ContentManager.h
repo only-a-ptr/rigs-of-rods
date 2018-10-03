@@ -51,11 +51,6 @@ namespace RoR {
             m_filename_patterns.push_back("*.train");
         }
 
-        virtual ~TruckfileScriptLoader()
-        {
-            Ogre::ResourceGroupManager::getSingleton()._unregisterScriptLoader(this);
-        }
-
     // ===== Ogre::ScriptLoader interface =====
 
         const Ogre::StringVector& getScriptPatterns(void) const override
