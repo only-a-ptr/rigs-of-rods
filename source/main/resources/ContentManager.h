@@ -32,6 +32,61 @@
 
 namespace RoR {
 
+    // Inspired by *.skin handler in "gameplay/SkinManager.h|cpp" 
+    // TODO: maybe Ogre:::ScriptLoader would be enough? See "SoundScriptManager.h"
+    //   ~ only_a_ptr, 10/2018
+    class TruckfileResourceManager: public Ogre::ResourceManager
+    {
+    public:
+        TruckfileResourceManager()
+        {
+            // This makes the magic come true
+            mScriptPatterns.push_back("*.machine");
+            mScriptPatterns.push_back("*.fixed");
+            mScriptPatterns.push_back("*.truck");
+            mScriptPatterns.push_back("*.car");
+            mScriptPatterns.push_back("*.boat");
+            mScriptPatterns.push_back("*.airplane");
+            mScriptPatterns.push_back("*.trailer");
+            mScriptPatterns.push_back("*.load");
+            mScriptPatterns.push_back("*.train");
+
+            mResourceType = "RoR Softbody actors";
+            Ogre::ResourceGroupManager::getSingleton()._registerScriptLoader(this); // TODO: maybe Ogre:::ScriptLoader would be enough? See "SoundScriptManager.h"   ~ only_a_ptr, 10/2018
+            Ogre::ResourceGroupManager::getSingleton()._registerResourceManager(mResourceType, this);
+        }
+
+        virtual ~TruckfileResourceManager()
+        {
+            Ogre::ResourceGroupManager::getSingleton()._unregisterResourceManager(mResourceType);
+            Ogre::ResourceGroupManager::getSingleton()._unregisterScriptLoader(this);
+        }
+
+        // == Ogre::ResourceManager interface functions ==
+
+        Ogre::Resource* createImpl(const Ogre::String& name, Ogre::ResourceHandle handle,
+            const Ogre::String& group, bool isManual, Ogre::ManualResourceLoader* loader,
+            const Ogre::NameValuePairList* params) override
+        {
+            return nullptr; // Not used
+        }
+        void parseScript(Ogre::DataStreamPtr& stream, const Ogre::String& groupName) override
+        {
+            RoR::LogFormat("[RoR| -- content DB -- ] Ogre::ResourceManager::parseScript() >> filename '%s', group name '%s'", stream->getName().c_str(), groupName.c_str());
+        }
+        void reloadUnreferencedResources(bool reloadableOnly = true) override {}
+        void unloadUnreferencedResources(bool reloadableOnly = true) override {}
+        void unload     (const Ogre::String& name) override {}
+        void unload     (Ogre::ResourceHandle handle) override {}
+        void unloadAll  (bool reloadableOnly = true) override {}
+    
+        void remove     (Ogre::ResourcePtr& r) override {}
+        void remove     (const Ogre::String& name) override{}
+        void remove     (Ogre::ResourceHandle handle) override{}
+        void removeAll  () override{}
+        void reloadAll  (bool reloadableOnly = true) override{}  
+    };
+
 class TestRGListener: public Ogre::ResourceGroupListener
 {
 public:
@@ -68,7 +123,7 @@ public:
     {
         // NOTE: yes, this works the way you'd expect, when 'initializeResourceGroup()' is running.
         RoR::LogFormat("[RoR| -- content DB -- ] ScriptParseStarted: %s", scriptName.c_str());
-        skipThisScript = true; // skip all!
+        skipThisScript = false; // TODO: Skip OGRE materials+programs, but not RoR content
     }
 
     virtual void resourceGroupScriptingStarted(const Ogre::String& groupName, size_t scriptCount) override {}
