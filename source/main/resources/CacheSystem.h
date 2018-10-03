@@ -211,7 +211,7 @@ protected:
 
     /// Checks if update is needed
     CacheValidityState IsCacheValid();
-    Ogre::String filenamesSHA1();             // generates the hash over the whole content
+    Ogre::String filenamesSHA1();             // generates the hash over the whole content. Purpose = update check (see if any known filetypes were added or removed).
     bool loadCache();                         // loads cache config file, new format; TODO: JSON preferable
     Ogre::String getCacheConfigFilename(bool full); // returns filename of the cache file; TODO: remove! only needed because of bad cachefile handling, see `CacheSystem::writeGeneratedCache()`
     int incrementalCacheUpdate();             // tries to update parts of the Cache only

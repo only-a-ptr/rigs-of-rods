@@ -257,11 +257,17 @@ bool ContentManager::OnApplicationStartup(void)
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "packs"   , "FileSystem", "Packs", true);
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "mods"    , "FileSystem", "Packs", true);
 
+    // stuff to try here instead of "CacheSystem.h|cpp"
+    //:yum: https://www.ogre3d.org/docs/api/1.9/class_ogre_1_1_resource_group_listener.html#aec5baaa909c2c43aeeb50f73c66a4433
+    //:cake:  https://www.ogre3d.org/docs/api/1.9/class_ogre_1_1_resource_group_listener.html
+
+    std::unique_ptr<TestRGListener> modcache_rg_listener = std::unique_ptr<TestRGListener>(new TestRGListener()); 
+    ResourceGroupManager::getSingleton().addResourceGroupListener(modcache_rg_listener.get());
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "vehicles", "FileSystem", "VehicleFolders");
     ResourceGroupManager::getSingleton().addResourceLocation(user_content_base + "terrains", "FileSystem", "TerrainFolders");
 
-    exploreFolders("VehicleFolders");
-    exploreFolders("TerrainFolders");
+    exploreFolders("VehicleFolders"); //  calls 'initialiseResourceGroup()'
+    exploreFolders("TerrainFolders"); //  calls 'initialiseResourceGroup()'
     exploreZipFolders("Packs"); // this is required for skins to work
 
     LOG("RoR|ContentManager: Calling initialiseAllResourceGroups() - Content");
@@ -278,6 +284,7 @@ bool ContentManager::OnApplicationStartup(void)
     }
 
     LanguageEngine::getSingleton().postSetup();
+     ResourceGroupManager::getSingleton().removeResourceGroupListener(modcache_rg_listener.get());
 
     return true;
 }

@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "Application.h" // Logging
 #include "BitFlags.h"
 #include "RoRPrerequisites.h"
 #include "Singleton.h"
@@ -30,6 +31,68 @@
 #include <OgreResourceGroupManager.h>
 
 namespace RoR {
+
+class TestRGListener: public Ogre::ResourceGroupListener
+{
+public:
+    // experimental prototype, DO NOT MERGE!  ~ only_a_ptr, 10/2018
+    TestRGListener(): m_loading_vehicles(false) {}
+
+    virtual void resourceGroupPrepareStarted(const Ogre::String& groupName, size_t resourceCount) override
+    {
+        // --------
+        // TO BE DISCOVERED: what does this callback mean? I thought it was when 'initializeResourceGroup()' is called, but apparently not.   ~ only_a_ptr, 10/2018
+        // --------
+        RoR::LogFormat("[RoR| -- content DB -- ] resourceGroupPrepareStarted: %s", groupName.c_str());
+        if (groupName == "VehicleFolders")
+        {
+            RoR::Log("[RoR| -- content DB -- ] Loading vehicles!");
+            m_loading_vehicles = true; // TO BE DISCOVERED: is it sequential like this?   ~ only_a_ptr, 10/2018
+        }
+    }
+
+    virtual void resourceGroupPrepareEnded(const Ogre::String& groupName) override
+    {
+        // --------
+        // TO BE DISCOVERED: what does this callback mean? I thought it was when 'initializeResourceGroup()' returns, but apparently not.   ~ only_a_ptr, 10/2018
+        // --------
+        RoR::LogFormat("[RoR| -- content DB -- ] resourceGroupPrepareEnded: %s", groupName.c_str());
+        if (groupName == "VehicleFolders")
+        {
+            RoR::Log("[RoR| -- content DB -- ] Done loading vehicles!");
+            m_loading_vehicles = false; // TO BE DISCOVERED: is it sequential like this?  ~ only_a_ptr, 10/2018
+        }
+    }
+
+    virtual void scriptParseStarted(const Ogre::String& scriptName, bool& skipThisScript) override
+    {
+        // NOTE: yes, this works the way you'd expect, when 'initializeResourceGroup()' is running.
+        RoR::LogFormat("[RoR| -- content DB -- ] ScriptParseStarted: %s", scriptName.c_str());
+        skipThisScript = true; // skip all!
+    }
+
+    virtual void resourceGroupScriptingStarted(const Ogre::String& groupName, size_t scriptCount) override {}
+
+    virtual void resourceGroupScriptingEnded(const Ogre::String& groupName) override {}
+
+	virtual void resourceGroupLoadStarted(const Ogre::String& groupName, size_t resourceCount) override {}
+
+	virtual void resourceLoadStarted(const Ogre::ResourcePtr& resource) override {}
+
+    virtual void resourceLoadEnded(void) override {}
+
+    virtual void worldGeometryStageStarted(const Ogre::String& description) override {}
+
+    virtual void worldGeometryStageEnded(void) override {}
+        
+	virtual void resourceGroupLoadEnded(const Ogre::String& groupName) override {}
+
+    virtual void scriptParseEnded(const Ogre::String& scriptName, bool skipped) override {}
+
+private:
+
+    bool m_loading_vehicles; // TO BE DISCOVERED: is it sequential? ~ only_a_ptr, 10/2018
+};
 
 class ContentManager : public Ogre::ResourceLoadingListener, public ZeroedMemoryAllocator
 {

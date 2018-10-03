@@ -1974,24 +1974,10 @@ void CacheSystem::checkForNewFiles(Ogre::String ext)
 
 String CacheSystem::filenamesSHA1()
 {
-    String filenames = "";
+    // HUGEBUFFER buffer of all filenames in the cache (slightly filtered, see below)  ~ only_a_ptr, 10/2018
+    String filenames = ""; 
 
-    // get all Files
-    /*
-    StringVector sv = ResourceGroupManager::getSingleton().getResourceGroups();
-    StringVector::iterator it;
-    for (it = sv.begin(); it!=sv.end(); it++)
-    {
-        StringVectorPtr files = ResourceGroupManager::getSingleton().listResourceNames(*it);
-        for (StringVector::iterator i=files->begin(); i!=files->end(); i++)
-        {
-            // only use the important files :)
-            for (std::vector<Ogre::String>::iterator sit=known_extensions.begin();sit!=known_extensions.end();sit++)
-                if (i->find("."+*sit) != String::npos && i->find(".dds") == String::npos && i->find(".png") == String::npos)
-                    filenames += "General/" + *i + "\n";
-        }
-    }
-    */
+
 
     // and we use all folders and files for the hash
     String restype[3] = {"Packs", "TerrainFolders", "VehicleFolders"};
@@ -2012,7 +1998,11 @@ String CacheSystem::filenamesSHA1()
                     bool vipfile = false;
                     for (std::vector<Ogre::String>::iterator sit = known_extensions.begin(); sit != known_extensions.end(); sit++)
                     {
-                        if ((iterFiles->filename.find("." + *sit) != String::npos && iterFiles->filename.find(".dds") == String::npos && iterFiles->filename.find(".png") == String::npos && iterFiles->filename.find(".jpg") == String::npos)
+                        if (
+                                (iterFiles->filename.find("." + *sit) != String::npos &&  // it must be in 'known extensions' ...
+                                    iterFiles->filename.find(".dds") == String::npos &&  // ... but it must NOT contain this in filename??  ~ only_a_ptr, 10/2018
+                                    iterFiles->filename.find(".png") == String::npos && 
+                                    iterFiles->filename.find(".jpg") == String::npos)
                             || (iterFiles->filename.find(".zip") != String::npos))
                         {
                             vipfile = true;
@@ -2023,7 +2013,7 @@ String CacheSystem::filenamesSHA1()
                         continue;
                 }
                 name += iterFiles->filename;
-                filenames += name + "\n";
+                filenames += name + "\n"; // add to HUGEBUFFER, see above  ~ only_a_ptr, 10/2018
             }
         }
     }
