@@ -105,6 +105,7 @@ void Console::CVarSetupBuiltins()
     App::sys_profiler_dir        = this->CVarCreate("sys_profiler_dir",        "Profiler output dir",        0);
     App::sys_savegames_dir       = this->CVarCreate("sys_savegames_dir",       "",                           0);
     App::sys_screenshot_dir      = this->CVarCreate("sys_screenshot_dir",      "",                           0);
+    App::sys_projects_dir        = this->CVarCreate("sys_projects_dir",        "",                           0);
 
     App::io_analog_smoothing     = this->CVarCreate("io_analog_smoothing",     "Analog Input Smoothing",     CVAR_ARCHIVE | CVAR_TYPE_FLOAT,   "1.0");
     App::io_analog_sensitivity   = this->CVarCreate("io_analog_sensitivity",   "Analog Input Sensitivity",   CVAR_ARCHIVE | CVAR_TYPE_FLOAT,   "1.0");

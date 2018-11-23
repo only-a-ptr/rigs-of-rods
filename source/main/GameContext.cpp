@@ -153,8 +153,7 @@ Actor* GameContext::SpawnActor(ActorSpawnRequest& rq)
         rq.asr_filename = rq.asr_cache_entry->fname;
     }
 
-    std::shared_ptr<RigDef::File> def = m_actor_manager.FetchActorDef(
-        rq.asr_filename, rq.asr_origin == ActorSpawnRequest::Origin::TERRN_DEF);
+    std::shared_ptr<RigDef::File> def = m_actor_manager.FetchActorDef(rq);
     if (def == nullptr)
     {
         return nullptr; // Error already reported
@@ -253,6 +252,8 @@ void GameContext::ModifyActor(ActorModifyRequest& rq)
         auto debug_view = rq.amr_actor->GetGfxActor()->GetDebugView();
         auto asr_config = rq.amr_actor->GetSectionConfig();
         auto used_skin  = rq.amr_actor->GetUsedSkin();
+        auto cache_entry= rq.amr_actor->GetCacheEntry();
+        auto project    = rq.amr_actor->GetProjectEntry();
 
         reload_pos.y = m_player_actor->GetMinHeight();
 
@@ -266,11 +267,21 @@ void GameContext::ModifyActor(ActorModifyRequest& rq)
         srq->asr_rotation   = reload_dir;
         srq->asr_config     = asr_config;
         srq->asr_skin_entry = used_skin;
-        srq->asr_filename   = filename;
         srq->asr_debugview  = (int)debug_view;
         srq->asr_origin     = ActorSpawnRequest::Origin::USER;
+        if (project)
+        {
+            srq->asr_project = project; // Always reloaded from filesystem
+            srq->asr_filename = filename; // Required for project
+        }
+        else
+        {
+            App::GetCacheSystem()->UnloadActorFromMemory(filename); // Force reload from filesystem
+            srq->asr_filename = filename; // Optional, used if cache entry is not available
+            srq->asr_cache_entry = cache_entry;
+        }
         this->PushMessage(Message(MSG_SIM_SPAWN_ACTOR_REQUESTED, (void*)srq));
-    }    
+    }
 }
 
 void GameContext::DeleteActor(Actor* actor)
