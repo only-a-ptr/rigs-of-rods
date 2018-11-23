@@ -36,6 +36,9 @@
 #define CACHE_FILE "mods.cache"
 #define CACHE_FILE_FORMAT 11
 
+#define PROJECT_FILE "project.json"
+#define PROJECT_FILE_FORMAT "1"
+
 namespace RoR {
 
 struct AuthorInfo
@@ -122,6 +125,24 @@ public:
     std::vector<Ogre::String> sectionconfigs;
 };
 
+struct ProjectSnapshot
+{
+    std::string prs_name;
+    std::string prs_filename;
+};
+
+struct ProjectEntry
+{
+    ProjectEntry(): prj_valid(false), prj_format_version(1) {}
+
+    std::string   prj_name;
+    std::string   prj_dirname;
+    std::string   prj_rg_name; //!< OGRE resource group
+    size_t        prj_format_version;
+    std::vector<ProjectSnapshot> prj_snapshots;
+    bool          prj_valid;
+};
+
 enum CacheCategoryId
 {
     CID_Max           = 9000,
@@ -162,7 +183,7 @@ enum class CacheSearchMethod // Always case-insensitive
 
 struct CacheQuery
 {
-    RoR::LoaderType                cqy_filter_type = RoR::LoaderType::LT_None;
+    LoaderType                     cqy_filter_type = LoaderType::LT_None;
     int                            cqy_filter_category_id = CacheCategoryId::CID_All;
     std::string                    cqy_filter_guid; //!< Exact match; leave empty to disable
     CacheSearchMethod              cqy_search_method = CacheSearchMethod::NONE;
@@ -187,6 +208,8 @@ public:
 
     static const size_t        NUM_CATEGORIES = 31;
     static const CacheCategory CATEGORIES[NUM_CATEGORIES];
+    typedef std::vector<std::unique_ptr<ProjectEntry>> ProjectEntryVec;
+
 
     CacheSystem();
 
@@ -216,6 +239,10 @@ public:
 
     CacheEntry *GetEntry(int modid);
     Ogre::String GetPrettyName(Ogre::String fname);
+
+    void AddProjectEntry(std::unique_ptr<ProjectEntry> proj_entry) { m_projects.push_back(std::move(proj_entry)); }
+    ProjectEntryVec& GetProjectEntries() { return m_projects; }
+    void PruneInvalidProjects();
 
 private:
 
@@ -251,6 +278,7 @@ private:
     std::time_t                          m_update_time;      //!< Ensures that all inserted files share the same timestamp
     std::string                          m_filenames_hash;   //!< stores hash over the content, for quick update detection
     std::vector<CacheEntry>              m_entries;
+    ProjectEntryVec                      m_projects;         //!< All folders in ROR_HOME/projects
     std::vector<Ogre::String>            m_known_extensions; //!< the extensions we track in the cache system
     std::set<Ogre::String>               m_resource_paths;   //!< A temporary list of existing resource paths
     std::map<int, const CacheCategory*>  m_category_lookup;
