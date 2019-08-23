@@ -776,6 +776,21 @@ void ActorManager::UpdateSleepingState(Actor* player_actor, float dt)
         player_actor->ar_sim_state = Actor::SimState::LOCAL_SIMULATED;
     }
 
+    // RESEARCH: is the `visited` array + RecursiveActivation() working correctly?
+    // Let's assume we have:
+    // a player actor A touching active actor B and sleeping C. C and B are not touching. C also touches sleeping D.
+    // There's also X Y Z - group of sleeping trucks standing alone, not touching.
+    // ---- player actor phase ----
+    // RecursiveActivation() is invoked for A. A is marked 'visited'. test {AB, AC, AD, AX, AY, AZ}, 
+    // > found touch AB. RecursiveActivation() is run: B is marked 'visited'. test {BC, BD, BX, BY, BZ}
+    // > found touch AC. RecursiveActivation() is run: C is marked 'visited'. test {CD, CX, CY, CZ}
+    // > > found touch CD. RecursiveActivation() is run: D is marked visited. Test {DX, DY, DZ}
+    // ----- snowball -----
+    // RecursiveActivation is run for {A B C D X Y Z}: A-D are ignored as `visited`. test {XY XZ YZ}
+    // > no touch found, all marked `visited`.
+
+    // CONCLUSION: it's working correctly and efficiently.
+
     std::vector<bool> visited(m_actors.size());
     // Recursivly activate all actors which can be reached from current actor
     if (player_actor && player_actor->ar_sim_state == Actor::SimState::LOCAL_SIMULATED)
