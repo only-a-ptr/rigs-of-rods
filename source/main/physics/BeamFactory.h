@@ -39,6 +39,61 @@ class ThreadPool;
 
 namespace RoR {
 
+/// Fast and dense adjacency matrix (see https://www.geeksforgeeks.org/graph-and-its-representations/)
+/// ===============================
+/// How to read the picture below:
+///  * 'X' are elements touching themselves - ignored
+///  * 'x' are mirror values (contact of A+B is equivalent to B+A)
+///  * Numbers are positions in storage array.
+/// -----------
+/// @ A B C D E
+/// A X 0 1 2 3
+/// B x X 4 5 6
+/// C x x X 7 8
+/// D x x x X 9
+/// E x x x x X
+class TouchMatrix
+{
+public:
+    enum class Value
+    {
+        TOUCH_UNKNOWN = 0,
+        TOUCH_TRUE = 1,
+        TOUCH_FALSE = -1
+    };
+
+    void Reset(size_t n)
+    {
+        assert (n > 1);
+        m_values.resize((n * (n - 1))/2, Value::TOUCH_UNKNOWN);
+        m_lookup.resize(n);
+        uint8_t offset = 0;
+        for (size_t i = 0; i < n; ++i)
+        {
+            m_lookup[i] = offset;
+            offset += (n - 1) - i;
+        }
+    }
+    void SetTouch(int i1, int i2, bool val)
+    {
+        m_values[this->FindStoragePos(i1, i2)] = val ? Value::TOUCH_TRUE : Value::TOUCH_FALSE;
+    }
+    Value GetTouch(int i1, int i2)
+    {
+        return m_values.at(this->FindStoragePos(i1, i2));
+    }
+
+private:
+    size_t FindStoragePos(int i1, int i2)
+    {
+        const int lo = std::min(i1, i2);
+        const int hi = std::max(i1, i2);
+        return m_lookup.at(lo) + ((hi - 1) - lo);
+    }
+    std::vector<Value>   m_values;
+    std::vector<uint8_t> m_lookup;
+};
+
 /// Builds and manages softbody actors. Manage physics and threading.
 /// TODO: Currently also manages gfx, which should be done by GfxActor
 /// HISTORICAL NOTE: Until 01/2018, this class was named `BeamFactory` (because `Actor` was `Beam`)
@@ -109,7 +164,7 @@ private:
     bool           CheckActorCollAabbIntersect(int a, int b);    //!< Returns whether or not the bounding boxes of truck a and truck b intersect. Based on the truck collision bounding boxes.
     bool           PredictActorCollAabbIntersect(int a, int b);  //!< Returns whether or not the bounding boxes of truck a and truck b might intersect during the next framestep. Based on the truck collision bounding boxes.
     void           RemoveStreamSource(int sourceid);
-    void           RecursiveActivation(int j, std::vector<bool>& visited);
+    void           RecursiveActivation(int j);
     void           ForwardCommands(Actor* source_actor); //< Fowards things to trailers
 
     std::map<int, std::set<int>> m_stream_mismatches; //!< Networking: A set of streams without a corresponding actor in the actor-array for each stream source
@@ -123,6 +178,7 @@ private:
     float           m_dt_remainder;     ///< Keeps track of the rounding error in the time step calculation
     float           m_simulation_speed; ///< slow motion < 1.0 < fast motion
     bool            m_savegame_terrain_has_changed;
+    TouchMatrix     m_aabb_contact;
 };
 
 } // namespace RoR

@@ -661,27 +661,42 @@ bool ActorManager::PredictActorCollAabbIntersect(int a, int b)
     return false;
 }
 
-void ActorManager::RecursiveActivation(int j, std::vector<bool>& visited)
+void ActorManager::RecursiveActivation(int j)
 {
-    if (visited[j] || m_actors[j]->ar_sim_state != Actor::SimState::LOCAL_SIMULATED)
+    if (m_actors[j]->ar_sim_state != Actor::SimState::LOCAL_SIMULATED)
         return;
-
-    visited[j] = true;
 
     for (unsigned int t = 0; t < m_actors.size(); t++)
     {
-        if (t == j || visited[t])
+        if (t == j)
             continue;
-        if (m_actors[t]->ar_sim_state == Actor::SimState::LOCAL_SIMULATED && CheckActorCollAabbIntersect(t, j))
+
+        bool touch = false;
+        if (m_actors[t]->ar_sim_state == Actor::SimState::LOCAL_SIMULATED)
         {
-            m_actors[t]->ar_sleep_counter = 0.0f;
-            this->RecursiveActivation(t, visited);
+            if (m_aabb_contact.GetTouch(t, j) == TouchMatrix::Value::TOUCH_UNKNOWN)
+            {
+                bool touch = this->CheckActorCollAabbIntersect(t, j);
+                m_aabb_contact.SetTouch(t, j, touch);
+                if (touch)
+                {
+                    m_actors[t]->ar_sleep_counter = 0.0f;
+                    this->RecursiveActivation(t);
+                }
+            }
         }
-        if (m_actors[t]->ar_sim_state == Actor::SimState::LOCAL_SLEEPING && PredictActorCollAabbIntersect(t, j))
+        if (m_actors[t]->ar_sim_state == Actor::SimState::LOCAL_SLEEPING)
         {
-            m_actors[t]->ar_sleep_counter = 0.0f;
-            m_actors[t]->ar_sim_state = Actor::SimState::LOCAL_SIMULATED;
-            this->RecursiveActivation(t, visited);
+            if (m_aabb_contact.GetTouch(t, j) == TouchMatrix::Value::TOUCH_UNKNOWN)
+            {
+                bool touch = this->PredictActorCollAabbIntersect(t, j);
+                m_aabb_contact.SetTouch(t, j, touch);
+                if (touch)
+                {
+                    m_actors[t]->ar_sleep_counter = 0.0f;
+                    this->RecursiveActivation(t);
+                }
+            }
         }
     }
 }
@@ -776,6 +791,8 @@ void ActorManager::UpdateSleepingState(Actor* player_actor, float dt)
         player_actor->ar_sim_state = Actor::SimState::LOCAL_SIMULATED;
     }
 
+    m_aabb_contact.Reset(m_actors.size());
+    
     // RESEARCH: is the `visited` array + RecursiveActivation() working correctly?
     // Let's assume we have:
     // a player actor A touching active actor B and sleeping C. C and B are not touching. C also touches sleeping D.
@@ -791,18 +808,17 @@ void ActorManager::UpdateSleepingState(Actor* player_actor, float dt)
 
     // CONCLUSION: it's working correctly and efficiently.
 
-    std::vector<bool> visited(m_actors.size());
     // Recursivly activate all actors which can be reached from current actor
     if (player_actor && player_actor->ar_sim_state == Actor::SimState::LOCAL_SIMULATED)
     {
         player_actor->ar_sleep_counter = 0.0f;
-        this->RecursiveActivation(player_actor->ar_vector_index, visited);
+        this->RecursiveActivation(player_actor->ar_vector_index);
     }
     // Snowball effect (activate all actors which might soon get hit by a moving actor)
     for (unsigned int t = 0; t < m_actors.size(); t++)
     {
         if (m_actors[t]->ar_sim_state == Actor::SimState::LOCAL_SIMULATED && m_actors[t]->ar_sleep_counter == 0.0f)
-            this->RecursiveActivation(t, visited);
+            this->RecursiveActivation(t);
     }
 }
 
