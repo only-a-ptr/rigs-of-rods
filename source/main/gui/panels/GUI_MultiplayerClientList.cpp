@@ -68,7 +68,7 @@ void MpClientList::Draw()
 
         // Stream state indicators
         if (user.uniqueid != RoR::Networking::GetLocalUserData().uniqueid &&
-            App::app_state.GetActive() != AppState::MAIN_MENU)
+            App::app_state->GetActiveEnum<AppState>() != AppState::MAIN_MENU)
         {
             switch (App::GetSimController()->GetBeamFactory()->CheckNetworkStreamsOk(user.uniqueid))
             {
@@ -152,7 +152,7 @@ void MpClientList::Draw()
 
             // Stream state
             if (user.uniqueid != RoR::Networking::GetLocalUserData().uniqueid &&
-                App::app_state.GetActive() != AppState::MAIN_MENU)
+                App::app_state->GetActiveEnum<AppState>() != AppState::MAIN_MENU)
             {
                 ImGui::Separator();
                 ImGui::TextDisabled("%s", _L("truck loading state"));
