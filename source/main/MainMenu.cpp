@@ -110,7 +110,7 @@ void MainMenu::MainMenuLoopUpdate(float seconds_since_last_frame)
     }
 
 #ifdef USE_SOCKETW
-    if (App::mp_state->GetActiveEnum<MpState>() == MpState::CONNECTED &&
+    if (App::mp_state->GetPendingEnum<MpState>() == MpState::CONNECTED &&
         App::mp_state->GetActiveEnum<MpState>() == MpState::DISABLED)
     {
         Networking::StartConnecting();

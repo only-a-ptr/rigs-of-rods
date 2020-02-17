@@ -168,13 +168,13 @@ public:
     template <typename T>
     T GetActiveVal()
     {
-        return m_value_pending.GetValue<T>();
+        return m_value_active.GetValue<T>();
     }
 
     template <typename T>
     T GetActiveEnum()
     {
-        return (T)m_value_pending.GetValue<int>();
+        return (T)m_value_active.GetValue<int>();
     }
 
     std::string const& GetPendingStr()

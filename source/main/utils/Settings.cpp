@@ -256,6 +256,10 @@ void Settings::ParseGlobalVarSetting(CVar* cvar, std::string const & val)
     {
         App::gfx_sky_mode->SetActiveVal((int)ParseGfxSkyMode(val));
     }
+    else if (cvar->GetName() == App::sim_gearbox_mode->GetName())
+    {
+        App::sim_gearbox_mode->SetActiveVal((int)ParseSimGearboxMode(val));
+    }
     else if (cvar->GetName() == App::gfx_fov_external->GetName() ||
                 cvar->GetName() == App::gfx_fov_internal->GetName())
     {
@@ -282,8 +286,19 @@ void Settings::LoadRoRCfg()
         Ogre::ConfigFile::SettingsIterator i = cfg.getSettingsIterator();
         while (i.hasMoreElements())
         {
-            CVar* cvar = App::GetConsole()->CVarGet(
-                RoR::Utils::SanitizeUtf8String(i.peekNextKey()), CVAR_ALLOW_STORE | CVAR_AUTO_APPLY);
+            std::string cvar_name = RoR::Utils::SanitizeUtf8String(i.peekNextKey());
+            CVar* cvar = App::GetConsole()->CVarFind(cvar_name);
+            if (cvar && !cvar->HasFlags(CVAR_ALLOW_STORE))
+            {
+                RoR::LogFormat("[RoR|Settings] CVar '%s' cannot be set from %s (defined without 'allow store' flag)", cvar->GetName(), CONFIG_FILE_NAME);
+                i.moveNext();
+                continue;
+            }
+
+            if (!cvar)
+            {
+                cvar = App::GetConsole()->CVarGet(cvar_name, CVAR_ALLOW_STORE | CVAR_AUTO_APPLY);
+            }
 
             this->ParseGlobalVarSetting(cvar, RoR::Utils::SanitizeUtf8String(i.peekNextValue()));
 
@@ -332,13 +347,13 @@ void Settings::SaveSettings()
     f << "; Rigs of Rods configuration file" << std::endl;
     f << "; -------------------------------" << std::endl;
     
+    WriteVarsHelper(f, "Application",   "app_");
     WriteVarsHelper(f, "Multiplayer",   "mp_");
     WriteVarsHelper(f, "Simulation",    "sim_");
     WriteVarsHelper(f, "Input/Output",  "io_");
     WriteVarsHelper(f, "Graphics",      "gfx_");
     WriteVarsHelper(f, "Audio",         "audio_");
     WriteVarsHelper(f, "Diagnostics",   "diag_");
-    WriteVarsHelper(f, "Application",   "app_");
 
     try
     {

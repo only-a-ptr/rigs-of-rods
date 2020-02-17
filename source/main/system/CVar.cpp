@@ -26,7 +26,7 @@ using namespace RoR;
 
 void Console::CVarSetupBuiltins()
 {
-    App::app_state               = this->CVarCreate("app_state",               "",                                                                CVAR_TYPE_INT);
+    App::app_state               = this->CVarCreate("app_state",               "",                                                                CVAR_TYPE_INT,     "0"/*(int)AppState::BOOTSTRAP*/);
     App::app_language            = this->CVarCreate("app_language",            "Language",                   CVAR_ALLOW_STORE | CVAR_AUTO_APPLY,                     "en");          
     App::app_country             = this->CVarCreate("app_country",             "Country",                    CVAR_ALLOW_STORE | CVAR_AUTO_APPLY,                     "us");
     App::app_skip_main_menu      = this->CVarCreate("app_skip_main_menu",      "SkipMainMenu",               CVAR_ALLOW_STORE | CVAR_AUTO_APPLY | CVAR_TYPE_BOOL,    "false");
@@ -55,7 +55,7 @@ void Console::CVarSetupBuiltins()
     App::sim_no_self_collisions  = this->CVarCreate("sim_no_self_collisions",  "DisableSelfCollisions",      CVAR_ALLOW_STORE | CVAR_AUTO_APPLY | CVAR_TYPE_BOOL,    "false");
     App::sim_gearbox_mode        = this->CVarCreate("sim_gearbox_mode",        "GearboxMode",                CVAR_ALLOW_STORE                   | CVAR_TYPE_INT);
 
-    App::mp_state                = this->CVarCreate("mp_state",                "",                                                                CVAR_TYPE_INT);
+    App::mp_state                = this->CVarCreate("mp_state",                "",                                                                CVAR_TYPE_INT,     "0"/*(int)MpState::DISABLED*/);
     App::mp_join_on_startup      = this->CVarCreate("mp_join_on_startup",      "Auto connect",               CVAR_ALLOW_STORE                   | CVAR_TYPE_BOOL,    "false");       
     App::mp_chat_auto_hide       = this->CVarCreate("mp_chat_auto_hide",       "Auto hide chat",             CVAR_ALLOW_STORE | CVAR_AUTO_APPLY | CVAR_TYPE_BOOL,    "true");
     App::mp_hide_net_labels      = this->CVarCreate("mp_hide_net_labels",      "Hide net labels",            CVAR_ALLOW_STORE | CVAR_AUTO_APPLY | CVAR_TYPE_BOOL,    "false");
