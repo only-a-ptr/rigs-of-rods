@@ -75,7 +75,7 @@ RoR::GfxActor::SimBuffer::SimBuffer()
 {}
 
 RoR::GfxActor::GfxActor(Actor* actor, ActorSpawner* spawner, std::string ogre_resource_group,
-                        std::vector<NodeGfx>& gfx_nodes, std::vector<prop_t>& props,
+                        std::vector<NodeGfx>& gfx_nodes, std::vector<Prop>& props,
                         int driverseat_prop_idx, RoR::Renderdash* renderdash):
     m_actor(actor),
     m_custom_resource_group(ogre_resource_group),
@@ -189,7 +189,7 @@ RoR::GfxActor::~GfxActor()
     m_gfx_airbrakes.clear();
 
     // Delete props
-    for (prop_t & prop: m_props)
+    for (Prop & prop: m_props)
     {
         for (int k = 0; k < 4; ++k)
         {
@@ -1735,7 +1735,7 @@ void RoR::GfxActor::ScaleActor(Ogre::Vector3 relpos, float ratio)
 
     // props and stuff
     // TOFIX: care about prop positions as well!
-    for (prop_t& prop: m_props)
+    for (Prop& prop: m_props)
     {
         if (prop.scene_node)
             prop.scene_node->scale(ratio, ratio, ratio);
@@ -2140,7 +2140,7 @@ void RoR::GfxActor::UpdateNetLabels(float dt)
 void RoR::GfxActor::CalculateDriverPos(Ogre::Vector3& out_pos, Ogre::Quaternion& out_rot)
 {
     assert(m_driverseat_prop_index != -1);
-    prop_t* driverseat_prop = &m_props[m_driverseat_prop_index];
+    Prop* driverseat_prop = &m_props[m_driverseat_prop_index];
 
     NodeData* nodes = this->GetSimNodeBuffer();
 
@@ -2168,7 +2168,7 @@ void RoR::GfxActor::CalculateDriverPos(Ogre::Vector3& out_pos, Ogre::Quaternion&
     out_rot = rot;
 }
 
-void RoR::GfxActor::UpdateBeaconFlare(prop_t & prop, float dt, bool is_player_actor)
+void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_actor)
 {
     // TODO: Quick and dirty port from Beam::updateFlares(), clean it up ~ only_a_ptr, 06/2018
     using namespace Ogre;
@@ -2336,7 +2336,7 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
     NodeData* nodes = this->GetSimNodeBuffer();
 
     // Update prop meshes
-    for (prop_t& prop: m_props)
+    for (Prop& prop: m_props)
     {
         if (prop.scene_node == nullptr) // Wing beacons don't have scenenodes
             continue;
@@ -2395,7 +2395,7 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
     if ((App::gfx_flares_mode->GetActiveEnum<GfxFlaresMode>() != GfxFlaresMode::NONE)
         && m_beaconlight_active)
     {
-        for (prop_t& prop: m_props)
+        for (Prop& prop: m_props)
         {
             if (prop.beacontype != 0)
             {
@@ -2407,7 +2407,7 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
 
 void RoR::GfxActor::SetPropsVisible(bool visible)
 {
-    for (prop_t& prop: m_props)
+    for (Prop& prop: m_props)
     {
         if (prop.mo)
             prop.mo->setVisible(visible);
@@ -2436,7 +2436,7 @@ void RoR::GfxActor::SetBeaconsEnabled(bool beacon_light_is_active)
 {
     const bool enableLight = (App::gfx_flares_mode->GetActiveEnum<GfxFlaresMode>() != GfxFlaresMode::NO_LIGHTSOURCES);
 
-    for (prop_t& prop: m_props)
+    for (Prop& prop: m_props)
     {
         char beacon_type = prop.beacontype;
         if (beacon_type == 'b')
@@ -2927,14 +2927,14 @@ void RoR::GfxActor::CalcPropAnimation(const int flag_state, float& cstate, int& 
 
 void RoR::GfxActor::UpdatePropAnimations(float dt, bool is_player_connected)
 {
-    for (prop_t& prop: m_props)
+    for (Prop& prop: m_props)
     {
         int animnum = 0;
         float rx = 0.0f;
         float ry = 0.0f;
         float rz = 0.0f;
 
-        for (prop_anim_t& anim: prop.pp_animations)
+        for (PropAnim& anim: prop.pp_animations)
         {
             float cstate = 0.0f;
             int div = 0.0f;
@@ -3307,7 +3307,7 @@ void RoR::GfxActor::SetCastShadows(bool value)
     }
 
     // Props
-    for (prop_t& prop: m_props)
+    for (Prop& prop: m_props)
     {
         if (prop.mo != nullptr && prop.mo->getEntity())
             prop.mo->getEntity()->setCastShadows(value);
