@@ -2353,7 +2353,7 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
         }
         else
         {
-            const bool mo_visible = (prop.cameramode == -2 || prop.cameramode == m_simbuf.simbuf_cur_cinecam);
+            const bool mo_visible = (prop.pp_camera_mode == -2 || prop.pp_camera_mode == m_simbuf.simbuf_cur_cinecam);
             prop.pp_mesh_obj->setVisible(mo_visible);
             if (!mo_visible)
             {
