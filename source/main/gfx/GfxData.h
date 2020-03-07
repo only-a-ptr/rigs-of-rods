@@ -109,8 +109,9 @@ struct Prop
     Ogre::Vector3     pp_offset_orig  = Ogre::Vector3::ZERO; //!< Used with ANIM_FLAG_OFFSET*
     Ogre::Vector3     pp_rota         = Ogre::Vector3::ZERO;
     Ogre::Quaternion  pp_rot          = Ogre::Quaternion::IDENTITY;
+    Ogre::SceneNode*  pp_scene_node   = nullptr; //!< The pivot scene node (parented to root-node).
+    MeshObject*       pp_mesh_obj     = nullptr;
 
-    Ogre::SceneNode *scene_node = nullptr; //!< The pivot scene node (parented to root-node).
     Ogre::SceneNode *wheel = nullptr; //!< Special prop: custom steering wheel for dashboard
     Ogre::Vector3 wheelpos = Ogre::Vector3::ZERO; //!< Special prop: custom steering wheel for dashboard
     int mirror = 0;             //<! Special prop: rear view mirror {0 = disabled, -1 = right, 1 = left}
@@ -133,7 +134,7 @@ struct Prop
 
     Ogre::Real wheelrotdegree = 0;
     int cameramode = -2; //!< Visibility control {-2 = always, -1 = 3rdPerson only, 0+ = cinecam index}
-    MeshObject *mo = nullptr;
+    
     MeshObject *wheelmo = nullptr;
 
     std::vector<PropAnim> pp_animations;

@@ -796,7 +796,7 @@ void ActorSpawner::BuildAerialEngine(
     {
         if ((prop.pp_node_ref == ref_node_index) && (prop.pp_aero_propeller_blade || prop.pp_aero_propeller_spin))
         {
-            prop.scene_node->scale(scale, scale, scale);
+            prop.pp_scene_node->scale(scale, scale, scale);
             prop.pp_aero_engine_idx = aeroengine_index;
         }
     }
@@ -970,7 +970,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_green_prop.wheel=nullptr;
                 left_green_prop.wheelrotdegree=0.0;
                 left_green_prop.mirror=0;
-                left_green_prop.scene_node=nullptr; //no visible prop
                 left_green_prop.beacon_light_rotation_angle[0]=0.0;
                 left_green_prop.beacon_light_rotation_rate[0]=1.0;
                 left_green_prop.beacontype='L';
@@ -1001,7 +1000,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_flash_prop.wheel=nullptr;
                 left_flash_prop.wheelrotdegree=0.0;
                 left_flash_prop.mirror=0;
-                left_flash_prop.scene_node=nullptr; //no visible prop
                 left_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
                 left_flash_prop.beacon_light_rotation_rate[0]=1.0;
                 left_flash_prop.beacontype='w';
@@ -1042,7 +1040,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_red_prop.wheel=nullptr;
                 right_red_prop.wheelrotdegree=0.0;
                 right_red_prop.mirror=0;
-                right_red_prop.scene_node=nullptr; //no visible prop
                 right_red_prop.beacon_light_rotation_angle[0]=0.0;
                 right_red_prop.beacon_light_rotation_rate[0]=1.0;
                 right_red_prop.beacontype='R';
@@ -1073,7 +1070,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_flash_prop.wheel=nullptr;
                 right_flash_prop.wheelrotdegree=0.0;
                 right_flash_prop.mirror=0;
-                right_flash_prop.scene_node=nullptr; //no visible prop
                 right_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
                 right_flash_prop.beacon_light_rotation_rate[0]=1.0;
                 right_flash_prop.beacontype='w';
@@ -1605,17 +1601,17 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
 
     /* CREATE THE PROP */
 
-    prop.scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+    prop.pp_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
     const std::string instance_name = this->ComposeName("PropEntity", prop_index);
-    prop.mo = new MeshObject(def.mesh_name, m_custom_resource_group, instance_name, prop.scene_node);
-    prop.mo->setCastShadows(true); // Orig code {{ prop.mo->setCastShadows(shadowmode != 0); }}, shadowmode has default value 1 and changes with undocumented directive 'set_shadows'
+    prop.pp_mesh_obj = new MeshObject(def.mesh_name, m_custom_resource_group, instance_name, prop.pp_scene_node);
+    prop.pp_mesh_obj->setCastShadows(true); // Orig code {{ prop.pp_mesh_obj->setCastShadows(shadowmode != 0); }}, shadowmode has default value 1 and changes with undocumented directive 'set_shadows'
     prop.beacontype = 'n'; // Orig: hardcoded in BTS_PROPS
 
     if (def.special == RigDef::Prop::SPECIAL_AERO_PROP_SPIN)
     {
         prop.pp_aero_propeller_spin = true;
-        prop.mo->setCastShadows(false);
-        prop.scene_node->setVisible(false);
+        prop.pp_mesh_obj->setCastShadows(false);
+        prop.pp_scene_node->setVisible(false);
     }
     else if(def.special == RigDef::Prop::SPECIAL_AERO_PROP_BLADE)
     {
@@ -1627,7 +1623,7 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
         if (m_driverseat_prop_index == -1)
         {
             m_driverseat_prop_index = prop_index;
-            prop.mo->setMaterialName("driversseat");
+            prop.pp_mesh_obj->setMaterialName("driversseat");
         }
         else
         {
@@ -1761,11 +1757,11 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
 
         if (m_curr_mirror_prop_type != CustomMaterial::MirrorPropType::MPROP_NONE)
         {
-            m_curr_mirror_prop_scenenode = prop.mo->GetSceneNode();
+            m_curr_mirror_prop_scenenode = prop.pp_mesh_obj->GetSceneNode();
         }
     }
 
-    this->SetupNewEntity(prop.mo->getEntity(), Ogre::ColourValue(1.f, 1.f, 0.f));
+    this->SetupNewEntity(prop.pp_mesh_obj->getEntity(), Ogre::ColourValue(1.f, 1.f, 0.f));
 
     m_curr_mirror_prop_scenenode = nullptr;
     m_curr_mirror_prop_type = CustomMaterial::MirrorPropType::MPROP_NONE;

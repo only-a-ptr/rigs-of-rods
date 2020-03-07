@@ -205,19 +205,19 @@ RoR::GfxActor::~GfxActor()
             }
         }
 
-        if (prop.scene_node)
+        if (prop.pp_scene_node)
         {
-            prop.scene_node->removeAndDestroyAllChildren();
-            gEnv->sceneManager->destroySceneNode(prop.scene_node);
+            prop.pp_scene_node->removeAndDestroyAllChildren();
+            gEnv->sceneManager->destroySceneNode(prop.pp_scene_node);
         }
         if (prop.wheel)
         {
             prop.wheel->removeAndDestroyAllChildren();
             gEnv->sceneManager->destroySceneNode(prop.wheel);
         }
-        if (prop.mo)
+        if (prop.pp_mesh_obj)
         {
-            delete prop.mo;
+            delete prop.pp_mesh_obj;
         }
         if (prop.wheelmo)
         {
@@ -1737,8 +1737,8 @@ void RoR::GfxActor::ScaleActor(Ogre::Vector3 relpos, float ratio)
     // TOFIX: care about prop positions as well!
     for (Prop& prop: m_props)
     {
-        if (prop.scene_node)
-            prop.scene_node->scale(ratio, ratio, ratio);
+        if (prop.pp_scene_node)
+            prop.pp_scene_node->scale(ratio, ratio, ratio);
 
         if (prop.wheel)
             prop.wheel->scale(ratio, ratio, ratio);
@@ -2179,7 +2179,7 @@ void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_acto
     if (prop.beacontype == 'b')
     {
         // Get data
-        Ogre::SceneNode* beacon_scene_node = prop.scene_node;
+        Ogre::SceneNode* beacon_scene_node = prop.pp_scene_node;
         Ogre::Quaternion beacon_orientation = beacon_scene_node->getOrientation();
         Ogre::Light* beacon_light = prop.beacon_light[0];
         float beacon_rotation_rate = prop.beacon_light_rotation_rate[0];
@@ -2221,16 +2221,16 @@ void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_acto
         for (int k = 0; k < 4; k++)
         {
             //update light
-            Quaternion orientation = prop.scene_node->getOrientation();
+            Quaternion orientation = prop.pp_scene_node->getOrientation();
             switch (k)
             {
-            case 0: prop.beacon_light[k]->setPosition(prop.scene_node->getPosition() + orientation * Vector3(-0.64, 0, 0.14));
+            case 0: prop.beacon_light[k]->setPosition(prop.pp_scene_node->getPosition() + orientation * Vector3(-0.64, 0, 0.14));
                 break;
-            case 1: prop.beacon_light[k]->setPosition(prop.scene_node->getPosition() + orientation * Vector3(-0.32, 0, 0.14));
+            case 1: prop.beacon_light[k]->setPosition(prop.pp_scene_node->getPosition() + orientation * Vector3(-0.32, 0, 0.14));
                 break;
-            case 2: prop.beacon_light[k]->setPosition(prop.scene_node->getPosition() + orientation * Vector3(+0.32, 0, 0.14));
+            case 2: prop.beacon_light[k]->setPosition(prop.pp_scene_node->getPosition() + orientation * Vector3(+0.32, 0, 0.14));
                 break;
-            case 3: prop.beacon_light[k]->setPosition(prop.scene_node->getPosition() + orientation * Vector3(+0.64, 0, 0.14));
+            case 3: prop.beacon_light[k]->setPosition(prop.pp_scene_node->getPosition() + orientation * Vector3(+0.64, 0, 0.14));
                 break;
             }
             prop.beacon_light_rotation_angle[k] += dt * prop.beacon_light_rotation_rate[k];//rotate baby!
@@ -2262,8 +2262,8 @@ void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_acto
     else if (prop.beacontype == 'r')
     {
         //update light
-        Quaternion orientation = prop.scene_node->getOrientation();
-        prop.beacon_light[0]->setPosition(prop.scene_node->getPosition() + orientation * Vector3(0, 0, 0.06));
+        Quaternion orientation = prop.pp_scene_node->getOrientation();
+        prop.beacon_light[0]->setPosition(prop.pp_scene_node->getPosition() + orientation * Vector3(0, 0, 0.06));
         prop.beacon_light_rotation_angle[0] += dt * prop.beacon_light_rotation_rate[0];//rotate baby!
         //billboard
         Vector3 vdir = prop.beacon_light[0]->getPosition() - gEnv->mainCamera->getPosition();
@@ -2338,7 +2338,7 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
     // Update prop meshes
     for (Prop& prop: m_props)
     {
-        if (prop.scene_node == nullptr) // Wing beacons don't have scenenodes
+        if (prop.pp_scene_node == nullptr) // Wing beacons don't have scenenodes
             continue;
 
         // Update visibility
@@ -2347,14 +2347,14 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
             const float SPINNER_THRESHOLD = 200.f; // TODO: magic! ~ only_a_ptr, 09/2018
             const bool show_spinner = m_simbuf.simbuf_aeroengines[prop.pp_aero_engine_idx].simbuf_ae_rpm > SPINNER_THRESHOLD;
             if (prop.pp_aero_propeller_blade)
-                prop.scene_node->setVisible(!show_spinner);
+                prop.pp_scene_node->setVisible(!show_spinner);
             else if (prop.pp_aero_propeller_spin)
-                prop.scene_node->setVisible(show_spinner);
+                prop.pp_scene_node->setVisible(show_spinner);
         }
         else
         {
             const bool mo_visible = (prop.cameramode == -2 || prop.cameramode == m_simbuf.simbuf_cur_cinecam);
-            prop.mo->setVisible(mo_visible);
+            prop.pp_mesh_obj->setVisible(mo_visible);
             if (!mo_visible)
             {
                 continue; // No need to update hidden meshes
@@ -2369,12 +2369,12 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
         Vector3 normal = (diffY.crossProduct(diffX)).normalisedCopy();
 
         Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.pp_offset.x * diffX + prop.pp_offset.y * diffY;
-        prop.scene_node->setPosition(mposition + normal * prop.pp_offset.z);
+        prop.pp_scene_node->setPosition(mposition + normal * prop.pp_offset.z);
 
         Vector3 refx = diffX.normalisedCopy();
         Vector3 refy = refx.crossProduct(normal);
         Quaternion orientation = Quaternion(refx, normal, refy) * prop.pp_rot;
-        prop.scene_node->setOrientation(orientation);
+        prop.pp_scene_node->setOrientation(orientation);
 
         if (prop.wheel) // special prop - steering wheel
         {
@@ -2409,8 +2409,8 @@ void RoR::GfxActor::SetPropsVisible(bool visible)
 {
     for (Prop& prop: m_props)
     {
-        if (prop.mo)
-            prop.mo->setVisible(visible);
+        if (prop.pp_mesh_obj)
+            prop.pp_mesh_obj->setVisible(visible);
         if (prop.wheel)
             prop.wheel->setVisible(visible);
         if (prop.beacon_flare_billboard_scene_node[0])
@@ -3309,8 +3309,8 @@ void RoR::GfxActor::SetCastShadows(bool value)
     // Props
     for (Prop& prop: m_props)
     {
-        if (prop.mo != nullptr && prop.mo->getEntity())
-            prop.mo->getEntity()->setCastShadows(value);
+        if (prop.pp_mesh_obj != nullptr && prop.pp_mesh_obj->getEntity())
+            prop.pp_mesh_obj->getEntity()->setCastShadows(value);
         if (prop.wheelmo != nullptr && prop.wheelmo->getEntity())
             prop.wheelmo->getEntity()->setCastShadows(value);
     }
