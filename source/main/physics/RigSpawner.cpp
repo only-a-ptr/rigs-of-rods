@@ -969,7 +969,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_green_prop.pp_offset.z=0.0;
                 left_green_prop.wheel=nullptr;
                 left_green_prop.wheelrotdegree=0.0;
-                left_green_prop.mirror=0;
                 left_green_prop.beacon_light_rotation_angle[0]=0.0;
                 left_green_prop.beacon_light_rotation_rate[0]=1.0;
                 left_green_prop.beacontype='L';
@@ -999,7 +998,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_flash_prop.pp_offset.z=0.0;
                 left_flash_prop.wheel=nullptr;
                 left_flash_prop.wheelrotdegree=0.0;
-                left_flash_prop.mirror=0;
                 left_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
                 left_flash_prop.beacon_light_rotation_rate[0]=1.0;
                 left_flash_prop.beacontype='w';
@@ -1039,7 +1037,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_red_prop.pp_offset.z=0.0;
                 right_red_prop.wheel=nullptr;
                 right_red_prop.wheelrotdegree=0.0;
-                right_red_prop.mirror=0;
                 right_red_prop.beacon_light_rotation_angle[0]=0.0;
                 right_red_prop.beacon_light_rotation_rate[0]=1.0;
                 right_red_prop.beacontype='R';
@@ -1069,7 +1066,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_flash_prop.pp_offset.z=0.0;
                 right_flash_prop.wheel=nullptr;
                 right_flash_prop.wheelrotdegree=0.0;
-                right_flash_prop.mirror=0;
                 right_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
                 right_flash_prop.beacon_light_rotation_rate[0]=1.0;
                 right_flash_prop.beacontype='w';
@@ -1559,14 +1555,12 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
     /* Rear view mirror (left) */
     if (def.special == RigDef::Prop::SPECIAL_MIRROR_LEFT)
     {
-        prop.mirror = 1;
         m_curr_mirror_prop_type = CustomMaterial::MirrorPropType::MPROP_LEFT;
     }
 
     /* Rear view mirror (right) */
     if (def.special == RigDef::Prop::SPECIAL_MIRROR_RIGHT)
     {
-        prop.mirror = -1;
         m_curr_mirror_prop_type = CustomMaterial::MirrorPropType::MPROP_RIGHT;
     }
 

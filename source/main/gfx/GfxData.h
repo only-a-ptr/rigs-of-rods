@@ -114,7 +114,6 @@ struct Prop
 
     Ogre::SceneNode *wheel = nullptr; //!< Special prop: custom steering wheel for dashboard
     Ogre::Vector3 wheelpos = Ogre::Vector3::ZERO; //!< Special prop: custom steering wheel for dashboard
-    int mirror = 0;             //<! Special prop: rear view mirror {0 = disabled, -1 = right, 1 = left}
     char beacontype = 0;        //<! Special prop: beacon {0 = none, 'b' = user-specified, 'r' = red, 'p' = police lightbar, 'L'/'R'/'w' - aircraft wings}
 
     // formerly named "bbs"
