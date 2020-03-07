@@ -176,7 +176,7 @@ struct NodeGfx
 {
     NodeGfx(uint16_t node_idx):
         nx_node_idx(node_idx),
-        nx_no_particles(false),
+        nx_no_particles(false), // Bitfields can't be initialized in-class :(
         nx_may_get_wet(false),
         nx_is_hot(false),
         nx_no_sparks(true),
@@ -199,23 +199,21 @@ struct NodeGfx
 struct Rod
 {
     // We don't keep pointer to the Ogre::Entity - we rely on the SceneNode keeping it attached all the time.
-    Ogre::SceneNode* rod_scenenode;
-    uint16_t         rod_beam_index;
-    uint16_t         rod_diameter_mm; //!< Diameter in millimeters
+    Ogre::SceneNode* rod_scenenode       = nullptr;
+    uint16_t         rod_beam_index      = 0;
+    uint16_t         rod_diameter_mm     = 0;                    //!< Diameter in millimeters
 
-    uint16_t         rod_node1;         //!< Node index - may change during simulation!
-    uint16_t         rod_node2;         //!< Node index - may change during simulation!
-    Actor*           rod_target_actor;
-    bool             rod_is_visible;
+    uint16_t         rod_node1           = node_t::INVALID_IDX;  //!< Node index - may change during simulation!
+    uint16_t         rod_node2           = node_t::INVALID_IDX;  //!< Node index - may change during simulation!
+    Actor*           rod_target_actor    = nullptr;
+    bool             rod_is_visible      = false;
 };
 
 struct WheelGfx
 {
-    WheelGfx(): wx_flex_mesh(nullptr), wx_scenenode(nullptr), wx_is_meshwheel(false) {}
-
-    Flexable*        wx_flex_mesh;
-    Ogre::SceneNode* wx_scenenode;
-    bool             wx_is_meshwheel;
+    Flexable*        wx_flex_mesh        = nullptr;
+    Ogre::SceneNode* wx_scenenode        = nullptr;
+    bool             wx_is_meshwheel     = false;
 };
 
 struct AirbrakeGfx
