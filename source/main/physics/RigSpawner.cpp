@@ -1549,9 +1549,9 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
     prop.pp_node_ref         = GetNodeIndexOrThrow(def.reference_node);
     prop.pp_node_x           = FindNodeIndex(def.x_axis_node);
     prop.pp_node_y           = FindNodeIndex(def.y_axis_node);
-    if (prop.pp_node_x == -1 || prop.pp_node_y == -1)
+    if (prop.pp_node_x == node_t::INVALID_IDX || prop.pp_node_y == node_t::INVALID_IDX)
     {
-        return;
+        return; // Error alredy logged by `FindNodeIndex()`
     }
     prop.pp_offset       = def.offset;
     prop.pp_offset_orig  = def.offset;
