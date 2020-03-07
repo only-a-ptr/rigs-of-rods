@@ -967,7 +967,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_green_prop.pp_offset.x=0.5;
                 left_green_prop.pp_offset.y=0.0;
                 left_green_prop.pp_offset.z=0.0;
-                left_green_prop.rot=Ogre::Quaternion::IDENTITY;
                 left_green_prop.wheel=nullptr;
                 left_green_prop.wheelrotdegree=0.0;
                 left_green_prop.mirror=0;
@@ -999,7 +998,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_flash_prop.pp_offset.x=0.5;
                 left_flash_prop.pp_offset.y=0.0;
                 left_flash_prop.pp_offset.z=0.0;
-                left_flash_prop.rot=Ogre::Quaternion::IDENTITY;
                 left_flash_prop.wheel=nullptr;
                 left_flash_prop.wheelrotdegree=0.0;
                 left_flash_prop.mirror=0;
@@ -1041,7 +1039,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_red_prop.pp_offset.x=0.5;
                 right_red_prop.pp_offset.y=0.0;
                 right_red_prop.pp_offset.z=0.0;
-                right_red_prop.rot=Ogre::Quaternion::IDENTITY;
                 right_red_prop.wheel=nullptr;
                 right_red_prop.wheelrotdegree=0.0;
                 right_red_prop.mirror=0;
@@ -1073,7 +1070,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_flash_prop.pp_offset.x=0.5;
                 right_flash_prop.pp_offset.y=0.0;
                 right_flash_prop.pp_offset.z=0.0;
-                right_flash_prop.rot=Ogre::Quaternion::IDENTITY;
                 right_flash_prop.wheel=nullptr;
                 right_flash_prop.wheelrotdegree=0.0;
                 right_flash_prop.mirror=0;
@@ -1555,12 +1551,10 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
     }
     prop.pp_offset       = def.offset;
     prop.pp_offset_orig  = def.offset;
-    prop.rotaX           = def.rotation.x;
-    prop.rotaY           = def.rotation.y;
-    prop.rotaZ           = def.rotation.z;
-    prop.rot             = Ogre::Quaternion(Ogre::Degree(def.rotation.z), Ogre::Vector3::UNIT_Z);
-    prop.rot             = prop.rot * Ogre::Quaternion(Ogre::Degree(def.rotation.y), Ogre::Vector3::UNIT_Y);
-    prop.rot             = prop.rot * Ogre::Quaternion(Ogre::Degree(def.rotation.x), Ogre::Vector3::UNIT_X);
+    prop.pp_rot          = Ogre::Quaternion(Ogre::Degree(def.rotation.z), Ogre::Vector3::UNIT_Z)
+                           * Ogre::Quaternion(Ogre::Degree(def.rotation.y), Ogre::Vector3::UNIT_Y)
+                           * Ogre::Quaternion(Ogre::Degree(def.rotation.x), Ogre::Vector3::UNIT_X);
+    prop.pp_rota         = def.rotation;
     prop.cameramode      = def.camera_settings.mode; /* Handles default value */
     prop.wheelrotdegree  = 160.f;
 
@@ -1965,16 +1959,16 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
             const bool use_default_upper_limit = (anim_def.upper_limit == 0.f);
 
             if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_ROTATION_X)) {
-                anim.lower_limit = (use_default_lower_limit) ? (-180.f) : (anim_def.lower_limit + prop.rotaX);
-                anim.upper_limit = (use_default_upper_limit) ? ( 180.f) : (anim_def.upper_limit + prop.rotaX);
+                anim.lower_limit = (use_default_lower_limit) ? (-180.f) : (anim_def.lower_limit + prop.pp_rota.x);
+                anim.upper_limit = (use_default_upper_limit) ? ( 180.f) : (anim_def.upper_limit + prop.pp_rota.x);
             }
             if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_ROTATION_Y)) {
-                anim.lower_limit = (use_default_lower_limit) ? (-180.f) : (anim_def.lower_limit + prop.rotaY);
-                anim.upper_limit = (use_default_upper_limit) ? ( 180.f) : (anim_def.upper_limit + prop.rotaY);
+                anim.lower_limit = (use_default_lower_limit) ? (-180.f) : (anim_def.lower_limit + prop.pp_rota.y);
+                anim.upper_limit = (use_default_upper_limit) ? ( 180.f) : (anim_def.upper_limit + prop.pp_rota.y);
             }
             if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_ROTATION_Z)) {
-                anim.lower_limit = (use_default_lower_limit) ? (-180.f) : (anim_def.lower_limit + prop.rotaZ);
-                anim.upper_limit = (use_default_upper_limit) ? ( 180.f) : (anim_def.upper_limit + prop.rotaZ);
+                anim.lower_limit = (use_default_lower_limit) ? (-180.f) : (anim_def.lower_limit + prop.pp_rota.z);
+                anim.upper_limit = (use_default_upper_limit) ? ( 180.f) : (anim_def.upper_limit + prop.pp_rota.z);
             }
             if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_OFFSET_X)) {
                 anim.lower_limit = (use_default_lower_limit) ? (-10.f) : (anim_def.lower_limit + prop.pp_offset_orig.x);

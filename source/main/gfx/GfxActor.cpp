@@ -2163,7 +2163,7 @@ void RoR::GfxActor::CalculateDriverPos(Ogre::Vector3& out_pos, Ogre::Quaternion&
     const Ogre::Vector3 x_vec_norm = x_vec.normalisedCopy();
     const Ogre::Vector3 y_vec_norm = x_vec_norm.crossProduct(normal);
     Ogre::Quaternion rot(x_vec_norm, normal, y_vec_norm);
-    rot = rot * driverseat_prop->rot;
+    rot = rot * driverseat_prop->pp_rot;
     rot = rot * Ogre::Quaternion(Ogre::Degree(180), Ogre::Vector3::UNIT_Y); // rotate towards the driving direction
     out_rot = rot;
 }
@@ -2373,7 +2373,7 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
 
         Vector3 refx = diffX.normalisedCopy();
         Vector3 refy = refx.crossProduct(normal);
-        Quaternion orientation = Quaternion(refx, normal, refy) * prop.rot;
+        Quaternion orientation = Quaternion(refx, normal, refy) * prop.pp_rot;
         prop.scene_node->setOrientation(orientation);
 
         if (prop.wheel) // special prop - steering wheel
@@ -3024,18 +3024,18 @@ void RoR::GfxActor::UpdatePropAnimations(float dt, bool is_player_connected)
                 {
                     if (anim.animMode & ANIM_MODE_ROTA_X)
                     {
-                        prop.rotaX += cstate * dt_frac;
-                        limiter = prop.rotaX;
+                        prop.pp_rota.x += cstate * dt_frac;
+                        limiter = prop.pp_rota.x;
                     }
                     if (anim.animMode & ANIM_MODE_ROTA_Y)
                     {
-                        prop.rotaY += cstate * dt_frac;
-                        limiter = prop.rotaY;
+                        prop.pp_rota.y += cstate * dt_frac;
+                        limiter = prop.pp_rota.y;
                     }
                     if (anim.animMode & ANIM_MODE_ROTA_Z)
                     {
-                        prop.rotaZ += cstate * dt_frac;
-                        limiter = prop.rotaZ;
+                        prop.pp_rota.z += cstate * dt_frac;
+                        limiter = prop.pp_rota.z;
                     }
                 }
                 else
@@ -3082,11 +3082,11 @@ void RoR::GfxActor::UpdatePropAnimations(float dt, bool is_player_connected)
                 if (limiterchanged)
                 {
                     if (anim.animMode & ANIM_MODE_ROTA_X)
-                        prop.rotaX = limiter;
+                        prop.pp_rota.x = limiter;
                     if (anim.animMode & ANIM_MODE_ROTA_Y)
-                        prop.rotaY = limiter;
+                        prop.pp_rota.y = limiter;
                     if (anim.animMode & ANIM_MODE_ROTA_Z)
-                        prop.rotaZ = limiter;
+                        prop.pp_rota.z = limiter;
                 }
             }
 
@@ -3161,13 +3161,13 @@ void RoR::GfxActor::UpdatePropAnimations(float dt, bool is_player_connected)
             animnum++;
         }
         //recalc the quaternions with final stacked rotation values ( rx, ry, rz )
-        rx += prop.rotaX;
-        ry += prop.rotaY;
-        rz += prop.rotaZ;
+        rx += prop.pp_rota.x;
+        ry += prop.pp_rota.y;
+        rz += prop.pp_rota.z;
 
-        prop.rot = Ogre::Quaternion(Ogre::Degree(rz), Ogre::Vector3::UNIT_Z) * 
-                   Ogre::Quaternion(Ogre::Degree(ry), Ogre::Vector3::UNIT_Y) *
-                   Ogre::Quaternion(Ogre::Degree(rx), Ogre::Vector3::UNIT_X);
+        prop.pp_rot = Ogre::Quaternion(Ogre::Degree(rz), Ogre::Vector3::UNIT_Z) * 
+                      Ogre::Quaternion(Ogre::Degree(ry), Ogre::Vector3::UNIT_Y) *
+                      Ogre::Quaternion(Ogre::Degree(rx), Ogre::Vector3::UNIT_X);
     }
 }
 
