@@ -794,7 +794,7 @@ void ActorSpawner::BuildAerialEngine(
     float scale = GetNode(ref_node_index).RelPosition.distance(GetNode(blade_1_node_index).RelPosition) / 2.25f;
     for (RoR::Prop& prop: m_props)
     {
-        if ((prop.noderef == ref_node_index) && (prop.pp_aero_propeller_blade || prop.pp_aero_propeller_spin))
+        if ((prop.pp_node_ref == ref_node_index) && (prop.pp_aero_propeller_blade || prop.pp_aero_propeller_spin))
         {
             prop.scene_node->scale(scale, scale, scale);
             prop.pp_aero_engine_idx = aeroengine_index;
@@ -961,9 +961,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 m_airplane_left_light=previous_wing.fa->nfld;
                 RoR::Prop left_green_prop;
 
-                left_green_prop.noderef=previous_wing.fa->nfld;
-                left_green_prop.nodex=previous_wing.fa->nflu;
-                left_green_prop.nodey=previous_wing.fa->nfld; //ignored
+                left_green_prop.pp_node_ref=previous_wing.fa->nfld;
+                left_green_prop.pp_node_x=previous_wing.fa->nflu;
+                left_green_prop.pp_node_y=previous_wing.fa->nfld; //ignored
                 left_green_prop.offsetx=0.5;
                 left_green_prop.offsety=0.0;
                 left_green_prop.offsetz=0.0;
@@ -993,9 +993,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 //Left flash
                 RoR::Prop left_flash_prop;
 
-                left_flash_prop.noderef=previous_wing.fa->nbld;
-                left_flash_prop.nodex=previous_wing.fa->nblu;
-                left_flash_prop.nodey=previous_wing.fa->nbld; //ignored
+                left_flash_prop.pp_node_ref=previous_wing.fa->nbld;
+                left_flash_prop.pp_node_x=previous_wing.fa->nblu;
+                left_flash_prop.pp_node_y=previous_wing.fa->nbld; //ignored
                 left_flash_prop.offsetx=0.5;
                 left_flash_prop.offsety=0.0;
                 left_flash_prop.offsetz=0.0;
@@ -1035,9 +1035,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 RoR::Prop right_red_prop;
 
                 
-                right_red_prop.noderef=start_wing.fa->nfrd;
-                right_red_prop.nodex=start_wing.fa->nfru;
-                right_red_prop.nodey=start_wing.fa->nfrd; //ignored
+                right_red_prop.pp_node_ref=start_wing.fa->nfrd;
+                right_red_prop.pp_node_x=start_wing.fa->nfru;
+                right_red_prop.pp_node_y=start_wing.fa->nfrd; //ignored
                 right_red_prop.offsetx=0.5;
                 right_red_prop.offsety=0.0;
                 right_red_prop.offsetz=0.0;
@@ -1067,9 +1067,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 //Right flash
                 RoR::Prop right_flash_prop;
 
-                right_flash_prop.noderef=start_wing.fa->nbrd;
-                right_flash_prop.nodex=start_wing.fa->nbru;
-                right_flash_prop.nodey=start_wing.fa->nbrd; //ignored
+                right_flash_prop.pp_node_ref=start_wing.fa->nbrd;
+                right_flash_prop.pp_node_x=start_wing.fa->nbru;
+                right_flash_prop.pp_node_y=start_wing.fa->nbrd; //ignored
                 right_flash_prop.offsetx=0.5;
                 right_flash_prop.offsety=0.0;
                 right_flash_prop.offsetz=0.0;
@@ -1546,10 +1546,10 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
     RoR::Prop prop;
     int prop_index = static_cast<int>(m_props.size());
 
-    prop.noderef         = GetNodeIndexOrThrow(def.reference_node);
-    prop.nodex           = FindNodeIndex(def.x_axis_node);
-    prop.nodey           = FindNodeIndex(def.y_axis_node);
-    if (prop.nodex == -1 || prop.nodey == -1)
+    prop.pp_node_ref         = GetNodeIndexOrThrow(def.reference_node);
+    prop.pp_node_x           = FindNodeIndex(def.x_axis_node);
+    prop.pp_node_y           = FindNodeIndex(def.y_axis_node);
+    if (prop.pp_node_x == -1 || prop.pp_node_y == -1)
     {
         return;
     }

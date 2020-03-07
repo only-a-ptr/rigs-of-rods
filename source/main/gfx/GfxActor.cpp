@@ -2144,9 +2144,9 @@ void RoR::GfxActor::CalculateDriverPos(Ogre::Vector3& out_pos, Ogre::Quaternion&
 
     NodeData* nodes = this->GetSimNodeBuffer();
 
-    const Ogre::Vector3 x_pos = nodes[driverseat_prop->nodex].AbsPosition;
-    const Ogre::Vector3 y_pos = nodes[driverseat_prop->nodey].AbsPosition;
-    const Ogre::Vector3 center_pos = nodes[driverseat_prop->noderef].AbsPosition;
+    const Ogre::Vector3 x_pos = nodes[driverseat_prop->pp_node_x].AbsPosition;
+    const Ogre::Vector3 y_pos = nodes[driverseat_prop->pp_node_y].AbsPosition;
+    const Ogre::Vector3 center_pos = nodes[driverseat_prop->pp_node_ref].AbsPosition;
 
     const Ogre::Vector3 x_vec = x_pos - center_pos;
     const Ogre::Vector3 y_vec = y_pos - center_pos;
@@ -2288,7 +2288,7 @@ void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_acto
     }
     else if (prop.beacontype == 'R' || prop.beacontype == 'L') // Avionic navigation lights (red/green)
     {
-        Vector3 mposition = nodes[prop.noderef].AbsPosition + prop.offsetx * (nodes[prop.nodex].AbsPosition - nodes[prop.noderef].AbsPosition) + prop.offsety * (nodes[prop.nodey].AbsPosition - nodes[prop.noderef].AbsPosition);
+        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.offsetx * (nodes[prop.pp_node_x].AbsPosition - nodes[prop.pp_node_ref].AbsPosition) + prop.offsety * (nodes[prop.pp_node_y].AbsPosition - nodes[prop.pp_node_ref].AbsPosition);
         //billboard
         Vector3 vdir = mposition - gEnv->mainCamera->getPosition();
         float vlen = vdir.length();
@@ -2303,7 +2303,7 @@ void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_acto
     }
     else if (prop.beacontype == 'w') // Avionic navigation lights (white rotating beacon)
     {
-        Vector3 mposition = nodes[prop.noderef].AbsPosition + prop.offsetx * (nodes[prop.nodex].AbsPosition - nodes[prop.noderef].AbsPosition) + prop.offsety * (nodes[prop.nodey].AbsPosition - nodes[prop.noderef].AbsPosition);
+        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.offsetx * (nodes[prop.pp_node_x].AbsPosition - nodes[prop.pp_node_ref].AbsPosition) + prop.offsety * (nodes[prop.pp_node_y].AbsPosition - nodes[prop.pp_node_ref].AbsPosition);
         prop.beacon_light[0]->setPosition(mposition);
         prop.beacon_light_rotation_angle[0] += dt * prop.beacon_light_rotation_rate[0];//rotate baby!
         //billboard
@@ -2363,12 +2363,12 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
 
         // Update position and orientation
         // -- quick ugly port from `Actor::updateProps()` --- ~ 06/2018
-        Vector3 diffX = nodes[prop.nodex].AbsPosition - nodes[prop.noderef].AbsPosition;
-        Vector3 diffY = nodes[prop.nodey].AbsPosition - nodes[prop.noderef].AbsPosition;
+        Vector3 diffX = nodes[prop.pp_node_x].AbsPosition - nodes[prop.pp_node_ref].AbsPosition;
+        Vector3 diffY = nodes[prop.pp_node_y].AbsPosition - nodes[prop.pp_node_ref].AbsPosition;
 
         Vector3 normal = (diffY.crossProduct(diffX)).normalisedCopy();
 
-        Vector3 mposition = nodes[prop.noderef].AbsPosition + prop.offsetx * diffX + prop.offsety * diffY;
+        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.offsetx * diffX + prop.offsety * diffY;
         prop.scene_node->setPosition(mposition + normal * prop.offsetz);
 
         Vector3 refx = diffX.normalisedCopy();

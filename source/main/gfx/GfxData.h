@@ -102,11 +102,10 @@ struct PropAnim
 /// A mesh attached to vehicle frame via 3 nodes
 struct Prop
 {
-    Prop() { memset(this, 0, sizeof(*this)); }
+    uint16_t  pp_node_ref  = node_t::INVALID_IDX;
+    uint16_t  pp_node_x    = node_t::INVALID_IDX;
+    uint16_t  pp_node_y    = node_t::INVALID_IDX;
 
-    int noderef;
-    int nodex;
-    int nodey;
     float offsetx;
     float offsety;
     float offsetz;
