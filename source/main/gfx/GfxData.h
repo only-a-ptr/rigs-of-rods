@@ -102,19 +102,14 @@ struct PropAnim
 /// A mesh attached to vehicle frame via 3 nodes
 struct Prop
 {
-    uint16_t  pp_node_ref  = node_t::INVALID_IDX;
-    uint16_t  pp_node_x    = node_t::INVALID_IDX;
-    uint16_t  pp_node_y    = node_t::INVALID_IDX;
-
-    float offsetx;
-    float offsety;
-    float offsetz;
+    uint16_t      pp_node_ref     = node_t::INVALID_IDX;
+    uint16_t      pp_node_x       = node_t::INVALID_IDX;
+    uint16_t      pp_node_y       = node_t::INVALID_IDX;
+    Ogre::Vector3 pp_offset       = Ogre::Vector3::ZERO;
+    Ogre::Vector3 pp_offset_orig  = Ogre::Vector3::ZERO; //!< Used with ANIM_FLAG_OFFSET*
     float rotaX;
     float rotaY;
     float rotaZ;
-    float orgoffsetX;
-    float orgoffsetY;
-    float orgoffsetZ;
     Ogre::Quaternion rot;
     Ogre::SceneNode *scene_node; //!< The pivot scene node (parented to root-node).
     Ogre::SceneNode *wheel; //!< Special prop: custom steering wheel for dashboard

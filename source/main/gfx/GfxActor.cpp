@@ -2154,9 +2154,9 @@ void RoR::GfxActor::CalculateDriverPos(Ogre::Vector3& out_pos, Ogre::Quaternion&
 
     // Output position
     Ogre::Vector3 pos = center_pos;
-    pos += (driverseat_prop->offsetx * x_vec);
-    pos += (driverseat_prop->offsety * y_vec);
-    pos += (driverseat_prop->offsetz * normal);
+    pos += (driverseat_prop->pp_offset.x * x_vec);
+    pos += (driverseat_prop->pp_offset.y * y_vec);
+    pos += (driverseat_prop->pp_offset.z * normal);
     out_pos = pos;
 
     // Output orientation
@@ -2288,7 +2288,7 @@ void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_acto
     }
     else if (prop.beacontype == 'R' || prop.beacontype == 'L') // Avionic navigation lights (red/green)
     {
-        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.offsetx * (nodes[prop.pp_node_x].AbsPosition - nodes[prop.pp_node_ref].AbsPosition) + prop.offsety * (nodes[prop.pp_node_y].AbsPosition - nodes[prop.pp_node_ref].AbsPosition);
+        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.pp_offset.x * (nodes[prop.pp_node_x].AbsPosition - nodes[prop.pp_node_ref].AbsPosition) + prop.pp_offset.y * (nodes[prop.pp_node_y].AbsPosition - nodes[prop.pp_node_ref].AbsPosition);
         //billboard
         Vector3 vdir = mposition - gEnv->mainCamera->getPosition();
         float vlen = vdir.length();
@@ -2303,7 +2303,7 @@ void RoR::GfxActor::UpdateBeaconFlare(Prop & prop, float dt, bool is_player_acto
     }
     else if (prop.beacontype == 'w') // Avionic navigation lights (white rotating beacon)
     {
-        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.offsetx * (nodes[prop.pp_node_x].AbsPosition - nodes[prop.pp_node_ref].AbsPosition) + prop.offsety * (nodes[prop.pp_node_y].AbsPosition - nodes[prop.pp_node_ref].AbsPosition);
+        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.pp_offset.x * (nodes[prop.pp_node_x].AbsPosition - nodes[prop.pp_node_ref].AbsPosition) + prop.pp_offset.y * (nodes[prop.pp_node_y].AbsPosition - nodes[prop.pp_node_ref].AbsPosition);
         prop.beacon_light[0]->setPosition(mposition);
         prop.beacon_light_rotation_angle[0] += dt * prop.beacon_light_rotation_rate[0];//rotate baby!
         //billboard
@@ -2368,8 +2368,8 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
 
         Vector3 normal = (diffY.crossProduct(diffX)).normalisedCopy();
 
-        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.offsetx * diffX + prop.offsety * diffY;
-        prop.scene_node->setPosition(mposition + normal * prop.offsetz);
+        Vector3 mposition = nodes[prop.pp_node_ref].AbsPosition + prop.pp_offset.x * diffX + prop.pp_offset.y * diffY;
+        prop.scene_node->setPosition(mposition + normal * prop.pp_offset.z);
 
         Vector3 refx = diffX.normalisedCopy();
         Vector3 refy = refx.crossProduct(normal);
@@ -2380,7 +2380,7 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
         {
             Quaternion brot = Quaternion(Degree(-59.0), Vector3::UNIT_X);
             brot = brot * Quaternion(Degree(m_simbuf.simbuf_hydro_dir_state * prop.wheelrotdegree), Vector3::UNIT_Y);
-            prop.wheel->setPosition(mposition + normal * prop.offsetz + orientation * prop.wheelpos);
+            prop.wheel->setPosition(mposition + normal * prop.pp_offset.z + orientation * prop.wheelpos);
             prop.wheel->setOrientation(orientation * brot);
         }
     }
@@ -3098,11 +3098,11 @@ void RoR::GfxActor::UpdatePropAnimations(float dt, bool is_player_connected)
                 float autooffset = 0.0f;
 
                 if (anim.animMode & ANIM_MODE_OFFSET_X)
-                    offset = prop.orgoffsetX;
+                    offset = prop.pp_offset_orig.x;
                 if (anim.animMode & ANIM_MODE_OFFSET_Y)
-                    offset = prop.orgoffsetY;
+                    offset = prop.pp_offset_orig.y;
                 if (anim.animMode & ANIM_MODE_OFFSET_Z)
-                    offset = prop.orgoffsetZ;
+                    offset = prop.pp_offset_orig.z;
 
                 if (anim.animMode & ANIM_MODE_AUTOANIMATE)
                 {
@@ -3141,21 +3141,21 @@ void RoR::GfxActor::UpdatePropAnimations(float dt, bool is_player_connected)
 
                 if (anim.animMode & ANIM_MODE_OFFSET_X)
                 {
-                    prop.offsetx = offset;
+                    prop.pp_offset.x = offset;
                     if (anim.animMode & ANIM_MODE_AUTOANIMATE)
-                        prop.orgoffsetX = autooffset;
+                        prop.pp_offset_orig.x = autooffset;
                 }
                 if (anim.animMode & ANIM_MODE_OFFSET_Y)
                 {
-                    prop.offsety = offset;
+                    prop.pp_offset.y = offset;
                     if (anim.animMode & ANIM_MODE_AUTOANIMATE)
-                        prop.orgoffsetY = autooffset;
+                        prop.pp_offset_orig.y = autooffset;
                 }
                 if (anim.animMode & ANIM_MODE_OFFSET_Z)
                 {
-                    prop.offsetz = offset;
+                    prop.pp_offset.z = offset;
                     if (anim.animMode & ANIM_MODE_AUTOANIMATE)
-                        prop.orgoffsetZ = autooffset;
+                        prop.pp_offset_orig.z = autooffset;
                 }
             }
             animnum++;

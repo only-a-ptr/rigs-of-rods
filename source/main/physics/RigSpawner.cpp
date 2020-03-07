@@ -964,9 +964,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_green_prop.pp_node_ref=previous_wing.fa->nfld;
                 left_green_prop.pp_node_x=previous_wing.fa->nflu;
                 left_green_prop.pp_node_y=previous_wing.fa->nfld; //ignored
-                left_green_prop.offsetx=0.5;
-                left_green_prop.offsety=0.0;
-                left_green_prop.offsetz=0.0;
+                left_green_prop.pp_offset.x=0.5;
+                left_green_prop.pp_offset.y=0.0;
+                left_green_prop.pp_offset.z=0.0;
                 left_green_prop.rot=Ogre::Quaternion::IDENTITY;
                 left_green_prop.wheel=nullptr;
                 left_green_prop.wheelrotdegree=0.0;
@@ -996,9 +996,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_flash_prop.pp_node_ref=previous_wing.fa->nbld;
                 left_flash_prop.pp_node_x=previous_wing.fa->nblu;
                 left_flash_prop.pp_node_y=previous_wing.fa->nbld; //ignored
-                left_flash_prop.offsetx=0.5;
-                left_flash_prop.offsety=0.0;
-                left_flash_prop.offsetz=0.0;
+                left_flash_prop.pp_offset.x=0.5;
+                left_flash_prop.pp_offset.y=0.0;
+                left_flash_prop.pp_offset.z=0.0;
                 left_flash_prop.rot=Ogre::Quaternion::IDENTITY;
                 left_flash_prop.wheel=nullptr;
                 left_flash_prop.wheelrotdegree=0.0;
@@ -1038,9 +1038,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_red_prop.pp_node_ref=start_wing.fa->nfrd;
                 right_red_prop.pp_node_x=start_wing.fa->nfru;
                 right_red_prop.pp_node_y=start_wing.fa->nfrd; //ignored
-                right_red_prop.offsetx=0.5;
-                right_red_prop.offsety=0.0;
-                right_red_prop.offsetz=0.0;
+                right_red_prop.pp_offset.x=0.5;
+                right_red_prop.pp_offset.y=0.0;
+                right_red_prop.pp_offset.z=0.0;
                 right_red_prop.rot=Ogre::Quaternion::IDENTITY;
                 right_red_prop.wheel=nullptr;
                 right_red_prop.wheelrotdegree=0.0;
@@ -1070,9 +1070,9 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_flash_prop.pp_node_ref=start_wing.fa->nbrd;
                 right_flash_prop.pp_node_x=start_wing.fa->nbru;
                 right_flash_prop.pp_node_y=start_wing.fa->nbrd; //ignored
-                right_flash_prop.offsetx=0.5;
-                right_flash_prop.offsety=0.0;
-                right_flash_prop.offsetz=0.0;
+                right_flash_prop.pp_offset.x=0.5;
+                right_flash_prop.pp_offset.y=0.0;
+                right_flash_prop.pp_offset.z=0.0;
                 right_flash_prop.rot=Ogre::Quaternion::IDENTITY;
                 right_flash_prop.wheel=nullptr;
                 right_flash_prop.wheelrotdegree=0.0;
@@ -1553,12 +1553,8 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
     {
         return;
     }
-    prop.offsetx         = def.offset.x;
-    prop.offsety         = def.offset.y;
-    prop.offsetz         = def.offset.z;
-    prop.orgoffsetX      = def.offset.x;
-    prop.orgoffsetY      = def.offset.y;
-    prop.orgoffsetZ      = def.offset.z;
+    prop.pp_offset       = def.offset;
+    prop.pp_offset_orig  = def.offset;
     prop.rotaX           = def.rotation.x;
     prop.rotaY           = def.rotation.y;
     prop.rotaZ           = def.rotation.z;
@@ -1981,16 +1977,16 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
                 anim.upper_limit = (use_default_upper_limit) ? ( 180.f) : (anim_def.upper_limit + prop.rotaZ);
             }
             if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_OFFSET_X)) {
-                anim.lower_limit = (use_default_lower_limit) ? (-10.f) : (anim_def.lower_limit + prop.orgoffsetX);
-                anim.upper_limit = (use_default_upper_limit) ? ( 10.f) : (anim_def.upper_limit + prop.orgoffsetX);
+                anim.lower_limit = (use_default_lower_limit) ? (-10.f) : (anim_def.lower_limit + prop.pp_offset_orig.x);
+                anim.upper_limit = (use_default_upper_limit) ? ( 10.f) : (anim_def.upper_limit + prop.pp_offset_orig.x);
             }
             if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_OFFSET_Y)) {
-                anim.lower_limit = (use_default_lower_limit) ? (-10.f) : (anim_def.lower_limit + prop.orgoffsetY);
-                anim.upper_limit = (use_default_upper_limit) ? ( 10.f) : (anim_def.upper_limit + prop.orgoffsetY);
+                anim.lower_limit = (use_default_lower_limit) ? (-10.f) : (anim_def.lower_limit + prop.pp_offset_orig.y);
+                anim.upper_limit = (use_default_upper_limit) ? ( 10.f) : (anim_def.upper_limit + prop.pp_offset_orig.y);
             }
             if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_OFFSET_Z)) {
-                anim.lower_limit = (use_default_lower_limit) ? (-10.f) : (anim_def.lower_limit + prop.orgoffsetZ);
-                anim.upper_limit = (use_default_upper_limit) ? ( 10.f) : (anim_def.upper_limit + prop.orgoffsetZ);
+                anim.lower_limit = (use_default_lower_limit) ? (-10.f) : (anim_def.lower_limit + prop.pp_offset_orig.z);
+                anim.upper_limit = (use_default_upper_limit) ? ( 10.f) : (anim_def.upper_limit + prop.pp_offset_orig.z);
             }
         }
         if (BITMASK_IS_1(anim_def.mode, RigDef::Animation::MODE_NO_FLIP)) 
