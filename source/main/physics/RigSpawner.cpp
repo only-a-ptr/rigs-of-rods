@@ -967,22 +967,22 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_green_prop.pp_offset.x=0.5;
                 left_green_prop.pp_offset.y=0.0;
                 left_green_prop.pp_offset.z=0.0;
-                left_green_prop.beacon_light_rotation_angle[0]=0.0;
-                left_green_prop.beacon_light_rotation_rate[0]=1.0;
-                left_green_prop.beacontype='L';
-                left_green_prop.beacon_light[0]=nullptr; //no light
+                left_green_prop.pp_beacon_rot_angle[0]=0.0;
+                left_green_prop.pp_beacon_rot_rate[0]=1.0;
+                left_green_prop.pp_beacon_type='L';
+                left_green_prop.pp_beacon_light[0]=nullptr; //no light
                 //the flare billboard
-                left_green_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-                left_green_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(this->ComposeName("Prop", static_cast<int>(m_props.size())+1),1);
-                left_green_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
-                if (left_green_prop.beacon_flares_billboard_system[0])
+                left_green_prop.pp_beacon_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+                left_green_prop.pp_beacon_bbs[0]=gEnv->sceneManager->createBillboardSet(this->ComposeName("Prop", static_cast<int>(m_props.size())+1),1);
+                left_green_prop.pp_beacon_bbs[0]->createBillboard(0,0,0);
+                if (left_green_prop.pp_beacon_bbs[0])
                 {
-                    left_green_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-                    left_green_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/greenflare");
-                    left_green_prop.beacon_flare_billboard_scene_node[0]->attachObject(left_green_prop.beacon_flares_billboard_system[0]);
+                    left_green_prop.pp_beacon_bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+                    left_green_prop.pp_beacon_bbs[0]->setMaterialName("tracks/greenflare");
+                    left_green_prop.pp_beacon_scene_node[0]->attachObject(left_green_prop.pp_beacon_bbs[0]);
                 }
-                left_green_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
-                left_green_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(0.5, 0.5);
+                left_green_prop.pp_beacon_scene_node[0]->setVisible(false);
+                left_green_prop.pp_beacon_bbs[0]->setDefaultDimensions(0.5, 0.5);
                 m_props.push_back(left_green_prop);
                 
                 //Left flash
@@ -994,30 +994,30 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_flash_prop.pp_offset.x=0.5;
                 left_flash_prop.pp_offset.y=0.0;
                 left_flash_prop.pp_offset.z=0.0;
-                left_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
-                left_flash_prop.beacon_light_rotation_rate[0]=1.0;
-                left_flash_prop.beacontype='w';
+                left_flash_prop.pp_beacon_rot_angle[0]=0.5; //alt
+                left_flash_prop.pp_beacon_rot_rate[0]=1.0;
+                left_flash_prop.pp_beacon_type='w';
                 //light
                 std::string prop_name = this->ComposeName("Prop", static_cast<int>(m_props.size())+1);
-                left_flash_prop.beacon_light[0]=gEnv->sceneManager->createLight(prop_name);
-                left_flash_prop.beacon_light[0]->setType(Ogre::Light::LT_POINT);
-                left_flash_prop.beacon_light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-                left_flash_prop.beacon_light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-                left_flash_prop.beacon_light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-                left_flash_prop.beacon_light[0]->setCastShadows(false);
-                left_flash_prop.beacon_light[0]->setVisible(false);
+                left_flash_prop.pp_beacon_light[0]=gEnv->sceneManager->createLight(prop_name);
+                left_flash_prop.pp_beacon_light[0]->setType(Ogre::Light::LT_POINT);
+                left_flash_prop.pp_beacon_light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+                left_flash_prop.pp_beacon_light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+                left_flash_prop.pp_beacon_light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
+                left_flash_prop.pp_beacon_light[0]->setCastShadows(false);
+                left_flash_prop.pp_beacon_light[0]->setVisible(false);
                 //the flare billboard
-                left_flash_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-                left_flash_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(prop_name,1);
-                left_flash_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
-                if (left_flash_prop.beacon_flares_billboard_system[0])
+                left_flash_prop.pp_beacon_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+                left_flash_prop.pp_beacon_bbs[0]=gEnv->sceneManager->createBillboardSet(prop_name,1);
+                left_flash_prop.pp_beacon_bbs[0]->createBillboard(0,0,0);
+                if (left_flash_prop.pp_beacon_bbs[0])
                 {
-                    left_flash_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-                    left_flash_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/flare");
-                    left_flash_prop.beacon_flare_billboard_scene_node[0]->attachObject(left_flash_prop.beacon_flares_billboard_system[0]);
+                    left_flash_prop.pp_beacon_bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+                    left_flash_prop.pp_beacon_bbs[0]->setMaterialName("tracks/flare");
+                    left_flash_prop.pp_beacon_scene_node[0]->attachObject(left_flash_prop.pp_beacon_bbs[0]);
                 }
-                left_flash_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
-                left_flash_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(1.0, 1.0);
+                left_flash_prop.pp_beacon_scene_node[0]->setVisible(false);
+                left_flash_prop.pp_beacon_bbs[0]->setDefaultDimensions(1.0, 1.0);
                 m_props.push_back(left_flash_prop);
                 
                 //Right red
@@ -1031,22 +1031,22 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_red_prop.pp_offset.x=0.5;
                 right_red_prop.pp_offset.y=0.0;
                 right_red_prop.pp_offset.z=0.0;
-                right_red_prop.beacon_light_rotation_angle[0]=0.0;
-                right_red_prop.beacon_light_rotation_rate[0]=1.0;
-                right_red_prop.beacontype='R';
-                right_red_prop.beacon_light[0]=nullptr; /* No light */
+                right_red_prop.pp_beacon_rot_angle[0]=0.0;
+                right_red_prop.pp_beacon_rot_rate[0]=1.0;
+                right_red_prop.pp_beacon_type='R';
+                right_red_prop.pp_beacon_light[0]=nullptr; /* No light */
                 //the flare billboard
-                right_red_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-                right_red_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(this->ComposeName("Prop", static_cast<int>(m_props.size())+1),1);
-                right_red_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
-                if (right_red_prop.beacon_flares_billboard_system[0])
+                right_red_prop.pp_beacon_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+                right_red_prop.pp_beacon_bbs[0]=gEnv->sceneManager->createBillboardSet(this->ComposeName("Prop", static_cast<int>(m_props.size())+1),1);
+                right_red_prop.pp_beacon_bbs[0]->createBillboard(0,0,0);
+                if (right_red_prop.pp_beacon_bbs[0])
                 {
-                    right_red_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-                    right_red_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/redflare");
-                    right_red_prop.beacon_flare_billboard_scene_node[0]->attachObject(right_red_prop.beacon_flares_billboard_system[0]);
+                    right_red_prop.pp_beacon_bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+                    right_red_prop.pp_beacon_bbs[0]->setMaterialName("tracks/redflare");
+                    right_red_prop.pp_beacon_scene_node[0]->attachObject(right_red_prop.pp_beacon_bbs[0]);
                 }
-                right_red_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
-                right_red_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(0.5, 0.5);
+                right_red_prop.pp_beacon_scene_node[0]->setVisible(false);
+                right_red_prop.pp_beacon_bbs[0]->setDefaultDimensions(0.5, 0.5);
                 m_props.push_back(right_red_prop);
                 
                 //Right flash
@@ -1058,30 +1058,30 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_flash_prop.pp_offset.x=0.5;
                 right_flash_prop.pp_offset.y=0.0;
                 right_flash_prop.pp_offset.z=0.0;
-                right_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
-                right_flash_prop.beacon_light_rotation_rate[0]=1.0;
-                right_flash_prop.beacontype='w';
+                right_flash_prop.pp_beacon_rot_angle[0]=0.5; //alt
+                right_flash_prop.pp_beacon_rot_rate[0]=1.0;
+                right_flash_prop.pp_beacon_type='w';
                 //light
                 prop_name = this->ComposeName("Prop", static_cast<int>(m_props.size())+1);
-                right_flash_prop.beacon_light[0]=gEnv->sceneManager->createLight(prop_name);
-                right_flash_prop.beacon_light[0]->setType(Ogre::Light::LT_POINT);
-                right_flash_prop.beacon_light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-                right_flash_prop.beacon_light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
-                right_flash_prop.beacon_light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-                right_flash_prop.beacon_light[0]->setCastShadows(false);
-                right_flash_prop.beacon_light[0]->setVisible(false);
+                right_flash_prop.pp_beacon_light[0]=gEnv->sceneManager->createLight(prop_name);
+                right_flash_prop.pp_beacon_light[0]->setType(Ogre::Light::LT_POINT);
+                right_flash_prop.pp_beacon_light[0]->setDiffuseColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+                right_flash_prop.pp_beacon_light[0]->setSpecularColour( Ogre::ColourValue(1.0, 1.0, 1.0));
+                right_flash_prop.pp_beacon_light[0]->setAttenuation(50.0, 1.0, 0.3, 0.0);
+                right_flash_prop.pp_beacon_light[0]->setCastShadows(false);
+                right_flash_prop.pp_beacon_light[0]->setVisible(false);
                 //the flare billboard
-                right_flash_prop.beacon_flare_billboard_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-                right_flash_prop.beacon_flares_billboard_system[0]=gEnv->sceneManager->createBillboardSet(prop_name,1);
-                right_flash_prop.beacon_flares_billboard_system[0]->createBillboard(0,0,0);
-                if (right_flash_prop.beacon_flares_billboard_system[0] != nullptr)
+                right_flash_prop.pp_beacon_scene_node[0] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+                right_flash_prop.pp_beacon_bbs[0]=gEnv->sceneManager->createBillboardSet(prop_name,1);
+                right_flash_prop.pp_beacon_bbs[0]->createBillboard(0,0,0);
+                if (right_flash_prop.pp_beacon_bbs[0] != nullptr)
                 {
-                    right_flash_prop.beacon_flares_billboard_system[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
-                    right_flash_prop.beacon_flares_billboard_system[0]->setMaterialName("tracks/flare");
-                    right_flash_prop.beacon_flare_billboard_scene_node[0]->attachObject(right_flash_prop.beacon_flares_billboard_system[0]);
+                    right_flash_prop.pp_beacon_bbs[0]->setVisibilityFlags(DEPTHMAP_DISABLED);
+                    right_flash_prop.pp_beacon_bbs[0]->setMaterialName("tracks/flare");
+                    right_flash_prop.pp_beacon_scene_node[0]->attachObject(right_flash_prop.pp_beacon_bbs[0]);
                 }
-                right_flash_prop.beacon_flare_billboard_scene_node[0]->setVisible(false);
-                right_flash_prop.beacon_flares_billboard_system[0]->setDefaultDimensions(1.0, 1.0);
+                right_flash_prop.pp_beacon_scene_node[0]->setVisible(false);
+                right_flash_prop.pp_beacon_bbs[0]->setDefaultDimensions(1.0, 1.0);
                 m_props.push_back(right_flash_prop);
                 
                 m_generate_wing_position_lights = false; // Already done
@@ -1591,7 +1591,6 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
     const std::string instance_name = this->ComposeName("PropEntity", prop_index);
     prop.pp_mesh_obj = new MeshObject(def.mesh_name, m_custom_resource_group, instance_name, prop.pp_scene_node);
     prop.pp_mesh_obj->setCastShadows(true); // Orig code {{ prop.pp_mesh_obj->setCastShadows(shadowmode != 0); }}, shadowmode has default value 1 and changes with undocumented directive 'set_shadows'
-    prop.beacontype = 'n'; // Orig: hardcoded in BTS_PROPS
 
     if (def.special == RigDef::Prop::SPECIAL_AERO_PROP_SPIN)
     {
@@ -1632,18 +1631,18 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
     {
         if(def.special == RigDef::Prop::SPECIAL_BEACON)
         {
-            prop.beacontype = 'b';
-            prop.beacon_light_rotation_angle[0] = 2.0 * 3.14 * frand();
-            prop.beacon_light_rotation_rate[0] = 4.0 * 3.14 + frand() - 0.5;
+            prop.pp_beacon_type = 'b';
+            prop.pp_beacon_rot_angle[0] = 2.0 * 3.14 * frand();
+            prop.pp_beacon_rot_rate[0] = 4.0 * 3.14 + frand() - 0.5;
             /* the light */
-            auto beacon_light = gEnv->sceneManager->createLight();
-            beacon_light->setType(Ogre::Light::LT_SPOTLIGHT);
-            beacon_light->setDiffuseColour(def.special_prop_beacon.color);
-            beacon_light->setSpecularColour(def.special_prop_beacon.color);
-            beacon_light->setAttenuation(50.0, 1.0, 0.3, 0.0);
-            beacon_light->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
-            beacon_light->setCastShadows(false);
-            beacon_light->setVisible(false);
+            auto pp_beacon_light = gEnv->sceneManager->createLight();
+            pp_beacon_light->setType(Ogre::Light::LT_SPOTLIGHT);
+            pp_beacon_light->setDiffuseColour(def.special_prop_beacon.color);
+            pp_beacon_light->setSpecularColour(def.special_prop_beacon.color);
+            pp_beacon_light->setAttenuation(50.0, 1.0, 0.3, 0.0);
+            pp_beacon_light->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
+            pp_beacon_light->setCastShadows(false);
+            pp_beacon_light->setVisible(false);
             /* the flare billboard */
             auto flare_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
             auto flare_billboard_sys = gEnv->sceneManager->createBillboardSet(1); //(propname,1);
@@ -1657,23 +1656,23 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
             flare_scene_node->setVisible(false);
 
             // Complete
-            prop.beacon_flare_billboard_scene_node[0] = flare_scene_node;
-            prop.beacon_flares_billboard_system[0] = flare_billboard_sys;
-            prop.beacon_light[0] = beacon_light;
+            prop.pp_beacon_scene_node[0] = flare_scene_node;
+            prop.pp_beacon_bbs[0] = flare_billboard_sys;
+            prop.pp_beacon_light[0] = pp_beacon_light;
         }
         else if(def.special == RigDef::Prop::SPECIAL_REDBEACON)
         {
-            prop.beacon_light_rotation_angle[0] = 0.f;
-            prop.beacon_light_rotation_rate[0] = 1.0;
-            prop.beacontype = 'r';
+            prop.pp_beacon_rot_angle[0] = 0.f;
+            prop.pp_beacon_rot_rate[0] = 1.0;
+            prop.pp_beacon_type = 'r';
             //the light
-            auto beacon_light=gEnv->sceneManager->createLight();//propname);
-            beacon_light->setType(Ogre::Light::LT_POINT);
-            beacon_light->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
-            beacon_light->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
-            beacon_light->setAttenuation(50.0, 1.0, 0.3, 0.0);
-            beacon_light->setCastShadows(false);
-            beacon_light->setVisible(false);
+            auto pp_beacon_light=gEnv->sceneManager->createLight();//propname);
+            pp_beacon_light->setType(Ogre::Light::LT_POINT);
+            pp_beacon_light->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+            pp_beacon_light->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+            pp_beacon_light->setAttenuation(50.0, 1.0, 0.3, 0.0);
+            pp_beacon_light->setCastShadows(false);
+            pp_beacon_light->setVisible(false);
             //the flare billboard
             auto flare_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
             auto flare_billboard_sys = gEnv->sceneManager->createBillboardSet(1); //propname,1);
@@ -1688,56 +1687,56 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
             flare_scene_node->setVisible(false);
 
             // Finalize
-            prop.beacon_light[0] = beacon_light;
-            prop.beacon_flare_billboard_scene_node[0] = flare_scene_node;
-            prop.beacon_flares_billboard_system[0] = flare_billboard_sys;
+            prop.pp_beacon_light[0] = pp_beacon_light;
+            prop.pp_beacon_scene_node[0] = flare_scene_node;
+            prop.pp_beacon_bbs[0] = flare_billboard_sys;
             
         }
         else if(def.special == RigDef::Prop::SPECIAL_LIGHTBAR)
         {
             m_actor->ar_is_police = true;
-            prop.beacontype='p';
+            prop.pp_beacon_type='p';
             for (int k=0; k<4; k++)
             {
-                prop.beacon_light_rotation_angle[k] = 2.0 * 3.14 * frand();
-                prop.beacon_light_rotation_rate[k] = 4.0 * 3.14 + frand() - 0.5;
-                prop.beacon_flares_billboard_system[k] = nullptr;
+                prop.pp_beacon_rot_angle[k] = 2.0 * 3.14 * frand();
+                prop.pp_beacon_rot_rate[k] = 4.0 * 3.14 + frand() - 0.5;
+                prop.pp_beacon_bbs[k] = nullptr;
                 //the light
-                prop.beacon_light[k]=gEnv->sceneManager->createLight();
-                prop.beacon_light[k]->setType(Ogre::Light::LT_SPOTLIGHT);
+                prop.pp_beacon_light[k]=gEnv->sceneManager->createLight();
+                prop.pp_beacon_light[k]->setType(Ogre::Light::LT_SPOTLIGHT);
                 if (k>1)
                 {
-                    prop.beacon_light[k]->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
-                    prop.beacon_light[k]->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+                    prop.pp_beacon_light[k]->setDiffuseColour( Ogre::ColourValue(1.0, 0.0, 0.0));
+                    prop.pp_beacon_light[k]->setSpecularColour( Ogre::ColourValue(1.0, 0.0, 0.0));
                 }
                 else
                 {
-                    prop.beacon_light[k]->setDiffuseColour( Ogre::ColourValue(0.0, 0.5, 1.0));
-                    prop.beacon_light[k]->setSpecularColour( Ogre::ColourValue(0.0, 0.5, 1.0));
+                    prop.pp_beacon_light[k]->setDiffuseColour( Ogre::ColourValue(0.0, 0.5, 1.0));
+                    prop.pp_beacon_light[k]->setSpecularColour( Ogre::ColourValue(0.0, 0.5, 1.0));
                 }
-                prop.beacon_light[k]->setAttenuation(50.0, 1.0, 0.3, 0.0);
-                prop.beacon_light[k]->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
-                prop.beacon_light[k]->setCastShadows(false);
-                prop.beacon_light[k]->setVisible(false);
+                prop.pp_beacon_light[k]->setAttenuation(50.0, 1.0, 0.3, 0.0);
+                prop.pp_beacon_light[k]->setSpotlightRange( Ogre::Degree(35), Ogre::Degree(45) );
+                prop.pp_beacon_light[k]->setCastShadows(false);
+                prop.pp_beacon_light[k]->setVisible(false);
                 //the flare billboard
-                prop.beacon_flare_billboard_scene_node[k] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-                prop.beacon_flares_billboard_system[k]=gEnv->sceneManager->createBillboardSet(1);
-                prop.beacon_flares_billboard_system[k]->createBillboard(0,0,0);
-                if (prop.beacon_flares_billboard_system[k])
+                prop.pp_beacon_scene_node[k] = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+                prop.pp_beacon_bbs[k]=gEnv->sceneManager->createBillboardSet(1);
+                prop.pp_beacon_bbs[k]->createBillboard(0,0,0);
+                if (prop.pp_beacon_bbs[k])
                 {
                     if (k>1)
                     {
-                        prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightredflare");
+                        prop.pp_beacon_bbs[k]->setMaterialName("tracks/brightredflare");
                     }
                     else
                     {
-                        prop.beacon_flares_billboard_system[k]->setMaterialName("tracks/brightblueflare");
+                        prop.pp_beacon_bbs[k]->setMaterialName("tracks/brightblueflare");
                     }
 
-                    prop.beacon_flares_billboard_system[k]->setVisibilityFlags(DEPTHMAP_DISABLED);
-                    prop.beacon_flare_billboard_scene_node[k]->attachObject(prop.beacon_flares_billboard_system[k]);
+                    prop.pp_beacon_bbs[k]->setVisibilityFlags(DEPTHMAP_DISABLED);
+                    prop.pp_beacon_scene_node[k]->attachObject(prop.pp_beacon_bbs[k]);
                 }
-                prop.beacon_flare_billboard_scene_node[k]->setVisible(false);
+                prop.pp_beacon_scene_node[k]->setVisible(false);
             }
         }
 
