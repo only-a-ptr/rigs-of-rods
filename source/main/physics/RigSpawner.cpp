@@ -967,8 +967,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_green_prop.pp_offset.x=0.5;
                 left_green_prop.pp_offset.y=0.0;
                 left_green_prop.pp_offset.z=0.0;
-                left_green_prop.wheel=nullptr;
-                left_green_prop.wheelrotdegree=0.0;
                 left_green_prop.beacon_light_rotation_angle[0]=0.0;
                 left_green_prop.beacon_light_rotation_rate[0]=1.0;
                 left_green_prop.beacontype='L';
@@ -996,8 +994,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 left_flash_prop.pp_offset.x=0.5;
                 left_flash_prop.pp_offset.y=0.0;
                 left_flash_prop.pp_offset.z=0.0;
-                left_flash_prop.wheel=nullptr;
-                left_flash_prop.wheelrotdegree=0.0;
                 left_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
                 left_flash_prop.beacon_light_rotation_rate[0]=1.0;
                 left_flash_prop.beacontype='w';
@@ -1035,8 +1031,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_red_prop.pp_offset.x=0.5;
                 right_red_prop.pp_offset.y=0.0;
                 right_red_prop.pp_offset.z=0.0;
-                right_red_prop.wheel=nullptr;
-                right_red_prop.wheelrotdegree=0.0;
                 right_red_prop.beacon_light_rotation_angle[0]=0.0;
                 right_red_prop.beacon_light_rotation_rate[0]=1.0;
                 right_red_prop.beacontype='R';
@@ -1064,8 +1058,6 @@ void ActorSpawner::ProcessWing(RigDef::Wing & def)
                 right_flash_prop.pp_offset.x=0.5;
                 right_flash_prop.pp_offset.y=0.0;
                 right_flash_prop.pp_offset.z=0.0;
-                right_flash_prop.wheel=nullptr;
-                right_flash_prop.wheelrotdegree=0.0;
                 right_flash_prop.beacon_light_rotation_angle[0]=0.5; //alt
                 right_flash_prop.beacon_light_rotation_rate[0]=1.0;
                 right_flash_prop.beacontype='w';
@@ -1548,7 +1540,7 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
                            * Ogre::Quaternion(Ogre::Degree(def.rotation.x), Ogre::Vector3::UNIT_X);
     prop.pp_rota         = def.rotation;
     prop.cameramode      = def.camera_settings.mode; /* Handles default value */
-    prop.wheelrotdegree  = 160.f;
+    prop.pp_wheel_rot_degree  = 160.f; // ??
 
     /* SPECIAL PROPS */
 
@@ -1580,17 +1572,17 @@ void ActorSpawner::ProcessProp(RigDef::Prop & def)
         {
             steering_wheel_offset = def.special_prop_dashboard.offset;
         }
-        prop.wheelrotdegree = def.special_prop_dashboard.rotation_angle;
-        prop.wheel = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-        prop.wheelpos = steering_wheel_offset;
+        prop.pp_wheel_rot_degree = def.special_prop_dashboard.rotation_angle;
+        prop.pp_wheel_scene_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+        prop.pp_wheel_pos = steering_wheel_offset;
         const std::string instance_name = this->ComposeName("SteeringWheelPropEntity", prop_index);
-        prop.wheelmo = new MeshObject(
+        prop.pp_wheel_mesh_obj = new MeshObject(
             def.special_prop_dashboard.mesh_name,
             m_custom_resource_group,
             instance_name,
-            prop.wheel
+            prop.pp_wheel_scene_node
             );
-        this->SetupNewEntity(prop.wheelmo->getEntity(), Ogre::ColourValue(0, 0.5, 0.5));
+        this->SetupNewEntity(prop.pp_wheel_mesh_obj->getEntity(), Ogre::ColourValue(0, 0.5, 0.5));
     }
 
     /* CREATE THE PROP */

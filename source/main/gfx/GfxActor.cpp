@@ -210,18 +210,18 @@ RoR::GfxActor::~GfxActor()
             prop.pp_scene_node->removeAndDestroyAllChildren();
             gEnv->sceneManager->destroySceneNode(prop.pp_scene_node);
         }
-        if (prop.wheel)
+        if (prop.pp_wheel_scene_node)
         {
-            prop.wheel->removeAndDestroyAllChildren();
-            gEnv->sceneManager->destroySceneNode(prop.wheel);
+            prop.pp_wheel_scene_node->removeAndDestroyAllChildren();
+            gEnv->sceneManager->destroySceneNode(prop.pp_wheel_scene_node);
         }
         if (prop.pp_mesh_obj)
         {
             delete prop.pp_mesh_obj;
         }
-        if (prop.wheelmo)
+        if (prop.pp_wheel_mesh_obj)
         {
-            delete prop.wheelmo;
+            delete prop.pp_wheel_mesh_obj;
         }
     }
     m_props.clear();
@@ -1740,11 +1740,11 @@ void RoR::GfxActor::ScaleActor(Ogre::Vector3 relpos, float ratio)
         if (prop.pp_scene_node)
             prop.pp_scene_node->scale(ratio, ratio, ratio);
 
-        if (prop.wheel)
-            prop.wheel->scale(ratio, ratio, ratio);
-
-        if (prop.wheel)
-            prop.wheelpos = relpos + (prop.wheelpos - relpos) * ratio;
+        if (prop.pp_wheel_scene_node)
+        {
+            prop.pp_wheel_scene_node->scale(ratio, ratio, ratio);
+            prop.pp_wheel_pos = relpos + (prop.pp_wheel_pos - relpos) * ratio;
+        }
 
         if (prop.beacon_flare_billboard_scene_node[0])
             prop.beacon_flare_billboard_scene_node[0]->scale(ratio, ratio, ratio);
@@ -2376,12 +2376,12 @@ void RoR::GfxActor::UpdateProps(float dt, bool is_player_actor)
         Quaternion orientation = Quaternion(refx, normal, refy) * prop.pp_rot;
         prop.pp_scene_node->setOrientation(orientation);
 
-        if (prop.wheel) // special prop - steering wheel
+        if (prop.pp_wheel_scene_node) // special prop - steering wheel
         {
             Quaternion brot = Quaternion(Degree(-59.0), Vector3::UNIT_X);
-            brot = brot * Quaternion(Degree(m_simbuf.simbuf_hydro_dir_state * prop.wheelrotdegree), Vector3::UNIT_Y);
-            prop.wheel->setPosition(mposition + normal * prop.pp_offset.z + orientation * prop.wheelpos);
-            prop.wheel->setOrientation(orientation * brot);
+            brot = brot * Quaternion(Degree(m_simbuf.simbuf_hydro_dir_state * prop.pp_wheel_rot_degree), Vector3::UNIT_Y);
+            prop.pp_wheel_scene_node->setPosition(mposition + normal * prop.pp_offset.z + orientation * prop.pp_wheel_pos);
+            prop.pp_wheel_scene_node->setOrientation(orientation * brot);
         }
     }
 
@@ -2411,8 +2411,8 @@ void RoR::GfxActor::SetPropsVisible(bool visible)
     {
         if (prop.pp_mesh_obj)
             prop.pp_mesh_obj->setVisible(visible);
-        if (prop.wheel)
-            prop.wheel->setVisible(visible);
+        if (prop.pp_wheel_mesh_obj)
+            prop.pp_wheel_mesh_obj->setVisible(visible);
         if (prop.beacon_flare_billboard_scene_node[0])
             prop.beacon_flare_billboard_scene_node[0]->setVisible(visible);
         if (prop.beacon_flare_billboard_scene_node[1])
@@ -3311,8 +3311,8 @@ void RoR::GfxActor::SetCastShadows(bool value)
     {
         if (prop.pp_mesh_obj != nullptr && prop.pp_mesh_obj->getEntity())
             prop.pp_mesh_obj->getEntity()->setCastShadows(value);
-        if (prop.wheelmo != nullptr && prop.wheelmo->getEntity())
-            prop.wheelmo->getEntity()->setCastShadows(value);
+        if (prop.pp_wheel_mesh_obj != nullptr && prop.pp_wheel_mesh_obj->getEntity())
+            prop.pp_wheel_mesh_obj->getEntity()->setCastShadows(value);
     }
 
     // Wheels
