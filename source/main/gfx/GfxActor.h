@@ -274,7 +274,7 @@ private:
     DebugViewType               m_last_debug_view;
     std::vector<NodeGfx>        m_gfx_nodes;
     std::vector<AirbrakeGfx>    m_gfx_airbrakes;
-    std::vector<Prop>         m_props;
+    std::vector<Prop>           m_props;
     std::vector<FlexBody*>      m_flexbodies;
     int                         m_driverseat_prop_index;
     Attributes                  m_attr;
