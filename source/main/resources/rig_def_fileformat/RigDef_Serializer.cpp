@@ -2721,4 +2721,5 @@ void Serializer::ProcessScripts(File::Module* module)
         }
         m_stream << " " << script.filename << " " << script.arguments;
     }
+    m_stream << endl << endl;
 }
