@@ -384,7 +384,7 @@ void registerOgreVector2(AngelScript::asIScriptEngine* engine)
     // Register the object constructors
     r = engine->RegisterObjectBehaviour("vector2", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(Vector2DefaultConstructor), asCALL_CDECL_OBJLAST);
     MYASSERT( r >= 0 );
-    r = engine->RegisterObjectBehaviour("vector2", asBEHAVE_CONSTRUCT, "void f(float, float, float)", asFUNCTION(Vector2InitConstructor), asCALL_CDECL_OBJLAST);
+    r = engine->RegisterObjectBehaviour("vector2", asBEHAVE_CONSTRUCT, "void f(float, float)", asFUNCTION(Vector2InitConstructor), asCALL_CDECL_OBJLAST);
     MYASSERT( r >= 0 );
     r = engine->RegisterObjectBehaviour("vector2", asBEHAVE_CONSTRUCT, "void f(const vector2 &in)", asFUNCTION(Vector2CopyConstructor), asCALL_CDECL_OBJLAST);
     MYASSERT( r >= 0 );
