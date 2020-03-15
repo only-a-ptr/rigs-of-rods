@@ -783,9 +783,8 @@ void registerOgreTexture(AngelScript::asIScriptEngine* engine)
     engine->RegisterObjectBehaviour("TexturePtr", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(TexturePtrDefaultConstructor), asCALL_CDECL_OBJLAST);
     engine->RegisterObjectBehaviour("TexturePtr", asBEHAVE_CONSTRUCT, "void f(const TexturePtr&in)", asFUNCTION(TexturePtrCopyConstructor), asCALL_CDECL_OBJLAST);
     engine->RegisterObjectBehaviour("TexturePtr", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(TexturePtrDestructor), asCALL_CDECL_OBJLAST);
-return;
+
     // Wrappers are inevitable, see https://www.gamedev.net/forums/topic/540419-custom-smartpointers-and-angelscript-/
-    // Pseudo-member functions must accept `this` as `const&` (otherwise the program crashes)
     engine->RegisterObjectMethod("TexturePtr", "uint getWidth()", asFUNCTIONPR([](TexturePtr const& self){
         return (Ogre::uint32)self->getWidth();
     }, (TexturePtr const&), Ogre::uint32), asCALL_CDECL_OBJFIRST);
@@ -794,7 +793,11 @@ return;
     }, (TexturePtr const&), Ogre::uint32), asCALL_CDECL_OBJFIRST);
 
     engine->RegisterObjectType("TextureManager", sizeof(TextureManager), asOBJ_REF | asOBJ_NOCOUNT);
-    engine->RegisterObjectMethod("TextureManager", "TexturePtr load(string file, string rg)", asMETHOD(TextureManager, load), asCALL_THISCALL_OBJFIRST);
+    // Convenience wrapper to omit optional parameters
+    engine->RegisterObjectMethod("TextureManager", "TexturePtr load(string file, string rg)", asFUNCTIONPR([](TextureManager& mgr, std::string const& file, std::string const& rg){
+        return mgr.load(file, rg);
+    }, (TextureManager& mgr, std::string const& file, std::string const& rg), TexturePtr), asCALL_CDECL_OBJFIRST);
+
 
     engine->SetDefaultNamespace("Ogre::TextureManager");
     engine->RegisterGlobalFunction("TextureManager& getSingleton()", asFUNCTION(TextureManager::getSingleton), asCALL_CDECL);
