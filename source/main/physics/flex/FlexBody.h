@@ -72,6 +72,9 @@ public:
 
     int size() { return static_cast<int>(m_vertex_count); };
 
+    Ogre::SceneNode* GetSceneNode() { return m_scene_node; }
+    Ogre::Entity* GetSceneEntity() { return static_cast<Ogre::Entity*>(m_scene_node->getAttachedObject(0)); }
+
 private:
 
     RoR::GfxActor*    m_gfx_actor;
@@ -89,7 +92,6 @@ private:
     int               m_node_y;
     Ogre::Vector3     m_center_offset;
     Ogre::SceneNode*  m_scene_node;
-    Ogre::Entity*     m_scene_entity;
     int               m_camera_mode; ///< Visibility control {-2 = always, -1 = 3rdPerson only, 0+ = cinecam index}
 
     int                                 m_shared_buf_num_verts;

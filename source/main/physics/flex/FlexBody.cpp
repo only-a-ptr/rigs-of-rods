@@ -50,7 +50,6 @@ FlexBody::FlexBody(
     , m_node_y(ny)
     , m_has_texture_blend(true)
     , m_scene_node(nullptr)
-    , m_scene_entity(ent)
     , m_shared_buf_num_verts(0)
     , m_has_texture(true)
     , m_blend_changed(false)
@@ -540,15 +539,16 @@ FlexBody::~FlexBody()
     if (m_dst_pos     != nullptr) { free(m_dst_pos    ); }
     if (m_src_colors  != nullptr) { free(m_src_colors ); }
 
+    // OGRE resource - scene entity
+    Ogre::MeshPtr mesh = this->GetSceneEntity()->getMesh();
+    m_scene_node->removeAndDestroyAllChildren();
+
     // OGRE resource - scene node
     m_scene_node->getParentSceneNode()->removeChild(m_scene_node);
     gEnv->sceneManager->destroySceneNode(m_scene_node);
     m_scene_node = nullptr;
 
-    // OGRE resource - scene entity
-    Ogre::MeshPtr mesh = m_scene_entity->getMesh();
-    gEnv->sceneManager->destroyEntity(m_scene_entity);
-    m_scene_entity = nullptr;
+
 
     // OGRE resource - mesh (unique copy - should be destroyed)
     Ogre::MeshManager::getSingleton().remove(mesh->getHandle());
@@ -562,7 +562,7 @@ void FlexBody::setVisible(bool visible)
 
 void FlexBody::SetFlexbodyCastShadow(bool val)
 {
-    m_scene_entity->setCastShadows(val);
+    this->GetSceneEntity()->setCastShadows(val);
 }
 
 void FlexBody::printMeshInfo(Mesh* mesh)
