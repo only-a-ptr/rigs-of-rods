@@ -33,17 +33,11 @@
 #include "ScriptEngine.h"
 #include "ThreadPool.h" // class Task
 
-#include <OgreAxisAlignedBox.h>
-#include <OgreColourValue.h>
-#include <OgreMaterial.h>
-#include <OgreQuaternion.h>
-#include <OgreTexture.h>
-#include <OgreVector3.h>
+#include <Ogre.h>
 #include <string>
 #include <vector>
 
-namespace RoR
-{
+namespace RoR {
 
 class GfxActor
 {
