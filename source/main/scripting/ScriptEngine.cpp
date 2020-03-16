@@ -388,6 +388,7 @@ void ScriptEngine::init()
     m_engine_frame->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, true); // Needed for ImGui
     m_engine_frame->SetMessageCallback(AngelScript::asMETHOD(ScriptEngine,msgCallback), this, AngelScript::asCALL_THISCALL);
     AngelScript::RegisterStdString(m_engine_frame);
+    AngelScript::RegisterScriptArray(engine, true);
     //AngelScript::RegisterStdStringUtils(m_engine_frame);
     AngelScript::RegisterScriptMath(m_engine_frame);
     m_engine_frame->RegisterGlobalFunction("void log(const string &in)", AngelScript::asFUNCTION(logString), AngelScript::asCALL_CDECL);

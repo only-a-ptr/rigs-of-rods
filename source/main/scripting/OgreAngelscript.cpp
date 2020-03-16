@@ -210,6 +210,22 @@ static void TexturePtrDestructor(TexturePtr* self)
     (self)->~TexturePtr();
 }
 
+/***MATERIAL***/
+static void MaterialPtrDefaultConstructor(MaterialPtr* self)
+{
+    new (self) MaterialPtr();
+}
+
+static void MaterialPtrCopyConstructor(const MaterialPtr& other, MaterialPtr* self)
+{
+    new (self) MaterialPtr(other);
+}
+
+static void MaterialPtrDestructor(MaterialPtr* self)
+{
+    (self)->~MaterialPtr();
+}
+
 // forward declarations, defined below
 void registerOgreVector3(AngelScript::asIScriptEngine* engine);
 void registerOgreVector2(AngelScript::asIScriptEngine* engine);
@@ -217,6 +233,8 @@ void registerOgreRadian(AngelScript::asIScriptEngine* engine);
 void registerOgreDegree(AngelScript::asIScriptEngine* engine);
 void registerOgreQuaternion(AngelScript::asIScriptEngine* engine);
 void registerOgreTexture(AngelScript::asIScriptEngine* engine);
+void registerOgreMaterial(AngelScript::asIScriptEngine* engine);
+void registerOgreScene(AngelScript::asIScriptEngine* engine);
 
 // main registration method
 void RegisterOgreObjects(AngelScript::asIScriptEngine* engine)
@@ -255,6 +273,7 @@ void RegisterOgreObjects(AngelScript::asIScriptEngine* engine)
     registerOgreVector2(engine);
     registerOgreQuaternion(engine);
     registerOgreTexture(engine);
+    registerOgreMaterial(engine);
 }
 
 // register Ogre::Vector3
@@ -779,6 +798,7 @@ void registerOgreColourValue(AngelScript::asIScriptEngine* engine)
 void registerOgreTexture(AngelScript::asIScriptEngine* engine)
 {
     engine->SetDefaultNamespace("Ogre");
+
     engine->RegisterObjectType("TexturePtr", sizeof(TexturePtr), asOBJ_VALUE | asGetTypeTraits<TexturePtr>());
     engine->RegisterObjectBehaviour("TexturePtr", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(TexturePtrDefaultConstructor), asCALL_CDECL_OBJLAST);
     engine->RegisterObjectBehaviour("TexturePtr", asBEHAVE_CONSTRUCT, "void f(const TexturePtr&in)", asFUNCTION(TexturePtrCopyConstructor), asCALL_CDECL_OBJLAST);
@@ -792,7 +812,12 @@ void registerOgreTexture(AngelScript::asIScriptEngine* engine)
         return (Ogre::uint32)self->getHeight();
     }, (TexturePtr const&), Ogre::uint32), asCALL_CDECL_OBJFIRST);
 
-    engine->RegisterObjectType("TextureManager", sizeof(TextureManager), asOBJ_REF | asOBJ_NOCOUNT);
+    // Ogre::Resource
+    engine->RegisterObjectMethod("TexturePtr", "string getName()", asFUNCTIONPR([](TexturePtr const& self){
+        return self->getName();
+    }, (TexturePtr const&), std::string), asCALL_CDECL_OBJFIRST);
+
+    engine->RegisterObjectType("TextureManager", 0, asOBJ_REF | asOBJ_NOCOUNT);
     // Convenience wrapper to omit optional parameters
     engine->RegisterObjectMethod("TextureManager", "TexturePtr load(string file, string rg)", asFUNCTIONPR([](TextureManager& mgr, std::string const& file, std::string const& rg){
         return mgr.load(file, rg);
@@ -801,6 +826,75 @@ void registerOgreTexture(AngelScript::asIScriptEngine* engine)
 
     engine->SetDefaultNamespace("Ogre::TextureManager");
     engine->RegisterGlobalFunction("TextureManager& getSingleton()", asFUNCTION(TextureManager::getSingleton), asCALL_CDECL);
+
+    engine->SetDefaultNamespace("");
+}
+
+void registerOgreMaterial(AngelScript::asIScriptEngine* engine)
+{
+    engine->SetDefaultNamespace("Ogre");
+
+    engine->RegisterObjectType("TextureUnitState", 0, asOBJ_REF | asOBJ_NOCOUNT);
+    engine->RegisterObjectMethod("TextureUnitState", "uint  getNumFrames()                          ", asMETHOD(TextureUnitState, getNumFrames)       , asCALL_THISCALL);           
+    engine->RegisterObjectMethod("TextureUnitState", "uint  getCurrentFrame()                       ", asMETHOD(TextureUnitState, getCurrentFrame)    , asCALL_THISCALL);             
+    engine->RegisterObjectMethod("TextureUnitState", "void  setCurrentFrame(uint)                   ", asMETHOD(TextureUnitState, setCurrentFrame)    , asCALL_THISCALL);         
+    engine->RegisterObjectMethod("TextureUnitState", "const string& getTextureName()                ", asMETHOD(TextureUnitState, getTextureName)     , asCALL_THISCALL);    
+    engine->RegisterObjectMethod("TextureUnitState", "const string& getFrameTextureName(uint)       ", asMETHOD(TextureUnitState, getFrameTextureName) , asCALL_THISCALL);
+    engine->RegisterObjectMethod("TextureUnitState", "void  setFrameTextureName(const string&, uint)", asMETHOD(TextureUnitState, setFrameTextureName) , asCALL_THISCALL);    
+    engine->RegisterObjectMethod("TextureUnitState", "void  setTexture( const TexturePtr& texPtr)   ", asMETHOD(TextureUnitState, setTexture)     , asCALL_THISCALL);    
+    engine->RegisterObjectMethod("TextureUnitState", "void  setName( const TextsurePtr& texPtr)     ", asMETHOD(TextureUnitState, setTexture)     , asCALL_THISCALL);   
+    engine->RegisterObjectMethod("TextureUnitState", "void  setTexture( const TexturePtr& texPtr)   ", asMETHOD(TextureUnitState, setTexture)     , asCALL_THISCALL);   
+
+    engine->RegisterObjectType("Pass", 0, asOBJ_REF | asOBJ_NOCOUNT);
+    engine->RegisterObjectMethod("Pass", "TextureUnitState@ createTextureUnitState()                  ", asMETHODPR(Pass, createTextureUnitState, (void), TextureUnitState*)    , asCALL_THISCALL);
+    engine->RegisterObjectMethod("Pass", "TextureUnitState@ getTextureUnitState(ushort index)         ", asMETHODPR(Pass, getTextureUnitState, (unsigned short)const, TextureUnitState* ), asCALL_THISCALL);
+    engine->RegisterObjectMethod("Pass", "TextureUnitState@ getTextureUnitState(const string& name)   ", asMETHODPR(Pass, getTextureUnitState, (const String&)const, TextureUnitState* ), asCALL_THISCALL);
+    engine->RegisterObjectMethod("Pass", "void removeTextureUnitState(ushort)                         ", asMETHOD(Pass, removeTextureUnitState)    , asCALL_THISCALL);
+    engine->RegisterObjectMethod("Pass", "void removeAllTextureUnitStates()                           ", asMETHOD(Pass, removeAllTextureUnitStates), asCALL_THISCALL);
+
+    engine->RegisterObjectType("Technique", 0, asOBJ_REF | asOBJ_NOCOUNT);
+    engine->RegisterObjectMethod("Technique", "Pass@  createPass()               ", asMETHOD(Technique, createPass)      , asCALL_THISCALL);       
+    engine->RegisterObjectMethod("Technique", "Pass@  getPass(ushort index)      ", asMETHODPR(Technique, getPass, (unsigned short)const, Pass*)  , asCALL_THISCALL);
+    engine->RegisterObjectMethod("Technique", "Pass@  getPass(const string& name)", asMETHODPR(Technique, getPass, (std::string const&)const, Pass*)   , asCALL_THISCALL);
+    engine->RegisterObjectMethod("Technique", "ushort getNumPasses()             ", asMETHOD(Technique, getNumPasses)    , asCALL_THISCALL);       
+    engine->RegisterObjectMethod("Technique", "void   removePass(ushort index)   ", asMETHOD(Technique, removePass)      , asCALL_THISCALL);
+    engine->RegisterObjectMethod("Technique", "void   removeAllPasses()          ", asMETHOD(Technique, removeAllPasses) , asCALL_THISCALL);       
+
+    engine->RegisterObjectType("MaterialPtr", sizeof(MaterialPtr), asOBJ_VALUE | asGetTypeTraits<MaterialPtr>());
+    engine->RegisterObjectBehaviour("MaterialPtr", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(MaterialPtrDefaultConstructor), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectBehaviour("MaterialPtr", asBEHAVE_CONSTRUCT, "void f(const MaterialPtr&in)", asFUNCTION(MaterialPtrCopyConstructor), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectBehaviour("MaterialPtr", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(MaterialPtrDestructor), asCALL_CDECL_OBJLAST);
+
+    engine->RegisterObjectMethod("MaterialPtr", "Technique@ createTechnique()               ", asFUNCTIONPR([](MaterialPtr& mat){ return mat->createTechnique(); }, (MaterialPtr&), Technique*), asCALL_CDECL_OBJFIRST);
+    engine->RegisterObjectMethod("MaterialPtr", "Technique@ getTechnique(ushort index)      ", asFUNCTIONPR([](MaterialPtr& mat, unsigned short index){ return mat->getTechnique(index); }, (MaterialPtr&, unsigned short), Technique*), asCALL_CDECL_OBJFIRST);
+    engine->RegisterObjectMethod("MaterialPtr", "Technique@ getTechnique(const String& name)", asFUNCTIONPR([](MaterialPtr& mat, std::string const& name){ return mat->getTechnique(name); }, (MaterialPtr&, std::string const&), Technique*), asCALL_CDECL_OBJFIRST);
+    engine->RegisterObjectMethod("MaterialPtr", "ushort getNumTechniques()                  ", asFUNCTIONPR([](MaterialPtr& mat){ return mat->getNumTechniques(); }, (MaterialPtr&), unsigned short), asCALL_CDECL_OBJFIRST);
+    engine->RegisterObjectMethod("MaterialPtr", "void removeTechnique(ushort index)         ", asFUNCTIONPR([](MaterialPtr& mat, unsigned short index){ return mat->removeTechnique(index); }, (MaterialPtr&, unsigned short), void), asCALL_CDECL_OBJFIRST);
+    engine->RegisterObjectMethod("MaterialPtr", "void removeAllTechniques()                 ", asFUNCTIONPR([](MaterialPtr& mat){ return mat->removeAllTechniques(); }, (MaterialPtr&), void), asCALL_CDECL_OBJFIRST);
+
+    // Ogre::Resource
+    engine->RegisterObjectMethod("MaterialPtr", "string getName()                           ", asFUNCTIONPR([](MaterialPtr const& self){ return self->getName(); }, (MaterialPtr const&), std::string), asCALL_CDECL_OBJFIRST);
+
+    engine->SetDefaultNamespace("");
+}
+
+
+void registerOgreScene(AngelScript::asIScriptEngine* engine)
+{
+    engine->SetDefaultNamespace("Ogre");
+
+    engine->RegisterObjectType("SubEntity", 0, asOBJ_REF | asOBJ_NOCOUNT);
+    engine->RegisterObjectMethod("SubEntity", "const string& getMaterialName()                                 ", asMETHOD(SubEntity, getMaterialName) , asCALL_THISCALL);
+    engine->RegisterObjectMethod("SubEntity", "void setMaterialName( const String& name, const String& group ) ", asMETHOD(SubEntity, setMaterialName) , asCALL_THISCALL);
+    engine->RegisterObjectMethod("SubEntity", "void setMaterial( const MaterialPtr& material )                 ", asMETHOD(SubEntity, setMaterial)     , asCALL_THISCALL);
+    engine->RegisterObjectMethod("SubEntity", "void setVisible(bool visible)                                   ", asMETHOD(SubEntity, setVisible)      , asCALL_THISCALL);
+    engine->RegisterObjectMethod("SubEntity", "bool isVisible()                                            ", asMETHOD(SubEntity, isVisible)       , asCALL_THISCALL);    
+
+    engine->RegisterObjectType("Entity", 0, asOBJ_REF | asOBJ_NOCOUNT);
+    //const MeshPtr& getMesh(void) const;
+    engine->RegisterObjectMethod("Entity", "SubEntity@ getSubEntity(uint index) const    ", asMETHODPR(Entity, getSubEntity, (size_t)const, SubEntity* ), asCALL_THISCALL);
+    engine->RegisterObjectMethod("Entity", "SubEntity@ getSubEntity( const string& name )", asMETHODPR(Entity, getSubEntity, (const String&)const, SubEntity* ), asCALL_THISCALL);
+    engine->RegisterObjectMethod("Entity", "uint getNumSubEntities()                 ", asMETHOD(Entity, getNumSubEntities), asCALL_THISCALL);
 
     engine->SetDefaultNamespace("");
 }
