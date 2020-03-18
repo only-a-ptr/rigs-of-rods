@@ -262,6 +262,7 @@ if (ROR_USE_ANGELSCRIPT)
             scripting/ImGuiAngelscript.cpp
             scripting/OgreScriptBuilder.{h,cpp}
             scripting/ScriptEngine.{h,cpp}
+            scripting/ScriptTypes.{h,cpp}
             )
 endif ()
 

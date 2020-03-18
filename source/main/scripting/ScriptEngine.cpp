@@ -52,6 +52,7 @@
 #include "PlatformUtils.h"
 #include "RoRFrameListener.h" // SimController
 #include "ScriptEvents.h"
+#include "ScriptTypes.h"
 #include "VehicleAI.h"
 
 const char *ScriptEngine::moduleName = "RoRScript";
@@ -388,10 +389,11 @@ void ScriptEngine::init()
     m_engine_frame->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, true); // Needed for ImGui
     m_engine_frame->SetMessageCallback(AngelScript::asMETHOD(ScriptEngine,msgCallback), this, AngelScript::asCALL_THISCALL);
     AngelScript::RegisterStdString(m_engine_frame);
-    AngelScript::RegisterScriptArray(engine, true);
+    AngelScript::RegisterScriptArray(m_engine_frame, true);
     //AngelScript::RegisterStdStringUtils(m_engine_frame);
     AngelScript::RegisterScriptMath(m_engine_frame);
     m_engine_frame->RegisterGlobalFunction("void log(const string &in)", AngelScript::asFUNCTION(logString), AngelScript::asCALL_CDECL);
+    RegisterScriptTypes(m_engine_frame);
     RegisterOgreObjects(m_engine_frame);
     RegisterImGuiBindings(m_engine_frame);
     RegisterFrameStepInterface(m_engine_frame);

@@ -45,6 +45,8 @@ class GfxActor
 
 public:
 
+    typedef std::vector<FlexBody*> FlexBodyPtrVec;
+
     enum class VideoCamState
     {
         VCSTATE_INVALID,
@@ -235,6 +237,7 @@ public:
     SimBuffer::NodeSB*        GetSimNodeBuffer   ()                       { return m_simbuf.simbuf_nodes.get(); }
     std::set<GfxActor*>       GetLinkedGfxActors ()                       { return m_linked_gfx_actors; }
     Ogre::String              GetResourceGroup   ()                       { return m_custom_resource_group; }
+    FlexBodyPtrVec&           GetFlexbodies      ()                       { return m_flexbodies; }
     std::string               FetchActorDesignName() const;
     int                       FetchNumBeams      () const ;
     int                       FetchNumNodes      () const ;
@@ -267,7 +270,7 @@ private:
     std::vector<NodeGfx>        m_gfx_nodes;
     std::vector<AirbrakeGfx>    m_gfx_airbrakes;
     std::vector<Prop>           m_props;
-    std::vector<FlexBody*>      m_flexbodies;
+    FlexBodyPtrVec              m_flexbodies;
     int                         m_driverseat_prop_index;
     Attributes                  m_attr;
     DustPool*                   m_particles_drip;

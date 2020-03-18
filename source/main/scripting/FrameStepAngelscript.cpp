@@ -22,7 +22,9 @@
 #include "ScriptEngine.h"
 
 #include "Console.h"
+#include "FlexBody.h"
 #include "GfxActor.h"
+#include "ScriptTypes.h"
 
 using namespace RoR;
 using namespace AngelScript;
@@ -84,9 +86,22 @@ void RegisterFrameStepInterface(asIScriptEngine* engine)
     engine->RegisterObjectProperty(obj, "float          ap_ils_hdev            ", asOFFSET(GfxActor::SimBuffer, simbuf_ap_ils_hdev            )); //float                       
     engine->RegisterObjectProperty(obj, "int            ap_vs_value            ", asOFFSET(GfxActor::SimBuffer, simbuf_ap_vs_value            )); //int  
 
+    obj = "FlexBody";
+    engine->RegisterObjectType(obj, 0, asOBJ_REF | asOBJ_NOCOUNT);
+    engine->RegisterObjectMethod(obj, "Ogre::Entity@ GetSceneEntity()", asMETHOD(FlexBody, GetSceneEntity), asCALL_THISCALL);
+
     obj = "GfxActor";
     engine->RegisterObjectType(obj, 0, asOBJ_REF | asOBJ_NOCOUNT);
     engine->RegisterObjectMethod(obj, "ActorSimBuffer& GetSimDataBuffer()", asMETHODPR(GfxActor, GetSimDataBuffer, (void), GfxActor::SimBuffer&), asCALL_THISCALL);
+
+    // Experiment - array_view
+    engine->RegisterObjectMethod(obj, "array_view<FlexBody@> GetFlexbodies()", asFUNCTIONPR([](GfxActor* self)
+        {
+            const int elem_size = sizeof(asPWORD); // Size of pointer type - see AngelScript SDK, bundled addon "scriptarray.cpp", constructor `CScriptArray::CScriptArray(asITypeInfo *ti, void *buf)`
+            GfxActor::FlexBodyPtrVec& vec = self->GetFlexbodies();
+            return ScriptArrayView(vec.data(), vec.size(), elem_size);
+        },
+    (GfxActor* self), ScriptArrayView), asCALL_CDECL_OBJFIRST);
 
     obj = "CVar"; // Read-only interface
     engine->RegisterObjectType(obj, 0, asOBJ_REF | asOBJ_NOCOUNT);
