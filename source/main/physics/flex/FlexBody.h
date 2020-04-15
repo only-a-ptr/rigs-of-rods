@@ -26,10 +26,7 @@
 #include "Flexable.h"
 #include "Locator_t.h"
 
-#include <OgreVector3.h>
-#include <OgreQuaternion.h>
-#include <OgreHardwareVertexBuffer.h>
-#include <OgreMesh.h>
+#include <Ogre.h>
 
 /// Flexbody = A deformable mesh; updated on CPU every frame, then uploaded to video memory
 class FlexBody
@@ -41,7 +38,7 @@ class FlexBody
         RigDef::Flexbody* def,
         RoR::FlexBodyCacheData* preloaded_from_cache,
         RoR::GfxActor* gfx_actor,
-        Ogre::Entity* entity,
+        Ogre::MeshPtr mesh,
         int ref, 
         int nx, 
         int ny,

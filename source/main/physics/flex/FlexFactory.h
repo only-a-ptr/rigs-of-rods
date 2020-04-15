@@ -169,10 +169,10 @@ public:
 
     FlexBody* CreateFlexBody(
         RigDef::Flexbody* def,
-        const int ref_node, 
-        const int x_node, 
-        const int y_node, 
-        Ogre::Quaternion const & rot, 
+        const int ref_node,
+        const int x_node,
+        const int y_node,
+        Ogre::Quaternion const & rot,
         std::vector<unsigned int> & node_indices,
         std::string resource_group_name);
 
@@ -191,11 +191,7 @@ public:
     void  SaveFlexbodiesToCache();
 
 private:
-
-    void  ResolveFlexbodyLOD(std::string meshname, Ogre::MeshPtr newmesh);
-
-    ActorSpawner*             m_rig_spawner;
-
+    ActorSpawner*           m_rig_spawner;
     FlexBodyFileIO          m_flexbody_cache;
     bool                    m_is_flexbody_cache_enabled;
     bool                    m_is_flexbody_cache_loaded;

@@ -72,13 +72,6 @@ FlexBody* FlexFactory::CreateFlexBody(
     int flexbody_id = m_rig_spawner->GetActor()->GetGfxActor()->GetNumFlexbodies();
     const std::string mesh_unique_name = m_rig_spawner->ComposeName("FlexbodyMesh", flexbody_id);
     Ogre::MeshPtr mesh = common_mesh->clone(mesh_unique_name);
-    if (App::gfx_flexbody_lods.GetActive())
-    {
-        this->ResolveFlexbodyLOD(def->mesh_name, mesh);
-    }
-    const std::string flexbody_name = m_rig_spawner->ComposeName("Flexbody", flexbody_id);
-    Ogre::Entity* entity = gEnv->sceneManager->createEntity(flexbody_name, mesh_unique_name, resource_group_name);
-    m_rig_spawner->SetupNewEntity(entity, Ogre::ColourValue(0.5, 0.5, 1));
 
     FLEX_DEBUG_LOG(__FUNCTION__);
     FlexBodyCacheData* from_cache = nullptr;
@@ -93,7 +86,7 @@ FlexBody* FlexFactory::CreateFlexBody(
         def,
         from_cache,
         m_rig_spawner->GetActor()->GetGfxActor(),
-        entity,
+        mesh,
         ref_node,
         x_node,
         y_node,
@@ -104,6 +97,18 @@ FlexBody* FlexFactory::CreateFlexBody(
     {
         m_flexbody_cache.AddItemToSave(new_flexbody);
     }
+
+    if (App::gfx_flexbody_lods.GetActive())
+    {
+        Ogre::MeshLodGenerator::getSingleton().generateAutoconfiguredLodLevels(mesh);
+    }
+
+    new_flexbody->m_scene_entity = gEnv->sceneManager->createEntity(
+        m_rig_spawner->ComposeName("Flexbody", flexbody_id), mesh);
+    m_rig_spawner->SetupNewEntity(new_flexbody->m_scene_entity, Ogre::ColourValue(0.5, 0.5, 1));
+
+    new_flexbody->m_scene_node->attachObject(new_flexbody->m_scene_entity);
+
     return new_flexbody;
 }
 
@@ -410,25 +415,5 @@ void FlexFactory::SaveFlexbodiesToCache()
     {
         FLEX_DEBUG_LOG(__FUNCTION__ " >> Saving flexbodies");
         m_flexbody_cache.SaveFile();
-    }
-}
-
-void FlexFactory::ResolveFlexbodyLOD(std::string meshname, Ogre::MeshPtr newmesh)
-{
-    std::string basename, ext;
-    Ogre::StringUtil::splitBaseFilename(meshname, basename, ext);
-    for (int i=0; i<4;i++)
-    {
-        const std::string fn = basename + "_" + TOSTRING(i) + ".mesh";
-
-        if (!Ogre::ResourceGroupManager::getSingleton().resourceExistsInAnyGroup(fn))
-            continue;
-
-        float distance = 3;
-        if (i == 1) distance = 20;
-        if (i == 2) distance = 50;
-        if (i == 3) distance = 200;
-        //newmesh->createManualLodLevel(distance, fn);
-        Ogre::MeshLodGenerator::getSingleton().generateAutoconfiguredLodLevels(newmesh);
     }
 }

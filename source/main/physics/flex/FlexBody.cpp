@@ -36,7 +36,7 @@ FlexBody::FlexBody(
     RigDef::Flexbody* def,
     RoR::FlexBodyCacheData* preloaded_from_cache,
     RoR::GfxActor* gfx_actor,
-    Ogre::Entity* ent,
+    Ogre::MeshPtr mesh,
     int ref,
     int nx,
     int ny,
@@ -50,7 +50,7 @@ FlexBody::FlexBody(
     , m_node_y(ny)
     , m_has_texture_blend(true)
     , m_scene_node(nullptr)
-    , m_scene_entity(ent)
+    , m_scene_entity(nullptr)
     , m_shared_buf_num_verts(0)
     , m_has_texture(true)
     , m_blend_changed(false)
@@ -61,9 +61,6 @@ FlexBody::FlexBody(
     , m_src_colors(nullptr)
     , m_gfx_actor(gfx_actor)
 {
-
-    Ogre::Vector3* vertices = nullptr;
-
     Vector3 normal = Vector3::UNIT_Y;
     Vector3 position = Vector3::ZERO;
     Quaternion orientation = Quaternion::ZERO;
@@ -94,7 +91,6 @@ FlexBody::FlexBody(
         orientation = rot;
     }
 
-    Ogre::MeshPtr mesh=ent->getMesh();
     int num_submeshes = static_cast<int>(mesh->getNumSubMeshes());
     if (preloaded_from_cache == nullptr)
     {
@@ -304,7 +300,7 @@ FlexBody::FlexBody(
     }
     else
     {
-        vertices=(Vector3*)malloc(sizeof(Vector3)*m_vertex_count);
+        Ogre::Vector3* vertices=(Vector3*)malloc(sizeof(Vector3)*m_vertex_count);
         m_dst_pos=(Vector3*)malloc(sizeof(Vector3)*m_vertex_count);
         m_src_normals=(Vector3*)malloc(sizeof(Vector3)*m_vertex_count);
         m_dst_normals=(Vector3*)malloc(sizeof(Vector3)*m_vertex_count);
@@ -463,6 +459,7 @@ FlexBody::FlexBody(
 
             // that's it!
         }
+        free(vertices);
 
     } // if (preloaded_from_cache == nullptr)
 
@@ -483,9 +480,8 @@ FlexBody::FlexBody(
     aab.setMaximum(Vector3(ma,ma,ma));
     mesh->_setBounds(aab, true);
 
-    //okay, show the mesh now
     m_scene_node=gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-    m_scene_node->attachObject(ent);
+    // Entity is created & attached by FlexFactory afterwards
     m_scene_node->setPosition(position);
 
     if (preloaded_from_cache == nullptr)
@@ -506,8 +502,6 @@ FlexBody::FlexBody(
             m_src_normals[i] = mat*(orientation * m_src_normals[i]);
         }
     }
-
-    if (vertices != nullptr) { free(vertices); }
 
 #ifdef FLEXBODY_LOG_LOADING_TIMES
     char stats[1000];
