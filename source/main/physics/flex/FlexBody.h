@@ -72,6 +72,12 @@ public:
 
 private:
 
+    void TransformVerticesForShaderDeformation(
+        int vert_offset, int vert_count,
+        Ogre::HardwareVertexBufferSharedPtr vertices,
+        Ogre::HardwareVertexBufferSharedPtr normals,
+        Ogre::HardwareVertexBufferSharedPtr nodes_as_uv);
+
     RoR::GfxActor*    m_gfx_actor;
     size_t            m_vertex_count;
     Ogre::Vector3     m_flexit_center; ///< Updated per frame

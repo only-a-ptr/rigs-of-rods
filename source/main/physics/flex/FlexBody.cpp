@@ -139,10 +139,18 @@ FlexBody::FlexBody(
 
     //create optimal VertexDeclaration
     VertexDeclaration* optimalVD=HardwareBufferManager::getSingleton().createVertexDeclaration();
-    optimalVD->addElement(0, 0, VET_FLOAT3, VES_POSITION);
-    optimalVD->addElement(1, 0, VET_FLOAT3, VES_NORMAL);
+    optimalVD->addElement(0, 0, VET_FLOAT3, VES_POSITION); // Position relative to 'ref/x/y' nodes, for deformation by vertex shader
+    optimalVD->addElement(1, 0, VET_FLOAT3, VES_NORMAL); // Normal relative to 'ref/x/y' nodes, for deformation by vertex shader
     if (m_has_texture_blend) optimalVD->addElement(2, 0, VET_COLOUR_ARGB, VES_DIFFUSE);
-    if (m_has_texture) optimalVD->addElement(3, 0, VET_FLOAT2, VES_TEXTURE_COORDINATES);
+    if (m_has_texture)
+    {
+        optimalVD->addElement(3, 0, VET_FLOAT2, VES_TEXTURE_COORDINATES);
+        optimalVD->addElement(4, 0, VET_FLOAT2, VES_TEXTURE_COORDINATES); // Packed node indices for deformation by vertex shader
+    }
+    else
+    {
+        optimalVD->addElement(3, 0, VET_FLOAT2, VES_TEXTURE_COORDINATES); // Packed node indices for deformation by vertex shader
+    }
     optimalVD->sort();
     optimalVD->closeGapsInSource();
     BufferUsageList optimalBufferUsages;
@@ -503,25 +511,63 @@ FlexBody::FlexBody(
         }
     }
 
-#ifdef FLEXBODY_LOG_LOADING_TIMES
-    char stats[1000];
-    sprintf(stats, "FLEXBODY (%s) ready, stats:"
-        "\n\tmesh loaded:  %f sec"
-        "\n\tmesh ready:   %f sec"
-        "\n\tmesh scanned: %f sec"
-        "\n\tOgre vertexbuffers created:       %f sec"
-        "\n\tOgre vertexbuffers reorganised:   %f sec"
-        "\n\tmanual vertexbuffers created:     %f sec"
-        "\n\tmanual vertexbuffers transformed: %f sec"
-        "\n\tnodes located:      %f sec"
-        "\n\tmesh displayed:     %f sec"
-        "\n\tnormals calculated: %f sec",
-        meshname.c_str(), stat_mesh_loaded_time, stat_mesh_ready_time, stat_mesh_scanned_time, 
-        stat_vertexbuffers_created_time, stat_buffers_reorganised_time,
-        stat_manual_buffers_created_time, stat_transformed_time, stat_located_time, 
-        stat_showmesh_time, stat_euclidean2_time);
-    LOG(stats);
-#endif
+    // Transform the mesh for deformation via vertex shader
+    const int nodebuf_source = (m_has_texture) ? 4 : 3; // see vertex decl. above
+    int vert_offset = 0;
+    if (mesh->sharedVertexData)
+    {
+        this->TransformVerticesForShaderDeformation(
+            vert_offset, (int)mesh->sharedVertexData->vertexCount,
+            m_shared_vbuf_pos, m_shared_vbuf_norm,
+            mesh->sharedVertexData->vertexBufferBinding->getBuffer(nodebuf_source));
+
+        vert_offset += (int)mesh->sharedVertexData->vertexCount;
+    }
+    for (int i = 0; i<num_submeshes; ++i)
+    {
+        Ogre::SubMesh* submesh = mesh->getSubMesh(i);
+
+        if (!submesh->useSharedVertices)
+        {
+            this->TransformVerticesForShaderDeformation(
+                vert_offset, (int)submesh->vertexData->vertexCount,
+                m_submesh_vbufs_pos[i], m_submesh_vbufs_norm[i],
+                submesh->vertexData->vertexBufferBinding->getBuffer(nodebuf_source));
+
+            vert_offset += (int)submesh->vertexData->vertexCount;
+        }
+    }
+    assert(vert_offset == m_vertex_count);
+}
+
+
+void FlexBody::TransformVerticesForShaderDeformation(
+    int vert_offset, int vert_count,
+    Ogre::HardwareVertexBufferSharedPtr vertices,
+    Ogre::HardwareVertexBufferSharedPtr normals,
+    Ogre::HardwareVertexBufferSharedPtr nodes_as_uv)
+{
+    Ogre::Vector3* vert_pos = (Ogre::Vector3*) vertices->lock(Ogre::HardwareBuffer::LockOptions::HBL_DISCARD);
+    Ogre::Vector3* vert_norm = (Ogre::Vector3*) normals->lock(Ogre::HardwareBuffer::LockOptions::HBL_DISCARD);
+    Ogre::Vector2* vert_nodes = (Ogre::Vector2*) nodes_as_uv->lock(Ogre::HardwareBuffer::LockOptions::HBL_DISCARD);
+
+    for (int i = 0; i < vert_count; ++i)
+    {
+        // Vertex positions + normals must be relative to 'ref/x/y' nodes
+        vert_pos[i] = m_locators[i + vert_offset].coords;
+        vert_norm[i] = m_src_normals[i + vert_offset];
+        // Node positions must be packed into a texcoord (aka UV) channel
+        static_assert(sizeof(float) == sizeof(uint32_t), "float is not 32-bit?!");
+        uint32_t u = (uint16_t)m_locators[i + vert_offset].ref << 16 | (uint16_t)m_locators[i + vert_offset].nx;
+        uint32_t v = (uint16_t)m_locators[i + vert_offset].ny << 16 | (uint16_t)m_locators[i + vert_offset].nz;
+        // by-the-book type punning, see https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8#how-do-we-type-pun-correctly
+        std::memcpy(&vert_nodes[i].x, &u, sizeof(float));
+        std::memcpy(&vert_nodes[i].y, &v, sizeof(float));
+    }
+
+    vertices->unlock();
+    normals->unlock();
+    nodes_as_uv->unlock();
 }
 
 FlexBody::~FlexBody()
