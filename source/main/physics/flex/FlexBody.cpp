@@ -48,7 +48,7 @@ FlexBody::FlexBody(
     , m_node_center(ref)
     , m_node_x(nx)
     , m_node_y(ny)
-    , m_has_texture_blend(true)
+    , m_has_texture_blend(false) // Disabled until further notice
     , m_scene_node(nullptr)
     , m_scene_entity(nullptr)
     , m_shared_buf_num_verts(0)
@@ -91,113 +91,31 @@ FlexBody::FlexBody(
         orientation = rot;
     }
 
-    int num_submeshes = static_cast<int>(mesh->getNumSubMeshes());
-    if (preloaded_from_cache == nullptr)
-    {
-        //determine if we have texture coordinates everywhere
-        if (mesh->sharedVertexData && mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_TEXTURE_COORDINATES)==0)
-        {
-            m_has_texture=false;
-        }
-        for (int i=0; i<num_submeshes; i++)
-        {
-            if (!mesh->getSubMesh(i)->useSharedVertices && mesh->getSubMesh(i)->vertexData->vertexDeclaration->findElementBySemantic(VES_TEXTURE_COORDINATES)==0) 
-            {
-                m_has_texture=false;
-            }
-        }
-        if (!m_has_texture)
-        {
-            LOG("FLEXBODY Warning: at least one part of this mesh does not have texture coordinates, switching off texturing!");
-            m_has_texture_blend=false;
-        }
+    // Specify a vertex format (one-size-fits-all, for simplicity)
 
-        //detect the anomalous case where a mesh is exported without normal vectors
-        bool havenormal=true;
-        if (mesh->sharedVertexData && mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_NORMAL)==0)
-        {
-            havenormal=false;
-        }
-        for (int i=0; i<num_submeshes; i++)
-        {
-            if (!mesh->getSubMesh(i)->useSharedVertices && mesh->getSubMesh(i)->vertexData->vertexDeclaration->findElementBySemantic(VES_NORMAL)==0) 
-            {
-                havenormal=false;
-            }
-        }
-        if (!havenormal)
-        {
-            LOG("FLEXBODY Error: at least one part of this mesh does not have normal vectors, export your mesh with normal vectors! Disabling flexbody");
-            // NOTE: Intentionally not disabling, for compatibility with v0.4.0.7
-        }
-    }
-    else
-    {
-        m_has_texture        = preloaded_from_cache->header.HasTexture();
-        m_has_texture_blend  = preloaded_from_cache->header.HasTextureBlend();
-    }
+    Ogre::VertexDeclaration* optimalVD = Ogre::HardwareBufferManager::getSingleton().createVertexDeclaration();
+    size_t offset = 0;
+    // Position relative to 'ref/x/y' nodes, for deformation by vertex shader
+    const Ogre::VertexElement& vd_pos = optimalVD->addElement(0, offset, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
+    offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
+    // Normal relative to 'ref/x/y' nodes, for deformation by vertex shader
+    const Ogre::VertexElement& vd_norm = optimalVD->addElement(1, offset, Ogre::VET_FLOAT3, Ogre::VES_NORMAL);
+    offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
+    // Texture coordinates (aka UV coordinates) #0 - packed 'ref/x/y' node indices, for deformation by vertex shader
+    const Ogre::VertexElement& vd_nodes = optimalVD->addElement(2, offset, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES);
+    offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+    // Texture coordinates (aka UV coordinates) #1 - actual texture coordinate data
+    const Ogre::VertexElement& vd_uv = optimalVD->addElement(3, offset, Ogre::VET_FLOAT2, Ogre::VES_TEXTURE_COORDINATES);
+    offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
 
-    //create optimal VertexDeclaration
-    VertexDeclaration* optimalVD=HardwareBufferManager::getSingleton().createVertexDeclaration();
-    optimalVD->addElement(0, 0, VET_FLOAT3, VES_POSITION); // Position relative to 'ref/x/y' nodes, for deformation by vertex shader
-    optimalVD->addElement(1, 0, VET_FLOAT3, VES_NORMAL); // Normal relative to 'ref/x/y' nodes, for deformation by vertex shader
-    if (m_has_texture_blend) optimalVD->addElement(2, 0, VET_COLOUR_ARGB, VES_DIFFUSE);
-    if (m_has_texture)
-    {
-        optimalVD->addElement(3, 0, VET_FLOAT2, VES_TEXTURE_COORDINATES);
-        optimalVD->addElement(4, 0, VET_FLOAT2, VES_TEXTURE_COORDINATES); // Packed node indices for deformation by vertex shader
-    }
-    else
-    {
-        optimalVD->addElement(3, 0, VET_FLOAT2, VES_TEXTURE_COORDINATES); // Packed node indices for deformation by vertex shader
-    }
-    optimalVD->sort();
-    optimalVD->closeGapsInSource();
     BufferUsageList optimalBufferUsages;
     for (size_t u = 0; u <= optimalVD->getMaxSource(); ++u)
     {
         optimalBufferUsages.push_back(HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
     }
 
-    //adding color buffers, well get the reference later
-    if (m_has_texture_blend)
-    {
-        if (mesh->sharedVertexData)
-        {
-            if (mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)==0)
-            {
-                //add buffer
-                int index=mesh->sharedVertexData->vertexDeclaration->getMaxSource()+1;
-                mesh->sharedVertexData->vertexDeclaration->addElement(index, 0, VET_COLOUR_ARGB, VES_DIFFUSE);
-                mesh->sharedVertexData->vertexDeclaration->sort();
-                index=mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)->getSource();
-                HardwareVertexBufferSharedPtr vbuf=HardwareBufferManager::getSingleton().createVertexBuffer(VertexElement::getTypeSize(VET_COLOUR_ARGB), mesh->sharedVertexData->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
-                mesh->sharedVertexData->vertexBufferBinding->setBinding(index, vbuf);
-            }
-        }
-        for (int i=0; i<num_submeshes; i++)
-        {
-            if (!mesh->getSubMesh(i)->useSharedVertices)
-            {
-                Ogre::VertexData* vertex_data = mesh->getSubMesh(i)->vertexData;
-                Ogre::VertexDeclaration* vertex_decl = vertex_data->vertexDeclaration;
-                if (vertex_decl->findElementBySemantic(VES_DIFFUSE)==0)
-                {
-                    //add buffer
-                    int index = vertex_decl->getMaxSource()+1;
-                    vertex_decl->addElement(index, 0, VET_COLOUR_ARGB, VES_DIFFUSE);
-                    vertex_decl->sort();
-                    vertex_decl->findElementBySemantic(VES_DIFFUSE)->getSource();
-                    HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
-                        VertexElement::getTypeSize(VET_COLOUR_ARGB), vertex_data->vertexCount, HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
-                    vertex_data->vertexBufferBinding->setBinding(index, vbuf);
-                }
-            }
-        }
-    }
-
     //reorg
-    //LOG("FLEXBODY reorganizing buffers");
+
     if (mesh->sharedVertexData)
     {
         mesh->sharedVertexData->reorganiseBuffers(optimalVD, optimalBufferUsages);
@@ -216,14 +134,9 @@ FlexBody::FlexBody(
         }
     }
 
-    //print mesh information
-    //LOG("FLEXBODY Printing modififed mesh informations:");
-    //printMeshInfo(ent->getMesh().getPointer());
-
-    //get the buffers
-    //getMeshInformation(ent->getMesh().getPointer(),m_vertex_count,vertices,index_count,indices, position, orientation, Vector3(1,1,1));
-
     //getting vertex counts
+
+    int num_submeshes = (int)mesh->getNumSubMeshes();
     if (preloaded_from_cache == nullptr)
     {
         m_vertex_count=0;
@@ -249,10 +162,6 @@ FlexBody::FlexBody(
         m_num_submesh_vbufs       = preloaded_from_cache->header.num_submesh_vbufs;
     }
     
-    // Profiler data
-    double stat_manual_buffers_created_time = -1;
-    double stat_transformed_time = -1;
-    double stat_located_time = -1;
     if (preloaded_from_cache != nullptr)
     {
         m_dst_pos     = preloaded_from_cache->dst_pos;
@@ -270,17 +179,10 @@ FlexBody::FlexBody(
             m_shared_buf_num_verts=(int)mesh->sharedVertexData->vertexCount;
 
             //vertices
-            int source=mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_POSITION)->getSource();
-            m_shared_vbuf_pos=mesh->sharedVertexData->vertexBufferBinding->getBuffer(source);
+            m_shared_vbuf_pos=mesh->sharedVertexData->vertexBufferBinding->getBuffer(vd_pos.getSource());
             //normals
-            source=mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_NORMAL)->getSource();
-            m_shared_vbuf_norm=mesh->sharedVertexData->vertexBufferBinding->getBuffer(source);
-            //colors
-            if (m_has_texture_blend)
-            {
-                source=mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)->getSource();
-                m_shared_vbuf_color=mesh->sharedVertexData->vertexBufferBinding->getBuffer(source);
-            }
+            m_shared_vbuf_norm=mesh->sharedVertexData->vertexBufferBinding->getBuffer(vd_norm.getSource());
+
         }
         unsigned int curr_submesh_idx = 0;
         for (int i=0; i<num_submeshes; i++)
@@ -293,16 +195,9 @@ FlexBody::FlexBody(
             const Ogre::VertexData* vertex_data = submesh->vertexData;
             m_submesh_vbufs_vertex_counts[curr_submesh_idx] = (int)vertex_data->vertexCount;
 
-            int source_pos  = vertex_data->vertexDeclaration->findElementBySemantic(VES_POSITION)->getSource();
-            int source_norm = vertex_data->vertexDeclaration->findElementBySemantic(VES_NORMAL)->getSource();
-            m_submesh_vbufs_pos [curr_submesh_idx] = vertex_data->vertexBufferBinding->getBuffer(source_pos);
-            m_submesh_vbufs_norm[curr_submesh_idx] = vertex_data->vertexBufferBinding->getBuffer(source_norm);
+            m_submesh_vbufs_pos [curr_submesh_idx] = vertex_data->vertexBufferBinding->getBuffer(vd_pos.getSource());
+            m_submesh_vbufs_norm[curr_submesh_idx] = vertex_data->vertexBufferBinding->getBuffer(vd_norm.getSource());
 
-            if (m_has_texture_blend)
-            {
-                int source_color = vertex_data->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)->getSource();
-                m_submesh_vbufs_color[curr_submesh_idx] = vertex_data->vertexBufferBinding->getBuffer(source_color);
-            }
             curr_submesh_idx++;
         }
     }
@@ -323,22 +218,14 @@ FlexBody::FlexBody(
         {
             m_shared_buf_num_verts=(int)mesh->sharedVertexData->vertexCount;
             //vertices
-            int source=mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_POSITION)->getSource();
-            m_shared_vbuf_pos=mesh->sharedVertexData->vertexBufferBinding->getBuffer(source);
+            m_shared_vbuf_pos=mesh->sharedVertexData->vertexBufferBinding->getBuffer(vd_pos.getSource());
             m_shared_vbuf_pos->readData(0, mesh->sharedVertexData->vertexCount*sizeof(Vector3), (void*)vpt);
             vpt+=mesh->sharedVertexData->vertexCount;
             //normals
-            source=mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_NORMAL)->getSource();
-            m_shared_vbuf_norm=mesh->sharedVertexData->vertexBufferBinding->getBuffer(source);
+            m_shared_vbuf_norm=mesh->sharedVertexData->vertexBufferBinding->getBuffer(vd_norm.getSource());
             m_shared_vbuf_norm->readData(0, mesh->sharedVertexData->vertexCount*sizeof(Vector3), (void*)npt);
             npt+=mesh->sharedVertexData->vertexCount;
-            //colors
-            if (m_has_texture_blend)
-            {
-                source=mesh->sharedVertexData->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)->getSource();
-                m_shared_vbuf_color=mesh->sharedVertexData->vertexBufferBinding->getBuffer(source);
-                m_shared_vbuf_color->writeData(0, mesh->sharedVertexData->vertexCount*sizeof(ARGB), (void*)m_src_colors);
-            }
+
         }
         int cursubmesh=0;
         for (int i=0; i<num_submeshes; i++)
@@ -352,22 +239,14 @@ FlexBody::FlexBody(
             int vertex_count = (int)vertex_data->vertexCount;
             m_submesh_vbufs_vertex_counts[cursubmesh] = vertex_count;
             //vertices
-            int source = vertex_data->vertexDeclaration->findElementBySemantic(VES_POSITION)->getSource();
-            m_submesh_vbufs_pos[cursubmesh]=vertex_data->vertexBufferBinding->getBuffer(source);
+            m_submesh_vbufs_pos[cursubmesh]=vertex_data->vertexBufferBinding->getBuffer(vd_pos.getSource());
             m_submesh_vbufs_pos[cursubmesh]->readData(0, vertex_count*sizeof(Vector3), (void*)vpt);
             vpt += vertex_count;
             //normals
-            source = vertex_data->vertexDeclaration->findElementBySemantic(VES_NORMAL)->getSource();
-            m_submesh_vbufs_norm[cursubmesh]=vertex_data->vertexBufferBinding->getBuffer(source);
+            m_submesh_vbufs_norm[cursubmesh]=vertex_data->vertexBufferBinding->getBuffer(vd_norm.getSource());
             m_submesh_vbufs_norm[cursubmesh]->readData(0, vertex_count*sizeof(Vector3), (void*)npt);
             npt += vertex_count;
-            //colors
-            if (m_has_texture_blend)
-            {
-                source = vertex_data->vertexDeclaration->findElementBySemantic(VES_DIFFUSE)->getSource();
-                m_submesh_vbufs_color[cursubmesh] = vertex_data->vertexBufferBinding->getBuffer(source);
-                m_submesh_vbufs_color[cursubmesh]->writeData(0, vertex_count*sizeof(ARGB), (void*)m_src_colors);
-            }
+
             cursubmesh++;
         }
 
@@ -512,14 +391,13 @@ FlexBody::FlexBody(
     }
 
     // Transform the mesh for deformation via vertex shader
-    const int nodebuf_source = (m_has_texture) ? 4 : 3; // see vertex decl. above
     int vert_offset = 0;
     if (mesh->sharedVertexData)
     {
         this->TransformVerticesForShaderDeformation(
             vert_offset, (int)mesh->sharedVertexData->vertexCount,
             m_shared_vbuf_pos, m_shared_vbuf_norm,
-            mesh->sharedVertexData->vertexBufferBinding->getBuffer(nodebuf_source));
+            mesh->sharedVertexData->vertexBufferBinding->getBuffer(vd_nodes.getSource()));
 
         vert_offset += (int)mesh->sharedVertexData->vertexCount;
     }
@@ -532,7 +410,7 @@ FlexBody::FlexBody(
             this->TransformVerticesForShaderDeformation(
                 vert_offset, (int)submesh->vertexData->vertexCount,
                 m_submesh_vbufs_pos[i], m_submesh_vbufs_norm[i],
-                submesh->vertexData->vertexBufferBinding->getBuffer(nodebuf_source));
+                submesh->vertexData->vertexBufferBinding->getBuffer(vd_nodes.getSource()));
 
             vert_offset += (int)submesh->vertexData->vertexCount;
         }
