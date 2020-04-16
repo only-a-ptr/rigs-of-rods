@@ -5,9 +5,12 @@ material managed/flexmesh_standard/simple
 {
 	technique BaseTechnique: Shadows/managed/base_receiver //Include shadows
 	{
-	//Texture is rendred here
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }
+        
 			texture_unit Diffuse_Map
 			{
 				texture_alias unknown.dds
@@ -20,9 +23,12 @@ material managed/flexmesh_standard/damageonly
 {
 	technique BaseTechnique: Shadows/managed/base_receiver //Include shadows
 	{
-	//Texture is rendred here
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }
+        
 			diffuse vertexcolour
 			texture_unit Diffuse_Map
 			{
@@ -43,9 +49,12 @@ material managed/flexmesh_standard/specularonly
 {
 	technique BaseTechnique: Shadows/managed/base_receiver //Include shadows
 	{
-	//Texture is rendred here
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }        
+        
 			texture_unit Diffuse_Map
 			{
 				texture_alias unknown.dds
@@ -62,9 +71,12 @@ material managed/flexmesh_standard/speculardamage
 {
 	technique BaseTechnique: Shadows/managed/base_receiver //Include shadows
 	{
-	//Texture is rendred here
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }        
+        
 			diffuse vertexcolour
 			texture_unit Diffuse_Map
 			{

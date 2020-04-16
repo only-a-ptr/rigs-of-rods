@@ -1,0 +1,9 @@
+vertex_program flexbody_vert glsl
+{
+    source flexbody_vert.glsl
+    
+    default_params
+    {
+        param_named_auto worldViewProj worldviewproj_matrix
+    }    
+}

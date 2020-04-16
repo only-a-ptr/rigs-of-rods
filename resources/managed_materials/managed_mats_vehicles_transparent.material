@@ -7,6 +7,10 @@ material managed/flexmesh_transparent/simple
 	{
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }        
+        
 			scene_blend alpha_blend
 			alpha_rejection greater 0
 			depth_write off
@@ -24,6 +28,10 @@ material managed/flexmesh_transparent/damageonly
 	{
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }        
+        
 			scene_blend alpha_blend
 			alpha_rejection greater 0
 			depth_write off
@@ -52,6 +60,10 @@ material managed/flexmesh_transparent/specularonly
 	{
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }        
+        
 			alpha_rejection greater 0
 			depth_write off
 			
@@ -79,6 +91,10 @@ material managed/flexmesh_transparent/speculardamage
 	{
 		pass BaseRender
 		{
+            vertex_program_ref flexbody_vert
+            {
+            }        
+        
 			alpha_rejection greater 0
 			depth_write off
 
