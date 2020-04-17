@@ -10,6 +10,10 @@ material managed/flexmesh_standard/simple
             vertex_program_ref flexbody_vert
             {
             }
+            
+            fragment_program_ref flexbody_frag
+            {
+            }
         
 			texture_unit Diffuse_Map
 			{
@@ -28,6 +32,10 @@ material managed/flexmesh_standard/damageonly
             vertex_program_ref flexbody_vert
             {
             }
+            
+            fragment_program_ref flexbody_frag
+            {
+            }            
         
 			diffuse vertexcolour
 			texture_unit Diffuse_Map
@@ -53,7 +61,11 @@ material managed/flexmesh_standard/specularonly
 		{
             vertex_program_ref flexbody_vert
             {
-            }        
+            }    
+
+            fragment_program_ref flexbody_frag
+            {
+            }            
         
 			texture_unit Diffuse_Map
 			{
@@ -75,7 +87,11 @@ material managed/flexmesh_standard/speculardamage
 		{
             vertex_program_ref flexbody_vert
             {
-            }        
+            }    
+
+            fragment_program_ref flexbody_frag
+            {
+            }            
         
 			diffuse vertexcolour
 			texture_unit Diffuse_Map

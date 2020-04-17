@@ -1,0 +1,20 @@
+vertex_program flexbody_vert glsl
+{
+    source flexbody_vert.glsl
+    
+    default_params
+    {
+        param_named_auto worldViewProj worldviewproj_matrix
+    }    
+}
+
+fragment_program flexbody_frag glsl
+{
+    source flexbody_frag.glsl
+ 
+    default_params
+    { 
+		// assign samplers as required by GLSL
+		param_named Diffuse_Map int 0
+    }
+}
