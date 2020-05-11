@@ -393,6 +393,7 @@ void ScriptEngine::init()
     m_engine_frame->RegisterGlobalFunction("void log(const string &in)", AngelScript::asFUNCTION(logString), AngelScript::asCALL_CDECL);
     RegisterOgreObjects(m_engine_frame);
     RegisterImGuiBindings(m_engine_frame);
+    RegisterImGuiExBindings(m_engine_frame);
     RegisterFrameStepInterface(m_engine_frame);
     SLOG("Type registrations done. If you see no error above everything should be working");
 }
@@ -783,22 +784,14 @@ bool ScriptEngine::loadActorScript(Actor* actor, RigDef::Script& def)
         if (!loop_fn) { msg << "`" << LOOP_DECL << "` "; }
         App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_ERROR, msg.ToCStr());
         return false;
-    }        
-
-    asIScriptContext* context = engine->CreateContext();
-    if (context->Prepare(setup_fn) != asSUCCESS)
-        return false;
-
-    if (context->SetArgObject(0, &def.arguments) != asSUCCESS)
-        return false;
-
-    if (context->Execute() != asEXECUTION_FINISHED)
-        return false;
+    }
 
     ScriptUnit unit;
+    unit.su_def = def;
     unit.su_module = module;
+    unit.su_setup_fn = setup_fn; // Must be invoked outside DearIMGUI frame (to install fonts).
     unit.su_loop_fn = loop_fn;
-    unit.su_context = context;
+    unit.su_context = engine->CreateContext();
 
     actor->GetGfxActor()->AddScript(unit);
     return true;

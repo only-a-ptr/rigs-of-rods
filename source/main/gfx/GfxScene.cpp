@@ -316,3 +316,11 @@ void RoR::GfxScene::RemoveGfxCharacter(RoR::GfxCharacter* remove_me)
     m_all_gfx_characters.erase(itor, m_all_gfx_characters.end());
 }
 
+void RoR::GfxScene::SetupScripts()
+{
+    for (GfxActor* a: m_all_gfx_actors)
+    {
+        a->SetupScripts();
+    }
+}
+

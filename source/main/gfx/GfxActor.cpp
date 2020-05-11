@@ -26,6 +26,7 @@
 #include "Beam.h"
 #include "BeamEngine.h" // EngineSim
 #include "Collisions.h"
+#include "Console.h"
 #include "Renderdash.h" // classic 'renderdash' material
 #include "DustPool.h" // General particle gfx
 #include "HydraxWater.h"
@@ -3401,4 +3402,29 @@ void RoR::GfxActor::RunScripts()
         unit.su_context->SetArgObject(0, this);
         unit.su_context->Execute();
     }
+}
+
+void RoR::GfxActor::SetupScripts()
+{
+    for (ScriptUnit& unit: m_scripts_to_setup)
+    {
+        const int prep_res = unit.su_context->Prepare(unit.su_setup_fn);
+        const int arg_res  = unit.su_context->SetArgObject(0, &unit.su_def.arguments);
+        const int exec_res = unit.su_context->Execute();
+
+        if (prep_res == AngelScript::asSUCCESS &&
+            arg_res  == AngelScript::asSUCCESS &&
+            exec_res == AngelScript::asEXECUTION_FINISHED)
+        {
+            m_framestep_scripts.push_back(unit);
+        }
+        else
+        {
+            // Detailed error is logged by AngelScript via message callback
+            Str<400> msg;
+            msg << "Failed to install script: " << unit.su_def.filename;
+            App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_ACTOR, Console::CONSOLE_SYSTEM_ERROR, msg.ToCStr());
+        }
+    }
+    m_scripts_to_setup.clear();
 }

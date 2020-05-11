@@ -70,6 +70,7 @@ public:
     void           RegisterGfxCharacter(RoR::GfxCharacter* gfx_character);
     void           RemoveGfxCharacter(RoR::GfxCharacter* gfx_character);
     void           BufferSimulationData(); //!< Run this when simulation is halted
+    void           SetupScripts(); //!< Run outside DearIMGUI frame (needed to install fonts)
     SimBuffer&     GetSimDataBuffer() { return m_simbuf; }
     std::vector<GfxActor*>& GetGfxActors() { return m_all_gfx_actors; }
     std::vector<GfxCharacter*>& GetGfxCharacters() { return m_all_gfx_characters; }

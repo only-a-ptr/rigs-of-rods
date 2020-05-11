@@ -7,6 +7,7 @@
 #include <OgreOverlay.h>
 
 #include <imgui.h>
+#include <map>
 
 namespace Ogre
 {
@@ -17,8 +18,10 @@ public:
     ~ImGuiOverlay();
 
     /// add font from ogre .fontdef file
-    /// must be called before first show()
-    ImFont* addFont(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT);
+    /// when called after first `show()`, you must call `updateFontTexture()`
+    ImFont* addFont(Ogre::FontPtr);
+
+    void updateFontTexture();
 
     static void NewFrame(const FrameEvent& evt);
 
@@ -49,7 +52,8 @@ private:
         const LightList& getLights(void) const;
 
         void createMaterial();
-        void createFontTexture();
+        void createOrUpdateFontTexture();
+        void markFontTextureDirty() { mFontTexDirty = true; }
 
         const MaterialPtr& getMaterial() const { return mMaterial; }
 
@@ -62,10 +66,12 @@ private:
         Matrix4 mXform;
         RenderOperation mRenderOp;
         TexturePtr mFontTex;
+        bool       mFontTexDirty;
         MaterialPtr mMaterial;
     };
 
     ImGUIRenderable mRenderable;
+    std::map<Ogre::FontPtr, ImFont*> mLoadedFonts;
 };
 } // namespace Ogre
 

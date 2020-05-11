@@ -23,6 +23,8 @@
 /// @author https://gist.github.com/JSandusky/54b85068aa30390c91a0b377703f042e
 /// @author https://discourse.urho3d.io/t/dear-imgui-w-o-steamrolling/3960
 
+#include "Application.h"
+#include "GUIManager.h"
 #include "GUIUtils.h"
 #include "OgreImGui.h"
 #include "scriptarray/scriptarray.h"
@@ -33,6 +35,7 @@
 
 using namespace AngelScript;
 using namespace Ogre;
+using namespace RoR;
 using namespace std;
 
 void RegisterImGuiBindings(asIScriptEngine* engine)
@@ -97,6 +100,10 @@ void RegisterImGuiBindings(asIScriptEngine* engine)
     engine->RegisterObjectType("ImGuiIO", 0, asOBJ_REF | asOBJ_NOCOUNT);
     engine->RegisterObjectMethod("ImGuiIO", "vector2 get_DisplaySize()", asFUNCTIONPR([](ImGuiIO* self){
         return Ogre::Vector2(self->DisplaySize.x, self->DisplaySize.y); }, (ImGuiIO* io), Vector2 ), asCALL_CDECL_OBJFIRST);
+
+    // Font struct
+    engine->RegisterObjectType("ImFont", 0, asOBJ_REF | asOBJ_NOCOUNT);
+    engine->RegisterObjectProperty("ImFont", "float FontSize", asOFFSET(ImFont, FontSize));
 
     engine->SetDefaultNamespace("ImGui");
 
@@ -194,6 +201,10 @@ void RegisterImGuiBindings(asIScriptEngine* engine)
         ImGui::PushStyleColor(idx, ImVec4(c.r, c.g, c.b, c.a));
     }, (ImGuiCol, ColourValue), void), asCALL_CDECL);
     engine->RegisterGlobalFunction("void PopStyleColor(int count = 1)", asFUNCTION(ImGui::PopStyleColor), asCALL_CDECL);
+
+    // Font
+    engine->RegisterGlobalFunction("void PushFont(ImFont@ font)", asFUNCTION(ImGui::PushFont), asCALL_CDECL);
+    engine->RegisterGlobalFunction("void PopFont()", asFUNCTION(ImGui::PopFont), asCALL_CDECL);
 
     // Columns
     engine->RegisterGlobalFunction("void Columns(int = 1, const string&in = string(), bool = true)", asFUNCTIONPR([](int a, const string& b, bool c) {  
@@ -506,6 +517,11 @@ void RegisterImGuiBindings(asIScriptEngine* engine)
     engine->RegisterGlobalFunction("string GetClipboardText()", asFUNCTIONPR([]() { return string(ImGui::GetClipboardText());  }, (), string), asCALL_CDECL);
     engine->RegisterGlobalFunction("void SetClipboardText(const string&in)", asFUNCTIONPR([](const string& a) {  ImGui::SetClipboardText(a.empty() ? a.c_str() : 0x0);  }, (const string&), void), asCALL_CDECL);
 
+    engine->SetDefaultNamespace("");
+}
+
+void RegisterImGuiExBindings(asIScriptEngine* engine)
+{
     engine->SetDefaultNamespace("ImGuiEx");
 
     engine->RegisterGlobalFunction("void DrawListAddImageRotated(const Ogre::TexturePtr&in, vector2 center_pos, vector2 size, float angle)",
@@ -514,6 +530,23 @@ void RegisterImGuiBindings(asIScriptEngine* engine)
             RoR::DrawImageRotated(reinterpret_cast<ImTextureID>(tex->getHandle()), ImVec2(pos.x, pos.y), ImVec2(size.x, size.y), angle);
         },
         (Ogre::TexturePtr const& tex, Vector2 pos, Vector2 size, float angle), void), asCALL_CDECL);
+
+    engine->RegisterGlobalFunction("ImFont@ AddFontFromOgreFontdef(const string&in name, const string&in rg_name)",
+        asFUNCTIONPR([](std::string const& name, std::string const& rg_name) -> ImFont*
+        {
+            try
+            {
+                Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName(name, rg_name);
+                ImFont* im_font = App::GetGuiManager()->GetImGui().GetOverlay()->addFont(font);
+                App::GetGuiManager()->GetImGui().GetOverlay()->updateFontTexture();
+                return im_font;
+            }
+            catch (Ogre::Exception&) {} // Logged by OGRE
+            return nullptr;
+        },
+        (std::string const& name, std::string const& rg_name), ImFont*), asCALL_CDECL);
+
+    
 
     engine->SetDefaultNamespace("");
 }

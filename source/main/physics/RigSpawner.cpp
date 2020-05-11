@@ -3702,7 +3702,7 @@ void ActorSpawner::ProcessScript(RigDef::Script & def)
     if (!ScriptEngine::getSingleton().loadActorScript(m_actor, def))
     {
         Str<400> msg;
-        msg << "Failed to load/compile/install script: " << def.filename;
+        msg << "Failed to load/compile script: " << def.filename;
         this->AddMessage(Message::TYPE_ERROR, msg.ToCStr());
     }
 }

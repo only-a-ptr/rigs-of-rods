@@ -44,6 +44,14 @@ void ImGuiOverlay::initialise()
     mInitialised = true;
 }
 
+void ImGuiOverlay::updateFontTexture()
+{
+    if (mInitialised)
+    {
+        mRenderable.createOrUpdateFontTexture();
+    }
+}
+
 //-----------------------------------------------------------------------------------
 void ImGuiOverlay::_findVisibleObjects(Camera* cam, RenderQueue* queue, Viewport* vp)
 {
@@ -74,10 +82,14 @@ void ImGuiOverlay::ImGUIRenderable::createMaterial()
     mMaterial->setDepthCheckEnabled(false);
 }
 
-ImFont* ImGuiOverlay::addFont(const String& name, const String& group)
+ImFont* ImGuiOverlay::addFont(FontPtr font)
 {
-    FontPtr font = FontManager::getSingleton().getByName(name, group);
-    OgreAssert(font, "font does not exist");
+    auto itor = mLoadedFonts.find(font);
+    if (itor != mLoadedFonts.end())
+    {
+        return itor->second;
+    }
+
     OgreAssert(font->getType() == FT_TRUETYPE, "font must be of FT_TRUETYPE");
     DataStreamPtr dataStreamPtr =
         ResourceGroupManager::getSingleton().openResource(font->getSource(), font->getGroup());
@@ -102,26 +114,43 @@ ImFont* ImGuiOverlay::addFont(const String& name, const String& group)
     }
 
     ImFontConfig cfg;
-    strncpy(cfg.Name, name.c_str(), 40);
-    return io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), (int)ttfchunk.size(), font->getTrueTypeSize(), &cfg,
-                                          cprangePtr);
+    strncpy(cfg.Name, font->getName().c_str(), 40);
+    ImFont* imFont = io.Fonts->AddFontFromMemoryTTF(ttfchunk.getPtr(), (int)ttfchunk.size(),
+                                                    font->getTrueTypeSize(), &cfg, cprangePtr);
+    mLoadedFonts.insert(std::make_pair(font, imFont));
+    mRenderable.markFontTextureDirty();
+    return imFont;
 }
 
-void ImGuiOverlay::ImGUIRenderable::createFontTexture()
+void ImGuiOverlay::ImGUIRenderable::createOrUpdateFontTexture()
 {
-    // Build texture atlas
     ImGuiIO& io = ImGui::GetIO();
     if (io.Fonts->Fonts.empty())
+    {
         io.Fonts->AddFontDefault();
+        mFontTexDirty = true;
+    }
 
+    if (!mFontTexDirty)
+    {
+        return;
+    }
+
+    // Build texture atlas
     unsigned char* pixels;
     int width, height;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
+    if (mFontTex)
+    {
+        TextureManager::getSingleton().remove(mFontTex);
+        mFontTex.reset();
+    }
     mFontTex = TextureManager::getSingleton().createManual("ImGui/FontTex", RGN_INTERNAL, TEX_TYPE_2D,
-                                                           width, height, 1, 1, PF_BYTE_RGBA);
+                                                               width, height, 1, 1, PF_BYTE_RGBA);
 
     mFontTex->getBuffer()->blitFromMemory(PixelBox(Box(0, 0, width, height), PF_BYTE_RGBA, pixels));
+    mFontTexDirty = false;
 }
 void ImGuiOverlay::NewFrame(const FrameEvent& evt)
 {
@@ -253,11 +282,12 @@ ImGuiOverlay::ImGUIRenderable::ImGUIRenderable()
     mUseIdentityView = true;
 
     mConvertToBGR = false;
+    mFontTexDirty = false;
 }
 //-----------------------------------------------------------------------------------
 void ImGuiOverlay::ImGUIRenderable::initialise(void)
 {
-    createFontTexture();
+    createOrUpdateFontTexture();
     createMaterial();
 
     mRenderOp.vertexData = OGRE_NEW VertexData();

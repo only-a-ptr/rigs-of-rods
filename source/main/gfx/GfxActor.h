@@ -267,7 +267,8 @@ public:
     void                 CalcPropAnimation   (const int flag_state, float& cstate, int& div, float timer,
                                               const float lower_limit, const float upper_limit, const float option3);
     void                 UpdateFlares        (float dt_sec, bool is_player);
-    void                 AddScript           (ScriptUnit s) { m_framestep_scripts.push_back(s); }
+    void                 AddScript           (ScriptUnit s) { m_scripts_to_setup.push_back(s); }
+    void                 SetupScripts        (); //!< To install fonts, must be invoked outside DearIMGUI frame
     void                 RunScripts          ();
 
 private:
@@ -306,6 +307,7 @@ private:
     int                         m_prop_anim_prev_gear;
     std::set<GfxActor*>         m_linked_gfx_actors;
     std::vector<ScriptUnit>     m_framestep_scripts;
+    std::vector<ScriptUnit>     m_scripts_to_setup;
 
     bool                        m_initialized;
 

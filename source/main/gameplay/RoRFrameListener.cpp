@@ -2278,6 +2278,7 @@ void SimController::EnterGameplayLoop()
         }
 
         // Update gameplay and 3D scene
+        m_gfx_scene.SetupScripts(); // To install fonts, must be invoked outside DearIMGUI frame
         App::GetGuiManager()->NewImGuiFrame(dt_sec);
 
         if (dt_sec != 0.f)

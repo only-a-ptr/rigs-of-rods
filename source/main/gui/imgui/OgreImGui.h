@@ -67,6 +67,8 @@ public:
     virtual void renderQueueStarted(Ogre::uint8 queueGroupId,
         const Ogre::String& invocation, bool& skipThisInvocation) override;
 
+    Ogre::ImGuiOverlay* GetOverlay() { return m_imgui_overlay.get(); }
+
 private:
     std::unique_ptr<Ogre::ImGuiOverlay> m_imgui_overlay;
 };

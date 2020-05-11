@@ -20,8 +20,8 @@
 */
 
 /// @file
-/// @author Thomas Fischer
-/// @date   24th of February 2009
+/// @author Thomas Fischer, 2009 (legacy sync interface)
+/// @author Petr Ohlidal, 2020 (async interface)
 
 #pragma once
 
@@ -39,12 +39,6 @@
 #include "scriptbuilder/scriptbuilder.h"
 
 #include <angelscript.h>
-/**
- * @file ScriptEngine.h
- * @version 0.1.0
- * @brief AngelScript interface to the game
- * @authors Thomas Fischer (thomas{AT}rigsofrods{DOT}com)
- */
 
 class GameScript;
 
@@ -53,7 +47,9 @@ class GameScript;
  */
 struct ScriptUnit
 {
+    RigDef::Script                  su_def;                //!< Type & setup arg
     AngelScript::asIScriptModule*   su_module   = nullptr; //!< Bytecode
+    AngelScript::asIScriptFunction* su_setup_fn = nullptr;
     AngelScript::asIScriptFunction* su_loop_fn  = nullptr;
     AngelScript::asIScriptContext*  su_context  = nullptr; //!< Stack
 };
@@ -203,6 +199,7 @@ void RegisterOgreObjects(AngelScript::asIScriptEngine* engine);
 
 // Defined in file 'ImGuiAngelscript.cpp'
 void RegisterImGuiBindings(AngelScript::asIScriptEngine* engine);
+void RegisterImGuiExBindings(AngelScript::asIScriptEngine* engine);
 
 // Defined in file 'FrameStepAngelscript.cpp'
 void RegisterFrameStepInterface(AngelScript::asIScriptEngine* engine);
