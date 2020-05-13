@@ -680,7 +680,7 @@ void GameScript::setCameraPosition(const Vector3& pos)
     if (!this->HaveMainCamera(__FUNCTION__))
         return;
 
-    gEnv->mainCamera->setPosition(Vector3(pos.x, pos.y, pos.z));
+    App::GetCameraManager()->GetCameraNode()->setPosition(Vector3(pos.x, pos.y, pos.z));
 }
 
 void GameScript::setCameraDirection(const Vector3& rot)
@@ -688,7 +688,7 @@ void GameScript::setCameraDirection(const Vector3& rot)
     if (!this->HaveMainCamera(__FUNCTION__))
         return;
 
-    gEnv->mainCamera->setDirection(Vector3(rot.x, rot.y, rot.z));
+    App::GetCameraManager()->GetCameraNode()->setDirection(Vector3(rot.x, rot.y, rot.z));
 }
 
 void GameScript::setCameraOrientation(const Quaternion& q)
@@ -696,7 +696,7 @@ void GameScript::setCameraOrientation(const Quaternion& q)
     if (!this->HaveMainCamera(__FUNCTION__))
         return;
 
-    gEnv->mainCamera->setOrientation(Quaternion(q.w, q.x, q.y, q.z));
+    App::GetCameraManager()->GetCameraNode()->setOrientation(Quaternion(q.w, q.x, q.y, q.z));
 }
 
 void GameScript::setCameraYaw(float rotX)
@@ -704,7 +704,7 @@ void GameScript::setCameraYaw(float rotX)
     if (!this->HaveMainCamera(__FUNCTION__))
         return;
 
-    gEnv->mainCamera->yaw(Degree(rotX));
+    App::GetCameraManager()->GetCameraNode()->yaw(Degree(rotX));
 }
 
 void GameScript::setCameraPitch(float rotY)
@@ -712,7 +712,7 @@ void GameScript::setCameraPitch(float rotY)
     if (!this->HaveMainCamera(__FUNCTION__))
         return;
 
-    gEnv->mainCamera->pitch(Degree(rotY));
+    App::GetCameraManager()->GetCameraNode()->pitch(Degree(rotY));
 }
 
 void GameScript::setCameraRoll(float rotZ)
@@ -720,14 +720,14 @@ void GameScript::setCameraRoll(float rotZ)
     if (!this->HaveMainCamera(__FUNCTION__))
         return;
 
-    gEnv->mainCamera->roll(Degree(rotZ));
+    App::GetCameraManager()->GetCameraNode()->roll(Degree(rotZ));
 }
 
 Vector3 GameScript::getCameraPosition()
 {
     Vector3 result(Vector3::ZERO);
     if (gEnv->mainCamera)
-        result = gEnv->mainCamera->getPosition();
+        result = App::GetCameraManager()->GetCameraNode()->getPosition();
     return result;
 }
 
@@ -735,7 +735,7 @@ Vector3 GameScript::getCameraDirection()
 {
     Vector3 result(Vector3::ZERO);
     if (gEnv->mainCamera)
-        result = gEnv->mainCamera->getDirection();
+        result = -App::GetCameraManager()->GetCameraNode()->getLocalAxes().GetColumn(2); // Negative Z is 'forward'
     return result;
 }
 
@@ -743,7 +743,7 @@ Quaternion GameScript::getCameraOrientation()
 {
     Quaternion result(Quaternion::ZERO);
     if (gEnv->mainCamera)
-        result = gEnv->mainCamera->getOrientation();
+        result = App::GetCameraManager()->GetCameraNode()->getOrientation();
     return result;
 }
 
@@ -752,7 +752,7 @@ void GameScript::cameraLookAt(const Vector3& pos)
     if (!this->HaveMainCamera(__FUNCTION__))
         return;
 
-    gEnv->mainCamera->lookAt(Vector3(pos.x, pos.y, pos.z));
+    App::GetCameraManager()->GetCameraNode()->lookAt(Vector3(pos.x, pos.y, pos.z), Ogre::Node::TS_WORLD);
 }
 
 int GameScript::useOnlineAPI(const String& apiquery, const AngelScript::CScriptDictionary& dict, String& result)

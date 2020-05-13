@@ -114,16 +114,13 @@ CameraManager::CameraManager() :
     m_cct_player_actor = nullptr;
     m_staticcam_update_timer.reset();
 
-    Ogre::Camera* camera = gEnv->sceneManager->createCamera("PlayerCam");
-    camera->setNearClipDistance(0.5);
-    camera->setAutoAspectRatio(true);
+    m_camera = gEnv->sceneManager->createCamera("PlayerCam");
+    m_camera->setNearClipDistance(0.5);
+    m_camera->setAutoAspectRatio(true);
+    this->CreateCameraNode();
 
-    m_camera_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
-    m_camera_node->setFixedYawAxis(true);
-    m_camera_node->attachObject(camera);
-
-    App::GetOgreSubsystem()->GetViewport()->setCamera(camera);
-    gEnv->mainCamera = camera; // Temporary, removal in progress!!! ~ 05/2020 Petr O.
+    App::GetOgreSubsystem()->GetViewport()->setCamera(m_camera);
+    gEnv->mainCamera = m_camera; // Temporary, removal in progress!!! ~ 05/2020 Petr O.
 }
 
 CameraManager::~CameraManager()
@@ -132,6 +129,20 @@ CameraManager::~CameraManager()
         delete m_splinecam_spline;
     if (m_splinecam_mo)
         delete m_splinecam_mo;
+}
+
+void CameraManager::CreateCameraNode()
+{
+    assert(!m_camera_node);
+    m_camera_node = gEnv->sceneManager->getRootSceneNode()->createChildSceneNode();
+    m_camera_node->setFixedYawAxis(true);
+    m_camera_node->attachObject(m_camera);
+}
+
+void CameraManager::ReCreateCameraNode()
+{
+    m_camera_node = nullptr; // after call to `Ogre::SceneManager::ClearScene()`, the node pointer is invalid.
+    this->CreateCameraNode();
 }
 
 bool CameraManager::EvaluateSwitchBehavior()
@@ -216,8 +227,8 @@ void CameraManager::UpdateCurrentBehavior()
 
         Quaternion orientation = Quaternion(m_cam_rot_x, up) * Quaternion(Degree(180.0) + m_cam_rot_y, roll) * Quaternion(roll, up, dir);
 
-        gEnv->mainCamera->setPosition(m_cct_player_actor->ar_nodes[m_cct_player_actor->ar_cinecam_node[m_cct_player_actor->ar_current_cinecam]].AbsPosition);
-        gEnv->mainCamera->setOrientation(orientation);
+        App::GetCameraManager()->GetCameraNode()->setPosition(m_cct_player_actor->ar_nodes[m_cct_player_actor->ar_cinecam_node[m_cct_player_actor->ar_current_cinecam]].AbsPosition);
+        App::GetCameraManager()->GetCameraNode()->setOrientation(orientation);
         return;
     }
     case CAMERA_BEHAVIOR_FREE:            this->UpdateCameraBehaviorFree(); return;
@@ -528,8 +539,8 @@ bool CameraManager::mouseMoved(const OIS::MouseEvent& _arg)
     case CAMERA_BEHAVIOR_FREE: {
         const OIS::MouseState ms = _arg.state;
 
-        gEnv->mainCamera->yaw(Degree(-ms.X.rel * 0.13f));
-        gEnv->mainCamera->pitch(Degree(-ms.Y.rel * 0.13f));
+        m_camera_node->yaw(Degree(-ms.X.rel * 0.13f));
+        m_camera_node->pitch(Degree(-ms.Y.rel * 0.13f));
 
         App::GetGuiManager()->SetMouseCursorVisibility(GUIManager::MouseCursorVisibility::HIDDEN);
 
@@ -752,8 +763,8 @@ void CameraManager::UpdateCameraBehaviorStatic()
     float camDist = m_staticcam_position.distance(m_staticcam_look_at);
     float fov = atan2(20.0f, std::pow(camDist, fovExp));
 
-    gEnv->mainCamera->setPosition(m_staticcam_position);
-    gEnv->mainCamera->lookAt(m_staticcam_look_at);
+    App::GetCameraManager()->GetCameraNode()->setPosition(m_staticcam_position);
+    m_camera_node->lookAt(m_staticcam_look_at, Ogre::Node::TS_WORLD);
     gEnv->mainCamera->setFOVy(Radian(fov));
 }
 
@@ -867,28 +878,28 @@ void CameraManager::CameraBehaviorOrbitUpdate()
 
     Vector3 camDisplacement = m_cam_look_at - m_cam_look_at_last;
     Vector3 precedingLookAt = m_cam_look_at_smooth_last + camDisplacement;
-    Vector3 precedingPosition = gEnv->mainCamera->getPosition() + camDisplacement;
+    Vector3 precedingPosition = App::GetCameraManager()->GetCameraNode()->getPosition() + camDisplacement;
 
     Vector3 camPosition = (1.0f / (m_cam_ratio + 1.0f)) * desiredPosition + (m_cam_ratio / (m_cam_ratio + 1.0f)) * precedingPosition;
 
     if (App::GetSimTerrain()->GetCollisions() && App::GetSimTerrain()->GetCollisions()->forcecam)
     {
-        gEnv->mainCamera->setPosition(App::GetSimTerrain()->GetCollisions()->forcecampos);
+        App::GetCameraManager()->GetCameraNode()->setPosition(App::GetSimTerrain()->GetCollisions()->forcecampos);
         App::GetSimTerrain()->GetCollisions()->forcecam = false;
     }
     else
     {
         if (m_cct_player_actor && m_cct_player_actor->ar_replay_mode && camDisplacement != Vector3::ZERO)
-            gEnv->mainCamera->setPosition(desiredPosition);
+            App::GetCameraManager()->GetCameraNode()->setPosition(desiredPosition);
         else
-            gEnv->mainCamera->setPosition(camPosition);
+            App::GetCameraManager()->GetCameraNode()->setPosition(camPosition);
     }
 
     m_cam_look_at_smooth = (1.0f / (m_cam_ratio + 1.0f)) * m_cam_look_at + (m_cam_ratio / (m_cam_ratio + 1.0f)) * precedingLookAt;
 
     m_cam_look_at_last = m_cam_look_at;
     m_cam_look_at_smooth_last = m_cam_look_at_smooth;
-    gEnv->mainCamera->lookAt(m_cam_look_at_smooth);
+    m_camera_node->lookAt(m_cam_look_at_smooth, Ogre::Node::TS_WORLD);
 }
 
 bool CameraManager::CameraBehaviorOrbitMouseMoved(const OIS::MouseEvent& _arg)
@@ -983,12 +994,12 @@ void CameraManager::UpdateCameraBehaviorFree()
         mRotY -= cct_rot_scale;
     }
 
-    gEnv->mainCamera->yaw(mRotX);
-    gEnv->mainCamera->pitch(mRotY);
+    m_camera_node->yaw(mRotX);
+    m_camera_node->pitch(mRotY);
 
-    Vector3 camPosition = gEnv->mainCamera->getPosition() + gEnv->mainCamera->getOrientation() * mTrans.normalisedCopy() * cct_trans_scale;
+    Vector3 camPosition = App::GetCameraManager()->GetCameraNode()->getPosition() + App::GetCameraManager()->GetCameraNode()->getOrientation() * mTrans.normalisedCopy() * cct_trans_scale;
 
-    gEnv->mainCamera->setPosition(camPosition);
+    App::GetCameraManager()->GetCameraNode()->setPosition(camPosition);
 }
 
 void CameraManager::UpdateCameraBehaviorFixed()
@@ -996,7 +1007,7 @@ void CameraManager::UpdateCameraBehaviorFixed()
 	if (App::gfx_fixed_cam_tracking->GetActiveVal<bool>())
     {
         Vector3 look_at = m_cct_player_actor ? m_cct_player_actor->getPosition() : App::GetSimController()->GetPlayerCharacter()->getPosition();
-        gEnv->mainCamera->lookAt(look_at);
+        m_camera_node->lookAt(look_at, Ogre::Node::TS_WORLD);
     }
 }
 
@@ -1039,10 +1050,10 @@ bool CameraManager::CameraBehaviorVehicleMousePressed(const OIS::MouseEvent& _ar
 		{
 			// Calculate new camera distance
 			Vector3 lookAt = m_cct_player_actor->ar_nodes[m_cct_player_actor->ar_custom_camera_node].AbsPosition;
-			m_cam_dist = 2.0f * gEnv->mainCamera->getPosition().distance(lookAt);
+			m_cam_dist = 2.0f * App::GetCameraManager()->GetCameraNode()->getPosition().distance(lookAt);
 
 			// Calculate new camera pitch
-			Vector3 camDir = (gEnv->mainCamera->getPosition() - lookAt).normalisedCopy();
+			Vector3 camDir = (App::GetCameraManager()->GetCameraNode()->getPosition() - lookAt).normalisedCopy();
 			m_cam_rot_y = asin(camDir.y);
 
 			// Calculate new camera yaw
