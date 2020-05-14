@@ -1767,7 +1767,7 @@ void SimController::UpdateSimulation(float dt)
         lastCameraPosition = cam_node->getPosition();
         Ogre::Vector3 cam_direction = -cam_node->getLocalAxes().GetColumn(2); // Negative Z is 'forward'
         Ogre::Vector3 cam_up = cam_node->getLocalAxes().GetColumn(1); // Y is 'up'
-        SoundScriptManager::getSingleton().setCamera(cam_node->getPosition(), cam_direction, cam_up, cameraSpeed);
+        App::GetSoundScriptManager()->setCamera(cam_node->getPosition(), cam_direction, cam_up, cameraSpeed);
 #endif // USE_OPENAL
     }
 
