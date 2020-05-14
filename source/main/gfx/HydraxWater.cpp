@@ -21,6 +21,7 @@
 #include "HydraxWater.h"
 
 #include "Application.h"
+#include "CameraManager.h"
 #include "OgreSubsystem.h"
 #include "SkyManager.h"
 #include "TerrainManager.h"
@@ -30,6 +31,7 @@
 #endif // USE_CAELUM
 
 using namespace Ogre;
+using namespace RoR;
 
 // HydraxWater
 HydraxWater::HydraxWater(float water_height, Ogre::String conf_file):
@@ -37,7 +39,7 @@ HydraxWater::HydraxWater(float water_height, Ogre::String conf_file):
     , mHydrax(0)
     , waterHeight(water_height)
     , waveHeight(water_height)
-    , mRenderCamera(gEnv->mainCamera)
+    , mRenderCamera(App::GetCameraManager()->GetCamera())
     , CurrentConfigFile(conf_file)
 {
     mRenderCamera->setNearClipDistance(0.1f);
@@ -98,7 +100,7 @@ void HydraxWater::UpdateWater()
     if (RoR::App::GetSimTerrain()->getSkyManager() != nullptr)
     {
         SkyManager* sky = RoR::App::GetSimTerrain()->getSkyManager();
-        Ogre::Vector3 sunPosition = gEnv->mainCamera->getDerivedPosition();
+        Ogre::Vector3 sunPosition = App::GetCameraManager()->GetCamera()->getDerivedPosition();
         sunPosition -= sky->GetCaelumSys()->getSun()->getLightDirection() * 80000;
         mHydrax->setSunPosition(sunPosition);
         mHydrax->setSunColor(Ogre::Vector3(sky->GetCaelumSys()->getSun()->getBodyColour().r, sky->GetCaelumSys()->getSun()->getBodyColour().g, sky->GetCaelumSys()->getSun()->getBodyColour().b));

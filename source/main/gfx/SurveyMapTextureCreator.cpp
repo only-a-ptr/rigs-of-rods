@@ -21,6 +21,7 @@
 #include "SurveyMapTextureCreator.h"
 
 #include "Application.h"
+#include "CameraManager.h"
 #include "IWater.h"
 #include "TerrainManager.h"
 
@@ -107,7 +108,7 @@ void SurveyMapTextureCreator::postRenderTargetUpdate(const RenderTargetEvent &ev
     auto water = App::GetSimTerrain()->getWater();
     if (water)
     {
-        water->WaterSetCamera(gEnv->mainCamera);
+        water->WaterSetCamera(App::GetCameraManager()->GetCamera());
         water->UpdateWater();
     }
 }

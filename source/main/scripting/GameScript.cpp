@@ -240,7 +240,7 @@ void GameScript::setWaterHeight(float value)
     if (App::GetSimTerrain()->getWater())
     {
         IWater* water = App::GetSimTerrain()->getWater();
-        water->WaterSetCamera(gEnv->mainCamera);
+        water->WaterSetCamera(App::GetCameraManager()->GetCamera());
         water->SetStaticWaterHeight(value);
         water->UpdateWater();
     }
@@ -726,7 +726,7 @@ void GameScript::setCameraRoll(float rotZ)
 Vector3 GameScript::getCameraPosition()
 {
     Vector3 result(Vector3::ZERO);
-    if (gEnv->mainCamera)
+    if (App::GetCameraManager()->GetCamera())
         result = App::GetCameraManager()->GetCameraNode()->getPosition();
     return result;
 }
@@ -734,7 +734,7 @@ Vector3 GameScript::getCameraPosition()
 Vector3 GameScript::getCameraDirection()
 {
     Vector3 result(Vector3::ZERO);
-    if (gEnv->mainCamera)
+    if (App::GetCameraManager()->GetCamera())
         result = -App::GetCameraManager()->GetCameraNode()->getLocalAxes().GetColumn(2); // Negative Z is 'forward'
     return result;
 }
@@ -742,7 +742,7 @@ Vector3 GameScript::getCameraDirection()
 Quaternion GameScript::getCameraOrientation()
 {
     Quaternion result(Quaternion::ZERO);
-    if (gEnv->mainCamera)
+    if (App::GetCameraManager()->GetCamera())
         result = App::GetCameraManager()->GetCameraNode()->getOrientation();
     return result;
 }
@@ -1007,7 +1007,7 @@ bool GameScript::HavePlayerAvatar(const char* func_name)
 
 bool GameScript::HaveMainCamera(const char* func_name)
 {
-    if (gEnv->mainCamera == nullptr)
+    if (App::GetCameraManager()->GetCamera() == nullptr)
     {
         this->logFormat("Cannot execute '%s', main camera not ready", func_name);
         return false;

@@ -26,6 +26,7 @@
 
 #include "Application.h"
 #include "BeamFactory.h"
+#include "CameraManager.h"
 #include "ContentManager.h"
 #include "GUIUtils.h"
 #include "InputEngine.h"
@@ -438,7 +439,7 @@ void GUIManager::NewImGuiFrame(float dt)
 {
     // Update screen size
     int left, top, width, height;
-    gEnv->mainCamera->getViewport()->getActualDimensions(left, top, width, height); // output params
+    App::GetCameraManager()->GetCamera()->getViewport()->getActualDimensions(left, top, width, height); // output params
 
      // Read keyboard modifiers inputs
     OIS::Keyboard* kb = App::GetInputEngine()->GetOisKeyboard();

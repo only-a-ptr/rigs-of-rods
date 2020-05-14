@@ -22,6 +22,7 @@
 #include "SkyXManager.h"
 
 #include "Application.h"
+#include "CameraManager.h"
 #include "HydraxWater.h"
 #include "OgreSubsystem.h"
 #include "TerrainManager.h"
@@ -39,7 +40,7 @@ SkyXManager::SkyXManager(Ogre::String configFile)
 	mBasicController = new SkyX::BasicController();
 	mSkyX = new SkyX::SkyX(gEnv->sceneManager, mBasicController);
 
-	mCfgFileManager = new SkyX::CfgFileManager(mSkyX, mBasicController, gEnv->mainCamera);
+	mCfgFileManager = new SkyX::CfgFileManager(mSkyX, mBasicController, App::GetCameraManager()->GetCamera());
 	mCfgFileManager->load(configFile);
 
 	mSkyX->create();
@@ -82,7 +83,7 @@ bool SkyXManager::update(float dt)
 bool SkyXManager::UpdateSkyLight()
 {
 	Ogre::Vector3 lightDir = -getMainLightDirection();
-	Ogre::Vector3 sunPos = gEnv->mainCamera->getDerivedPosition() - lightDir*mSkyX->getMeshManager()->getSkydomeRadius(gEnv->mainCamera);
+	Ogre::Vector3 sunPos = App::GetCameraManager()->GetCamera()->getDerivedPosition() - lightDir*mSkyX->getMeshManager()->getSkydomeRadius(App::GetCameraManager()->GetCamera());
 
 	// Calculate current color gradients point
 	float point = (-lightDir.y + 1.0f) / 2.0f;

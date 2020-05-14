@@ -28,10 +28,8 @@ class GlobalEnvironment
 public:
 
     GlobalEnvironment() :
-         mainCamera(0)
-        , sceneManager(0)
+         sceneManager(0)
     {}
 
-    Ogre::Camera*       mainCamera;
     Ogre::SceneManager* sceneManager;
 };
