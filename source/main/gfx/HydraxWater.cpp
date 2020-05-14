@@ -22,6 +22,7 @@
 
 #include "Application.h"
 #include "CameraManager.h"
+#include "GfxScene.h"
 #include "OgreSubsystem.h"
 #include "SkyManager.h"
 #include "TerrainManager.h"
@@ -55,7 +56,7 @@ HydraxWater::~HydraxWater()
 
 void HydraxWater::InitHydrax()
 {
-    mHydrax = new Hydrax::Hydrax(gEnv->sceneManager, mRenderCamera, RoR::App::GetOgreSubsystem()->GetViewport());
+    mHydrax = new Hydrax::Hydrax(App::GetGfxScene()->GetSceneManager(), mRenderCamera, RoR::App::GetOgreSubsystem()->GetViewport());
 
     waternoise = new Hydrax::Noise::Perlin();
     mModule = new Hydrax::Module::ProjectedGrid(// Hydrax parent pointer

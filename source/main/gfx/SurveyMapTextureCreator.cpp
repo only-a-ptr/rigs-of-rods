@@ -22,6 +22,7 @@
 
 #include "Application.h"
 #include "CameraManager.h"
+#include "GfxScene.h"
 #include "IWater.h"
 #include "TerrainManager.h"
 
@@ -42,7 +43,7 @@ SurveyMapTextureCreator::SurveyMapTextureCreator(Ogre::Real terrain_height) :
 SurveyMapTextureCreator::~SurveyMapTextureCreator()
 {
     if (mCamera)
-        gEnv->sceneManager->destroyCamera(mCamera);
+        App::GetGfxScene()->GetSceneManager()->destroyCamera(mCamera);
     if (mTexture)
         Ogre::TextureManager::getSingleton().remove(mTexture);
 }
@@ -64,7 +65,7 @@ bool SurveyMapTextureCreator::init(int res, int fsaa)
     mRttTex->addListener(this);
     mRttTex->setAutoUpdated(false);
 
-    mCamera = gEnv->sceneManager->createCamera("MapRttCam-" + TOSTRING(counter));
+    mCamera = App::GetGfxScene()->GetSceneManager()->createCamera("MapRttCam-" + TOSTRING(counter));
     mCamera->setFixedYawAxis(false);
     mCamera->setDirection(-Vector3::UNIT_Y);
     mCamera->setProjectionType(PT_ORTHOGRAPHIC);
