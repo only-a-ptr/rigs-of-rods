@@ -339,7 +339,7 @@ public:
 
     void Run(Ogre::StringVector const& args) override
     {
-        App::app_state_requested->SetActiveVal((int)AppState::SHUTDOWN);
+        App::GetGameContext()->PushMessage(Message(MSG_APP_SHUTDOWN_REQUESTED));
     }
 };
 
