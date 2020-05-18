@@ -373,16 +373,6 @@ public:
 // -------------------------------------------------------------------------------------
 // CVar (builtin) console commmands
 
-template <size_t L>
-inline void PrintCVarHelper(Str<L>& reply, CVar* cvar)
-{
-    reply << cvar->GetName() << " = " << cvar->GetActiveStr();
-    if (cvar->GetActiveStr() != cvar->GetPendingStr())
-    {
-        reply << " (" << _L("pending: ") << cvar->GetPendingStr() << ")";
-    }
-}
-
 class SetCmd: public ConsoleCmd
 {
 public:
@@ -409,7 +399,7 @@ public:
                     App::GetConsole()->CVarAssign(cvar, args[2]);
                 }
                 reply_type = Console::CONSOLE_SYSTEM_REPLY;
-                PrintCVarHelper(reply, cvar);
+                reply << cvar->GetName() << " = " << cvar->GetActiveStr();
             }
             else
             {
@@ -446,16 +436,14 @@ public:
             size_t i;
             for (i = 1; i < args.size(); ++i)
             {
-                     if (args[i] == "--autoapply")  { flags |= CVAR_AUTO_APPLY; }
-                else if (args[i] == "--autostore")  { flags |= CVAR_AUTO_STORE; }
-                else if (args[i] == "--allowstore") { flags |= CVAR_ALLOW_STORE; }
+                     if (args[i] == "--archive")  { flags |= CVAR_ARCHIVE; }
                 else break; // Exit loop on first non-switch arg!
             }
 
             if (i == args.size()) // Only switches but no cvar?
             {
                 reply_type = Console::CONSOLE_HELP;
-                reply << this->GetUsage() << " - " << this->GetDoc() << "Switches: --autoapply/--allowstore/--autostore";
+                reply << this->GetUsage() << " - " << this->GetDoc() << "Switches: --archive";
             }
             else
             {
@@ -465,7 +453,7 @@ public:
                     App::GetConsole()->CVarAssign(cvar, args[i+1]);
                 }
                 reply_type = Console::CONSOLE_SYSTEM_REPLY;
-                PrintCVarHelper(reply, cvar);
+                reply << cvar->GetName() << " = " << cvar->GetActiveStr();
             }
         }
 
@@ -562,7 +550,7 @@ void Console::DoCommand(std::string msg)
     if (cvar)
     {
         Str<200> reply;
-        PrintCVarHelper(reply, cvar);
+        reply << cvar->GetName() << " = " << cvar->GetActiveStr();
         App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_REPLY, reply.ToCStr());
         return;
     }
