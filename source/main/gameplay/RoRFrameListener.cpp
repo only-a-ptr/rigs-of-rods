@@ -1448,20 +1448,6 @@ void SimController::UpdateSimulation(float dt)
         App::GetOutGauge()->Update(dt, App::GetGameContext()->GetPlayerActor());
     }
 
-    if (App::mp_state->GetEnum<MpState>() == MpState::CONNECTED)
-    {
-        // Update mumble (3d audio)
-#ifdef USE_MUMBLE
-        // calculate orientation of avatar first
-        Ogre::Vector3 avatarDir = Ogre::Vector3(Math::Cos(App::GetGameContext()->GetPlayerCharacter()->getRotation()), 0.0f, Math::Sin(App::GetGameContext()->GetPlayerCharacter()->getRotation()));
-        Ogre::SceneNode* cam_node = App::GetCameraManager()->GetCameraNode();
-        Ogre::Vector3 cam_direction = -cam_node->getLocalAxes().GetColumn(2); // Negative Z is 'forward'
-        Ogre::Vector3 cam_up = cam_node->getLocalAxes().GetColumn(1); // Y is 'up'
-        App::GetMumble()->update(cam_node->getPosition(), cam_direction, cam_up,
-            App::GetGameContext()->GetPlayerCharacter()->getPosition() + Vector3(0, 1.8f, 0), avatarDir, Ogre::Vector3(0.0f, 1.0f, 0.0f));
-#endif // USE_MUMBLE
-    }
-
     if (App::sim_state->GetEnum<SimState>() == SimState::RUNNING || App::sim_state->GetEnum<SimState>() == SimState::EDITOR_MODE)
     {
         App::GetCameraManager()->Update(dt, App::GetGameContext()->GetPlayerActor(), App::GetGameContext()->GetActorManager()->GetSimulationSpeed());
