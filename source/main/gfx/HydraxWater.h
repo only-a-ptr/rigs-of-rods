@@ -26,6 +26,8 @@
 
 #include <Ogre.h>
 
+namespace RoR {
+
 class HydraxWater : public IWater
 {
 public:
@@ -57,3 +59,5 @@ protected:
     Hydrax::Module::ProjectedGrid* mModule;
     Ogre::String CurrentConfigFile;
 };
+
+} // namespace RoR
