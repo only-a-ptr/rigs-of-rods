@@ -88,10 +88,18 @@ void RoR::GUI::SurveyMap::Draw()
     }
 
     // Open window
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar;
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(WINDOW_PADDING, WINDOW_PADDING));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, WINDOW_ROUNDING);
-    ImGui::SetNextWindowSize(ImVec2((view_size.x + 8), (view_size.y + 8)));
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    if (mMapMode == SurveyMapMode::WINDOW)
+    {
+        ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_FirstUseEver);
+    }
+    else
+    {
+        flags = flags | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize;
+        ImGui::SetNextWindowSize(ImVec2((view_size.x + 8), (view_size.y + 8)));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(WINDOW_PADDING, WINDOW_PADDING));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, WINDOW_ROUNDING);
+    }
 
     if (mMapMode == SurveyMapMode::BIG)
     {
@@ -103,7 +111,14 @@ void RoR::GUI::SurveyMap::Draw()
             (view_size.x + App::GetGuiManager()->GetTheme().screen_edge_padding.x);
         ImGui::SetNextWindowPos(ImVec2(x, 100.f));
     }
-    ImGui::Begin("SurveyMap", nullptr, flags);
+    bool keep_open = true;
+    ImGui::Begin(_L("Survey Map"), &keep_open, flags);
+    if (!keep_open)
+    {
+        mMapMode = SurveyMapMode::NONE;
+        ImGui::End();
+        return;
+    }
 
     // Draw map texture
     ImVec2 tl_screen_pos = ImGui::GetCursorScreenPos();
@@ -145,13 +160,29 @@ void RoR::GUI::SurveyMap::Draw()
         }
         tex = mMapTextureCreatorDynamic->GetTexture();
     }
+    else if (mMapMode == SurveyMapMode::WINDOW)
+    {
+        // Scale the image
+        ImVec2 max_size = (ImGui::GetWindowSize() - ImGui::GetStyle().WindowPadding*2) -
+                          ImVec2(0, ImGui::GetTextLineHeightWithSpacing()); // Subtract titlebar from total height
+        ImVec2 size(mTerrainSize.x, mTerrainSize.y);
+        size *= max_size.x / size.x; // Fit size along X
+        if (size.y > max_size.y) // Reduce size along Y if needed
+        {
+            size *= max_size.y / size.y;
+        }
+        // Set up the view
+        tex = mMapTextureCreatorDynamic->GetTexture();
+        view_size = size;
+        view_origin = mMapCenterOffset;
+    }
 
     ImGui::Image(reinterpret_cast<ImTextureID>(tex->getHandle()), view_size);
     if (ImGui::IsItemClicked(0)) // 0 = left click
     {
         ImVec2 mouse_view_offset = (ImGui::GetMousePos() - tl_screen_pos) / view_size;
         Vector2 mouse_map_pos;
-        if (mMapMode == SurveyMapMode::BIG)
+        if (mMapMode == SurveyMapMode::BIG || mMapMode == SurveyMapMode::WINDOW)
         {
             mouse_map_pos = view_origin + Vector2(mouse_view_offset.x, mouse_view_offset.y) * mTerrainSize;
         }
@@ -224,7 +255,10 @@ void RoR::GUI::SurveyMap::Draw()
     }
 
     ImGui::End();
-    ImGui::PopStyleVar(2); // WindowPadding, WindowRounding
+    if (mMapMode != SurveyMapMode::WINDOW)
+    {
+        ImGui::PopStyleVar(2); // WindowPadding, WindowRounding
+    }
 }
 
 void RoR::GUI::SurveyMap::CreateTerrainTextures()
@@ -310,6 +344,14 @@ void RoR::GUI::SurveyMap::CycleMode()
 void RoR::GUI::SurveyMap::ToggleMode()
 {
     mMapMode = (mMapMode == SurveyMapMode::NONE) ? mMapLastMode : SurveyMapMode::NONE;
+}
+
+void SurveyMap::ShowWindowed()
+{
+    mMapMode = SurveyMapMode::WINDOW;
+    // Reset zoom (this uses same texture as SMALL view).
+    mMapZoom = 0.f;
+    mMapTextureCreatorDynamic->update((mTerrainSize / 2) + mMapCenterOffset, mTerrainSize);
 }
 
 void RoR::GUI::SurveyMap::DrawMapIcon(ImVec2 view_pos, ImVec2 view_size, Ogre::Vector2 view_origin,

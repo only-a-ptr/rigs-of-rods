@@ -54,8 +54,7 @@ public:
     bool IsVisible() const { return mMapMode != SurveyMapMode::NONE; }
     void CycleMode();
     void ToggleMode();
-
-    const char* getTypeByDriveable(int driveable);
+    void ShowWindowed();
 
 protected:
 
@@ -63,11 +62,13 @@ protected:
     {
         NONE, // Not visible
         SMALL,
-        BIG
+        BIG,
+        WINDOW
     };
 
     void setMapZoom(float zoom);
     void setMapZoomRelative(float dt_sec);
+    const char* getTypeByDriveable(int driveable);
 
     void DrawMapIcon(ImVec2 view_pos, ImVec2 view_size, Ogre::Vector2 view_origin,
                      std::string const& filename, std::string const& caption, 

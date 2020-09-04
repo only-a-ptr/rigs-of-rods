@@ -31,6 +31,7 @@
 #include "GUIManager.h"
 #include "GUIUtils.h"
 #include "GUI_MainSelector.h"
+#include "GUI_SurveyMap.h"
 #include "InputEngine.h"
 #include "Language.h"
 #include "Network.h"
@@ -493,6 +494,12 @@ void RoR::GUI::TopMenubar::Update()
                     App::GetGuiManager()->SetVisible_NodeBeamUtils(true);
                     m_open_menu = TopMenu::TOPMENU_NONE;
                 }
+            }
+
+            if (ImGui::Button("Windowed survey map"))
+            {
+                App::GetGuiManager()->GetSurveyMap()->ShowWindowed();
+                m_open_menu = TopMenu::TOPMENU_NONE;
             }
 
             ImGui::Separator();
