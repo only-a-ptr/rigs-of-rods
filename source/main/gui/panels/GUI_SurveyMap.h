@@ -32,10 +32,11 @@ namespace RoR {
 namespace GUI {
 
 /// In-game map widget
-/// Has 3 display modes (see `SurveyMapMode`), cycled using input `SURVEY_MAP_TOGGLE_VIEW`
+/// Has 4 display modes (see `SurveyMapMode`), cycled using input `SURVEY_MAP_TOGGLE_VIEW`
 ///  * NONE - not visible
 ///  * SMALL - 30% of window height, zoomable with inputs `SURVEY_MAP_ZOOM_[IN|OUT]`
 ///  * BIG - 98% of window height, not zoomable
+///  * WINDOW - Classic DearIMGUI window, adjustable size, not zoomable.
 /// Maintains 2 textures:
 ///  * static terrain texture (rendered on session start, used in BIG+SMALL map on full zoom-out)
 ///  * dynamic texture, used in SMALL map when zoomed-in
