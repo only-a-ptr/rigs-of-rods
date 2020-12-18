@@ -82,7 +82,6 @@ Main::Main():
 {
     // Load resources
     RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::ACTOR_EDITOR);
-    Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("RigEditor");
 
     // Load config file
     m_config = new RigEditor::Config(PathCombine(App::sys_config_dir->GetStr(), "rig_editor.cfg"));
