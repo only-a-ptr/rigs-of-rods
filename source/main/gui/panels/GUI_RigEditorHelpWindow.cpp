@@ -26,7 +26,7 @@
 #include "ContentManager.h"
 #include "GUI_RigEditorHelpWindow.h"
 #include "RigEditor_IMain.h"
-#include "RoRPrerequisites.h"
+
 #include "Utils.h"
 
 #include <MyGUI.h>
@@ -59,7 +59,7 @@ void CLASS::Show()
     {
         Ogre::DataStreamPtr helpfile_stream = Ogre::ResourceGroupManager::getSingleton().openResource(
             "rig_editor_helpfile_english.txt", // TODO: Localization
-            RoR::ContentManager::ResourcePack::RIG_EDITOR.resource_group_name,
+            RoR::ContentManager::ResourcePack::ACTOR_EDITOR.resource_group_name,
             false);
 
         if (!helpfile_stream.isNull())

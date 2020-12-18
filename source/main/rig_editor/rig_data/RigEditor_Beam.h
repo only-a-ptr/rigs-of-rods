@@ -27,7 +27,7 @@
 
 #include "RigDef_Prerequisites.h"
 #include "RigEditor_ForwardDeclarations.h"
-#include "RoRPrerequisites.h"
+#include "ForwardDeclarations.h"
 
 namespace RoR
 {

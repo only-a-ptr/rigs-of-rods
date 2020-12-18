@@ -19,6 +19,7 @@
     along with Rigs of Rods. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ActorEditor.h"
 #include "Application.h"
 #include "AppContext.h"
 #include "CacheSystem.h"
@@ -257,6 +258,8 @@ int main(int argc, char *argv[])
                 }
             }
         }
+
+        App::GetActorEditor()->Initialize();
 
         App::app_state->SetVal((int)AppState::MAIN_MENU);
         App::GetGuiManager()->ReflectGameState();
@@ -512,7 +515,7 @@ int main(int argc, char *argv[])
                     break;
 
                 case MSG_SIM_UNLOAD_TERRN_REQUESTED:
-                    if (App::sim_state->GetEnum<SimState>() == SimState::EDITOR_MODE)
+                    if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
                     {
                         App::GetSimTerrain()->GetTerrainEditor()->WriteOutputFile();
                     }
@@ -615,22 +618,46 @@ int main(int argc, char *argv[])
                     break;
 
                 case MSG_EDI_ENTER_TERRN_EDITOR_REQUESTED:
-                    if (App::sim_state->GetEnum<SimState>() != SimState::EDITOR_MODE)
+                    if (App::sim_state->GetEnum<SimState>() != SimState::TERRN_EDITOR)
                     {
-                        App::sim_state->SetVal((int)SimState::EDITOR_MODE);
+                        App::sim_state->SetVal((int)SimState::TERRN_EDITOR);
                         App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE,
                                                       _L("Entered terrain editing mode"));
                     }
                     break;
 
                 case MSG_EDI_LEAVE_TERRN_EDITOR_REQUESTED:
-                    if (App::sim_state->GetEnum<SimState>() == SimState::EDITOR_MODE)
+                    if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
                     {
                         App::GetSimTerrain()->GetTerrainEditor()->WriteOutputFile();
                         App::GetSimTerrain()->GetTerrainEditor()->ClearSelection();
                         App::sim_state->SetVal((int)SimState::RUNNING);
                         App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_NOTICE,
                                                       _L("Left terrain editing mode"));
+                    }
+                    break;
+
+                case MSG_EDI_ENTER_ACTOR_EDITOR_REQUESTED:
+                    if (App::sim_state->GetEnum<SimState>() != SimState::ACTOR_EDITOR)
+                    {
+                        App::GetAppContext()->GetRenderWindow()->removeAllViewports();
+                        App::GetActorEditor()->BringUp();
+                        App::sim_state->SetVal((int)SimState::TERRN_EDITOR);
+                    }
+                    break;
+
+                case MSG_EDI_LEAVE_ACTOR_EDITOR_REQUESTED:
+                    if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
+                    {
+                        App::GetActorEditor()->Suspend();
+                        App::sim_state->SetVal((int)SimState::PAUSED);
+                    }
+                    break;
+
+                case MSG_EDI_LOAD_ACTOR_SNAPSHOT_REQUESTED:
+                    if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
+                    {
+                        App::GetActorEditor()->LoadSnapshot((ProjectSnapshot*)m.payload);
                     }
                     break;
 
@@ -695,9 +722,13 @@ int main(int argc, char *argv[])
                 {
                     App::GetCameraManager()->UpdateInputEvents(dt);
                     App::GetOverlayWrapper()->update(dt);
-                    if (App::sim_state->GetEnum<SimState>() == SimState::EDITOR_MODE)
+                    if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
                     {
                         App::GetSimTerrain()->GetTerrainEditor()->UpdateInputEvents(dt);
+                    }
+                    else if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
+                    {
+                        App::GetActorEditor()->UpdateInputEvents(dt);
                     }
                     else if (App::sim_state->GetEnum<SimState>() == SimState::RUNNING)
                     {
@@ -730,20 +761,6 @@ int main(int argc, char *argv[])
                     App::GetGameContext()->GetRecoveryMode().UpdateInputEvents(dt);
                     App::GetGameContext()->GetActorManager()->UpdateInputEvents(dt);
                 }
-            }
-            else if (App::app_state.GetPending() == AppState::RIG_EDITOR)
-            {
-                // Prepare
-                menu_wallpaper_widget->setVisible(false);
-                App::GetOgreSubsystem()->GetRenderWindow()->removeAllViewports();
-                App::GetOgreSubsystem()->GetOgreRoot()->removeFrameListener(App::GetGuiManager()); // Stop GUIManager updates
-                rig_editor->BringUp();
-                App::app_state.ApplyPending();
-                // Enter
-                rig_editor->EnterEditorLoop();
-                // Suspend
-                rig_editor->PutOff();
-                menu_wallpaper_widget->setVisible(true);
             }
 
             // Update OutGauge device
@@ -810,6 +827,10 @@ int main(int argc, char *argv[])
             if (App::sim_state->GetEnum<SimState>() == SimState::RUNNING)
             {
                 App::GetGameContext()->UpdateActors(); // *** Start new physics tasks. No reading from Actor N/B beyond this point.
+            }
+            else if (App::sim_state->GetEnum<SimState>() == SimState::RUNNING)
+            {
+                App::GetActorEditor()->UpdateEditor();
             }
 
             // Scene and GUI updates

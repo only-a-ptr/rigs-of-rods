@@ -25,10 +25,11 @@
 
 #include "RigEditor_Main.h"
 
+#include "AppContext.h"
 #include "Application.h"
 #include "CacheSystem.h"
+#include "Console.h"
 #include "ContentManager.h"
-#include "GlobalEnvironment.h"
 #include "GUI_RigEditorBeamsPanel.h"
 #include "GUI_RigEditorCommands2Panel.h"
 #include "GUI_RigEditorDeleteMenu.h"
@@ -44,7 +45,7 @@
 #include "GUI_RigEditorShocks2Panel.h"
 #include "GUIManager.h"
 #include "InputEngine.h"
-#include "OgreSubsystem.h"
+#include "PlatformUtils.h"
 #include "RigDef_Parser.h"
 #include "RigDef_Serializer.h"
 #include "RigDef_Validator.h"
@@ -56,7 +57,6 @@
 #include "RigEditor_RigProperties.h"
 #include "RigEditor_RigElementsAggregateData.h"
 #include "RigEditor_RigWheelsAggregateData.h"
-#include "Settings.h"
 
 #include <OISKeyboard.h>
 #include <OgreEntity.h>
@@ -70,9 +70,6 @@
 using namespace RoR;
 using namespace RoR::RigEditor;
 
-const MyGUI::UString Main::OpenSaveFileDialogMode::MODE_OPEN_TRUCK     ("RigEditor_OpenTruckFile");
-const MyGUI::UString Main::OpenSaveFileDialogMode::MODE_SAVE_TRUCK_AS  ("RigEditor_SaveTruckFileAs");
-
 Main::Main():
     m_scene_manager(nullptr),
     m_camera(nullptr),
@@ -84,18 +81,14 @@ Main::Main():
     m_state_flags(0)
 {
     // Load resources
-    RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::RIG_EDITOR);
+    RoR::App::GetContentManager()->AddResourcePack(ContentManager::ResourcePack::ACTOR_EDITOR);
     Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("RigEditor");
 
     // Load config file
-    GStr<300> cfg_path;
-    cfg_path << App::sys_config_dir.GetActive() << PATH_SLASH << "rig_editor.cfg";
-    m_config = new RigEditor::Config(cfg_path.ToCStr());
+    m_config = new RigEditor::Config(PathCombine(App::sys_config_dir->GetStr(), "rig_editor.cfg"));
 
     /* Setup 3D engine */
-    OgreSubsystem* ror_ogre_subsystem = App::GetOgreSubsystem();
-    assert(ror_ogre_subsystem != nullptr);
-    m_scene_manager = ror_ogre_subsystem->GetOgreRoot()->createSceneManager(Ogre::ST_GENERIC, "rig_editor_scene_manager");
+    m_scene_manager = App::GetAppContext()->GetOgreRoot()->createSceneManager(Ogre::ST_GENERIC, "rig_editor_scene_manager");
     m_scene_manager->setAmbientLight(m_config->scene_ambient_light_color);
 
     /* Camera */
@@ -136,39 +129,10 @@ Main::~Main()
     }
 }
 
-void Main::EnterEditorLoop()
-{
-    Ogre::RenderWindow* const window     = App::GetOgreSubsystem()->GetRenderWindow();
-    Ogre::Root* const         ogre_root  = App::GetOgreSubsystem()->GetOgreRoot();
-    while (App::app_state.GetPending() == RoR::AppState::RIG_EDITOR)
-    {
-        this->UpdateEditorLoop();
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-        RoRWindowEventUtilities::messagePump();
-#endif
-
-        if (window->isClosed())
-        {
-            App::app_state.SetPending(RoR::AppState::SHUTDOWN);
-            break;
-        }
-
-        ogre_root->renderOneFrame();
-
-        if (!window->isActive() && window->isVisible())
-        {
-            window->update(); // update even when in background !
-        }
-    }
-}
-
 void Main::BringUp()
 {
     /* Setup 3D engine */
-    OgreSubsystem* ror_ogre_subsystem = App::GetOgreSubsystem();
-    assert(ror_ogre_subsystem != nullptr);
-    m_viewport = ror_ogre_subsystem->GetRenderWindow()->addViewport(nullptr);
+    m_viewport = App::GetAppContext()->GetRenderWindow()->addViewport(nullptr);
     int viewport_width = m_viewport->getActualWidth();
     m_viewport->setBackgroundColour(m_config->viewport_background_color);
     m_camera->setAspectRatio(m_viewport->getActualHeight() / viewport_width);
@@ -188,10 +152,6 @@ void Main::PutOff()
 {
     /* Hide GUI */
     m_gui_menubar->Hide();
-    if (m_gui_open_save_file_dialog->isModal())
-    {
-        m_gui_open_save_file_dialog->endModal(); // Hides the dialog
-    }
     m_gui_delete_menu->Hide();
     // Supress node/beam panels (if visible)
     m_nodes_panel    ->HideTemporarily();
@@ -207,20 +167,19 @@ void Main::PutOff()
     m_debug_box->setVisible(false);
 }
 
-void Main::UpdateEditorLoop()
+void Main::UpdateInputEvents(float dt)
 {
-
     /* Update input events */
     m_input_handler->ResetEvents();
     App::GetInputEngine()->Capture(); // Also injects input to GUI (through RigEditor::InputHandler)
 
     /* Handle key presses */
-    bool camera_ortho_toggled = false;
-    int camera_view_changed = false;
+    m_camera_ortho_toggled = false;
+    m_camera_view_changed = false;
     if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_TOGGLE_PERSPECTIVE))
     {
         m_camera_handler->ToggleOrtho();
-        camera_ortho_toggled = true;
+        m_camera_ortho_toggled = true;
     }
 
     // Orientation:
@@ -236,17 +195,17 @@ void Main::UpdateEditorLoop()
     if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_FRONT))
     {
         m_camera_handler->LookInDirection(ctrl_is_down ? Ogre::Vector3::NEGATIVE_UNIT_X : Ogre::Vector3::UNIT_X);
-        camera_view_changed = true;
+        m_camera_view_changed = true;
     }
     if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_SIDE))
     {
         m_camera_handler->LookInDirection(ctrl_is_down ? Ogre::Vector3::UNIT_Z : Ogre::Vector3::NEGATIVE_UNIT_Z);
-        camera_view_changed = true;
+        m_camera_view_changed = true;
     }
     if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_TOP))
     {
         m_camera_handler->TopView(! ctrl_is_down);
-        camera_view_changed = true;
+        m_camera_view_changed = true;
     }
 
     /* Handle camera control */
@@ -261,9 +220,15 @@ void Main::UpdateEditorLoop()
         );
         if (res)
         {
-            camera_view_changed = true;
+            m_camera_view_changed = true;
         }
     }
+}
+
+void Main::UpdateEditorLoop()
+{
+    OIS::Keyboard* ois_keyboard = App::GetInputEngine()->GetOisKeyboard();
+    bool ctrl_is_down = ois_keyboard->isKeyDown(OIS::KC_RCONTROL) || ois_keyboard->isKeyDown(OIS::KC_LCONTROL);
 
     // RIG MANIPULATION \\
 
@@ -377,7 +342,7 @@ void Main::UpdateEditorLoop()
         }
         
 
-        if (camera_view_changed || camera_ortho_toggled)
+        if (m_camera_view_changed || m_camera_ortho_toggled)
         {
             m_rig->RefreshAllNodesScreenPositions(m_camera_handler);
         }
@@ -385,7 +350,7 @@ void Main::UpdateEditorLoop()
         if	(	(m_input_handler->WasModeExited(InputHandler::Mode::CREATE_NEW_NODE))
             ||	(m_input_handler->WasModeExited(InputHandler::Mode::GRAB_NODES))
             ||	(	(! m_input_handler->IsModeActive(InputHandler::Mode::CREATE_NEW_NODE))
-                &&	((m_input_handler->GetMouseMotionEvent().HasMoved() || camera_view_changed || camera_ortho_toggled))
+                &&	((m_input_handler->GetMouseMotionEvent().HasMoved() || m_camera_view_changed || m_camera_ortho_toggled))
                 )
             )
         {
@@ -624,21 +589,12 @@ void Main::UpdateEditorLoop()
 
 void Main::CommandShowDialogOpenRigFile()
 {
-    m_gui_open_save_file_dialog->setDialogInfo(MyGUI::UString("Open rig file"), MyGUI::UString("Open"), false);
-    m_gui_open_save_file_dialog->eventEndDialog = MyGUI::newDelegate(this, &Main::NotifyFileSelectorEnded);
-    m_gui_open_save_file_dialog->setMode(OpenSaveFileDialogMode::MODE_OPEN_TRUCK);
-    m_gui_open_save_file_dialog->doModal(); // Shows the dialog
+  //TODO: NotifyFileSelectorEnded()
 }
 
 void Main::CommandShowDialogSaveRigFileAs()
 {
-    if (m_rig != nullptr)
-    {
-        m_gui_open_save_file_dialog->setDialogInfo(MyGUI::UString("Save rig file"), MyGUI::UString("Save"), false);
-        m_gui_open_save_file_dialog->eventEndDialog = MyGUI::newDelegate(this, &Main::NotifyFileSelectorEnded);
-        m_gui_open_save_file_dialog->setMode(OpenSaveFileDialogMode::MODE_SAVE_TRUCK_AS);
-        m_gui_open_save_file_dialog->doModal(); // Shows the dialog
-    }
+  //TODO: NotifyFileSelectorEnded()
 }
 
 void Main::CommandSaveRigFile()
@@ -663,161 +619,49 @@ void Main::CommandCloseCurrentRig()
 
 void Main::NotifyFileSelectorEnded(GUI::Dialog* dialog, bool result)
 {
-    if (result)
-    {
-        const MyGUI::UString & mode = m_gui_open_save_file_dialog->getMode();
-        auto const & folder = m_gui_open_save_file_dialog->getCurrentFolder();
-        auto const & filename = m_gui_open_save_file_dialog->getFileName();
-
-        if (mode == OpenSaveFileDialogMode::MODE_OPEN_TRUCK)
-        {
-            LoadRigDefFile(folder, filename);
-        }
-        else if (mode == OpenSaveFileDialogMode::MODE_SAVE_TRUCK_AS)
-        {
-            SaveRigDefFile(folder, filename);
-        }
-    }
-    dialog->endModal(); // Hides the dialog
+    //TODO: 
+    //LoadRigDefFile(folder, filename); 
+    //SaveRigDefFile(folder, filename);
 }
 
 void Main::SaveRigDefFile(MyGUI::UString const & directory, MyGUI::UString const & filename)
 {
-    using namespace RigDef;
-
-    if (m_rig == nullptr)
-    {
-        LOG("RigEditor: [WARNING] SaveRigDefFile(): Nothing to save.");
-        return;
-    }
-
-    auto rig_def = m_rig->Export();
-    auto out_path = directory + '/' + filename;
-    Serializer serializer(rig_def, out_path);
-    serializer.Serialize();
-    LOG("RigEditor: Rig saved as: " + out_path);
+    //TODO: m_rig->Export();
 }
 
-void RigEditor_LogParserMessages(RigDef::Parser & parser)
+bool Main::LoadRigDefFile(std::string const & filename, MyGUI::UString const & rg_name)
 {
-    if (parser.GetMessages().size() == 0)
-    {
-        LOG("RigEditor: Parsing done OK");
-        return;
-    }
-
-    std::stringstream report;
-    report << "RigEditor: Parsing done, report:" << std::endl <<std::endl;
-
-    for (auto iter = parser.GetMessages().begin(); iter != parser.GetMessages().end(); iter++)
-    {
-        switch (iter->type)
-        {
-            case (RigDef::Parser::Message::TYPE_FATAL_ERROR): 
-                report << "FATAL_ERROR"; 
-                break;
-
-            case (RigDef::Parser::Message::TYPE_ERROR): 
-                report << "ERROR"; 
-                break;
-
-            case (RigDef::Parser::Message::TYPE_WARNING): 
-                report << "WARNING"; 
-                break;
-
-            default:
-                report << "INFO"; 
-                break;
-        }
-        report << " (Section " << RigDef::File::SectionToString(iter->section) << ")" << std::endl;
-        report << "\tLine (# " << iter->line_number << "): " << iter->line << std::endl;
-        report << "\tMessage: " << iter->message << std::endl;
-    }
-
-    Ogre::LogManager::getSingleton().logMessage(report.str());
-}
-
-void RigEditor_LogValidatorMessages(RigDef::Validator & validator)
-{
-    if (validator.GetMessages().empty())
-    {
-        Ogre::LogManager::getSingleton().logMessage("RigEditor: Validating done OK");
-        return;
-    }
-
-    std::ostringstream report;
-    report << "RigEditor: Validating done, report:" <<std::endl << std::endl;
-
-    for(auto itor = validator.GetMessages().begin(); itor != validator.GetMessages().end(); itor++)
-    {
-        switch (itor->type)
-        {
-            case (RigDef::Validator::Message::TYPE_FATAL_ERROR):
-                report << "FATAL ERROR";
-                break;
-            case (RigDef::Validator::Message::TYPE_ERROR):
-                report << "ERROR";
-                break;
-            case (RigDef::Validator::Message::TYPE_WARNING):
-                report << "WARNING";
-                break;
-            default:
-                report << "INFO";
-        }
-
-        report << ": " << itor->text << std::endl;
-    }
-
-    Ogre::LogManager::getSingleton().logMessage(report.str());
-}
-
-bool Main::LoadRigDefFile(MyGUI::UString const & directory, MyGUI::UString const & filename)
-{
-    /* CLOSE PREVIOUS RIG */
-
+    // Close prev. rig
     if (m_rig != nullptr)
     {
         this->CommandCloseCurrentRig();
     }
 
-    /* LOAD */
-
-    Ogre::DataStreamPtr stream = Ogre::DataStreamPtr();
-    Ogre::String resource_group_name("RigEditor_CurrentProject");
-
+    // Load and parse new file
+    std::shared_ptr<RigDef::File> def;
     try
     {
-        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(directory, "FileSystem", resource_group_name);
-        stream = Ogre::ResourceGroupManager::getSingleton().openResource(filename, resource_group_name);
+        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(filename, rg_name);
+
+        RigDef::Parser parser;
+        parser.Prepare();
+        parser.ProcessOgreStream(stream.get(), RGN_ACTOR_PROJECT);
+        parser.Finalize();
+
+        def = parser.GetFile();
     } 
     catch (Ogre::Exception& e)
     {
-        // TODO: Report error to user
-
-        LOG("RigEditor: Failed to retrieve rig file" + filename + ", Ogre::Exception was thrown with message: " + e.what());
+        // OGRE exception already logged
+        App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_ACTOR, Console::CONSOLE_SYSTEM_ERROR,
+            "RigEditor: Failed to retrieve rig file" + filename + ", Ogre::Exception was thrown with message: " + e.what());
         return false;
     }
 
-    /* PARSE */
-
-    LOG("RigEditor: Parsing rig file: " + filename);
-
-    RigDef::Parser parser;
-    parser.Prepare();
-    parser.ProcessOgreStream(stream.get());
-    parser.Finalize();
-
-    RigEditor_LogParserMessages(parser);
-
-    /* VALIDATE */
-
-    LOG("RigEditor: Validating vehicle: " + parser.GetFile()->name);
-
+    // validate file
     RigDef::Validator validator;
-    validator.Setup(parser.GetFile());
+    validator.Setup(def);
     bool valid = validator.Validate();
-
-    RigEditor_LogValidatorMessages(validator);
 
     if (! valid)
     {
@@ -827,14 +671,13 @@ bool Main::LoadRigDefFile(MyGUI::UString const & directory, MyGUI::UString const
         return false;
     }
 
-    /* BUILD RIG MESH */
-
+    // Build the editor mesh
     m_rig = new RigEditor::Rig(m_config);
     RigEditor::RigBuildingReport rig_build_report;
     Ogre::SceneNode* parent_scene_node = m_scene_manager->getRootSceneNode();
-    m_rig->Build(parser.GetFile(), this, parent_scene_node, &rig_build_report);
+    m_rig->Build(def, this, parent_scene_node, &rig_build_report);
 
-    /* SHOW MESH */
+    // Display mesh
     this->OnNewRigCreatedOrLoaded(parent_scene_node);
 
     LOG(Ogre::String("RigEditor: Finished loading rig, report:\n") + rig_build_report.ToString());
@@ -884,18 +727,6 @@ void Main::CommandCurrentRigDeleteSelectedBeams()
     m_rig->DeleteBeamsBetweenSelectedNodes();
     m_rig->RefreshBeamsDynamicMesh();
     m_rig->RefreshNodesDynamicMeshes(m_scene_manager->getRootSceneNode());
-}
-
-void Main::CommandQuitRigEditor()
-{
-    if (App::app_state.GetActive() == RoR::AppState::RIG_EDITOR)
-    {
-        App::app_state.SetPending(AppState::MAIN_MENU);
-    }
-    else // AppState::SIMULATION, SimState::RIG_EDITOR
-    {
-        App::sim_state.SetPending(SimState::RUNNING);
-    }
 }
 
 void Main::CommandShowRigPropertiesWindow()
@@ -971,10 +802,7 @@ void Main::InitializeOrRestoreGui()
         m_gui_menubar->Show();
     }
     m_gui_menubar->StretchWidthToScreen();
-    if (m_gui_open_save_file_dialog.get() == nullptr)
-    {
-        m_gui_open_save_file_dialog = std::unique_ptr<GUI::OpenSaveFileDialog>(new GUI::OpenSaveFileDialog());
-    }
+
     if (m_gui_delete_menu.get() == nullptr)
     {
         m_gui_delete_menu = std::unique_ptr<GUI::RigEditorDeleteMenu>(new GUI::RigEditorDeleteMenu(this));
@@ -1168,6 +996,3 @@ void Main::CommandCreateNewEmptyRig()
     this->OnNewRigCreatedOrLoaded(m_scene_manager->getRootSceneNode());
 }
 
-// ----------------------------------------------------------------------------
-// End
-// ----------------------------------------------------------------------------

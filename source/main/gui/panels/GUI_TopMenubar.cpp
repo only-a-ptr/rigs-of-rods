@@ -323,7 +323,7 @@ void TopMenubar::Update()
             for (std::unique_ptr<ProjectEntry>& project: projects)
             {
                 ImGui::PushID(id_counter++);
-                if (ImGui::TreeNode(project->prj_name.c_str())) // TODO: EDIT button
+                if (ImGui::TreeNode(project->prj_name.c_str()))
                 {
                     for (ProjectSnapshot& snap: project->prj_snapshots)
                     {
@@ -335,6 +335,12 @@ void TopMenubar::Update()
                             rq->asr_project = project.get(); // Load from project
                             rq->asr_filename = snap.prs_filename;
                             App::GetGameContext()->PushMessage(Message(MSG_SIM_SPAWN_ACTOR_REQUESTED, (void*)rq));
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button("Edit"))
+                        {
+                            App::GetGameContext()->PushMessage(Message(MSG_EDI_ENTER_ACTOR_EDITOR_REQUESTED));
+                            App::GetGameContext()->ChainMessage(Message(MSG_EDI_LOAD_ACTOR_SNAPSHOT_REQUESTED, &snap));
                         }
                     }
                     ImGui::TreePop();
@@ -352,6 +358,12 @@ void TopMenubar::Update()
             if (ImGui::Button(_L("Refresh list")))
             {
                 App::GetContentManager()->ReScanProjects(); // TODO: Make it happen asynchronously!
+            }
+
+            if (ImGui::Button("Open actor editor"))
+            {
+                App::GetGameContext()->PushMessage(Message(MSG_EDI_ENTER_ACTOR_EDITOR_REQUESTED));
+                m_open_menu = TopMenu::TOPMENU_NONE;
             }
 
             if (App::GetGameContext()->GetPlayerActor() == nullptr)
@@ -372,9 +384,8 @@ void TopMenubar::Update()
                     ProjectEntry* proj = App::GetContentManager()->CreateNewProject(filename, prj_name.ToCStr());
                     if (proj != nullptr) // Error already logged + displayed
                     {
-                        ActorEditor e;
-                        e.SetProject(proj);
-                        e.ImportSnapshotToProject(filename, src_actor->GetDefinition()); // Logs+displays errors
+                        App::GetActorEditor()->SetProject(proj);
+                        App::GetActorEditor()->ImportSnapshotToProject(filename, src_actor->GetDefinition()); // Logs+displays errors
                     }
                 }
             }
@@ -607,12 +618,6 @@ void TopMenubar::Update()
                 if (ImGui::Button("Node / Beam utility"))
                 {
                     App::GetGuiManager()->SetVisible_NodeBeamUtils(true);
-                    m_open_menu = TopMenu::TOPMENU_NONE;
-                }
-                
-                if (ImGui::Button("Rig editor"))
-                {
-                    App::sim_state.SetPending(RoR::AppState::RIG_EDITOR);
                     m_open_menu = TopMenu::TOPMENU_NONE;
                 }
             }

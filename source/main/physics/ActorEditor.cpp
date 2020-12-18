@@ -26,12 +26,38 @@
 #include "GUIManager.h"
 #include "Language.h"
 #include "RigDef_Serializer.h"
+#include "RigEditor_Main.h"
 
 #include <OgreDataStream.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
 
 using namespace RoR;
+
+void ActorEditor::Initialize()
+{
+    m_rig_editor = std::unique_ptr<RigEditor::Main>(new RigEditor::Main());
+}
+
+void ActorEditor::UpdateInputEvents(float dt)
+{
+    m_rig_editor->UpdateInputEvents(dt);
+}
+
+void ActorEditor::BringUp()
+{
+    m_rig_editor->BringUp();
+}
+
+void ActorEditor::Suspend()
+{
+    m_rig_editor->PutOff();
+}
+
+void ActorEditor::UpdateEditor()
+{
+    m_rig_editor->UpdateEditorLoop();
+}
 
 // static
 bool ActorEditor::ReLoadProjectFromDirectory(ProjectEntry* proj)
@@ -279,3 +305,7 @@ bool ActorEditor::SaveSnapshot()
     }
 }
 
+bool ActorEditor::LoadSnapshot(ProjectSnapshot* snapshot)
+{
+    return m_rig_editor->LoadRigDefFile(snapshot->prs_filename, RGN_PROJECTS);
+}

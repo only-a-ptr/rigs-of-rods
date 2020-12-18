@@ -24,6 +24,7 @@
 */
 
 #include "GUI_RigEditorMenubar.h"
+#include "GameContext.h"
 
 #include "RigEditor_GuiPopupWheelsList.h"
 
@@ -99,7 +100,7 @@ void RigEditorMenubar::CloseRigItemClicked(MyGUI::Widget* sender)
 
 void RigEditorMenubar::QuitEditorItemClicked(MyGUI::Widget* sender)
 {
-    m_rig_editor_interface->CommandQuitRigEditor();
+    App::GetGameContext()->PushMessage(Message(MSG_EDI_LEAVE_ACTOR_EDITOR_REQUESTED));
 }
 
 void RigEditorMenubar::RigPropertiesItemClicked(MyGUI::Widget* sender)

@@ -49,8 +49,6 @@ public:
 
     virtual void CommandCurrentRigDeleteSelectedBeams() = 0;
 
-    virtual void CommandQuitRigEditor() = 0;
-
     virtual void CommandShowRigPropertiesWindow() = 0;
 
     virtual void CommandSaveContentOfRigPropertiesWindow() = 0;

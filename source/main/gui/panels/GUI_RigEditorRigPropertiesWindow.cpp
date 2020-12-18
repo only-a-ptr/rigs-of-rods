@@ -26,7 +26,7 @@
 #include "GUI_RigEditorRigPropertiesWindow.h"
 #include "RigEditor_IMain.h"
 #include "RigEditor_RigProperties.h"
-#include "RoRPrerequisites.h"
+#include "ForwardDeclarations.h"
 #include "Utils.h"
 
 #include <MyGUI.h>
@@ -141,14 +141,8 @@ void CLASS::Import(RigEditor::RigProperties* data)
     for (auto itor = data->m_authors.begin(); itor != authors_end; ++itor)
     {
         authors_buffer << itor->type << " ";
-        if (itor->_has_forum_account)
-        {
-            authors_buffer << TOSTRING(itor->forum_account_id) << " ";
-        }
-        else
-        {
-            authors_buffer << "-1 ";
-        }
+        authors_buffer << TOSTRING(itor->forum_account_id) << " ";
+
         authors_buffer << itor->name << " ";
         authors_buffer << itor->email << std::endl;
     }
@@ -241,7 +235,8 @@ void CLASS::Export(RigEditor::RigProperties* data)
         {
             if (! itor->empty()) // Empty line?
             {
-                std::string line = RoR::Utils::TrimBlanksAndLinebreaks(*itor);
+                std::string line = *itor;
+                Ogre::StringUtil::trim(line);
                 if (! line.empty())
                 {
                     data->m_description.push_back(line);
@@ -274,7 +269,6 @@ void CLASS::Export(RigEditor::RigProperties* data)
                 if (account_id > -1)
                 {
                     author.forum_account_id = static_cast<unsigned int>(account_id);
-                    author._has_forum_account = true;
                 }
 
                 if (tokens.size() > 2)

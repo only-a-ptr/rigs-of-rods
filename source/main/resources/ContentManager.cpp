@@ -90,7 +90,7 @@ DECLARE_RESOURCE_PACK( SCRIPTS,               "scripts",              "ScriptsRG
 DECLARE_RESOURCE_PACK( SOUNDS,                "sounds",               "SoundsRG");
 DECLARE_RESOURCE_PACK( TEXTURES,              "textures",             "TexturesRG");
 DECLARE_RESOURCE_PACK( SKYX,                  "SkyX",                 "SkyXRG");
-DECLARE_RESOURCE_PACK( 30, RIG_EDITOR,            "rig_editor",           "RigEditor");
+DECLARE_RESOURCE_PACK( ACTOR_EDITOR,            "rig_editor",           "RigEditorRG");
 
 // ================================================================================
 // Functions

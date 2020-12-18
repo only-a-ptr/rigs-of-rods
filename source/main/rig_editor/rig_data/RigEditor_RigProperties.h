@@ -28,7 +28,7 @@
 #include "RigDef_File.h"
 #include "RigDef_Prerequisites.h"
 #include "RigEditor_ForwardDeclarations.h"
-#include "RoRPrerequisites.h"
+#include "ForwardDeclarations.h"
 
 #include <memory>
 

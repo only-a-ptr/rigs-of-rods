@@ -159,11 +159,6 @@ void InputHandler::ExitMode(Mode const & mode)
 
 bool InputHandler::keyPressed( const OIS::KeyEvent &arg )
 {
-    if (App::GetGuiManager()->keyPressed(arg))
-    {
-        return true;
-    }
-
     // HANDLE EVENTS \\
 
     const Event* event_ptr = m_event_key_mappings[arg.key];
@@ -186,11 +181,6 @@ bool InputHandler::keyPressed( const OIS::KeyEvent &arg )
 
 bool InputHandler::keyReleased( const OIS::KeyEvent &arg )
 {
-    if (App::GetGuiManager()->keyReleased(arg))
-    {
-        return true;
-    }
-
     // HANDLE MODES \\
 
     const Mode* mode_ptr = m_mode_key_mappings[arg.key];

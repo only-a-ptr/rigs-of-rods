@@ -31,6 +31,7 @@
 namespace RoR
 {
     class  Actor;
+    class  ActorEditor;
     class  ActorManager;
     class  ActorSpawner;
     class  AeroEngine;
@@ -159,6 +160,7 @@ namespace RoR
         class  SurveyMap;
         class  TopMenubar;
     }
+
 } // namespace RoR
 
 namespace RoRnet

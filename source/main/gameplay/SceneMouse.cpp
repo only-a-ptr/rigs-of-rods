@@ -229,7 +229,7 @@ bool SceneMouse::mousePressed(const OIS::MouseEvent& _arg, OIS::MouseButtonID _i
         lastMouseX = ms.X.abs;
         Ray mouseRay = getMouseRay();
 
-        if (App::sim_state->GetEnum<SimState>() == SimState::EDITOR_MODE)
+        if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
         {
             return true;
         }

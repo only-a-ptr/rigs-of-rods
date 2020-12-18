@@ -27,7 +27,7 @@
 #include "RigDef_File.h"
 #include "RigEditor_Main.h"
 #include "RigEditor_RigProperties.h"
-#include "RoRPrerequisites.h"
+#include "ForwardDeclarations.h"
 
 #include <MyGUI.h>
 

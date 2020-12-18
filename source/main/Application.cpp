@@ -25,6 +25,7 @@
 
 #include "Application.h"
 
+#include "ActorEditor.h"
 #include "AppContext.h"
 #include "CacheSystem.h"
 #include "CameraManager.h"
@@ -71,6 +72,7 @@ static Network          g_network;
 static GameContext      g_game_context;
 static OutGauge         g_out_gauge;
 static DiscordRpc       g_discord_rpc;
+static ActorEditor      g_actor_editor;
 
 // App
 CVar* app_state;
@@ -256,6 +258,7 @@ Network*               GetNetwork            () { return &g_network; }
 GameContext*           GetGameContext        () { return &g_game_context; }
 OutGauge*              GetOutGauge           () { return &g_out_gauge; }
 DiscordRpc*            GetDiscordRpc         () { return &g_discord_rpc; }
+ActorEditor*           GetActorEditor        () { return &g_actor_editor; }
 
 // Factories
 void CreateOverlayWrapper()

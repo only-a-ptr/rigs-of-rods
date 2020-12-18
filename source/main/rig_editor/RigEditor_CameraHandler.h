@@ -56,7 +56,7 @@
 
 #include "RigDef_Prerequisites.h"
 #include "RigEditor_Types.h"
-#include "RoRPrerequisites.h"
+#include "ForwardDeclarations.h"
 
 #include <OgreMatrix4.h>
 

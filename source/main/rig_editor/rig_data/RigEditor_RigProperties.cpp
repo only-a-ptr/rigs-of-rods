@@ -54,7 +54,6 @@ void RigProperties::Import(std::shared_ptr<RigDef::File> def_file)
     m_import_commands   = def_file->import_commands;
     m_is_rescuer        = def_file->rescuer;
     m_rollon            = def_file->rollon;
-    m_minimass          = def_file->minimum_mass;
 
     m_enable_advanced_deformation   = def_file->enable_advanced_deformation;
     m_disable_default_sounds        = def_file->disable_default_sounds;
@@ -107,7 +106,6 @@ void RigProperties::Export(std::shared_ptr<RigDef::File> def_file)
     def_file->import_commands   = m_import_commands; 
     def_file->rescuer           = m_is_rescuer;      
     def_file->rollon            = m_rollon;          
-    def_file->minimum_mass      = m_minimass;  
 
     def_file->enable_advanced_deformation = m_enable_advanced_deformation;
     def_file->disable_default_sounds      = m_disable_default_sounds;

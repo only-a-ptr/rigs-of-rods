@@ -38,13 +38,11 @@
 #pragma once
 
 #include "ConfigFile.h"
-#include "GUI_OpenSaveFileDialog.h"
 #include "RigDef_Node.h"
 #include "RigDef_File.h"
 #include "RigDef_Prerequisites.h"
 #include "RigEditor_IMain.h"
 #include "RigEditor_ForwardDeclarations.h"
-#include "RoRPrerequisites.h"
 
 namespace RoR
 {

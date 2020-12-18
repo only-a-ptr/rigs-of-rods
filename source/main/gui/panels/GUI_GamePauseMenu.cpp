@@ -96,8 +96,6 @@ void GamePauseMenu::Draw() // TODO: Copypaste of 'GameMainMenu' -- cleanup and u
 
         const char* exit_title = (m_kb_focus_index == 2) ? "--> Exit game <--" : "Exit game";
         if (ImGui::Button(exit_title, btn_size) || (m_kb_enter_index == 2))
-    this->Hide();
-    App::sim_state.SetPending(SimState::RIG_EDITOR);
         {
             App::GetGameContext()->PushMessage(Message(MSG_APP_SHUTDOWN_REQUESTED));
         }

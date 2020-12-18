@@ -38,6 +38,7 @@
 #define RGN_PROJECTS "Projects"
 #define RGN_SAVEGAMES "Savegames"
 #define RGN_MANAGED_MATS "ManagedMaterials"
+#define RGN_ACTOR_PROJECT "ActorProject"
 
 namespace RoR {
 
@@ -77,7 +78,7 @@ public:
         static const ResourcePack SCRIPTS;
         static const ResourcePack SOUNDS;
         static const ResourcePack TEXTURES;
-		static const ResourcePack RIG_EDITOR;
+        static const ResourcePack ACTOR_EDITOR;
 
         const char* name;
         const char* resource_group_name;

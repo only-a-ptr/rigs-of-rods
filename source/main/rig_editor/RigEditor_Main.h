@@ -26,11 +26,11 @@
 #pragma once
 
 #include "ConfigFile.h"
-#include "GUI_OpenSaveFileDialog.h"
+
 #include "RigDef_Prerequisites.h"
 #include "RigEditor_IMain.h"
 #include "RigEditor_ForwardDeclarations.h"
-#include "RoRPrerequisites.h"
+
 
 namespace RoR
 {
@@ -42,19 +42,14 @@ class Main: public IMain
 {
 public:
 
-    struct OpenSaveFileDialogMode
-    {
-        static const MyGUI::UString MODE_OPEN_TRUCK;
-        static const MyGUI::UString MODE_SAVE_TRUCK_AS;
-    };
-
     Main();
     ~Main();
 
     void BringUp();
     void PutOff();
     void UpdateEditorLoop();
-    void EnterEditorLoop(); ///< You must call `BringUp()` before and `PutOff()` afterwards.
+    void UpdateInputEvents(float dt);
+    bool LoadRigDefFile(std::string const & filename, MyGUI::UString const & rg_name);
 
     Ogre::SceneManager* GetOgreSceneManager()
     {
@@ -71,8 +66,6 @@ public:
         return m_rig;
     }
 
-    /* IMain implementations */
-
     // File management
     virtual void CommandShowDialogOpenRigFile();
     virtual void CommandShowDialogSaveRigFileAs();
@@ -83,8 +76,6 @@ public:
     virtual void CommandCurrentRigDeleteSelectedNodes();
 
     virtual void CommandCurrentRigDeleteSelectedBeams();
-
-    virtual void CommandQuitRigEditor();
 
     virtual void CommandShowRigPropertiesWindow();
 
@@ -134,7 +125,7 @@ private:
     void HideAllNodeBeamGuiPanels();
     void HideAllWheelGuiPanels();
 
-    bool LoadRigDefFile(MyGUI::UString const & directory, MyGUI::UString const & filename);
+
 
     void SaveRigDefFile(MyGUI::UString const & directory, MyGUI::UString const & filename);
 
@@ -154,7 +145,6 @@ private:
     // GUI
     MyGUI::TextBox*                                             m_debug_box;
     std::unique_ptr<GUI::RigEditorMenubar>                      m_gui_menubar;
-    std::unique_ptr<GUI::OpenSaveFileDialog>                    m_gui_open_save_file_dialog;
     std::unique_ptr<GUI::RigEditorDeleteMenu>                   m_gui_delete_menu;
     std::unique_ptr<GUI::RigEditorHelpWindow>                   m_gui_help_window;
     std::unique_ptr<GUI::RigEditorNodePanel>                    m_nodes_panel;
@@ -167,7 +157,10 @@ private:
     std::unique_ptr<GUI::RigEditorFlexBodyWheelsPanel>          m_flexbodywheels_panel;
     std::unique_ptr<GUI::RigEditorRigPropertiesWindow>          m_gui_rig_properties_window;
     std::unique_ptr<GUI::RigEditorLandVehiclePropertiesWindow>  m_gui_land_vehicle_properties_window;
-    
+
+    // Transient state
+    bool m_camera_ortho_toggled = false;
+    bool m_camera_view_changed = false;
 };
 
 } // namespace RigEditor

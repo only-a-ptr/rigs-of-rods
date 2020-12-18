@@ -92,6 +92,9 @@ enum MsgType
     MSG_EDI_MODIFY_GROUNDMODEL_REQUESTED,  //!< Payload = ground_model_t* (weak)
     MSG_EDI_ENTER_TERRN_EDITOR_REQUESTED,
     MSG_EDI_LEAVE_TERRN_EDITOR_REQUESTED,
+    MSG_EDI_ENTER_ACTOR_EDITOR_REQUESTED,
+    MSG_EDI_LEAVE_ACTOR_EDITOR_REQUESTED,
+    MSG_EDI_LOAD_ACTOR_SNAPSHOT_REQUESTED   //!< Payload = ProjectSnapshot* (weak)
 };
 
 enum class AppState
@@ -99,7 +102,6 @@ enum class AppState
     BOOTSTRAP,          //!< Initial state
     MAIN_MENU,
     SIMULATION,
-    RIG_EDITOR,         ///< Enter rig editor without simulation (can be started later)
     SHUTDOWN,
     PRINT_HELP_EXIT,
     PRINT_VERSION_EXIT,
@@ -118,8 +120,8 @@ enum class SimState
     RUNNING,
     PAUSED,
     SELECTING,  ///< The selector GUI window is displayed.
-    RIG_EDITOR, ///< Suspend simulation and enter editor.
-    MAP_EDITOR,
+    ACTOR_EDITOR, ///< Suspend simulation and enter editor.
+    TERRN_EDITOR,
 };
 
 enum class SimGearboxMode
@@ -424,6 +426,7 @@ Network*             GetNetwork();
 GameContext*         GetGameContext();
 OutGauge*            GetOutGauge();
 DiscordRpc*          GetDiscordRpc();
+ActorEditor*         GetActorEditor();
 
 // Factories
 void CreateOverlayWrapper();

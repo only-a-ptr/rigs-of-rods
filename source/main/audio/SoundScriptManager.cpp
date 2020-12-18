@@ -306,7 +306,7 @@ void SoundScriptManager::modulate(int actor_id, int mod, float value, int linkTy
 void SoundScriptManager::update(float dt_sec)
 {
     if (App::sim_state->GetEnum<SimState>() == SimState::RUNNING ||
-        App::sim_state->GetEnum<SimState>() == SimState::EDITOR_MODE)
+        App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
     {
         Ogre::SceneNode* cam_node = App::GetCameraManager()->GetCameraNode();
         static Vector3 lastCameraPosition;
