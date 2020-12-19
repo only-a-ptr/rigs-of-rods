@@ -38,12 +38,8 @@ namespace RoR
 namespace RigEditor
 {
 
-/** Editor-specific input handler
-TODO: Integrate
-*/
-class InputHandler:
-    public OIS::MouseListener,
-    public OIS::KeyListener
+/// Editor-specific input handler
+class InputHandler
 {
 public:
 
@@ -292,11 +288,11 @@ public:
 
     MouseButtonEvent const & GetMouseButtonEvent();
 
-    /* OIS::KeyListener */
+    /* Keyboard injection; formerly OIS::KeyListener */
     bool keyPressed( const OIS::KeyEvent &arg );
     bool keyReleased( const OIS::KeyEvent &arg );
 
-    /* OIS MouseListener */
+    /* Mouse injection; formerly OIS MouseListener */
     bool mouseMoved( const OIS::MouseEvent &arg );
     bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
     bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );

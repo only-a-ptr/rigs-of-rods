@@ -479,6 +479,7 @@ void GUIManager::SetupImGui()
     style.GrabRounding          = 3.f;
     style.WindowBorderSize      = 0.f;
 
+    // Register DearIMGUI for rendering
     App::GetGfxScene()->GetSceneManager()->addRenderQueueListener(&m_imgui);
 }
 

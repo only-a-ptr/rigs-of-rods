@@ -314,3 +314,8 @@ RigEditor::InputHandler* ActorEditor::GetInputHandler()
 {
     return m_rig_editor->GetInputHandler();
 }
+
+Ogre::SceneManager* ActorEditor::GetSceneManager()
+{
+    return m_rig_editor->GetOgreSceneManager();
+}

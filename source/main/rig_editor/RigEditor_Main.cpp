@@ -76,7 +76,6 @@ Main::Main():
     m_viewport(nullptr),
     m_rig_entity(nullptr),
     m_input_handler(nullptr),
-    m_debug_box(nullptr),
     m_rig(nullptr),
     m_state_flags(0)
 {
@@ -86,34 +85,28 @@ Main::Main():
     // Load config file
     m_config = new RigEditor::Config(PathCombine(App::sys_config_dir->GetStr(), "rig_editor.cfg"));
 
-    /* Setup 3D engine */
+    // Setup 3D engine 
     m_scene_manager = App::GetAppContext()->GetOgreRoot()->createSceneManager(Ogre::ST_GENERIC, "rig_editor_scene_manager");
     m_scene_manager->setAmbientLight(m_config->scene_ambient_light_color);
 
-    /* Camera */
+    // Camera 
     m_camera = m_scene_manager->createCamera("rig_editor_camera");
     m_camera->setNearClipDistance(m_config->camera_near_clip_distance);
     m_camera->setFarClipDistance(m_config->camera_far_clip_distance);
     m_camera->setFOVy(Ogre::Degree(m_config->camera_FOVy_degrees));
     m_camera->setAutoAspectRatio(true);
 
-    /* Setup input */
+    // Setup input 
     m_input_handler = new InputHandler();
 
-    /* Camera handling */
+    // Camera handling 
     m_camera_handler = new CameraHandler(m_camera);
     m_camera_handler->SetOrbitTarget(m_scene_manager->getRootSceneNode());	
     m_camera_handler->SetOrthoZoomRatio(m_config->ortho_camera_zoom_ratio);
     m_camera->setPosition(Ogre::Vector3(10,5,10));
 
-    /* Debug output box */
-    m_debug_box = MyGUI::Gui::getInstance().createWidget<MyGUI::TextBox>
-        ("TextBox", 10, 30, 400, 100, MyGUI::Align::Top, "Main", "rig_editor_quick_debug_text_box");
-    m_debug_box->setCaption("Hello\nRigEditor!");
-    m_debug_box->setTextColour(MyGUI::Colour(0.8, 0.8, 0.8));
-    m_debug_box->setFontName("DefaultBig");
-    m_debug_box->setVisible(false);
-    m_debug_box->setEnabled(false);
+    // Register DearIMGUI for rendering
+    m_scene_manager->addRenderQueueListener(&App::GetGuiManager()->GetImGui());
 }
 
 Main::~Main()
@@ -138,9 +131,6 @@ void Main::BringUp()
     m_viewport->setCamera(m_camera);
 
     this->InitializeOrRestoreGui();
-
-    /* Show debug box */
-    m_debug_box->setVisible(true);
 }
 
 void Main::PutOff()
@@ -157,9 +147,6 @@ void Main::PutOff()
     m_shocks2_panel  ->HideTemporarily();
     m_meshwheels2_panel     ->HideTemporarily();
     m_flexbodywheels_panel  ->HideTemporarily();
-
-    /* Hide debug box */
-    m_debug_box->setVisible(false);
 }
 
 void Main::UpdateInputEvents(float dt)
@@ -567,19 +554,20 @@ void Main::UpdateEditorLoop()
         m_rig->CheckAndRefreshWheelsMouseHoverHighlights(this, parent_scene_node);
     }
 
-    /* Update devel console */
-    std::stringstream msg;
-    msg << "Camera pos: [X "<<m_camera->getPosition().x <<", Y "<<m_camera->getPosition().y << ", Z "<<m_camera->getPosition().z <<"] "<<std::endl;
-    msg << "Mouse node: ";
+    // Draw debug box
+    ImGui::SetNextWindowPos(ImVec2(100,100));
+    ImGui::Begin("rigeditor dbg");
+    Str<100> mouse_node;
     if (m_rig != nullptr && m_rig->GetMouseHoveredNode() != nullptr)
     {
-        msg << m_rig->GetMouseHoveredNode()->GetId().ToString() << std::endl;
+        mouse_node << m_rig->GetMouseHoveredNode()->GetId().ToString();
     }
     else
     {
-        msg << "[null]"<< std::endl;
+        mouse_node << "[none]";
     }
-    m_debug_box->setCaption(msg.str());
+    ImGui::Text("mouse node: '%s'", mouse_node.ToCStr());
+    ImGui::End();
 }
 
 void Main::CommandShowDialogOpenRigFile()

@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        App::GetActorEditor()->Initialize();
+        App::GetActorEditor()->Initialize(); // Needs GfxScene, CameraManager, GUIManager
 
         App::app_state->SetVal((int)AppState::MAIN_MENU);
         App::GetGuiManager()->ReflectGameState();
@@ -644,9 +644,6 @@ int main(int argc, char *argv[])
                         // Set up rendering
                         App::GetAppContext()->GetRenderWindow()->removeAllViewports();
                         App::GetActorEditor()->BringUp();
-                        // Route inputs to RigEditor
-                        App::GetInputEngine()->SetKeyboardListener(App::GetActorEditor()->GetInputHandler());
-                        App::GetInputEngine()->SetMouseListener(App::GetActorEditor()->GetInputHandler());
                         // Update global state
                         App::sim_state->SetVal((int)SimState::ACTOR_EDITOR);
                     }
@@ -656,9 +653,6 @@ int main(int argc, char *argv[])
                     if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
                     {
                         App::GetActorEditor()->Suspend();
-                        // Route input back to gameplay
-                        App::GetInputEngine()->SetMouseListener(App::GetAppContext());
-                        App::GetInputEngine()->SetKeyboardListener(App::GetAppContext());
                         // Restore rendering
                         App::GetAppContext()->GetRenderWindow()->removeAllViewports();
                         App::GetAppContext()->InstallViewport();
@@ -842,7 +836,7 @@ int main(int argc, char *argv[])
             {
                 App::GetGameContext()->UpdateActors(); // *** Start new physics tasks. No reading from Actor N/B beyond this point.
             }
-            else if (App::sim_state->GetEnum<SimState>() == SimState::RUNNING)
+            else if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
             {
                 App::GetActorEditor()->UpdateEditor();
             }

@@ -148,7 +148,6 @@ private:
     unsigned int         m_state_flags;
 
     // GUI
-    MyGUI::TextBox*                                             m_debug_box;
     std::unique_ptr<GUI::RigEditorMenubar>                      m_gui_menubar;
     std::unique_ptr<GUI::RigEditorDeleteMenu>                   m_gui_delete_menu;
     std::unique_ptr<GUI::RigEditorHelpWindow>                   m_gui_help_window;

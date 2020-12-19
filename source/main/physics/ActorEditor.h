@@ -52,6 +52,7 @@ public:
     static bool         SaveProject(RoR::ProjectEntry* proj);
 
     RigEditor::InputHandler* GetInputHandler();
+    Ogre::SceneManager*      GetSceneManager();
 
 private:
     ProjectEntry*                    m_entry = nullptr;    //!< Currently open project
