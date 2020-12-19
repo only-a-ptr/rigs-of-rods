@@ -51,6 +51,8 @@ public:
     static bool         ReLoadProjectFromDirectory(ProjectEntry* proj);
     static bool         SaveProject(RoR::ProjectEntry* proj);
 
+    RigEditor::InputHandler* GetInputHandler();
+
 private:
     ProjectEntry*                    m_entry = nullptr;    //!< Currently open project
     ProjectSnapshot*                 m_snapshot = nullptr; //!< Currently open actor

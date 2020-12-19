@@ -39,7 +39,7 @@ namespace RigEditor
 {
 
 /** Editor-specific input handler
-* NOTE: class InputEngine is not useful because it's too tightly-coupled with simulation logic.
+TODO: Integrate
 */
 class InputHandler:
     public OIS::MouseListener,

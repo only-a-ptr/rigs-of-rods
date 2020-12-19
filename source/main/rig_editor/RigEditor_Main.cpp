@@ -139,10 +139,6 @@ void Main::BringUp()
 
     this->InitializeOrRestoreGui();
 
-    /* Setup input */
-    App::GetInputEngine()->SetKeyboardListener(m_input_handler);
-    App::GetInputEngine()->SetMouseListener(m_input_handler);
-
     /* Show debug box */
     m_debug_box->setVisible(true);
 }
@@ -791,7 +787,7 @@ void Main::InitializeOrRestoreGui()
     INIT_OR_RESTORE_RIG_ELEMENT_PANEL( m_meshwheels2_panel,      RigEditorMeshWheels2Panel);
     INIT_OR_RESTORE_RIG_ELEMENT_PANEL( m_flexbodywheels_panel,   RigEditorFlexBodyWheelsPanel);
 
-    App::GetGuiManager()->SetSceneManagerForGuiRendering(m_scene_manager);
+    App::GetGuiManager()->SetSceneManagerForMyGuiRendering(m_scene_manager);
     if (m_gui_menubar.get() == nullptr)
     {
         m_gui_menubar = std::unique_ptr<GUI::RigEditorMenubar>(new GUI::RigEditorMenubar(this));

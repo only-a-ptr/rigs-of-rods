@@ -46,6 +46,7 @@
 #include "OverlayWrapper.h"
 #include "PlatformUtils.h"
 #include "RigEditor_Config.h"
+#include "RigEditor_InputHandler.h"
 #include "RigEditor_Main.h"
 #include "RoRVersion.h"
 #include "ScriptEngine.h"
@@ -640,22 +641,35 @@ int main(int argc, char *argv[])
                 case MSG_EDI_ENTER_ACTOR_EDITOR_REQUESTED:
                     if (App::sim_state->GetEnum<SimState>() != SimState::ACTOR_EDITOR)
                     {
+                        // Set up rendering
                         App::GetAppContext()->GetRenderWindow()->removeAllViewports();
                         App::GetActorEditor()->BringUp();
-                        App::sim_state->SetVal((int)SimState::TERRN_EDITOR);
+                        // Route inputs to RigEditor
+                        App::GetInputEngine()->SetKeyboardListener(App::GetActorEditor()->GetInputHandler());
+                        App::GetInputEngine()->SetMouseListener(App::GetActorEditor()->GetInputHandler());
+                        // Update global state
+                        App::sim_state->SetVal((int)SimState::ACTOR_EDITOR);
                     }
                     break;
 
                 case MSG_EDI_LEAVE_ACTOR_EDITOR_REQUESTED:
-                    if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
+                    if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
                     {
                         App::GetActorEditor()->Suspend();
+                        // Route input back to gameplay
+                        App::GetInputEngine()->SetMouseListener(App::GetAppContext());
+                        App::GetInputEngine()->SetKeyboardListener(App::GetAppContext());
+                        // Restore rendering
+                        App::GetAppContext()->GetRenderWindow()->removeAllViewports();
+                        App::GetAppContext()->InstallViewport();
+                        App::GetAppContext()->GetViewport()->setCamera(App::GetCameraManager()->GetCamera());
+                        // Update global state
                         App::sim_state->SetVal((int)SimState::PAUSED);
                     }
                     break;
 
                 case MSG_EDI_LOAD_ACTOR_SNAPSHOT_REQUESTED:
-                    if (App::sim_state->GetEnum<SimState>() == SimState::TERRN_EDITOR)
+                    if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
                     {
                         App::GetActorEditor()->LoadSnapshot((ProjectSnapshot*)m.payload);
                     }

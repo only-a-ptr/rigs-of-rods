@@ -56,6 +56,7 @@ public:
     Ogre::RenderWindow*  CreateCustomRenderWindow(std::string const& name, int width, int height);
     void                 CaptureScreenshot();
     void                 ActivateFullscreen(bool val);
+    void                 InstallViewport();
 
     // Getters
     Ogre::Root*          GetOgreRoot() { return m_ogre_root; }

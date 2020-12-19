@@ -309,3 +309,8 @@ bool ActorEditor::LoadSnapshot(ProjectSnapshot* snapshot)
 {
     return m_rig_editor->LoadRigDefFile(snapshot->prs_filename, RGN_PROJECTS);
 }
+
+RigEditor::InputHandler* ActorEditor::GetInputHandler()
+{
+    return m_rig_editor->GetInputHandler();
+}

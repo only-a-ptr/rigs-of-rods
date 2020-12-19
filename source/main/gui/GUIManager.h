@@ -134,7 +134,7 @@ public:
     void SetGuiHidden(bool visible);
     bool IsGuiHidden() const { return m_hide_gui; }
 
-    void SetSceneManagerForGuiRendering(Ogre::SceneManager* scene_manager);
+    void SetSceneManagerForMyGuiRendering(Ogre::SceneManager* scene_manager);
 
     void ShutdownMyGUI();
     void ReflectGameState();

@@ -335,7 +335,7 @@ void GUIManager::SetUpMenuWallpaper()
     m_impl->overlay_Wallpaper->show();
 }
 
-void GUIManager::SetSceneManagerForGuiRendering(Ogre::SceneManager* scene_manager)
+void GUIManager::SetSceneManagerForMyGuiRendering(Ogre::SceneManager* scene_manager)
 {
     m_impl->mygui_platform->getRenderManagerPtr()->setSceneManager(scene_manager);
 }

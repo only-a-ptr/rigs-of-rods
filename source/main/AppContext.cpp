@@ -315,9 +315,7 @@ bool AppContext::SetUpRendering()
     OgreBites::WindowEventUtilities::_addRenderWindow(m_render_window);
     m_render_window->setActive(true);
 
-    // Create viewport (without camera)
-    m_viewport = m_render_window->addViewport(/*camera=*/nullptr);
-    m_viewport->setBackgroundColour(Ogre::ColourValue::Black);
+    this->InstallViewport();
 
     return true;
 }
@@ -393,6 +391,13 @@ void AppContext::ActivateFullscreen(bool val)
     {
         m_render_window->setFullscreen(val, m_render_window->getWidth(), m_render_window->getHeight());
     }
+}
+
+void AppContext::InstallViewport()
+{
+    // Create viewport (without camera)
+    m_viewport = m_render_window->addViewport(/*camera=*/nullptr);
+    m_viewport->setBackgroundColour(Ogre::ColourValue::Black);
 }
 
 // --------------------------
