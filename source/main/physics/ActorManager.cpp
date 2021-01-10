@@ -92,8 +92,14 @@ void ActorManager::SetupActor(Actor* actor, ActorSpawnRequest rq, std::shared_pt
 
     LOG(" == Spawning vehicle: " + def->name);
 
+    std::string rg_name;
+    if (rq.asr_project)
+        rg_name = rq.asr_project->prj_rg_name;
+    else
+        rg_name = rq.asr_cache_entry->resource_group;
+
     ActorSpawner spawner;
-    spawner.Setup(actor, def, parent_scene_node, rq.asr_position);
+    spawner.Setup(actor, def, parent_scene_node, rq.asr_position, rg_name);
     /* Setup modules */
     spawner.AddModule(def->root_module);
     if (!actor->m_section_config.empty())

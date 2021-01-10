@@ -89,7 +89,8 @@ void ActorSpawner::Setup(
     Actor *rig,
     std::shared_ptr<RigDef::File> file,
     Ogre::SceneNode *parent,
-    Ogre::Vector3 const & spawn_position
+    Ogre::Vector3 const & spawn_position,
+    std::string const& rg_name
 )
 {
     m_actor = rig;
@@ -105,6 +106,7 @@ void ActorSpawner::Setup(
     m_first_wing_index = -1;
     m_driverseat_prop_index = -1;
     m_oldstyle_renderdash = nullptr;
+    m_custom_resource_group = rg_name;
 
     m_generate_wing_position_lights = true;
     // TODO: Handle modules
@@ -112,8 +114,6 @@ void ActorSpawner::Setup(
     {
         m_generate_wing_position_lights = false; // Disable aerial pos. lights for land vehicles.
     }
-
-    App::GetCacheSystem()->CheckResourceLoaded(m_actor->ar_filename, m_custom_resource_group);
 }
 
 void ActorSpawner::CalcMemoryRequirements(ActorMemoryRequirements& req, RigDef::File::Module* module_def)

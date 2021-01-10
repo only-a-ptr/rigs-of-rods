@@ -90,7 +90,7 @@ DECLARE_RESOURCE_PACK( SCRIPTS,               "scripts",              "ScriptsRG
 DECLARE_RESOURCE_PACK( SOUNDS,                "sounds",               "SoundsRG");
 DECLARE_RESOURCE_PACK( TEXTURES,              "textures",             "TexturesRG");
 DECLARE_RESOURCE_PACK( SKYX,                  "SkyX",                 "SkyXRG");
-DECLARE_RESOURCE_PACK( ACTOR_EDITOR,            "rig_editor",           "RigEditorRG");
+DECLARE_RESOURCE_PACK( ACTOR_EDITOR,          "rig_editor",           "RigEditorRG");
 
 // ================================================================================
 // Functions
@@ -549,7 +549,7 @@ void ContentManager::ReScanProjects()
             {
                 std::unique_ptr<ProjectEntry> tmp_proj = std::unique_ptr<ProjectEntry>(new ProjectEntry());
                 tmp_proj->prj_dirname = proj_dir.filename;
-                tmp_proj->prj_rg_name = proj_dir.filename;
+                tmp_proj->prj_rg_name = "project " + proj_dir.filename;
 
                 Str<300> full_path;
                 full_path << App::sys_projects_dir->GetStr() << PATH_SLASH << proj_dir.filename;
@@ -591,7 +591,8 @@ ProjectEntry* ContentManager::CreateNewProject(std::string const& dir_name, cons
         RoR::CreateFolder(dir_path.ToCStr());
 
         // Create project RG
-        Ogre::String rg_name(dir_name_buf.ToCStr());
+        Str<200> rg_buf; rg_buf << "project " << dir_name_buf.ToCStr();
+        Ogre::String rg_name(rg_buf.ToCStr());
         Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
             dir_path.ToCStr(), "FileSystem", rg_name, /*recursive=*/false, /*readOnly=*/false);
         Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(rg_name);

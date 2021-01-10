@@ -118,7 +118,8 @@ public:
         Actor *actor,
         std::shared_ptr<RigDef::File> file,
         Ogre::SceneNode *parent,
-        Ogre::Vector3 const & spawn_position
+        Ogre::Vector3 const & spawn_position,
+        std::string const& rg_name
         );
 
     Actor *SpawnActor();
