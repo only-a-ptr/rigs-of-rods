@@ -92,6 +92,7 @@ bool ActorEditor::ReLoadProjectFromDirectory(ProjectEntry* proj)
         ProjectSnapshot snap;
         snap.prs_filename = truckfile.filename;
         snap.prs_name = truckfile.filename; // TODO: load actual truckfile name
+        snap.prs_project = proj;
         proj->prj_snapshots.push_back(snap);
     }
 
@@ -307,7 +308,13 @@ bool ActorEditor::SaveSnapshot()
 
 bool ActorEditor::LoadSnapshot(ProjectSnapshot* snapshot)
 {
-    return m_rig_editor->LoadRigDefFile(snapshot->prs_filename, RGN_PROJECTS);
+    ROR_ASSERT(snapshot->prs_project);
+    bool loaded = m_rig_editor->LoadRigDefFile(snapshot->prs_filename, snapshot->prs_project->prj_rg_name);
+    if (loaded)
+    {
+        m_snapshot = snapshot;
+    }
+    return loaded;
 }
 
 RigEditor::InputHandler* ActorEditor::GetInputHandler()

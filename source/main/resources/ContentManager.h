@@ -38,7 +38,6 @@
 #define RGN_PROJECTS "Projects"
 #define RGN_SAVEGAMES "Savegames"
 #define RGN_MANAGED_MATS "ManagedMaterials"
-#define RGN_ACTOR_PROJECT "ActorProject"
 
 namespace RoR {
 

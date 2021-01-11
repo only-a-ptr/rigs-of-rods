@@ -127,8 +127,9 @@ public:
 
 struct ProjectSnapshot
 {
-    std::string prs_name;
-    std::string prs_filename;
+    std::string    prs_name;
+    std::string    prs_filename;
+    ProjectEntry*  prs_project = nullptr;
 };
 
 struct ProjectEntry

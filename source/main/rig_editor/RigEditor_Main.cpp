@@ -30,6 +30,7 @@
 #include "CacheSystem.h"
 #include "Console.h"
 #include "ContentManager.h"
+#include "GameContext.h"
 #include "GUI_RigEditorBeamsPanel.h"
 #include "GUI_RigEditorCommands2Panel.h"
 #include "GUI_RigEditorDeleteMenu.h"
@@ -621,24 +622,10 @@ bool Main::LoadRigDefFile(std::string const & filename, MyGUI::UString const & r
     }
 
     // Load and parse new file
-    std::shared_ptr<RigDef::File> def;
-    try
+    std::shared_ptr<RigDef::File> def = App::GetGameContext()->GetActorManager()->LoadActorDef(filename, rg_name);
+    if (!def)
     {
-        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().openResource(filename, rg_name);
-
-        RigDef::Parser parser;
-        parser.Prepare();
-        parser.ProcessOgreStream(stream.get(), RGN_ACTOR_PROJECT);
-        parser.Finalize();
-
-        def = parser.GetFile();
-    } 
-    catch (Ogre::Exception& e)
-    {
-        // OGRE exception already logged
-        App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_ACTOR, Console::CONSOLE_SYSTEM_ERROR,
-            "RigEditor: Failed to retrieve rig file" + filename + ", Ogre::Exception was thrown with message: " + e.what());
-        return false;
+        return false; // Error already logged
     }
 
     // validate file
