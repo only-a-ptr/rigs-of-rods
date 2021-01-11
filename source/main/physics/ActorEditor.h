@@ -47,6 +47,7 @@ public:
     bool                SaveSnapshot();
     void                SetProject(ProjectEntry* e) { m_entry = e; }
     bool                LoadSnapshot(ProjectSnapshot* snapshot);
+    ProjectSnapshot*    GetActiveSnapshot() { return m_snapshot; }
 
     static bool         ReLoadProjectFromDirectory(ProjectEntry* proj);
     static bool         SaveProject(RoR::ProjectEntry* proj);

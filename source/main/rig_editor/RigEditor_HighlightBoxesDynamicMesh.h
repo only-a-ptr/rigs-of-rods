@@ -46,7 +46,7 @@ public:
     void Initialize(
         RigEditor::Main* rig_editor,
         Ogre::SceneManager* ogre_scene_manager, 
-        const char* material_name, 
+        std::string const& material_name, 
         int initial_capacity_boxes
         );
 
@@ -58,7 +58,7 @@ public:
 
 private:
     void AddLine(Ogre::Vector3 const & start, Ogre::Vector3 const & end, Ogre::ColourValue const & color);
-    void CheckAndCreateMaterial(const char* mat_name);
+    void CheckAndCreateMaterial(std::string const& material_name);
     void AddCorner(
         Ogre::Vector3 const & corner_point, 
         Ogre::Vector3 const & line_lengths, 

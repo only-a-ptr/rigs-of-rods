@@ -25,6 +25,7 @@
 
 #include "RigEditor_RigWheelVisuals.h"
 
+#include "ActorEditor.h"
 #include "RigEditor_Config.h"
 #include "RigEditor_HighlightBoxesDynamicMesh.h"
 #include "RigEditor_LandVehicleWheel.h"
@@ -38,15 +39,19 @@
 using namespace RoR;
 using namespace RigEditor;
 
+static std::string WHEELS_MAT_NAME = "RigEditor-Wheels";
+static std::string WHEELS_HOVERED_MAT_NAME = "RigEditor-WheelsHovered";
+static std::string WHEELS_SELECTED_MAT_NAME = "RigEditor-WheelsSelected";
+
 void RigWheelVisuals::Init(RigEditor::Main* rig_editor)
 {
     // WHEELS SELECTION + HOVER MESHES
     HighlightBoxesDynamicMesh* dyna_mesh = new HighlightBoxesDynamicMesh();
-    dyna_mesh->Initialize(rig_editor, rig_editor->GetOgreSceneManager(), "rig-editor-wheels-selected-dynamic-mesh", 10);
+    dyna_mesh->Initialize(rig_editor, rig_editor->GetOgreSceneManager(), WHEELS_SELECTED_MAT_NAME, 10);
     m_wheels_selected_dynamic_mesh = std::unique_ptr<HighlightBoxesDynamicMesh>(dyna_mesh);
 
     dyna_mesh = new HighlightBoxesDynamicMesh();
-    dyna_mesh->Initialize(rig_editor, rig_editor->GetOgreSceneManager(), "rig-editor-wheels-hovered-dynamic-mesh",  2);
+    dyna_mesh->Initialize(rig_editor, rig_editor->GetOgreSceneManager(), WHEELS_SELECTED_MAT_NAME,  2);
     m_wheels_hovered_dynamic_mesh = std::unique_ptr<HighlightBoxesDynamicMesh>(dyna_mesh);
 }
 
@@ -55,15 +60,14 @@ void RigWheelVisuals::BuildWheelsGeometryDynamicMesh(
     std::vector<LandVehicleWheel*> & wheels
     )
 {
-    assert(rig_editor != nullptr);
+    ROR_ASSERT(rig_editor);
+    ROR_ASSERT(App::GetActorEditor()->GetActiveSnapshot());
+    const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;
 
     // Prepare material
-    if (! Ogre::MaterialManager::getSingleton().resourceExists("rig-editor-skeleton-wheels-material"))
+    if (! Ogre::MaterialManager::getSingleton().resourceExists(WHEELS_MAT_NAME))
     {
-        Ogre::MaterialPtr node_mat = static_cast<Ogre::MaterialPtr>(
-            Ogre::MaterialManager::getSingleton().create("rig-editor-skeleton-wheels-material", 
-            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME)
-        );
+        Ogre::MaterialPtr node_mat = Ogre::MaterialManager::getSingleton().create(WHEELS_MAT_NAME, rg_name);
 
         node_mat->getTechnique(0)->getPass(0)->createTextureUnitState();
         node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -94,7 +98,7 @@ void RigWheelVisuals::BuildWheelsGeometryDynamicMesh(
     m_wheels_dynamic_mesh->setRenderingDistance(300);
 
     // Init
-    m_wheels_dynamic_mesh->begin("rig-editor-skeleton-wheels-material", Ogre::RenderOperation::OT_LINE_LIST);
+    m_wheels_dynamic_mesh->begin(WHEELS_MAT_NAME, Ogre::RenderOperation::OT_LINE_LIST, rg_name);
 
     // Process
     for (auto wheels_itor = wheels.begin(); wheels_itor != wheels_end; ++wheels_itor)

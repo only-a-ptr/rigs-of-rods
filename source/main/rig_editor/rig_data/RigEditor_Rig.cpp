@@ -25,6 +25,7 @@
 
 #include "RigEditor_Rig.h"
 
+#include "ActorEditor.h"
 #include "RigDef_File.h"
 #include "RigEditor_Beam.h"
 #include "RigEditor_CineCamera.h"
@@ -43,9 +44,15 @@
 
 #include <Ogre.h>
 #include <sstream>
+#include <string>
 
 using namespace RoR;
 using namespace RoR::RigEditor;
+
+static std::string BEAMS_MAT_NAME = "RigEditor-Beams";
+static std::string NODES_MAT_NAME = "RigEditor-Nodes";
+static std::string NODES_HOVERED_MAT_NAME = "RigEditor-NodesHovered";
+static std::string NODES_SELECTED_MAT_NAME = "RigEditor-NodesSelected";
 
 void RigBuildingReport::AddMessage(Console::MessageType level, Ogre::String const& text)
 {
@@ -109,8 +116,8 @@ void Rig::Build(
         RigBuildingReport* report // = nullptr
     )
 {
-    assert(parent_scene_node != nullptr);
-    assert(rig_editor != nullptr);
+    ROR_ASSERT(parent_scene_node != nullptr);
+    ROR_ASSERT(rig_editor != nullptr);
 
     RigEditor::Config & config = *rig_editor->GetConfig();
     RigDef::File::Module* module = rig_def->root_module.get();
@@ -401,13 +408,10 @@ void Rig::Build(
     // ##### CREATE MESH OF BEAMS #####
 
     /* Prepare material */
-    static const Ogre::String beams_mat_name("rig-editor-skeleton-material");
-    if (! Ogre::MaterialManager::getSingleton().resourceExists(beams_mat_name))
+    const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;
+    if (! Ogre::MaterialManager::getSingleton().resourceExists(BEAMS_MAT_NAME, rg_name))
     {
-        Ogre::MaterialPtr mat = static_cast<Ogre::MaterialPtr>(
-            Ogre::MaterialManager::getSingleton().create(beams_mat_name, 
-            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME)
-        );
+        Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().create(BEAMS_MAT_NAME, rg_name);
 
         mat->getTechnique(0)->getPass(0)->createTextureUnitState();
         mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -425,7 +429,7 @@ void Rig::Build(
     m_beams_dynamic_mesh->setRenderingDistance(300);
 
     /* Init */
-    m_beams_dynamic_mesh->begin(beams_mat_name, Ogre::RenderOperation::OT_LINE_LIST);
+    m_beams_dynamic_mesh->begin(BEAMS_MAT_NAME, Ogre::RenderOperation::OT_LINE_LIST, rg_name);
 
     /* Process beams */
     for (auto itor = m_beams.begin(); itor != m_beams.end(); ++itor)
@@ -443,13 +447,10 @@ void Rig::Build(
     // ##### CREATE MESH OF NODES #####
 
     /* Prepare material */
-    static const Ogre::String nodes_material_name("rig-editor-skeleton-nodes-material");
-    if (! Ogre::MaterialManager::getSingleton().resourceExists(nodes_material_name))
+
+    if (! Ogre::MaterialManager::getSingleton().resourceExists(NODES_MAT_NAME, rg_name))
     {
-        Ogre::MaterialPtr node_mat = static_cast<Ogre::MaterialPtr>(
-            Ogre::MaterialManager::getSingleton().create(nodes_material_name, 
-            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME)
-        );
+        Ogre::MaterialPtr node_mat = Ogre::MaterialManager::getSingleton().create(NODES_MAT_NAME, rg_name);
 
         node_mat->getTechnique(0)->getPass(0)->createTextureUnitState();
         node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -469,7 +470,7 @@ void Rig::Build(
     m_nodes_dynamic_mesh->setRenderingDistance(300);
 
     /* Init */
-    m_nodes_dynamic_mesh->begin(nodes_material_name, Ogre::RenderOperation::OT_POINT_LIST);
+    m_nodes_dynamic_mesh->begin(NODES_MAT_NAME, Ogre::RenderOperation::OT_POINT_LIST, rg_name);
 
     /* Process nodes */
     for (auto itor = m_nodes.begin(); itor != m_nodes.end(); itor++)
@@ -484,12 +485,9 @@ void Rig::Build(
     /* CREATE MESH OF HOVERED NODES */
 
     /* Prepare material */
-    if (! Ogre::MaterialManager::getSingleton().resourceExists("rig-editor-skeleton-nodes-hover-material"))
+    if (! Ogre::MaterialManager::getSingleton().resourceExists(NODES_HOVERED_MAT_NAME, rg_name))
     {
-        Ogre::MaterialPtr node_mat = static_cast<Ogre::MaterialPtr>(
-            Ogre::MaterialManager::getSingleton().create("rig-editor-skeleton-nodes-hover-material", 
-            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME)
-        );
+        Ogre::MaterialPtr node_mat = Ogre::MaterialManager::getSingleton().create(NODES_HOVERED_MAT_NAME, rg_name);
 
         node_mat->getTechnique(0)->getPass(0)->createTextureUnitState();
         node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -509,7 +507,7 @@ void Rig::Build(
     m_nodes_hover_dynamic_mesh->setRenderingDistance(300);
 
     /* Init */
-    m_nodes_hover_dynamic_mesh->begin("rig-editor-skeleton-nodes-hover-material", Ogre::RenderOperation::OT_POINT_LIST);
+    m_nodes_hover_dynamic_mesh->begin(NODES_HOVERED_MAT_NAME, Ogre::RenderOperation::OT_POINT_LIST, rg_name);
 
     /* Fill some dummy vertices (to properly initialise the object) */
     m_nodes_hover_dynamic_mesh->position(Ogre::Vector3::UNIT_X);
@@ -525,15 +523,9 @@ void Rig::Build(
     /* CREATE MESH OF SELECTED NODES */
 
     /* Prepare material */
-    static const Ogre::String nodes_selected_mat_name("rig-editor-skeleton-nodes-selected-material");
-    if (! Ogre::MaterialManager::getSingleton().resourceExists(nodes_selected_mat_name))
+    if (! Ogre::MaterialManager::getSingleton().resourceExists(NODES_SELECTED_MAT_NAME, rg_name))
     {
-        Ogre::MaterialPtr node_mat = static_cast<Ogre::MaterialPtr>(
-            Ogre::MaterialManager::getSingleton().create(
-                nodes_selected_mat_name, 
-                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
-            )
-        );
+        Ogre::MaterialPtr node_mat = Ogre::MaterialManager::getSingleton().create(NODES_SELECTED_MAT_NAME, rg_name);
 
         node_mat->getTechnique(0)->getPass(0)->createTextureUnitState();
         node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -553,7 +545,7 @@ void Rig::Build(
     m_nodes_selected_dynamic_mesh->setRenderingDistance(300);
 
     /* Init */
-    m_nodes_selected_dynamic_mesh->begin(nodes_selected_mat_name, Ogre::RenderOperation::OT_POINT_LIST);
+    m_nodes_selected_dynamic_mesh->begin(NODES_SELECTED_MAT_NAME, Ogre::RenderOperation::OT_POINT_LIST, rg_name);
 
     /* Fill some dummy vertices (to properly initialise the object) */
     m_nodes_selected_dynamic_mesh->position(Ogre::Vector3::UNIT_X);

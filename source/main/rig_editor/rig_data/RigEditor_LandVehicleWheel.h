@@ -103,8 +103,6 @@ public:
         m_aabb.setNull();
     }
 
-    virtual ~LandVehicleWheel();
-
     BITMASK_PROPERTY(m_flags,  1, IS_GEOMETRY_DIRTY,          IsGeometryDirty,         SetGeometryIsDirty)
     BITMASK_PROPERTY(m_flags,  2, IS_SELECTION_STATE_DIRTY,   IsSelectionStateDirty,   SetSelectionStateIsDirty)
     BITMASK_PROPERTY(m_flags,  3, IS_SELECTED,                IsSelected,              SetIsSelected)

@@ -109,15 +109,15 @@ Ogre::ColourValue const & LandVehicleWheel::Edge::GetColorValue(Edge::Type type,
     {
     case Edge::TYPE_FLEXBODYWHEEL_RIM_CONNECTION:     return config->flexbodywheel_rim_connection_color;
     case Edge::TYPE_FLEXBODYWHEEL_RIM_REINFORCEMENT:  return config->flexbodywheel_rim_reinforcement_color;
-    case Edge::TYPE_FLEXBODYWHEEL_TYRE_CONNECTION:	  return config->flexbodywheel_tyre_connection_color;
+    case Edge::TYPE_FLEXBODYWHEEL_TYRE_CONNECTION:    return config->flexbodywheel_tyre_connection_color;
     case Edge::TYPE_FLEXBODYWHEEL_TYRE_REINFORCEMENT: return config->flexbodywheel_tyre_reinforcement_color;
-    case Edge::TYPE_FLEXBODYWHEEL_TYRE_RIGIDITY:	  return config->flexbodywheel_tyre_rigidity_color;
-    case Edge::TYPE_MESHWHEEL2_BOUNDED:		          return config->meshwheel2_beam_bounded_color;
+    case Edge::TYPE_FLEXBODYWHEEL_TYRE_RIGIDITY:      return config->flexbodywheel_tyre_rigidity_color;
+    case Edge::TYPE_MESHWHEEL2_BOUNDED:               return config->meshwheel2_beam_bounded_color;
     case Edge::TYPE_MESHWHEEL2_REINFORCEMENT:         return config->meshwheel2_beam_reinforcement_color;
     case Edge::TYPE_MESHWHEEL2_RIGIDITY:              return config->meshwheel2_beam_rigidity_color;
-    case Edge::TYPE_MESHWHEEL_BOUNDED:				  return config->meshwheel_beam_bounded_color;
-    case Edge::TYPE_MESHWHEEL_REINFORCEMENT:		  return config->meshwheel_beam_reinforcement_color;
-    case Edge::TYPE_MESHWHEEL_RIGIDITY:				  return config->meshwheel_beam_rigidity_color;
+    case Edge::TYPE_MESHWHEEL_BOUNDED:                return config->meshwheel_beam_bounded_color;
+    case Edge::TYPE_MESHWHEEL_REINFORCEMENT:          return config->meshwheel_beam_reinforcement_color;
+    case Edge::TYPE_MESHWHEEL_RIGIDITY:               return config->meshwheel_beam_rigidity_color;
 
     default:
         assert(false && "Invalid wheel edge type!");
@@ -125,5 +125,3 @@ Ogre::ColourValue const & LandVehicleWheel::Edge::GetColorValue(Edge::Type type,
     }
 }
 
-LandVehicleWheel::~LandVehicleWheel()
-{}

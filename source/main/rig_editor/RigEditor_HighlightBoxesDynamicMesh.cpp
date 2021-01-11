@@ -24,33 +24,26 @@
 */
 
 #include "RigEditor_HighlightBoxesDynamicMesh.h"
+
+#include "ActorEditor.h"
 #include "RigEditor_Main.h"
 
-#include <OgreMaterialManager.h>
-#include <OgreMaterial.h>
-#include <OgreTechnique.h>
-#include <OgrePass.h>
-#include <OgreManualObject.h>
-#include <OgreSceneNode.h>
-#include <OgreSceneManager.h>
+#include <Ogre.h>
 
 #include <memory>
 
 using namespace RoR;
 using namespace RigEditor;
 
-void HighlightBoxesDynamicMesh::CheckAndCreateMaterial(const char* mat_name)
+void HighlightBoxesDynamicMesh::CheckAndCreateMaterial(std::string const& mat_name)
 {
-    if (Ogre::MaterialManager::getSingleton().resourceExists(mat_name))
+    ROR_ASSERT(App::GetActorEditor()->GetActiveSnapshot());
+    const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;
+    if (Ogre::MaterialManager::getSingleton().resourceExists(mat_name, rg_name))
     {
         return;
     }
-    Ogre::MaterialPtr mat = static_cast<Ogre::MaterialPtr>(
-        Ogre::MaterialManager::getSingleton().create(
-            mat_name, 
-            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME
-        )
-    );
+    Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().create(mat_name, rg_name);
 
     mat->getTechnique(0)->getPass(0)->createTextureUnitState();
     mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -62,13 +55,14 @@ void HighlightBoxesDynamicMesh::CheckAndCreateMaterial(const char* mat_name)
 void HighlightBoxesDynamicMesh::Initialize(
     RigEditor::Main* rig_editor,
     Ogre::SceneManager* ogre_scene_manager, 
-    const char* material_name,
+    std::string const& material_name,
     int initial_capacity_boxes
 )
 {
     assert(material_name != nullptr);
     assert(ogre_scene_manager != nullptr);
     m_dynamic_mesh_capacity_boxes = initial_capacity_boxes;
+    const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;
 
     this->CheckAndCreateMaterial(material_name);
 
@@ -85,7 +79,7 @@ void HighlightBoxesDynamicMesh::Initialize(
     m_dynamic_mesh->setRenderingDistance(300);
 
     // Initialize with dummy geometry
-    m_dynamic_mesh->begin(material_name, Ogre::RenderOperation::OT_LINE_LIST);
+    m_dynamic_mesh->begin(material_name, Ogre::RenderOperation::OT_LINE_LIST, rg_name);
     const int initial_num_lines = initial_capacity_boxes * lines_per_box;
     for (int i = 0; i < initial_num_lines; ++i)
     {

@@ -309,10 +309,11 @@ bool ActorEditor::SaveSnapshot()
 bool ActorEditor::LoadSnapshot(ProjectSnapshot* snapshot)
 {
     ROR_ASSERT(snapshot->prs_project);
+    m_snapshot = snapshot; // Neededed while loading
     bool loaded = m_rig_editor->LoadRigDefFile(snapshot->prs_filename, snapshot->prs_project->prj_rg_name);
-    if (loaded)
+    if (!loaded)
     {
-        m_snapshot = snapshot;
+        m_snapshot = nullptr;
     }
     return loaded;
 }
