@@ -408,16 +408,14 @@ void Rig::Build(
     // ##### CREATE MESH OF BEAMS #####
 
     /* Prepare material */
-    const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;
+   const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;
     if (! Ogre::MaterialManager::getSingleton().resourceExists(BEAMS_MAT_NAME, rg_name))
     {
         Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().create(BEAMS_MAT_NAME, rg_name);
 
-        mat->getTechnique(0)->getPass(0)->createTextureUnitState();
-        mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-        mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureAnisotropy(3);
         mat->setLightingEnabled(false);
         mat->setReceiveShadows(false);
+        mat->getTechnique(0)->getPass(0)->setVertexColourTracking(Ogre::TVC_DIFFUSE);
     }
 
     /* Create mesh */
@@ -452,12 +450,10 @@ void Rig::Build(
     {
         Ogre::MaterialPtr node_mat = Ogre::MaterialManager::getSingleton().create(NODES_MAT_NAME, rg_name);
 
-        node_mat->getTechnique(0)->getPass(0)->createTextureUnitState();
-        node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-        node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureAnisotropy(3);
         node_mat->setLightingEnabled(false);
         node_mat->setReceiveShadows(false);
         node_mat->setPointSize(m_config->node_generic_point_size);
+        node_mat->getTechnique(0)->getPass(0)->setVertexColourTracking(Ogre::TVC_DIFFUSE);
     }
 
     /* Create mesh */
@@ -489,12 +485,10 @@ void Rig::Build(
     {
         Ogre::MaterialPtr node_mat = Ogre::MaterialManager::getSingleton().create(NODES_HOVERED_MAT_NAME, rg_name);
 
-        node_mat->getTechnique(0)->getPass(0)->createTextureUnitState();
-        node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-        node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureAnisotropy(3);
         node_mat->setLightingEnabled(false);
         node_mat->setReceiveShadows(false);
         node_mat->setPointSize(m_config->node_hover_point_size);
+        node_mat->getTechnique(0)->getPass(0)->setVertexColourTracking(Ogre::TVC_DIFFUSE);
     }
 
     /* Create mesh */
@@ -527,12 +521,10 @@ void Rig::Build(
     {
         Ogre::MaterialPtr node_mat = Ogre::MaterialManager::getSingleton().create(NODES_SELECTED_MAT_NAME, rg_name);
 
-        node_mat->getTechnique(0)->getPass(0)->createTextureUnitState();
-        node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-        node_mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureAnisotropy(3);
         node_mat->setLightingEnabled(false);
         node_mat->setReceiveShadows(false);
         node_mat->setPointSize(m_config->node_selected_point_size);
+        node_mat->getTechnique(0)->getPass(0)->setVertexColourTracking(Ogre::TVC_DIFFUSE);
     }
 
     /* Create mesh */

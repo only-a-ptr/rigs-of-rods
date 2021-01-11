@@ -45,11 +45,9 @@ void HighlightBoxesDynamicMesh::CheckAndCreateMaterial(std::string const& mat_na
     }
     Ogre::MaterialPtr mat = Ogre::MaterialManager::getSingleton().create(mat_name, rg_name);
 
-    mat->getTechnique(0)->getPass(0)->createTextureUnitState();
-    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
-    mat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureAnisotropy(3);
     mat->setLightingEnabled(false);
     mat->setReceiveShadows(false);
+    mat->getTechnique(0)->getPass(0)->setVertexColourTracking(Ogre::TVC_DIFFUSE);
 }
 
 void HighlightBoxesDynamicMesh::Initialize(
@@ -59,8 +57,8 @@ void HighlightBoxesDynamicMesh::Initialize(
     int initial_capacity_boxes
 )
 {
-    assert(material_name != nullptr);
-    assert(ogre_scene_manager != nullptr);
+    ROR_ASSERT(material_name != nullptr);
+    ROR_ASSERT(ogre_scene_manager != nullptr);
     m_dynamic_mesh_capacity_boxes = initial_capacity_boxes;
     const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;
 
