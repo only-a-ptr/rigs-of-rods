@@ -25,15 +25,16 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <OgreAxisAlignedBox.h>
-
+#include "Console.h"
 #include "RigDef_File.h"
 #include "RigDef_Prerequisites.h"
 #include "RigEditor_ForwardDeclarations.h"
 #include "RigEditor_Types.h"
 #include "ForwardDeclarations.h"
 #include "RigEditor_Node.h"
+
+#include <Ogre.h>
+#include <unordered_map>
 
 namespace RoR
 {
@@ -44,46 +45,17 @@ namespace RigEditor
 class RigBuildingReport
 {
 public:
-    struct Message
-    {
-        enum Level
-        {
-            LEVEL_ERROR,
-            LEVEL_WARNING,
-            LEVEL_INFO,
-            LEVEL_INVALID = 0xFFFFFFFF
-        };
-
-        Message(Level level, Ogre::String const & text, Ogre::String const & module_name, Ogre::String const & section_name):
-            level(level),
-            text(text),
-            module_name(module_name),
-            section_name(section_name)
-        {}
-
-        Ogre::String section_name;
-        Ogre::String module_name;
-        Ogre::String text;
-        Level level;
-    };
-
     inline void SetCurrentSectionName(Ogre::String const & sec_name) { m_current_section_name = sec_name; }
     inline void ClearCurrentSectionName() { m_current_section_name.clear(); }
 
     inline void SetCurrentModuleName(Ogre::String const & sec_name) { m_current_module_name = sec_name; }
     inline void ClearCurrentModuleName() { m_current_module_name.clear(); }
 
-    void AddMessage(Message::Level level, Ogre::String const & text)
-    {
-        m_messages.push_back(Message(level, text, m_current_module_name, m_current_section_name));
-    }
-
-    Ogre::String ToString() const;
+    void AddMessage(Console::MessageType level, Ogre::String const& text);
 
 private:
     Ogre::String m_current_section_name;
     Ogre::String m_current_module_name;
-    std::list<Message> m_messages;
 };
 
 class Rig

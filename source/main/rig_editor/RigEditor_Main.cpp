@@ -650,8 +650,6 @@ bool Main::LoadRigDefFile(std::string const & filename, MyGUI::UString const & r
     // Display mesh
     this->OnNewRigCreatedOrLoaded(parent_scene_node);
 
-    LOG(Ogre::String("RigEditor: Finished loading rig, report:\n") + rig_build_report.ToString());
-
     return true;
 }
 

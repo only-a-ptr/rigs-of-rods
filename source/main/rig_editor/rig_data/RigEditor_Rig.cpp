@@ -41,42 +41,21 @@
 #include "RigEditor_RigWheelsAggregateData.h"
 #include "RigEditor_RigWheelVisuals.h"
 
-#include <OgreManualObject.h>
-#include <OgreMaterialManager.h>
-#include <OgreTechnique.h>
-#include <OgreManualObject.h>
-#include <OgreSceneManager.h>
-#include <OgreRenderOperation.h>
+#include <Ogre.h>
 #include <sstream>
 
 using namespace RoR;
 using namespace RoR::RigEditor;
 
-Ogre::String RigBuildingReport::ToString() const
+void RigBuildingReport::AddMessage(Console::MessageType level, Ogre::String const& text)
 {
-    std::stringstream s;
-    auto end = m_messages.end();
-    auto itor = m_messages.begin();
-    for (; itor != end; ++itor)
+    Str<2000> buf;
+    if (m_current_module_name != RigDef::ROOT_MODULE_NAME)
     {
-        switch (itor->level)
-        {
-        case Message::LEVEL_ERROR:
-            s << "ERROR ";
-            break;
-        case Message::LEVEL_INFO:
-            s << "INFO ";
-            break;
-        case Message::LEVEL_WARNING:
-            s << "WARNING ";
-            break;
-        default:
-            assert(false && "Wrong message type");
-            break;
-        }
-        s << "(module: " << itor->module_name << ", section: " << itor->section_name << "): " << itor->text << std::endl;
+        buf << "(module: '" << m_current_module_name << "') ";
     }
-    return s.str();
+    buf << "(section: '" << m_current_section_name << "') " << text;
+    App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_ACTOR, level, buf.ToCStr());
 }
 
 // ============================================================================
@@ -115,7 +94,7 @@ Node* Rig::FindNode(RigDef::Node::Ref const & node_ref, RigBuildingReport* logge
         // Node not found
         if (logger != nullptr)
         {
-            logger->AddMessage(RigBuildingReport::Message::LEVEL_WARNING, std::string("Node not found: ") + node_ref.ToString());
+            logger->AddMessage(Console::CONSOLE_SYSTEM_WARNING, std::string("Node not found: ") + node_ref.ToString());
         }
         return nullptr;
     }
@@ -171,7 +150,7 @@ void Rig::Build(
                 msg << "Duplicate node ID: " << node_id.ToString();
                 node_id.SetStr(node_id.Str() + "-dup");
                 msg << ", changed to: " << node_id.ToString();
-                report->AddMessage(RigBuildingReport::Message::LEVEL_WARNING, msg.str());
+                report->AddMessage(Console::CONSOLE_SYSTEM_WARNING, msg.str());
                 m_modified = true;
             }
         }
@@ -354,7 +333,7 @@ void Rig::Build(
             // Insert failed
             if (report != nullptr)
             {
-                report->AddMessage(RigBuildingReport::Message::LEVEL_ERROR, "FATAL: Failed to insert cinecam node.");
+                report->AddMessage(Console::CONSOLE_SYSTEM_ERROR, "FATAL: Failed to insert cinecam node.");
             }
             continue;
         }
@@ -396,7 +375,7 @@ void Rig::Build(
                 msg << ", 6=" << (nodes[6] ? "ok":"NULL");
                 msg << ", 7=" << (nodes[7] ? "ok":"NULL");
                 msg << ")";
-                report->AddMessage(RigBuildingReport::Message::LEVEL_ERROR, msg.str());
+                report->AddMessage(Console::CONSOLE_SYSTEM_ERROR, msg.str());
             }
             continue;
         }
@@ -602,7 +581,7 @@ bool Rig::GetWheelAxisNodes(RigDef::Node::Ref const & a1, RigDef::Node::Ref cons
     {
         if (report != nullptr)
         {
-            report->AddMessage(RigBuildingReport::Message::LEVEL_ERROR, "Some axis nodes were not found");
+            report->AddMessage(Console::CONSOLE_SYSTEM_ERROR, "Some axis nodes were not found");
         }
         return false;
     }
@@ -638,7 +617,7 @@ bool Rig::GetWheelDefinitionNodes(
             if (report != nullptr)
             {
                 report->AddMessage(
-                    RigBuildingReport::Message::LEVEL_ERROR, 
+                    Console::CONSOLE_SYSTEM_ERROR, 
                     Ogre::String("Failed to find rigidity node: ") + rigidity.ToString());
             }
             return false;
@@ -655,7 +634,7 @@ bool Rig::GetWheelDefinitionNodes(
             if (report != nullptr)
             {
                 report->AddMessage(
-                    RigBuildingReport::Message::LEVEL_ERROR, 
+                    Console::CONSOLE_SYSTEM_ERROR, 
                     Ogre::String("Failed to find reference arm node: ") + reference_arm.ToString());
             }
             return false;
