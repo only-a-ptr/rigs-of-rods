@@ -150,64 +150,6 @@ void Main::PutOff()
     m_flexbodywheels_panel  ->HideTemporarily();
 }
 
-void Main::UpdateInputEvents(float dt)
-{
-    /* Update input events */
-    m_input_handler->ResetEvents();
-    App::GetInputEngine()->Capture(); // Also injects input to GUI (through RigEditor::InputHandler)
-
-    /* Handle key presses */
-    m_camera_ortho_toggled = false;
-    m_camera_view_changed = false;
-    if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_TOGGLE_PERSPECTIVE))
-    {
-        m_camera_handler->ToggleOrtho();
-        m_camera_ortho_toggled = true;
-    }
-
-    // Orientation:
-    // Front->Back = X axis
-    // Right->Left = Z axis
-    // Top->Down   = Y axis negative
-    // Inspired by:
-    // * Gavril MZ2
-    // * Tatra-T813-Dakar.truck
-
-    OIS::Keyboard* ois_keyboard = App::GetInputEngine()->GetOisKeyboard();
-    bool ctrl_is_down = ois_keyboard->isKeyDown(OIS::KC_RCONTROL) || ois_keyboard->isKeyDown(OIS::KC_LCONTROL);
-    if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_FRONT))
-    {
-        m_camera_handler->LookInDirection(ctrl_is_down ? Ogre::Vector3::NEGATIVE_UNIT_X : Ogre::Vector3::UNIT_X);
-        m_camera_view_changed = true;
-    }
-    if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_SIDE))
-    {
-        m_camera_handler->LookInDirection(ctrl_is_down ? Ogre::Vector3::UNIT_Z : Ogre::Vector3::NEGATIVE_UNIT_Z);
-        m_camera_view_changed = true;
-    }
-    if (m_input_handler->WasEventFired(InputHandler::Event::CAMERA_VIEW_TOP))
-    {
-        m_camera_handler->TopView(! ctrl_is_down);
-        m_camera_view_changed = true;
-    }
-
-    /* Handle camera control */
-    
-    if (m_input_handler->GetMouseMotionEvent().HasMoved() || m_input_handler->GetMouseMotionEvent().HasScrolled())
-    {
-        bool res = m_camera_handler->InjectMouseMove(
-            m_input_handler->GetMouseButtonEvent().IsRightButtonDown(), /* (bool do_orbit) */
-            m_input_handler->GetMouseMotionEvent().rel_x,
-            m_input_handler->GetMouseMotionEvent().rel_y,
-            m_input_handler->GetMouseMotionEvent().rel_wheel
-        );
-        if (res)
-        {
-            m_camera_view_changed = true;
-        }
-    }
-}
-
 void Main::UpdateEditorLoop()
 {
     OIS::Keyboard* ois_keyboard = App::GetInputEngine()->GetOisKeyboard();

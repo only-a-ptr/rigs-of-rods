@@ -71,6 +71,11 @@ public:
         return m_input_handler;
     }
 
+    CameraHandler* GetCameraHandler()
+    {
+        return m_camera_handler;
+    }
+
     // File management
     virtual void CommandShowDialogOpenRigFile();
     virtual void CommandShowDialogSaveRigFileAs();

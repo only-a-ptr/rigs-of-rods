@@ -298,6 +298,30 @@ eventInfo_t eventInfo[] = {
         _L("zoom camera out faster")
     },
     {
+        "CAMERA_TOGGLE_ORTHO",
+        EV_CAMERA_TOGGLE_ORTHO,
+        "Keyboard EXPL+NUMPAD5",
+        _L("toggle orthographic view (for editing)")
+    },
+    {
+        "CAMERA_VIEW_FRONT",
+        EV_CAMERA_VIEW_FRONT,
+        "Keyboard EXPL+NUMPAD1",
+        _L("move orbit camera to front view")
+    },
+    {
+        "CAMERA_VIEW_SIDE",
+        EV_CAMERA_VIEW_SIDE,
+        "Keyboard EXPL+NUMPAD3",
+        _L("move orbit camera to side view")
+    },
+    {
+        "CAMERA_VIEW_TOP",
+        EV_CAMERA_VIEW_TOP,
+        "Keyboard EXPL+NUMPAD7",
+        _L("move orbit camera to top view")
+    },
+    {
         "CHARACTER_BACKWARDS",
         EV_CHARACTER_BACKWARDS,
         "Keyboard S",

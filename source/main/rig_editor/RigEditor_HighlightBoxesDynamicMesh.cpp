@@ -57,7 +57,6 @@ void HighlightBoxesDynamicMesh::Initialize(
     int initial_capacity_boxes
 )
 {
-    ROR_ASSERT(material_name != nullptr);
     ROR_ASSERT(ogre_scene_manager != nullptr);
     m_dynamic_mesh_capacity_boxes = initial_capacity_boxes;
     const Ogre::String rg_name = App::GetActorEditor()->GetActiveSnapshot()->prs_project->prj_rg_name;

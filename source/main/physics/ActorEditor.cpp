@@ -24,8 +24,10 @@
 #include "Application.h"
 #include "ContentManager.h"
 #include "GUIManager.h"
+#include "InputEngine.h"
 #include "Language.h"
 #include "RigDef_Serializer.h"
+#include "RigEditor_CameraHandler.h"
 #include "RigEditor_Main.h"
 
 #include <OgreDataStream.h>
@@ -41,7 +43,28 @@ void ActorEditor::Initialize()
 
 void ActorEditor::UpdateInputEvents(float dt)
 {
-    m_rig_editor->UpdateInputEvents(dt);
+    if (App::GetInputEngine()->getEventBoolValueBounce(EV_CAMERA_TOGGLE_ORTHO))
+    {
+        m_rig_editor->GetCameraHandler()->ToggleOrtho();
+    }
+
+    // Orientation:
+    // Front->Back = X axis
+    // Right->Left = Z axis
+    // Top->Down   = Y axis negative
+    const bool ctrl_is_down = App::GetInputEngine()->isKeyDown(OIS::KC_LCONTROL) || App::GetInputEngine()->isKeyDown(OIS::KC_RCONTROL);
+    if (App::GetInputEngine()->getEventBoolValueBounce(EV_CAMERA_VIEW_FRONT))
+    {
+        m_rig_editor->GetCameraHandler()->LookInDirection(ctrl_is_down ? Ogre::Vector3::NEGATIVE_UNIT_X : Ogre::Vector3::UNIT_X);
+    }
+    if (App::GetInputEngine()->getEventBoolValueBounce(EV_CAMERA_VIEW_SIDE))
+    {
+        m_rig_editor->GetCameraHandler()->LookInDirection(ctrl_is_down ? Ogre::Vector3::UNIT_Z : Ogre::Vector3::NEGATIVE_UNIT_Z);
+    }
+    if (App::GetInputEngine()->getEventBoolValueBounce(EV_CAMERA_VIEW_TOP))
+    {
+        m_rig_editor->GetCameraHandler()->TopView(!ctrl_is_down);
+    }
 }
 
 void ActorEditor::BringUp()

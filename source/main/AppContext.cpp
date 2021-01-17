@@ -80,11 +80,6 @@ bool AppContext::mouseMoved(const OIS::MouseEvent& arg) // overrides OIS::MouseL
     App::GetGuiManager()->WakeUpGUI();
     App::GetGuiManager()->GetImGui().InjectMouseMoved(arg);
 
-    if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
-    {
-        App::GetActorEditor()->GetInputHandler()->mouseMoved(arg);
-    }
-
     if (!ImGui::GetIO().WantCaptureMouse) // true if mouse is over any window
     {
         bool handled = false;
@@ -108,11 +103,6 @@ bool AppContext::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID _id
 {
     App::GetGuiManager()->WakeUpGUI();
     App::GetGuiManager()->GetImGui().InjectMousePressed(arg, _id);
-
-    if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
-    {
-        App::GetActorEditor()->GetInputHandler()->mousePressed(arg, _id);
-    }
 
     if (!ImGui::GetIO().WantCaptureMouse) // true if mouse is over any window
     {
@@ -141,11 +131,6 @@ bool AppContext::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID _i
     App::GetGuiManager()->WakeUpGUI();
     App::GetGuiManager()->GetImGui().InjectMouseReleased(arg, _id);
 
-    if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
-    {
-        App::GetActorEditor()->GetInputHandler()->mouseReleased(arg, _id);
-    }
-
     if (!ImGui::GetIO().WantCaptureMouse) // true if mouse is over any window
     {
         bool handled = false;
@@ -170,11 +155,6 @@ bool AppContext::keyPressed(const OIS::KeyEvent& arg)
 {
     App::GetGuiManager()->GetImGui().InjectKeyPressed(arg);
 
-    if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
-    {
-        App::GetActorEditor()->GetInputHandler()->keyPressed(arg);
-    }
-
     if (!App::GetGuiManager()->IsGuiCaptureKeyboardRequested() &&
         !ImGui::GetIO().WantCaptureKeyboard)
     {
@@ -187,11 +167,6 @@ bool AppContext::keyPressed(const OIS::KeyEvent& arg)
 bool AppContext::keyReleased(const OIS::KeyEvent& arg)
 {
     App::GetGuiManager()->GetImGui().InjectKeyReleased(arg);
-
-    if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
-    {
-        App::GetActorEditor()->GetInputHandler()->keyReleased(arg);
-    }
 
     if (!App::GetGuiManager()->IsGuiCaptureKeyboardRequested() &&
         !ImGui::GetIO().WantCaptureKeyboard)

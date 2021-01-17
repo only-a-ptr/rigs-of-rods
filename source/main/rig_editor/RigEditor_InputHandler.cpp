@@ -41,10 +41,6 @@ using namespace RoR::RigEditor;
 #define DECLARE_EVENT(_FIELD_, _INDEX_, _NAME_) const InputHandler::Event InputHandler::Event::_FIELD_(_INDEX_, _NAME_);
 
 DECLARE_EVENT (                           INVALID,   0,                             "INVALID" )
-DECLARE_EVENT (                 CAMERA_VIEW_FRONT,   1,                   "CAMERA_VIEW_FRONT" )
-DECLARE_EVENT (                  CAMERA_VIEW_SIDE,   2,                    "CAMERA_VIEW_SIDE" )
-DECLARE_EVENT (                   CAMERA_VIEW_TOP,   3,                     "CAMERA_VIEW_TOP" )
-DECLARE_EVENT (    CAMERA_VIEW_TOGGLE_PERSPECTIVE,   4,      "CAMERA_VIEW_TOGGLE_PERSPECTIVE" )
 DECLARE_EVENT (                            ESCAPE,   5,                              "ESCAPE" )
 DECLARE_EVENT (      NODES_DESELECT_OR_SELECT_ALL,   6,        "NODES_DESELECT_OR_SELECT_ALL" )
 DECLARE_EVENT (              GUI_SHOW_DELETE_MENU,   7,                "GUI_SHOW_DELETE_MENU" )
@@ -85,10 +81,6 @@ InputHandler::InputHandler()
 
 void InputHandler::SetupDefaultKeyMappings()
 {
-    m_event_key_mappings[OIS::KC_NUMPAD1] = & Event::CAMERA_VIEW_FRONT;
-    m_event_key_mappings[OIS::KC_NUMPAD3] = & Event::CAMERA_VIEW_SIDE;
-    m_event_key_mappings[OIS::KC_NUMPAD7] = & Event::CAMERA_VIEW_TOP;
-    m_event_key_mappings[OIS::KC_NUMPAD5] = & Event::CAMERA_VIEW_TOGGLE_PERSPECTIVE;
     m_event_key_mappings[OIS::KC_A]       = & Event::NODES_DESELECT_OR_SELECT_ALL;
     m_event_key_mappings[OIS::KC_DELETE]  = & Event::GUI_SHOW_DELETE_MENU;
     m_event_key_mappings[OIS::KC_E]       = & Event::NODES_EXTRUDE_SELECTED;

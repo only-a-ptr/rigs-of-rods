@@ -102,6 +102,7 @@ enum events
     EV_SKY_DECREASE_TIME_FAST, //!< decrease day-time a lot faster
     EV_SKY_INCREASE_TIME, //!< increase day-time
     EV_SKY_INCREASE_TIME_FAST, //!< increase day-time a lot faster
+
     EV_CAMERA_CHANGE, //!< change camera mode
     EV_CAMERA_DOWN,
     EV_CAMERA_FREE_MODE,
@@ -117,6 +118,11 @@ enum events
     EV_CAMERA_ZOOM_IN_FAST, //!< zoom camera in faster
     EV_CAMERA_ZOOM_OUT, //!< zoom camera out
     EV_CAMERA_ZOOM_OUT_FAST, //!< zoom camera out faster
+    EV_CAMERA_TOGGLE_ORTHO, //!< toggle orthographic view (for editing)
+    EV_CAMERA_VIEW_FRONT, //!< move orbit camera to front view
+    EV_CAMERA_VIEW_SIDE, //!< move orbit camera to side view
+    EV_CAMERA_VIEW_TOP, //!< move orbit camera to top view
+    
     EV_CHARACTER_BACKWARDS, //!< step backwards with the character
     EV_CHARACTER_FORWARD, //!< step forward with the character
     EV_CHARACTER_JUMP, //!< let the character jump
