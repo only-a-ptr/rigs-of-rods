@@ -185,57 +185,6 @@ bool InputHandler::keyReleased( const OIS::KeyEvent &arg )
     return true;
 }
 
-// ================================================================================
-// OIS Mouse listener
-// ================================================================================
-
-bool InputHandler::mouseMoved( const OIS::MouseEvent &mouse_event )
-{
-    MyGUI::InputManager::getInstance().injectMouseMove(
-        mouse_event.state.X.abs, 
-        mouse_event.state.Y.abs,
-        mouse_event.state.Z.abs
-        );
-
-    m_mouse_motion_event.AddRelativeMove(mouse_event.state.X.rel, mouse_event.state.Y.rel, mouse_event.state.Z.rel);
-    m_mouse_motion_event.abs_x = mouse_event.state.X.abs;
-    m_mouse_motion_event.abs_y = mouse_event.state.Y.abs;
-    m_mouse_motion_event.abs_wheel = mouse_event.state.Z.abs;
-
-    return true;
-}
-
-bool InputHandler::mousePressed( const OIS::MouseEvent &mouse_event, OIS::MouseButtonID button_id )
-{
-    bool handled_by_gui = MyGUI::InputManager::getInstance().injectMousePress(
-        mouse_event.state.X.abs, 
-        mouse_event.state.Y.abs,
-        MyGUI::MouseButton::Enum(button_id)
-        );
-
-    m_mouse_button_event.ButtonPressInputReceived(handled_by_gui);
-    if (handled_by_gui)
-    {
-        return true;
-    }
-
-    switch (button_id)
-    {
-    case OIS::MB_Right:
-        m_mouse_button_event.RightButtonDown();
-        break;
-    case OIS::MB_Left:
-        m_mouse_button_event.LeftButtonDown();
-        break;
-    case OIS::MB_Middle:
-        m_mouse_button_event.MiddleButtonDown();
-        break;
-    default:
-        assert(false && "Invalid OIS::MouseButtonID");
-    }
-
-    return true;
-}
 
 bool InputHandler::mouseReleased( const OIS::MouseEvent &mouse_event, OIS::MouseButtonID button_id )
 {

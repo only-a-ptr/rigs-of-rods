@@ -290,7 +290,6 @@ public:
 
     /* Mouse injection; formerly OIS MouseListener */
     bool mouseMoved( const OIS::MouseEvent &arg );
-    bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
     bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
 private:

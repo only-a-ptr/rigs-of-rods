@@ -82,16 +82,29 @@ bool AppContext::mouseMoved(const OIS::MouseEvent& arg) // overrides OIS::MouseL
 
     if (!ImGui::GetIO().WantCaptureMouse) // true if mouse is over any window
     {
-        bool handled = false;
-        if (App::GetOverlayWrapper())
+        if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
         {
-            handled = App::GetOverlayWrapper()->mouseMoved(arg); // update the old airplane / autopilot gui
-        }
-        if (!handled)
-        {
-            if (!App::GetCameraManager()->mouseMoved(arg))
+            bool handled = MyGUI::InputManager::getInstance().injectMouseMove(arg.state.X.abs,
+                                                                              arg.state.Y.abs,
+                                                                              arg.state.Z.abs);
+            if (!handled)
             {
-                App::GetGameContext()->GetSceneMouse().mouseMoved(arg);
+                App::GetCameraManager()->mouseMoved(arg);
+            }
+        }
+        else
+        {
+            bool handled = false;
+            if (App::GetOverlayWrapper())
+            {
+                handled = App::GetOverlayWrapper()->mouseMoved(arg); // update the old airplane / autopilot gui
+            }
+            if (!handled)
+            {
+                if (!App::GetCameraManager()->mouseMoved(arg))
+                {
+                    App::GetGameContext()->GetSceneMouse().mouseMoved(arg);
+                }
             }
         }
     }
@@ -106,16 +119,29 @@ bool AppContext::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID _id
 
     if (!ImGui::GetIO().WantCaptureMouse) // true if mouse is over any window
     {
-        bool handled = false;
-        if (App::GetOverlayWrapper())
+        if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
         {
-            handled = App::GetOverlayWrapper()->mousePressed(arg, _id); // update the old airplane / autopilot gui
+            bool handled = MyGUI::InputManager::getInstance().injectMousePress(arg.state.X.abs,
+                                                                               arg.state.Y.abs,
+                                                                               MyGUI::MouseButton::Enum(_id));
+            if (!handled)
+            {
+                App::GetCameraManager()->mousePressed(arg, _id);
+            }
         }
-
-        if (!handled && App::app_state->GetEnum<AppState>() == AppState::SIMULATION)
+        else
         {
-            App::GetGameContext()->GetSceneMouse().mousePressed(arg, _id);
-            App::GetCameraManager()->mousePressed(arg, _id);
+            bool handled = false;
+            if (App::GetOverlayWrapper())
+            {
+                handled = App::GetOverlayWrapper()->mousePressed(arg, _id); // update the old airplane / autopilot gui
+            }
+
+            if (!handled && App::app_state->GetEnum<AppState>() == AppState::SIMULATION)
+            {
+                App::GetGameContext()->GetSceneMouse().mousePressed(arg, _id);
+                App::GetCameraManager()->mousePressed(arg, _id);
+            }
         }
     }
     else
@@ -133,14 +159,24 @@ bool AppContext::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID _i
 
     if (!ImGui::GetIO().WantCaptureMouse) // true if mouse is over any window
     {
-        bool handled = false;
-        if (App::GetOverlayWrapper())
+        if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
         {
-            handled = App::GetOverlayWrapper()->mouseReleased(arg, _id); // update the old airplane / autopilot gui
+            bool handled = MyGUI::InputManager::getInstance().injectMouseRelease(arg.state.X.abs,
+                                                                                 arg.state.Y.abs,
+                                                                                 MyGUI::MouseButton::Enum(_id));
+            // CameraManager has no `mouseReleased()` ...
         }
-        if (!handled && App::app_state->GetEnum<AppState>() == AppState::SIMULATION)
+        else
         {
-            App::GetGameContext()->GetSceneMouse().mouseReleased(arg, _id);
+            bool handled = false;
+            if (App::GetOverlayWrapper())
+            {
+                handled = App::GetOverlayWrapper()->mouseReleased(arg, _id); // update the old airplane / autopilot gui
+            }
+            if (!handled && App::app_state->GetEnum<AppState>() == AppState::SIMULATION)
+            {
+                App::GetGameContext()->GetSceneMouse().mouseReleased(arg, _id);
+            }
         }
     }
     else
