@@ -709,8 +709,10 @@ void Rig::RefreshAllNodesScreenPositions(CameraHandler* camera_handler)
     }
 }
 
-bool Rig::RefreshMouseHoveredNode(Vector2int const & mouse_position)
+bool Rig::RefreshMouseHoveredNode()
 {
+    RigEditor::Vector2int mouse_position(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+
     /*
     Lookup method: for each node
         - Compute mouse offset
@@ -758,7 +760,7 @@ bool Rig::RefreshMouseHoveredNode(Vector2int const & mouse_position)
     return ret_val;
 }
 
-void Rig::RefreshNodesDynamicMeshes(Ogre::SceneNode* parent_scene_node)
+void Rig::RefreshNodesDynamicMeshes()
 {
     /* ========== Nodes (plain + selected) ========== */
 
@@ -807,18 +809,12 @@ void Rig::RefreshNodesDynamicMeshes(Ogre::SceneNode* parent_scene_node)
         m_nodes_hover_dynamic_mesh->position(m_mouse_hovered_node->GetPosition());
         m_nodes_hover_dynamic_mesh->colour(m_config->node_hover_color);
         m_nodes_hover_dynamic_mesh->end();
-        
-        if (! m_nodes_hover_dynamic_mesh->isAttached())
-        {
-            parent_scene_node->attachObject(m_nodes_hover_dynamic_mesh.get());
-        }
+
+        m_nodes_hover_dynamic_mesh->setVisible(true);
     }
     else
     {
-        if (m_nodes_hover_dynamic_mesh->isAttached())
-        {
-            m_nodes_hover_dynamic_mesh->detachFromParent();
-        }
+        m_nodes_hover_dynamic_mesh->setVisible(false);
     }
 }
 
@@ -848,16 +844,6 @@ void Rig::DeselectAllNodes()
     {
         itor->second.SetSelected(false);
     }
-}
-
-bool Rig::ToggleMouseHoveredNodeSelected()
-{
-    if (m_mouse_hovered_node == nullptr)
-    {
-        return false;
-    }
-    m_mouse_hovered_node->SetSelected(! m_mouse_hovered_node->IsSelected());
-    return true;
 }
 
 Node& Rig::CreateNewNode(Ogre::Vector3 const & position)

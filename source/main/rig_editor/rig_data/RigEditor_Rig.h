@@ -73,7 +73,7 @@ public:
     /**
     * @return True if new node was focused.
     */
-    bool RefreshMouseHoveredNode(Vector2int const & mouse_position);
+    bool RefreshMouseHoveredNode();
 
     void RefreshAllNodesScreenPositions(CameraHandler* camera_handler);
 
@@ -84,8 +84,6 @@ public:
 
     void AttachToScene(Ogre::SceneNode* parent_scene_node);
     void DetachFromScene();
-
-    bool ToggleMouseHoveredNodeSelected();
 
     void DeselectAllNodes();
 
@@ -146,7 +144,7 @@ public:
     inline unsigned int GetNumSelectedBeams() const { return m_selected_beams.size(); }
 
     // Update visuals
-    void RefreshNodesDynamicMeshes(Ogre::SceneNode* parent_scene_node);
+    void RefreshNodesDynamicMeshes();
     void RefreshBeamsDynamicMesh();
     void RefreshWheelsDynamicMesh(Ogre::SceneNode* parent_scene_node, RigEditor::Main* rig_editor);
     void CheckAndRefreshWheelsSelectionHighlights(RigEditor::Main* rig_editor, Ogre::SceneNode* parent_scene_node, bool force = false);

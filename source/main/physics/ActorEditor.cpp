@@ -29,6 +29,7 @@
 #include "RigDef_Serializer.h"
 #include "RigEditor_CameraHandler.h"
 #include "RigEditor_Main.h"
+#include "RigEditor_Rig.h"
 
 #include <OgreDataStream.h>
 #include <rapidjson/stringbuffer.h>
@@ -64,6 +65,39 @@ void ActorEditor::UpdateInputEvents(float dt)
     if (App::GetInputEngine()->getEventBoolValueBounce(EV_CAMERA_VIEW_TOP))
     {
         m_rig_editor->GetCameraHandler()->TopView(!ctrl_is_down);
+    }
+
+    // Editing
+    if (m_rig_editor->GetRig())
+    {
+        if (ImGui::GetIO().WantCaptureMouse) // true if mouse is over any window
+        {
+            m_rig_editor->GetRig()->ClearMouseHoveredNode();
+        }
+        else
+        {
+            m_rig_editor->GetRig()->RefreshAllNodesScreenPositions(m_rig_editor->GetCameraHandler());
+            m_rig_editor->GetRig()->RefreshMouseHoveredNode();
+
+            // Selecting nodes with [Shift+] LMB
+            if (m_rig_editor->GetRig()->GetMouseHoveredNode() &&
+                ImGui::IsMouseClicked(0)) // Left button
+            {
+                bool shift_pressed = App::GetInputEngine()->isKeyDown(OIS::KC_LSHIFT) || App::GetInputEngine()->isKeyDown(OIS::KC_RSHIFT);
+                if (shift_pressed)
+                {
+                    m_rig_editor->GetRig()->GetMouseHoveredNode()->SetSelected(!m_rig_editor->GetRig()->GetMouseHoveredNode()->IsSelected());
+                }
+                else
+                {
+                    m_rig_editor->GetRig()->DeselectAllNodes();
+                    m_rig_editor->GetRig()->GetMouseHoveredNode()->SetSelected(!m_rig_editor->GetRig()->GetMouseHoveredNode()->IsSelected());
+                }
+            }
+        }
+
+        // Visual updates
+        m_rig_editor->GetRig()->RefreshNodesDynamicMeshes();
     }
 }
 

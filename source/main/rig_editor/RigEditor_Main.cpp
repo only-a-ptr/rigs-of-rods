@@ -273,18 +273,7 @@ void Main::UpdateEditorLoop()
             m_rig->RefreshAllNodesScreenPositions(m_camera_handler);
         }
         
-        if	(	(m_input_handler->WasModeExited(InputHandler::Mode::CREATE_NEW_NODE))
-            ||	(m_input_handler->WasModeExited(InputHandler::Mode::GRAB_NODES))
-            ||	(	(! m_input_handler->IsModeActive(InputHandler::Mode::CREATE_NEW_NODE))
-                &&	((m_input_handler->GetMouseMotionEvent().HasMoved() || m_camera_view_changed || m_camera_ortho_toggled))
-                )
-            )
-        {
-            if (m_rig->RefreshMouseHoveredNode(mouse_screen_position))
-            {
-                node_hover_changed = true;
-            }
-        }
+
 
         // Selecting nodes with LMB
         if	(	(! node_mouse_selecting_disabled) 
@@ -480,10 +469,7 @@ void Main::UpdateEditorLoop()
 
         // ==== Update visuals ====
         Ogre::SceneNode* parent_scene_node = m_scene_manager->getRootSceneNode();
-        if (rig_updated || node_selection_changed || node_hover_changed)
-        {
-            m_rig->RefreshNodesDynamicMeshes(parent_scene_node);
-        }
+
         if (rig_updated)
         {
             m_rig->RefreshBeamsDynamicMesh();
@@ -599,12 +585,7 @@ bool Main::LoadRigDefFile(std::string const & filename, MyGUI::UString const & r
 void Main::OnNewRigCreatedOrLoaded(Ogre::SceneNode* parent_scene_node)
 {
     m_rig->AttachToScene(parent_scene_node);
-    /* Handle mouse selection of nodes */
-    m_rig->RefreshAllNodesScreenPositions(m_camera_handler);
-    if (m_rig->RefreshMouseHoveredNode(m_input_handler->GetMouseMotionEvent().GetAbsolutePosition()))
-    {
-        m_rig->RefreshNodesDynamicMeshes(parent_scene_node);
-    }
+
     /* Update GUI */
     m_gui_menubar->ClearLandVehicleWheelsList();
     m_gui_menubar->UpdateLandVehicleWheelsList(m_rig->GetWheels());
@@ -617,7 +598,7 @@ void Main::CommandCurrentRigDeleteSelectedNodes()
     assert(m_rig != nullptr);
     m_rig->DeleteSelectedNodes();
     m_rig->RefreshBeamsDynamicMesh();
-    m_rig->RefreshNodesDynamicMeshes(m_scene_manager->getRootSceneNode());
+    m_rig->RefreshNodesDynamicMeshes();
 }
 
 void Main::HideAllNodeBeamGuiPanels()
@@ -637,7 +618,7 @@ void Main::CommandCurrentRigDeleteSelectedBeams()
     assert(m_rig != nullptr);
     m_rig->DeleteBeamsBetweenSelectedNodes();
     m_rig->RefreshBeamsDynamicMesh();
-    m_rig->RefreshNodesDynamicMeshes(m_scene_manager->getRootSceneNode());
+    m_rig->RefreshNodesDynamicMeshes();
 }
 
 void Main::CommandShowRigPropertiesWindow()
