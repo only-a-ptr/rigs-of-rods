@@ -154,6 +154,7 @@ void Main::UpdateEditorLoop()
 {
     OIS::Keyboard* ois_keyboard = App::GetInputEngine()->GetOisKeyboard();
     bool ctrl_is_down = ois_keyboard->isKeyDown(OIS::KC_RCONTROL) || ois_keyboard->isKeyDown(OIS::KC_LCONTROL);
+    m_camera_view_changed = true; // TODO: remove the var.
 
     // RIG MANIPULATION \\
 

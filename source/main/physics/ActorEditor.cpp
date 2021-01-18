@@ -341,9 +341,9 @@ bool ActorEditor::LoadSnapshot(ProjectSnapshot* snapshot)
     return loaded;
 }
 
-RigEditor::InputHandler* ActorEditor::GetInputHandler()
+RigEditor::CameraHandler* ActorEditor::GetCameraHandler()
 {
-    return m_rig_editor->GetInputHandler();
+    return m_rig_editor->GetCameraHandler();
 }
 
 Ogre::SceneManager* ActorEditor::GetSceneManager()

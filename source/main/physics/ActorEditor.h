@@ -52,7 +52,7 @@ public:
     static bool         ReLoadProjectFromDirectory(ProjectEntry* proj);
     static bool         SaveProject(RoR::ProjectEntry* proj);
 
-    RigEditor::InputHandler* GetInputHandler();
+    RigEditor::CameraHandler* GetCameraHandler();
     Ogre::SceneManager*      GetSceneManager();
 
 private:

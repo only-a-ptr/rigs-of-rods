@@ -185,35 +185,3 @@ bool InputHandler::keyReleased( const OIS::KeyEvent &arg )
     return true;
 }
 
-
-bool InputHandler::mouseReleased( const OIS::MouseEvent &mouse_event, OIS::MouseButtonID button_id )
-{
-    bool handled_by_gui = MyGUI::InputManager::getInstance().injectMouseRelease(
-        mouse_event.state.X.abs, 
-        mouse_event.state.Y.abs,
-        MyGUI::MouseButton::Enum(button_id)
-        );
-
-    m_mouse_button_event.ButtonReleaseInputReceived(handled_by_gui);
-    if (handled_by_gui)
-    {
-        return true;
-    }
-
-    switch (button_id)
-    {
-    case OIS::MB_Right:
-        m_mouse_button_event.RightButtonUp();
-        break;
-    case OIS::MB_Left:
-        m_mouse_button_event.LeftButtonUp();
-        break;
-    case OIS::MB_Middle:
-        m_mouse_button_event.MiddleButtonUp();
-        break;
-    default:
-        assert(false && "Invalid OIS::MouseButtonID");
-    }
-
-    return true;
-}

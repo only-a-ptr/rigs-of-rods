@@ -288,10 +288,6 @@ public:
     bool keyPressed( const OIS::KeyEvent &arg );
     bool keyReleased( const OIS::KeyEvent &arg );
 
-    /* Mouse injection; formerly OIS MouseListener */
-    bool mouseMoved( const OIS::MouseEvent &arg );
-    bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-
 private:
 
     void SetupDefaultKeyMappings();

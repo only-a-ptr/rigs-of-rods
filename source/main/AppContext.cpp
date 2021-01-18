@@ -39,7 +39,7 @@
 #include "InputEngine.h"
 #include "Language.h"
 #include "PlatformUtils.h"
-#include "RigEditor_InputHandler.h"
+#include "RigEditor_CameraHandler.h"
 #include "RoRVersion.h"
 #include "OverlayWrapper.h"
 
@@ -89,7 +89,10 @@ bool AppContext::mouseMoved(const OIS::MouseEvent& arg) // overrides OIS::MouseL
                                                                               arg.state.Z.abs);
             if (!handled)
             {
-                App::GetCameraManager()->mouseMoved(arg);
+                App::GetActorEditor()->GetCameraHandler()->InjectMouseMove(arg.state.buttonDown(OIS::MB_Right),
+                                                                           arg.state.X.rel,
+                                                                           arg.state.Y.rel,
+                                                                           arg.state.Z.rel);
             }
         }
         else
@@ -121,13 +124,9 @@ bool AppContext::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID _id
     {
         if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
         {
-            bool handled = MyGUI::InputManager::getInstance().injectMousePress(arg.state.X.abs,
-                                                                               arg.state.Y.abs,
-                                                                               MyGUI::MouseButton::Enum(_id));
-            if (!handled)
-            {
-                App::GetCameraManager()->mousePressed(arg, _id);
-            }
+            MyGUI::InputManager::getInstance().injectMousePress(arg.state.X.abs,
+                                                                arg.state.Y.abs,
+                                                                MyGUI::MouseButton::Enum(_id));
         }
         else
         {
@@ -161,10 +160,9 @@ bool AppContext::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID _i
     {
         if (App::sim_state->GetEnum<SimState>() == SimState::ACTOR_EDITOR)
         {
-            bool handled = MyGUI::InputManager::getInstance().injectMouseRelease(arg.state.X.abs,
-                                                                                 arg.state.Y.abs,
-                                                                                 MyGUI::MouseButton::Enum(_id));
-            // CameraManager has no `mouseReleased()` ...
+            MyGUI::InputManager::getInstance().injectMouseRelease(arg.state.X.abs,
+                                                                  arg.state.Y.abs,
+                                                                  MyGUI::MouseButton::Enum(_id));
         }
         else
         {

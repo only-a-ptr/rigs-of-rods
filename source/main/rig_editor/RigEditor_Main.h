@@ -66,11 +66,6 @@ public:
         return m_rig;
     }
 
-    InputHandler* GetInputHandler()
-    {
-        return m_input_handler;
-    }
-
     CameraHandler* GetCameraHandler()
     {
         return m_camera_handler;
