@@ -155,7 +155,8 @@ public:
 	virtual void finish(void)
 	{
 		// hide loading screen
-		mLoadOverlay->hide();
+		if (mLoadOverlay)
+			mLoadOverlay->hide();
 
 		// Unregister listener
 		ResourceGroupManager::getSingleton().removeResourceGroupListener(this);

@@ -1,5 +1,6 @@
 #include "GameState.h"
 
+#include "ContentManager.h"
 #include "RoRFrameListener.h"
 #include "Settings.h"
 
@@ -37,6 +38,13 @@ void GameState::enter()
 	// TO BE DONE:
 	//m_pSceneMgr->setCameraRelativeRendering(true);
 
+	// Set up overlays
+	mOverlaySys = new Ogre::OverlaySystem();
+	m_pSceneMgr->addRenderQueueListener(mOverlaySys);
+
+	// then the base content setup
+	ContentManager::getSingleton().init();
+
 	LOG("Adding Frame Listener");
 
 	mFrameListener = new RoRFrameListener(this,	OgreFramework::getSingleton().getMainHWND());
@@ -72,6 +80,12 @@ void GameState::exit()
 	{
 		OgreFramework::getSingleton().m_pRoot->removeFrameListener(mFrameListener);
 		delete mFrameListener;
+	}
+
+	if (mOverlaySys)
+	{
+		m_pSceneMgr->removeRenderQueueListener(mOverlaySys);
+		delete mOverlaySys;
 	}
 
     m_pSceneMgr->destroyCamera(m_pCamera);

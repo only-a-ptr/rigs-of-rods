@@ -43,6 +43,7 @@ public:
 protected:
 
 	ExampleLoadingBar *mLoadingBar;
+	Ogre::OverlaySystem *mOverlaySys = nullptr;
 };
 
 #endif //DUMMY_STATE_HPP

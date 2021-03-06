@@ -37,6 +37,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #endif // USE_ANGELSCRIPT
 
 #include "Utils.h"
+#include "ErrorUtils.h"
 
 using namespace Ogre;
 using namespace std;
@@ -80,6 +81,11 @@ void ContentManager::initBootstrap(void)
 
 bool ContentManager::init(void)
 {
+	// Reload Bootstrap because only now OverlaySystem is created so fonts get registered
+	Ogre::ResourceGroupManager::getSingleton().destroyResourceGroup("Bootstrap");
+	loadMainResource("OgreCore", "Bootstrap");
+	Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("Bootstrap");
+
     // set listener if none has already been set
     if (!Ogre::ResourceGroupManager::getSingleton().getLoadingListener())
         Ogre::ResourceGroupManager::getSingleton().setLoadingListener(this);
@@ -229,7 +235,9 @@ bool ContentManager::init(void)
 			ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	} catch(Ogre::Exception& e)
 	{
-		LOG("catched error while initializing Resource groups: " + e.getFullDescription());
+		showError(_L("A fatal exception has occured!"),
+		          _L("Some of bundled resources failed to load. See RoR.log for details."));
+		exit(1); // Do not continue, RoR would exception-out later when trying to use the missing resource.
 	}
 #ifdef USE_OPENAL
 	SoundScriptManager::getSingleton().setLoadingBaseSounds(false);

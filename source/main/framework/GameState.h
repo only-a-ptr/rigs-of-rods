@@ -38,6 +38,9 @@ public:
 
 	void update(double timeSinceLastFrame);
 	void resized(Ogre::RenderWindow* rw);
+
+protected:
+	Ogre::OverlaySystem *mOverlaySys = nullptr;
 };
 
 #endif // __GameState_H_

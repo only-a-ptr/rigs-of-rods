@@ -1,5 +1,8 @@
 overlay tracks/3D_NeedlesOverlay
 {
+    // Mandatory top-level panel
+    overlay_element tracks/3D_NeedlesOverlayPanel Panel
+    {
 	zorder 530
 		container Panel (tracks/3Dtachoneedle)
 		{
@@ -125,5 +128,6 @@ overlay tracks/3D_NeedlesOverlay
 			colour_bottom 0.6 0.6 0.6
 		}
 
+    }
 
 }

@@ -69,9 +69,6 @@ void RigsOfRods::go(void)
 		ContentManager::getSingleton().initBootstrap();
 	}
 
-	// then the base content setup
-	ContentManager::getSingleton().init();
-
 	// thats the default state it chooses to start
 	// GameState = default state, classic
 	// LobbyState = experimental Multiplayer Lobby

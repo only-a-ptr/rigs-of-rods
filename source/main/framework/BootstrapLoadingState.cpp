@@ -1,5 +1,6 @@
 #include "BootstrapLoadingState.h"
 #include "ContentManager.h"
+#include "RoRPrerequisites.h"
 
 using namespace Ogre;
 
@@ -15,6 +16,9 @@ void BootstrapLoadingState::enter()
 	OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
 
 	ContentManager::getSingleton().initBootstrap();
+
+	mOverlaySys = new Ogre::OverlaySystem();
+	m_pSceneMgr->addRenderQueueListener(mOverlaySys);
 
 	LOG("creating loading bar");
 	// load all resources now, so the zip files are also initiated
@@ -56,6 +60,12 @@ void BootstrapLoadingState::exit()
 		mLoadingBar->finish();
 		delete(mLoadingBar);
 		mLoadingBar=NULL;
+	}
+
+	if (mOverlaySys)
+	{
+		m_pSceneMgr->removeRenderQueueListener(mOverlaySys);
+		delete mOverlaySys;
 	}
 	
 	if (m_pCamera)

@@ -38,6 +38,7 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include <Overlay/OgreOverlayElement.h>
 #include <Overlay/OgreOverlayElementFactory.h>
 #include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlaySystem.h>
 #include <Overlay/OgreTextAreaOverlayElement.h>
 
 
