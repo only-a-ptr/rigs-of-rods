@@ -30,7 +30,9 @@ LobbyGUI::LobbyGUI() : current_tab(0), rotatingWait(0)
 	initialiseByAttributes(this);
 
 	commandBox->eventKeyButtonPressed += MyGUI::newDelegate(this, &LobbyGUI::eventButtonPressed);
+#if USE_SOCKETW
 	commandBox->eventEditSelectAccept += MyGUI::newDelegate(this, &LobbyGUI::eventCommandAccept);
+#endif // USE_SOCKETW
 	tabControl->eventTabChangeSelect  += MyGUI::newDelegate(this, &LobbyGUI::eventChangeTab);
 
 #if USE_SOCKETW

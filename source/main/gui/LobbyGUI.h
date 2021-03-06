@@ -85,12 +85,12 @@ protected:
 	tabctx_t *current_tab;
 	bool waitingAnimation;
 #if USE_SOCKETW
+	void eventCommandAccept(MyGUI::Edit* _sender);
 	void processIRCEvent(message_t &msg);
 #endif
 	void addTextToChatWindow(Ogre::String, Ogre::String channel);
 	void addTab(Ogre::String name);
 
-	void eventCommandAccept(MyGUI::Edit* _sender);
 	void eventChangeTab(MyGUI::TabControl* _sender, size_t _index);
 	void eventButtonPressed(MyGUI::Widget* _sender, MyGUI::KeyCode _key, MyGUI::Char _char);
 };
