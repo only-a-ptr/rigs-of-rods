@@ -9,6 +9,8 @@
 #include "RoRWindowEventUtilities.h"
 #include "Utils.h"
 
+#include <Bites/OgreBitesConfigDialog.h>
+
 //|||||||||||||||||||||||||||||||||||||||||||||||
 
 using namespace Ogre;
@@ -46,7 +48,7 @@ bool OgreFramework::configure(void)
 		//default mode
 		bool ok = false;
 		if (useogreconfig)
-			ok = m_pRoot->showConfigDialog(nullptr);
+			ok = m_pRoot->showConfigDialog(OgreBites::getNativeConfigDialog());
 		else
 			ok = m_pRoot->restoreConfig();
 		if (ok)
