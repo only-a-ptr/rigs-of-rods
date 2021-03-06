@@ -1,7 +1,7 @@
 overlay tracks/TruckInfoBox
 {
 	zorder 10
-	container BorderPanel(tracks/TruckInfoBox/MainPanel)
+	overlay_element tracks/TruckInfoBox/MainPanel BorderPanel
 	{
         metrics_mode pixels
 		horz_align left
@@ -23,7 +23,7 @@ overlay tracks/TruckInfoBox
             border_bottom_uv      0.0039 0.0039 0.9961 0.0000
             border_bottomright_uv 0.9961 0.0039 1.0000 0.0000
 
-		container TextArea(tracks/TruckInfoBox/Truckname)
+		overlay_element tracks/TruckInfoBox/Truckname TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -32,12 +32,12 @@ overlay tracks/TruckInfoBox
 			height 30
 			font_name CyberbitEnglish
 			char_height 30
-			caption This is a Truck name
+			caption "This is a Truck name"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-		container TextArea(tracks/TruckInfoBox/Truckauthor)
+		overlay_element tracks/TruckInfoBox/Truckauthor TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -46,12 +46,12 @@ overlay tracks/TruckInfoBox
 			height 15
 			font_name CyberbitEnglish
 			char_height 15
-			caption by author xyz
+			caption "by author xyz"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-		container TextArea(tracks/TruckInfoBox/DescriptionLine1)
+		overlay_element tracks/TruckInfoBox/DescriptionLine1 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -60,11 +60,11 @@ overlay tracks/TruckInfoBox
 			height 15
 			font_name CyberbitEnglish
 			char_height 15
-			caption by author xyz
+			caption "by author xyz"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
-		container TextArea(tracks/TruckInfoBox/DescriptionLine2)
+		overlay_element tracks/TruckInfoBox/DescriptionLine2 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -73,11 +73,11 @@ overlay tracks/TruckInfoBox
 			height 15
 			font_name CyberbitEnglish
 			char_height 15
-			caption by author xyz
+			caption "by author xyz"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
-		container TextArea(tracks/TruckInfoBox/DescriptionLine3)
+		overlay_element tracks/TruckInfoBox/DescriptionLine3 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -86,12 +86,12 @@ overlay tracks/TruckInfoBox
 			height 15
 			font_name CyberbitEnglish
 			char_height 15
-			caption by author xyz
+			caption "by author xyz"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/BeamStatsLabel)
+        overlay_element tracks/TruckInfoBox/BeamStatsLabel TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -100,12 +100,12 @@ overlay tracks/TruckInfoBox
 			height 30
 			font_name CyberbitEnglish
 			char_height 20
-			caption Statistics:
+			caption "Statistics:"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/BeamTotal)
+        overlay_element tracks/TruckInfoBox/BeamTotal TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -114,12 +114,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption total: 1412
+			caption "total: 1412"
 			colour_top 1 1 0.7
 			colour_bottom 0.6 1 0.4
 		}
 
-        container TextArea(tracks/TruckInfoBox/BeamBroken)
+        overlay_element tracks/TruckInfoBox/BeamBroken TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -128,12 +128,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption broken: 412 (40%)
+			caption "broken: 412 (40%)"
 			colour_top 1 1 0.7
 			colour_bottom 1 0.6 0.4
 		}
 
-        container TextArea(tracks/TruckInfoBox/BeamDeformed)
+        overlay_element tracks/TruckInfoBox/BeamDeformed TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -147,7 +147,7 @@ overlay tracks/TruckInfoBox
 			colour_bottom 1 0.6 0.4
 		}
 
-        container TextArea(tracks/TruckInfoBox/BeamHealth)
+        overlay_element tracks/TruckInfoBox/BeamHealth TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -161,7 +161,7 @@ overlay tracks/TruckInfoBox
 			colour_bottom 0.6 0.8 0.4
 		}
 
-        container TextArea(tracks/TruckInfoBox/AverageBeamDeformation)
+        overlay_element tracks/TruckInfoBox/AverageBeamDeformation TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -170,12 +170,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption average deformation: 0
+			caption "average deformation: 0"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/AverageBeamStress)
+        overlay_element tracks/TruckInfoBox/AverageBeamStress TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -184,12 +184,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption average stress: 212134
+			caption "average stress: 212134"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/NodeCount)
+        overlay_element tracks/TruckInfoBox/NodeCount TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -198,12 +198,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption node count: 21324
+			caption "node count: 21324"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/TruckWeight)
+        overlay_element tracks/TruckInfoBox/TruckWeight TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -212,12 +212,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption weight: 212134 kg
+			caption "weight: 212134 kg"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/CurrentVelocity)
+        overlay_element tracks/TruckInfoBox/CurrentVelocity TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -226,12 +226,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption current Speed: 80.01 km/h (23.32 mp/h)
+			caption "current Speed: 80.01 km/h (23.32 mp/h)"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/CurrentRPM)
+        overlay_element tracks/TruckInfoBox/CurrentRPM TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -240,12 +240,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption current RPM: 1231 / 1500
+			caption "current RPM: 1231 / 1500"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/MaxVelocity)
+        overlay_element tracks/TruckInfoBox/MaxVelocity TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -254,12 +254,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption max Speed: 80.01 km/h (23.32 mp/h)
+			caption "max Speed: 80.01 km/h (23.32 mp/h)"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/AverageVelocity)
+        overlay_element tracks/TruckInfoBox/AverageVelocity TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -268,12 +268,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption current Speed: 80.01 km/h (23.32 mp/h)
+			caption "current Speed: 80.01 km/h (23.32 mp/h)"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/TimeStats)
+        overlay_element tracks/TruckInfoBox/TimeStats TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -282,12 +282,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption current Speed: 80.01 km/h (23.32 mp/h)
+			caption "current Speed: 80.01 km/h (23.32 mp/h)"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/Gees)
+        overlay_element tracks/TruckInfoBox/Gees TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -296,12 +296,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption Gee meter
+			caption "Gee meter"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-        container TextArea(tracks/TruckInfoBox/Gees2)
+        overlay_element tracks/TruckInfoBox/Gees2 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -310,12 +310,12 @@ overlay tracks/TruckInfoBox
 			height 20
 			font_name CyberbitEnglish
 			char_height 20
-			caption Gee meter
+			caption "Gee meter"
 			colour_top 1 1 0.7
 			colour_bottom 0.4 0.6 1
 		}
 
-		container TextArea(tracks/TruckInfoBox/CommandsTitleLabel)
+		overlay_element tracks/TruckInfoBox/CommandsTitleLabel TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -324,12 +324,12 @@ overlay tracks/TruckInfoBox
 			height 30
 			font_name CyberbitEnglish
 			char_height 30
-			caption Commands:
+			caption "Commands:"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command1)
+        overlay_element tracks/TruckInfoBox/Command1 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -338,12 +338,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command1
+			caption "Command1"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command2)
+        overlay_element tracks/TruckInfoBox/Command2 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -352,12 +352,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command2
+			caption "Command2"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command3)
+        overlay_element tracks/TruckInfoBox/Command3 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -366,12 +366,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command3
+			caption "Command3"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command4)
+        overlay_element tracks/TruckInfoBox/Command4 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -380,12 +380,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command4
+			caption "Command4"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command5)
+        overlay_element tracks/TruckInfoBox/Command5 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -394,12 +394,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command5
+			caption "Command5"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command6)
+        overlay_element tracks/TruckInfoBox/Command6 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -408,12 +408,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command6
+			caption "Command6"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command7)
+        overlay_element tracks/TruckInfoBox/Command7 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -422,12 +422,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command7
+			caption "Command7"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command8)
+        overlay_element tracks/TruckInfoBox/Command8 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -436,12 +436,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command8
+			caption "Command8"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command9)
+        overlay_element tracks/TruckInfoBox/Command9 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -450,12 +450,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command9
+			caption "Command9"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command10)
+        overlay_element tracks/TruckInfoBox/Command10 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -464,12 +464,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command10
+			caption "Command10"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command11)
+        overlay_element tracks/TruckInfoBox/Command11 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -478,12 +478,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command11
+			caption "Command11"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command12)
+        overlay_element tracks/TruckInfoBox/Command12 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -492,12 +492,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command13)
+        overlay_element tracks/TruckInfoBox/Command13 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -506,12 +506,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command14)
+        overlay_element tracks/TruckInfoBox/Command14 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -520,12 +520,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command15)
+        overlay_element tracks/TruckInfoBox/Command15 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -534,12 +534,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command16)
+        overlay_element tracks/TruckInfoBox/Command16 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -548,12 +548,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command17)
+        overlay_element tracks/TruckInfoBox/Command17 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -562,12 +562,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command18)
+        overlay_element tracks/TruckInfoBox/Command18 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -576,12 +576,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command19)
+        overlay_element tracks/TruckInfoBox/Command19 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -590,12 +590,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command20)
+        overlay_element tracks/TruckInfoBox/Command20 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -604,12 +604,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command21)
+        overlay_element tracks/TruckInfoBox/Command21 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -618,12 +618,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command22)
+        overlay_element tracks/TruckInfoBox/Command22 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -632,12 +632,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command23)
+        overlay_element tracks/TruckInfoBox/Command23 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -646,12 +646,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command24)
+        overlay_element tracks/TruckInfoBox/Command24 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -660,12 +660,12 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}
 
-        container TextArea(tracks/TruckInfoBox/Command25)
+        overlay_element tracks/TruckInfoBox/Command25 TextArea
 		{
 			metrics_mode pixels
 			left 10
@@ -674,7 +674,7 @@ overlay tracks/TruckInfoBox
 			height 10
 			font_name CyberbitEnglish
 			char_height 20
-			caption Command12
+			caption "Command12"
 			colour_top 1 1 0.7
 			colour_bottom 0.8 0.8 0.5
 		}

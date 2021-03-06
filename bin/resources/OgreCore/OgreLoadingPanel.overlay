@@ -1,9 +1,9 @@
 // Ogre overlay scripts
-Core/LoadOverlay
+overlay Core/LoadOverlay
 {
 	zorder 510
 
-	container Panel(Core/LoadPanelBackground)
+	overlay_element Core/LoadPanelBackground Panel
 	{
 		metrics_mode relative
 		material Core/RoRLoadingScreen
@@ -16,7 +16,7 @@ Core/LoadOverlay
 
 	zorder 520
 	// Main panel block
-	container BorderPanel(Core/LoadPanel)
+	overlay_element Core/LoadPanel BorderPanel
 	{
 		metrics_mode pixels
 		vert_align center
@@ -37,7 +37,7 @@ Core/LoadOverlay
        	border_bottom_uv      0.0039 0.0039 0.9961 0.0000
     	border_bottomright_uv 0.9961 0.0039 1.0000 0.0000
 
-		element TextArea(Core/LoadPanel/Description)
+		overlay_element Core/LoadPanel/Description TextArea
 		{
 			metrics_mode pixels
 			left 5
@@ -46,12 +46,12 @@ Core/LoadOverlay
 			height 20
 			font_name CyberbitEnglish
 			char_height 19
-			caption Loading, please wait...
+			caption "Loading, please wait..."
 			colour_top 1 1 0.7
 			colour_bottom 1 1 0.7
 		}
 
-		container BorderPanel(Core/LoadPanel/Bar)
+		overlay_element Core/LoadPanel/Bar BorderPanel
 		{
 			metrics_mode pixels
 			vert_align top
@@ -71,7 +71,7 @@ Core/LoadOverlay
 			border_bottom_uv      0.0039 0.0039 0.9961 0.0000
 			border_bottomright_uv 0.9961 0.0039 1.0000 0.0000
 
-			element Panel(Core/LoadPanel/Bar/Progress)
+			overlay_element Core/LoadPanel/Bar/Progress Panel
 			{
 				metrics_mode pixels
 				left 0
@@ -81,7 +81,7 @@ Core/LoadOverlay
 				material Core/ProgressBar
 			}
 		}
-		element TextArea(Core/LoadPanel/Comment)
+		overlay_element Core/LoadPanel/Comment TextArea
 		{
 			metrics_mode pixels
 			left 5
@@ -90,7 +90,7 @@ Core/LoadOverlay
 			height 20
 			font_name CyberbitEnglish
 			char_height 15
-			caption Initialising...
+			caption "Initialising..."
 			colour_top 0.8 0.8 0.5
 			colour_bottom 0.8 0.8 0.5
 		}

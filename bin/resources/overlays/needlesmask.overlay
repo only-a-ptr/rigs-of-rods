@@ -1,7 +1,7 @@
 overlay tracks/NeedlesMaskOverlay
 {
 	zorder 10
-	container Panel (tracks/pitchmask)
+	overlay_element tracks/pitchmask Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -15,7 +15,7 @@ overlay tracks/NeedlesMaskOverlay
 			height 0.035
 			material tracks/pitchmask
 		}
-	container Panel (tracks/rollmask)
+	overlay_element tracks/rollmask Panel
 		{
 			metrics_mode relative
 			horz_align right

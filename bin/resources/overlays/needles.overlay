@@ -3,7 +3,7 @@ overlay tracks/NeedlesOverlay
 	zorder 30
 
 
-	container Panel (tracks/speedoneedle)
+	overlay_element tracks/speedoneedle Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -18,7 +18,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/speedoneedle_mat
 		}
 
-	container Panel (tracks/tachoneedle)
+	overlay_element tracks/tachoneedle Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -33,7 +33,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/tachoneedle_mat
 		}
 
-	container Panel (tracks/rollneedle)
+	overlay_element tracks/rollneedle Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -48,7 +48,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/rollneedle_mat
 		}
 
-	container Panel (tracks/pitchneedle)
+	overlay_element tracks/pitchneedle Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -63,7 +63,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/pitchneedle_mat
 		}
 
-	container Panel (tracks/rollcorneedle)
+	overlay_element tracks/rollcorneedle Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -79,7 +79,7 @@ overlay tracks/NeedlesOverlay
 		}
 
 
-	container Panel (tracks/turboneedle)
+	overlay_element tracks/turboneedle Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -97,7 +97,7 @@ overlay tracks/NeedlesOverlay
 
 
 
-	container TextArea(tracks/Gear)
+	overlay_element tracks/Gear TextArea
 		{
 			metrics_mode relative
 //			horz_align center
@@ -110,12 +110,12 @@ overlay tracks/NeedlesOverlay
 			top -0.04
 			font_name CyberbitEnglish
 			char_height 0.03
-			caption N
+			caption "N"
 			colour_top 0.8 0.8 0.8
 			colour_bottom 0.6 0.6 0.6
 		}
 
-	container TextArea(tracks/AGearR)
+	overlay_element tracks/AGearR TextArea
 		{
 			metrics_mode relative
 			horz_align right
@@ -126,12 +126,12 @@ overlay tracks/NeedlesOverlay
 			top -0.17
 			font_name CyberbitEnglish
 			char_height 0.03
-			caption R
+			caption "R"
 			colour_top 0.8 0.8 0.8
 			colour_bottom 0.6 0.6 0.6
 		}
 
-	container TextArea(tracks/AGearN)
+	overlay_element tracks/AGearN TextArea
 		{
 			metrics_mode relative
 			horz_align right
@@ -142,12 +142,12 @@ overlay tracks/NeedlesOverlay
 			top -0.14
 			font_name CyberbitEnglish
 			char_height 0.03
-			caption N
+			caption "N"
 			colour_top 0.8 0.2 0.2
 			colour_bottom 0.6 0.1 0.1
 		}
 
-	container TextArea(tracks/AGearD)
+	overlay_element tracks/AGearD TextArea
 		{
 			metrics_mode relative
 			horz_align right
@@ -158,12 +158,12 @@ overlay tracks/NeedlesOverlay
 			top -0.11
 			font_name CyberbitEnglish
 			char_height 0.03
-			caption D
+			caption "D"
 			colour_top 0.8 0.8 0.8
 			colour_bottom 0.6 0.6 0.6
 		}
 
-	container TextArea(tracks/AGear2)
+	overlay_element tracks/AGear2 TextArea
 		{
 			metrics_mode relative
 			horz_align right
@@ -174,12 +174,12 @@ overlay tracks/NeedlesOverlay
 			top -0.08
 			font_name CyberbitEnglish
 			char_height 0.03
-			caption 2
+			caption "2"
 			colour_top 0.8 0.8 0.8
 			colour_bottom 0.6 0.6 0.6
 		}
 
-	container TextArea(tracks/AGear1)
+	overlay_element tracks/AGear1 TextArea
 		{
 			metrics_mode relative
 			horz_align right
@@ -190,12 +190,12 @@ overlay tracks/NeedlesOverlay
 			top -0.05
 			font_name CyberbitEnglish
 			char_height 0.03
-			caption 1
+			caption "1"
 			colour_top 0.8 0.8 0.8
 			colour_bottom 0.6 0.6 0.6
 		}
 
-	container Panel (tracks/pedalclutch)
+	overlay_element tracks/pedalclutch Panel
 		{
 			metrics_mode relative
 			horz_align left
@@ -207,7 +207,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/Pedal
 		}
 
-	container Panel (tracks/pedalbrake)
+	overlay_element tracks/pedalbrake Panel
 		{
 			metrics_mode relative
 			horz_align left
@@ -219,7 +219,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/Pedal
 		}
 
-	container Panel (tracks/pedalacc)
+	overlay_element tracks/pedalacc Panel
 		{
 			metrics_mode relative
 			horz_align left
@@ -231,7 +231,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/Pedal
 		}
 
-	container Panel (tracks/pbrake)
+	overlay_element tracks/pbrake Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -243,7 +243,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/pbrake-off
 		}
 
-	container Panel (tracks/locked)
+	overlay_element tracks/locked Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -255,7 +255,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/locked-off
 		}
 
-	container Panel (tracks/secured)
+	overlay_element tracks/secured Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -267,7 +267,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/secured-off
 		}
 
-	container Panel (tracks/lopress)
+	overlay_element tracks/lopress Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -278,7 +278,7 @@ overlay tracks/NeedlesOverlay
 			height 0.02
 			material tracks/lopress-off
 		}
-	container Panel (tracks/clutch)
+	overlay_element tracks/clutch Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -289,7 +289,7 @@ overlay tracks/NeedlesOverlay
 			height 0.02
 			material tracks/clutch-off
 		}
-	container Panel (tracks/lights)
+	overlay_element tracks/lights Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -300,7 +300,7 @@ overlay tracks/NeedlesOverlay
 			height 0.03
 			material tracks/lights-off
 		}
-	container Panel (tracks/batt)
+	overlay_element tracks/batt Panel
 		{
 			metrics_mode relative
 			horz_align right
@@ -312,7 +312,7 @@ overlay tracks/NeedlesOverlay
 			material tracks/batt-off
 		}
 
-	container Panel (tracks/ign)
+	overlay_element tracks/ign Panel
 		{
 			metrics_mode relative
 			horz_align left
@@ -323,7 +323,7 @@ overlay tracks/NeedlesOverlay
 			height 0.05
 			material tracks/ign-off
 		}
-         container Panel (tracks/tcontrol)
+         overlay_element tracks/tcontrol Panel
 	      {
 	         metrics_mode relative
 	         horz_align right
@@ -334,7 +334,7 @@ overlay tracks/NeedlesOverlay
 	         height 0.025
 	         material tracks/tcontrol-off
 	      }
-	   container Panel (tracks/antilock)
+	   overlay_element tracks/antilock Panel
 	      {
 	         metrics_mode relative
 	         horz_align right
