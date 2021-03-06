@@ -119,7 +119,8 @@ inline void sleepMilliSeconds(unsigned int ms)
 inline unsigned long getThreadID()
 {
 #ifdef WIN32
-	return (unsigned long)pthread_self().p;
+	// extra (ptrdiff_t) cast to silence "pointer truncation" warning.
+	return (unsigned long)(ptrdiff_t)pthread_self().p;
 #else
 	return (unsigned long)pthread_self();
 #endif // WIN32

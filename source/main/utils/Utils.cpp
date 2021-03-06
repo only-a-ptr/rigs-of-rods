@@ -367,7 +367,7 @@ void generateHashFromDataStream(DataStreamPtr &ds, Ogre::String &hash)
 	uint8_t *buf = 0;
 	ds->seek(0); // from start
 	// alloc buffer
-	uint32_t bufSize = ds->size();
+	uint32_t bufSize = (uint32_t)ds->size();
 	buf = (uint8_t *)malloc(bufSize+1);
 	// read into buffer
 	ds->read(buf, bufSize);

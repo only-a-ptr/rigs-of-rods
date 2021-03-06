@@ -192,7 +192,7 @@ void SkinManager::getUsableSkins(String guid, std::vector<Skin *> &skins)
 
 int SkinManager::getSkinCount()
 {
-	return mResourcesByHandle.size();
+	return (int) mResourcesByHandle.size();
 }
 
 void SkinManager::clear()

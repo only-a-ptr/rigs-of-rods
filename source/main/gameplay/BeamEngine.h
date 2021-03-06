@@ -81,7 +81,7 @@ public:
 	float getMinRPM() { return minRPM; };
 	float getPrimeMixture();
 	int getAutoShift();
-	int getNumGears() { return gearsRatio.size() - 2; };
+	int getNumGears() { return (int) gearsRatio.size() - 2; };
 	int getNumGearsRanges() { return getNumGears() / 6 + 1; };
 	TorqueCurve *getTorqueCurve() { return torqueCurve; };
 	void autoSetAcc(float val);
