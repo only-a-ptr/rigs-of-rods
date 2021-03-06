@@ -36,9 +36,8 @@ Envmap::Envmap() :
 	mIsDynamic = BSETTING("Envmap", false);
 	updateRate = ISETTING("EnvmapUpdateRate", 1);
 
-	TexturePtr texture = TextureManager::getSingleton().createManual("EnvironmentTexture",
-		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, TEX_TYPE_CUBE_MAP, 256, 256, 0,
-		PF_R8G8B8, TU_RENDERTARGET);
+	TexturePtr texture = Ogre::TextureManager::getSingleton().getByName("EnvironmentTexture");
+
 
 	for (int face=0; face < NUM_FACES; face++)
 	{

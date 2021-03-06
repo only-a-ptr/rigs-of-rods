@@ -42,6 +42,11 @@ void GameState::enter()
 	mOverlaySys = new Ogre::OverlaySystem();
 	m_pSceneMgr->addRenderQueueListener(mOverlaySys);
 
+	// Pre-create dynamic resources
+    Ogre::TextureManager::getSingleton().createManual ("EnvironmentTexture",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_CUBE_MAP, 256, 256, 0,
+        Ogre::PF_R8G8B8, Ogre::TU_RENDERTARGET);
+
 	// then the base content setup
 	ContentManager::getSingleton().init();
 
