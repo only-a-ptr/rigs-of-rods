@@ -181,6 +181,7 @@ void Settings::loadSettings(String configFile, bool overwrite)
 	while (i.hasMoreElements())
 	{
 		sname = i.peekNextKey();
+		Ogre::StringUtil::trim(sname);
 		svalue = i.getNext();
 		if (!overwrite && settings[sname] != "") continue;
 		settings[sname] = svalue;
