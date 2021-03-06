@@ -5260,26 +5260,32 @@ int SerializedRig::loadTruck(Ogre::String filename, Ogre::SceneNode *parent, Ogr
 		char transmatname[256];
 		sprintf(transmatname, "%s-trans", texname);
 		MaterialPtr transmat=mat->clone(transmatname);
-		if (mat->getTechnique(0)->getNumPasses()>1) transmat->getTechnique(0)->removePass(1);
-		transmat->getTechnique(0)->getPass(0)->setAlphaRejectSettings(CMPF_LESS_EQUAL, 128);
-		transmat->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-		if (transmat->getTechnique(0)->getPass(0)->getNumTextureUnitStates()>0)
-			transmat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(TFO_NONE);
-		transmat->compile();
+		if (transmat)
+		{
+			if (mat->getTechnique(0)->getNumPasses()>1) transmat->getTechnique(0)->removePass(1);
+			transmat->getTechnique(0)->getPass(0)->setAlphaRejectSettings(CMPF_LESS_EQUAL, 128);
+			transmat->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+			if (transmat->getTechnique(0)->getPass(0)->getNumTextureUnitStates()>0)
+				transmat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(TFO_NONE);
+			transmat->compile();
+		}
 
 		//-back
 		char backmatname[256];
 		sprintf(backmatname, "%s-back", texname);
 		MaterialPtr backmat=mat->clone(backmatname);
-		if (mat->getTechnique(0)->getNumPasses()>1) backmat->getTechnique(0)->removePass(1);
-		if (transmat->getTechnique(0)->getPass(0)->getNumTextureUnitStates()>0)
-			backmat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setColourOperationEx(LBX_SOURCE1, LBS_MANUAL, LBS_MANUAL, ColourValue(0,0,0),ColourValue(0,0,0));
-		if (shadowOptimizations)
-			backmat->setReceiveShadows(false);
-		//just in case
-		//backmat->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
-		//backmat->getTechnique(0)->getPass(0)->setAlphaRejectSettings(CMPF_GREATER, 128);
-		backmat->compile();
+		if (transmat && backmat)
+		{
+			if (mat->getTechnique(0)->getNumPasses()>1) backmat->getTechnique(0)->removePass(1);
+			if (transmat->getTechnique(0)->getPass(0)->getNumTextureUnitStates()>0)
+				backmat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setColourOperationEx(LBX_SOURCE1, LBS_MANUAL, LBS_MANUAL, ColourValue(0,0,0),ColourValue(0,0,0));
+			if (shadowOptimizations)
+				backmat->setReceiveShadows(false);
+			//just in case
+			//backmat->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+			//backmat->getTechnique(0)->getPass(0)->setAlphaRejectSettings(CMPF_GREATER, 128);
+			backmat->compile();
+		}
 
 		//-noem and -noem-trans
 		if (mat->getTechnique(0)->getNumPasses()>1)
@@ -5288,8 +5294,11 @@ int SerializedRig::loadTruck(Ogre::String filename, Ogre::SceneNode *parent, Ogr
 			char clomatname[256];
 			sprintf(clomatname, "%s-noem", texname);
 			MaterialPtr clomat=mat->clone(clomatname);
-			clomat->getTechnique(0)->removePass(1);
-			clomat->compile();
+			if (clomat)
+			{
+				clomat->getTechnique(0)->removePass(1);
+				clomat->compile();
+			}
 		}
 
 		//base texture is not modified
