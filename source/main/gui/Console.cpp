@@ -191,7 +191,7 @@ void Console::eventButtonPressed(MyGUI::Widget* _sender, MyGUI::KeyCode _key, My
 	if (autoCompleteIndex != -1 && wordDelimiters.find(_char) != wordDelimiters.npos)
 		abortAutoCompletion();
 
-	switch(_key.toValue())
+	switch(_key.getValue())
 	{
 	case MyGUI::KeyCode::Delete:
 		{
