@@ -160,6 +160,7 @@ void Console::select(UTFString start)
 
 void Console::startPrivateChat(int target_uid)
 {
+#if USE_SOCKETW
 	if (!gEnv->network) return;
 
 	client_t *c = gEnv->network->getClientInfo(target_uid);
@@ -167,6 +168,7 @@ void Console::startPrivateChat(int target_uid)
 
 	Console::getSingleton().setVisible(true);
 	Console::getSingleton().select("/whisper " + UTFString(c->user.username) + " ");
+#endif // USE_SOCKETW
 }
 
 void Console::unselect()

@@ -33,7 +33,9 @@ LobbyGUI::LobbyGUI() : current_tab(0), rotatingWait(0)
 	commandBox->eventEditSelectAccept += MyGUI::newDelegate(this, &LobbyGUI::eventCommandAccept);
 	tabControl->eventTabChangeSelect  += MyGUI::newDelegate(this, &LobbyGUI::eventChangeTab);
 
+#if USE_SOCKETW
 	initIRC();
+#endif // USE_SOCKETW
 }
 
 LobbyGUI::~LobbyGUI()
@@ -123,6 +125,8 @@ void LobbyGUI::addTab(String name)
 	tabControl->setIndexSelected(tabs.size()-1);
 	current_tab = t;
 }
+
+#ifdef USE_SOCKETW
 
 void LobbyGUI::processIRCEvent(message_t &msg)
 {
@@ -261,6 +265,8 @@ void LobbyGUI::processIRCEvent(message_t &msg)
 	}
 }
 
+#endif // USE_SOCKETW
+
 void LobbyGUI::addTextToChatWindow(String txt, String channel)
 {
 	//catch special case that channel is empty -> Status Channel
@@ -313,7 +319,9 @@ void LobbyGUI::update(float dt)
 		rotatingWait->setAngle(angle);
 	}
 
+#if USE_SOCKETW
 	process();
+#endif // USE_SOCKETW
 }
 
 void LobbyGUI::eventButtonPressed(MyGUI::Widget* _sender, MyGUI::KeyCode _key, MyGUI::Char _char)
@@ -365,6 +373,7 @@ void LobbyGUI::eventButtonPressed(MyGUI::Widget* _sender, MyGUI::KeyCode _key, M
 	}
 }
 
+#if USE_SOCKETW
 void LobbyGUI::eventCommandAccept(MyGUI::Edit* _sender)
 {
 	if (!current_tab) return;
@@ -425,6 +434,7 @@ void LobbyGUI::eventCommandAccept(MyGUI::Edit* _sender)
 	current_tab->mHistoryPosition = (int)current_tab->mHistory.size() - 1; // switch to the new line
 	commandBox->setCaption(current_tab->mHistory[current_tab->mHistoryPosition]);
 }
+#endif // USE_SOCKETW
 
 void LobbyGUI::eventChangeTab(MyGUI::TabControl* _sender, size_t _index)
 {

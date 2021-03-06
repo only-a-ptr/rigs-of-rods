@@ -59,6 +59,7 @@ OutProtocol::~OutProtocol(void)
 
 void OutProtocol::startup()
 {
+#if USE_SOCKETW
 #ifdef WIN32
 	SWBaseSocket::SWBaseError error;
 
@@ -104,6 +105,7 @@ void OutProtocol::startup()
 #else
 	// TODO: fix linux
 #endif //WIN32
+#endif //USE_SOCKETW
 }
 
 bool OutProtocol::update(float dt)

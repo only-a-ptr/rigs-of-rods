@@ -262,6 +262,7 @@ void GUI_MainMenu::vehiclesListUpdate()
 		}
 	} else
 	{
+#if USE_SOCKETW
 		// sort the list according to the network users
 
 		// add self first
@@ -277,6 +278,7 @@ void GUI_MainMenu::vehiclesListUpdate()
 			if (!c[i].used) continue;
 			addUserToMenu(c[i].user);
 		}
+#endif // USE_SOCKETW
 	}
 }
 
@@ -300,7 +302,7 @@ void GUI_MainMenu::onMenuBtn(MyGUI::MenuCtrlPtr _sender, MyGUI::MenuItemPtr _ite
 			BeamFactory::getSingleton().setCurrentTruck(truck);
 		}
 	}
-
+#if USE_SOCKETW
 	if (id.substr(0,5) == "USER_")
 	{
 		int user_uid = PARSEINT(id.substr(5));
@@ -310,6 +312,7 @@ void GUI_MainMenu::onMenuBtn(MyGUI::MenuCtrlPtr _sender, MyGUI::MenuItemPtr _ite
 
 		Console::getSingleton().startPrivateChat(user_uid);
 	}
+#endif // USE_SOCKETW
 	
 	if (!gEnv->frameListener) return;
 

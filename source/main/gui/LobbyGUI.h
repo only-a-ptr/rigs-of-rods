@@ -30,7 +30,9 @@ ATTRIBUTE_CLASS_LAYOUT(LobbyGUI, "Lobby.layout");
 class LobbyGUI :
 	public wraps::BaseLayout,
 	public RoRSingleton<LobbyGUI>,
+#if USE_SOCKETW
 	public IRCWrapper,
+#endif
 	public ZeroedMemoryAllocator
 {
 	friend class RoRSingleton<LobbyGUI>;
@@ -82,8 +84,9 @@ protected:
 	std::map<Ogre::String , tabctx_t > tabs;
 	tabctx_t *current_tab;
 	bool waitingAnimation;
-
+#if USE_SOCKETW
 	void processIRCEvent(message_t &msg);
+#endif
 	void addTextToChatWindow(Ogre::String, Ogre::String channel);
 	void addTab(Ogre::String name);
 
