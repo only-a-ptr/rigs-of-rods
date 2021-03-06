@@ -1,0 +1,6 @@
+dependencies/
+bin/RoR
+bin/RoRConfig
+bin/Release/
+bin/RelWithDebInfo/
+
