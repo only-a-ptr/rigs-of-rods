@@ -396,7 +396,7 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 	{
 		if (doUpdate)
 		{
-			affforce = 0;
+			affforce = Ogre::Vector3::ZERO;
 			affhydro = 0;
 		}
 		if (currentcamera != -1)
@@ -571,9 +571,9 @@ void Beam::calcForcesEulerCompute(int doUpdate, Real dt, int step, int maxsteps)
 			for (int i=0; i<free_buoycab; i++)
 			{
 				int tmpv=buoycabs[i]*3;
-				nodes[cabs[tmpv]].buoyanceForce=0;
-				nodes[cabs[tmpv+1]].buoyanceForce=0;
-				nodes[cabs[tmpv+2]].buoyanceForce=0;
+				nodes[cabs[tmpv]].buoyanceForce  =Ogre::Vector3::ZERO;
+				nodes[cabs[tmpv+1]].buoyanceForce=Ogre::Vector3::ZERO;
+				nodes[cabs[tmpv+2]].buoyanceForce=Ogre::Vector3::ZERO;
 			}
 			//add forces
 			for (int i=0; i<free_buoycab; i++)

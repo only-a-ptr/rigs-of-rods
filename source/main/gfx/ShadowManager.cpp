@@ -111,7 +111,7 @@ int ShadowManager::changeShadowTechnique(Ogre::ShadowTechnique tech)
 		gEnv->sceneManager->setShadowTextureSelfShadow(mDepthShadows);
 		gEnv->sceneManager->setShadowCasterRenderBackFaces(false);
 
-		gEnv->sceneManager->setShadowTextureCasterMaterial(mDepthShadows?"PSSM/shadow_caster":Ogre::StringUtil::BLANK);
+		//RETRO gEnv->sceneManager->setShadowTextureCasterMaterial(mDepthShadows?"PSSM/shadow_caster":Ogre::StringUtil::BLANK);
 
 		updatePSSM();
 

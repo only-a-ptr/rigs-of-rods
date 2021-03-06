@@ -31,13 +31,10 @@ namespace Hydrax
 	Mesh::Mesh(Hydrax *h)
             : mHydrax(h)
 			, mCreated(false)
-            , mMesh(0)
             , mSubMesh(0)
             , mEntity(0)
             , mNumFaces(0)
             , mNumVertices(0)
-            , mVertexBuffer(0)
-            , mIndexBuffer(0)
 			, mSceneNode(0)
             , mMaterialName("_NULL_")
     {
@@ -431,7 +428,7 @@ namespace Hydrax
 		    delete mTmpSN;
 		}
 
-		return mWorldMatrix.inverseAffine().transformAffine(WorldSpacePosition);
+		return mWorldMatrix.inverse()*(WorldSpacePosition);
 	}
 
 	const Ogre::Vector3 Mesh::getWorldSpacePosition(const Ogre::Vector3& ObjectSpacePosition) const
@@ -460,6 +457,7 @@ namespace Hydrax
 		    delete mTmpSN;
 		}
 
-		return mWorldMatrix.transformAffine(ObjectSpacePosition);
+		//return mWorldMatrix.transformAffine(ObjectSpacePosition);
+		return mWorldMatrix*(ObjectSpacePosition);
 	}
 }

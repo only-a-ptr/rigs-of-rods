@@ -323,7 +323,7 @@ Vector3 FlexMeshWheel::flexitFinal()
 		//nbuf->unlock();
 
 		EdgeData* ed = msh->getEdgeList();
-		ed->updateFaceNormals(0, pbuf);
+//RETRO		ed->updateFaceNormals(0, pbuf);
 	} else
 	{
 		//vbuf->lock(HardwareBuffer::HBL_NORMAL);

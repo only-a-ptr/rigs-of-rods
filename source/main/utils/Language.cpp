@@ -22,7 +22,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Language.h"
 
-#include "OgreFontManager.h"
 #include "Settings.h"
 
 #ifdef USE_MYGUI
@@ -31,8 +30,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include <MyGUI_FontData.h>
 #include <MyGUI_FontManager.h>
 #endif // USE_MYGUI
-
-#include <OgreTextAreaOverlayElement.h>
 
 #include "FontTextureHelper.h"
 

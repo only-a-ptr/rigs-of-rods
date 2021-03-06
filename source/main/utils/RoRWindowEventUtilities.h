@@ -22,7 +22,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #define RORWINDOWEVENTUTILITIES_H__
 
 #include "RoRPrerequisites.h"
-#include <OgreWindowEventUtilities.h>
 
 // same as original but with user triggerable events
 class RoRWindowEventUtilities : public Ogre::WindowEventUtilities, public ZeroedMemoryAllocator

@@ -1186,18 +1186,15 @@ void CacheSystem::addFile(String filename, String archiveType, String archiveDir
 				entry.hash="none";
 			// read in author and category
 			entries.push_back(entry);
+		} catch(Ogre::ItemIdentityException& e) // Ogre::Exception::ERR_DUPLICATE_ITEM
+		{
+			LOG(" *** error opening archive '"+filename+"': some files are duplicates of existing files. The file will be ignored.");
+			LOG("error while opening resource: " + e.getFullDescription());
 		} catch(Ogre::Exception& e)
 		{
-			if (e.getNumber() == Ogre::Exception::ERR_DUPLICATE_ITEM)
-			{
-				LOG(" *** error opening archive '"+filename+"': some files are duplicates of existing files. The file will be ignored.");
-				LOG("error while opening resource: " + e.getFullDescription());
-			}else
-			{
-				LOG("error while opening resource: " + e.getFullDescription());
-				LOG("error opening archive '"+String(filename)+"'. Is it corrupt?");
-				LOG("trying to continue ...");
-			}
+			LOG("error while opening resource: " + e.getFullDescription());
+			LOG("error opening archive '"+String(filename)+"'. Is it corrupt?");
+			LOG("trying to continue ...");
 		}
 	}
 }
@@ -1741,20 +1738,17 @@ bool CacheSystem::checkResourceLoaded(CacheEntry t)
 			loaded[t.dirname]=true;
 			ResourceGroupManager::getSingleton().initialiseResourceGroup(name);
 			return true;
+		} catch(Ogre::ItemIdentityException& e) // Ogre::Exception::ERR_DUPLICATE_ITEM
+		{
+			LOG(" *** error opening '"+t.dirname+"': some files are duplicates of existing files. The archive/directory will be ignored.");
+			LOG("error while opening resource: " + e.getFullDescription());
 		} catch(Ogre::Exception& e)
 		{
-			if (e.getNumber() == Ogre::Exception::ERR_DUPLICATE_ITEM)
-			{
-				LOG(" *** error opening '"+t.dirname+"': some files are duplicates of existing files. The archive/directory will be ignored.");
-				LOG("error while opening resource: " + e.getFullDescription());
-			} else
-			{
-				LOG("error opening '"+t.dirname+"'.");
-				if (t.type == "Zip")
-					LOG("Is the zip archive corrupt? Error: " + e.getFullDescription());
-				LOG("Error description : " + e.getFullDescription());
-				LOG("trying to continue ...");
-			}
+			LOG("error opening '"+t.dirname+"'.");
+			if (t.type == "Zip")
+				LOG("Is the zip archive corrupt? Error: " + e.getFullDescription());
+			LOG("Error description : " + e.getFullDescription());
+			LOG("trying to continue ...");
 		}
 	}
 	return false;
@@ -1808,20 +1802,15 @@ void CacheSystem::loadSingleDirectory(String dirname, String group, bool already
 			ResourceGroupManager::getSingleton().removeResourceLocation(dirname, rgname);
 			ResourceGroupManager::getSingleton().destroyResourceGroup(rgname);
 		}
-
+	} catch(Ogre::ItemIdentityException& e) // Ogre::Exception::ERR_DUPLICATE_ITEM
+	{
+		LOG(" *** error opening directory '"+dirname+"': some files are duplicates of existing files. The directory will be ignored.");
+		LOG("error while opening resource: " + e.getFullDescription());
 	} catch(Ogre::Exception& e)
 	{
-		if (e.getNumber() == Ogre::Exception::ERR_DUPLICATE_ITEM)
-		{
-			LOG(" *** error opening directory '"+dirname+"': some files are duplicates of existing files. The directory will be ignored.");
-			LOG("error while opening resource: " + e.getFullDescription());
-
-		} else
-		{
-			LOG("error while loading directory: " + e.getFullDescription());
-			LOG("error opening directory '"+dirname+"'");
-			LOG("trying to continue ...");
-		}
+		LOG("error while loading directory: " + e.getFullDescription());
+		LOG("error opening directory '"+dirname+"'");
+		LOG("trying to continue ...");
 	}
 }
 
@@ -1885,19 +1874,15 @@ void CacheSystem::loadSingleZip(String zippath, int cfactor, bool unload, bool o
 			rgm.unloadResourceGroup(rgname);
 			rgm.destroyResourceGroup(rgname);
 		}
+	} catch(Ogre::ItemIdentityException& e) // Ogre::Exception::ERR_DUPLICATE_ITEM
+	{
+		LOG(" *** error opening archive '"+realzipPath+"': some files are duplicates of existing files. The archive will be ignored.");
+		LOG("error while opening resource: " + e.getFullDescription());
 	} catch(Ogre::Exception& e)
 	{
-		if (e.getNumber() == Ogre::Exception::ERR_DUPLICATE_ITEM)
-		{
-			LOG(" *** error opening archive '"+realzipPath+"': some files are duplicates of existing files. The archive will be ignored.");
-			LOG("error while opening resource: " + e.getFullDescription());
-
-		} else
-		{
-			LOG("error while loading single Zip: " + e.getFullDescription());
-			LOG("error opening archive '"+realzipPath+"'. Is it corrupt? Ignoring that archive ...");
-			LOG("trying to continue ...");
-		}
+		LOG("error while loading single Zip: " + e.getFullDescription());
+		LOG("error opening archive '"+realzipPath+"'. Is it corrupt? Ignoring that archive ...");
+		LOG("trying to continue ...");
 	}
 }
 

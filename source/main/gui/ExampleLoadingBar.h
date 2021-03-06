@@ -22,8 +22,6 @@ the basic resources required for the progress bar and will be loaded automatical
 */
 #include "OgreResourceGroupManager.h"
 #include "OgreException.h"
-#include "OgreOverlay.h"
-#include "OgreOverlayManager.h"
 #include "OgreRenderWindow.h"
 
 #include "RoRWindowEventUtilities.h"

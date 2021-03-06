@@ -26,4 +26,4 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include <OgreImage.h>
 
 void SaveImage(Ogre::TexturePtr TextureToSave, Ogre::String filename);
-void WriteToTexture(const Ogre::String &str, Ogre::TexturePtr destTexture, Ogre::Image::Box destRectangle, Ogre::Font* font, const Ogre::ColourValue &color, char justify = 'l',  bool wordwrap = true);
+void WriteToTexture(const Ogre::String &str, Ogre::TexturePtr destTexture, Ogre::Box destRectangle, Ogre::Font* font, const Ogre::ColourValue &color, char justify = 'l',  bool wordwrap = true);

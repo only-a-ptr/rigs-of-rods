@@ -26,7 +26,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "DashBoardManager.h"
 #include "ErrorUtils.h"
 #include "Language.h"
-#include "OgreFontManager.h"
 #include "RoRVersion.h"
 #include "TruckHUD.h"
 #include "Utils.h"

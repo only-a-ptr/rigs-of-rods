@@ -28,17 +28,18 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 //#define _SECURE_SCL 0
 //#endif //WIN32
 
-// add some ogre headers
-#include <OgreAxisAlignedBox.h>
-#include <OgreColourValue.h>
-#include <OgreHeaderPrefix.h>
-#include <OgreLogManager.h>
-#include <OgreQuaternion.h>
-#include <OgreString.h>
-#include <OgreStringConverter.h>
+// OGRE headers
+#include <Ogre.h>
 #include <OgreUTFString.h>
-#include <OgreVector2.h>
-#include <OgreVector3.h>
+#include <Bites/OgreWindowEventUtilities.h>
+#include <Overlay/OgreFont.h>
+#include <Overlay/OgreFontManager.h>
+#include <Overlay/OgreOverlay.h>
+#include <Overlay/OgreOverlayElement.h>
+#include <Overlay/OgreOverlayElementFactory.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreTextAreaOverlayElement.h>
+
 
 #include "GlobalEnvironment.h"
 #include "ZeroedMemoryAllocator.h" // this is used quite a lot, so we include it here already

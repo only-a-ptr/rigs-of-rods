@@ -25,7 +25,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Singleton.h"
 
-#include "OgreTextAreaOverlayElement.h"
 #include <OIS.h>
 
 struct loadedOverlay_t

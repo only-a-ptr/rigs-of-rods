@@ -46,7 +46,7 @@ bool OgreFramework::configure(void)
 		//default mode
 		bool ok = false;
 		if (useogreconfig)
-			ok = m_pRoot->showConfigDialog();
+			ok = m_pRoot->showConfigDialog(nullptr);
 		else
 			ok = m_pRoot->restoreConfig();
 		if (ok)
@@ -157,8 +157,7 @@ bool OgreFramework::initOgre(Ogre::String name, Ogre::String hwnd, Ogre::String 
 		SETTINGS.loadSettings(SSETTING("Config Root", "")+"RoR.cfg");
 	} catch(Ogre::Exception& e)
 	{
-		String url = "http://wiki.rigsofrods.com/index.php?title=Error_" + TOSTRING(e.getNumber())+"#"+e.getSource();
-		showOgreWebError(_L("A fatal exception has occured!"), ANSI_TO_UTF(e.getFullDescription()), ANSI_TO_UTF(url));
+		showError(_L("A fatal exception has occured!"), e.getFullDescription());
 		showStoredOgreWebErrors();
 		exit(1);
 	}

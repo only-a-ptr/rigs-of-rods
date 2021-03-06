@@ -369,7 +369,6 @@ namespace Hydrax{namespace Noise
 
 	void FFT::_updateGPUNormalMapResources()
 	{
-		unsigned short *Data;
 		Ogre::HardwarePixelBufferSharedPtr PixelBuffer
 			= mGPUNormalMapManager->getTexture(0)->getBuffer();
 
@@ -377,11 +376,9 @@ namespace Hydrax{namespace Noise
 
 		const Ogre::PixelBox& PixelBox = PixelBuffer->getCurrentLock();
 
-		Data = static_cast<unsigned short*>(PixelBox.data);
-
 		for (int u = 0; u < resolution*resolution; u++)
 		{
-			Data[u] = static_cast<int>(re[u]*65535);
+			PixelBox.data[u] = static_cast<int>(re[u]*65535);
 		}
 
 		PixelBuffer->unlock();

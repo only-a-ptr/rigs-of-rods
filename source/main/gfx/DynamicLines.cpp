@@ -14,7 +14,7 @@ enum {
 DynamicLines::DynamicLines(char* materialname, OperationType opType)
 {
 	initialize(opType,false);
-	setMaterial(materialname);
+	//RETRO setMaterial(materialname);
 	mDirty = true;
 }
 

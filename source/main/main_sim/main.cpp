@@ -342,8 +342,7 @@ int main(int argc, char *argv[])
 		//if (InputEngine::singletonExists()) // this prevents the creating of it, if not existing
 		//	INPUTENGINE.prepareShutdown();
 
-		String url = "http://wiki.rigsofrods.com/index.php?title=Error_" + TOSTRING(e.getNumber())+"#"+e.getSource();
-		showOgreWebError(_L("An exception has occured!"), e.getFullDescription(), url);
+		showError(_L("An exception has occured!"), e.getFullDescription());
 	}
 
 #ifdef USE_CRASHRPT

@@ -19,7 +19,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "RoRFrameListener.h"
 
-#include <OgreFontManager.h>
 
 #include <OgreRTShaderSystem.h>
 #include <OgreTerrain.h>
@@ -3433,7 +3432,8 @@ bool RoRFrameListener::RTSSgenerateShadersForMaterial(String curMaterialName, St
 	bool success;
 
 	// Create the shader based technique of this material.
-	success = RTShader::ShaderGenerator::getSingleton().createShaderBasedTechnique(curMaterialName,
+	Ogre::MaterialPtr curMaterialPtr = Ogre::MaterialManager::getSingleton().getByName(curMaterialName);
+	success = RTShader::ShaderGenerator::getSingleton().createShaderBasedTechnique(*curMaterialPtr,
 			 			MaterialManager::DEFAULT_SCHEME_NAME,
 			 			RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 	if (!success)
@@ -3445,7 +3445,8 @@ bool RoRFrameListener::RTSSgenerateShadersForMaterial(String curMaterialName, St
 
 	// Grab the first pass render state.
 	// NOTE: For more complicated samples iterate over the passes and build each one of them as desired.
-	RTShader::RenderState* renderState = RTShader::ShaderGenerator::getSingleton().getRenderState(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, curMaterialName, 0);
+	RTShader::RenderState* renderState = RTShader::ShaderGenerator::getSingleton().getRenderState
+		(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, curMaterialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 0);
 
 	// Remove all sub render states.
 	renderState->reset();

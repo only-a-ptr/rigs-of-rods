@@ -315,7 +315,7 @@ namespace Hydrax{namespace Module
 				p.z = Vertices[i].z;
 
 				// Calculate the world-space position
-				mWorldMatrix.transformAffine(p);
+				p = mWorldMatrix*p;
 
 				Vertices[i].y = mNoise->getValue(p.x, p.z) * mOptions.Strength;
 			}

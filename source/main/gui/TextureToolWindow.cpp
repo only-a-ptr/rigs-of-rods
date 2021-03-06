@@ -67,7 +67,8 @@ void TextureToolWindow::fillCombo()
 
 	while (it.hasMoreElements())
 	{
-		TexturePtr txt = (TexturePtr)it.getNext();
+		ResourcePtr txtRes = it.getNext();
+		TexturePtr txt = dynamic_pointer_cast<Texture>(txtRes);
 		
 		if (dynamicOnly && ((txt->getUsage() & TU_STATIC) != 0)) continue;
 		

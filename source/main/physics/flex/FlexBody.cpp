@@ -143,7 +143,7 @@ FlexBody::FlexBody(node_t *nds, int numnds, char* meshname, char* uname, int ref
 		if (i == 1) distance = 20;
 		if (i == 2) distance = 50;
 		if (i == 3) distance = 200;
-		newmesh->createManualLodLevel(distance, fn);
+//RETRO		newmesh->createManualLodLevel(distance, fn);
 	}
 
 	Entity *ent = gEnv->sceneManager->createEntity(uname, uname_mesh);

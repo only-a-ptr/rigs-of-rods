@@ -22,6 +22,8 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "ApproxMath.h"
 #include "ResourceBuffer.h"
 
+#include <Ogre.h>
+
 // some gcc fixes
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -364,7 +366,7 @@ Vector3 FlexObj::flexit()
 		//nbuf->lock(HardwareBuffer::HBL_NORMAL);
 		nbuf->writeData(0, nbuf->getSizeInBytes(), shadownorvertices, true);
 		//nbuf->unlock();
-		msh->getEdgeList()->updateFaceNormals(0, pbuf);
+//RETRO		msh->getEdgeList()->updateFaceNormals(0, pbuf);
 	} else
 	{
 		center=updateVertices();

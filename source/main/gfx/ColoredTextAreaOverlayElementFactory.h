@@ -23,8 +23,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "RoRPrerequisites.h"
 
 #include <OgreString.h>
-#include <OgreOverlayElement.h>
-#include <OgreOverlayElementFactory.h>
 #include "ColoredTextAreaOverlayElement.h"
 
 /** Factory for creating TextAreaOverlayElement instances. */

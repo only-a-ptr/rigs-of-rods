@@ -43,7 +43,7 @@ namespace Ogre
 }
 
 
-class RoRFrameListener: public Ogre::FrameListener, public Ogre::WindowEventListener, public ZeroedMemoryAllocator
+class RoRFrameListener: public Ogre::FrameListener, public OgreBites::WindowEventListener, public ZeroedMemoryAllocator
 {
 public:
 	// Constructor takes a RenderWindow because it uses that to determine input context

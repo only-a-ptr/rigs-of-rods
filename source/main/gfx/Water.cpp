@@ -162,7 +162,8 @@ Water::Water(const Ogre::ConfigFile &mTerrainConfig)
 		const RenderSystemCapabilities* caps = Root::getSingleton().getRenderSystem()->getCapabilities();
 		if (!caps->hasCapability(RSC_VERTEX_PROGRAM) || !(caps->hasCapability(RSC_FRAGMENT_PROGRAM)))
 		{
-			OGRE_EXCEPT(1, "Your card does not support vertex and fragment programs, so cannot "
+			OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_STATE,
+				"Your card does not support vertex and fragment programs, so cannot "
 				"run Water effects. Sorry!",
 				"Water effects");
 		}
@@ -173,7 +174,8 @@ Water::Water(const Ogre::ConfigFile &mTerrainConfig)
 				!GpuProgramManager::getSingleton().isSyntaxSupported("ps_1_4")
 				)
 			{
-				OGRE_EXCEPT(1, "Your card does not support advanced fragment programs, "
+				OGRE_EXCEPT(Ogre::Exception::ERR_INVALID_STATE,
+					"Your card does not support advanced fragment programs, "
 					"so cannot run Water effects. Sorry!",
 					"Water effects");
 			}

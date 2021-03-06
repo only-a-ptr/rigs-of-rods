@@ -389,7 +389,7 @@ namespace Hydrax{namespace Noise
 			PixelBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
 			const Ogre::PixelBox& PixelBox = PixelBuffer->getCurrentLock();
 
-			Data = static_cast<unsigned short*>(PixelBox.data);
+			//RETRO Data = static_cast<unsigned short*>(PixelBox.data);
 
 			for (int u = 0; u < np_size_sq; u++)
 			{

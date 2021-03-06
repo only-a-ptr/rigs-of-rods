@@ -40,7 +40,6 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "WriteTextToTexture.h"
 
 #include <OgreRTShaderSystem.h>
-#include <OgreFontManager.h>
 
 using namespace Ogre;
 
@@ -1011,7 +1010,9 @@ void TerrainObjectManager::loadObject(const Ogre::String &name, const Ogre::Vect
 				sscanf(ptline, "generateMaterialShaders %s", mat);
 				if (BSETTING("Use RTShader System", false))
 				{
-					Ogre::RTShader::ShaderGenerator::getSingleton().createShaderBasedTechnique(String(mat), Ogre::MaterialManager::DEFAULT_SCHEME_NAME, Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+					Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().getByName(mat);
+					Ogre::RTShader::ShaderGenerator::getSingleton().createShaderBasedTechnique(
+						*matPtr, Ogre::MaterialManager::DEFAULT_SCHEME_NAME, Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 					Ogre::RTShader::ShaderGenerator::getSingleton().invalidateMaterial(RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME, String(mat));
 				}
 
@@ -1121,7 +1122,7 @@ void TerrainObjectManager::loadObject(const Ogre::String &name, const Ogre::Vect
 				w = background->getWidth() * w;
 				h = background->getHeight() * h;
 
-				Image::Box box = Image::Box((size_t)x, (size_t)y, (size_t)(x+w), (size_t)(y+h));
+				Ogre::Box box = Ogre::Box((size_t)x, (size_t)y, (size_t)(x+w), (size_t)(y+h));
 				WriteToTexture(String(text), texture, box, font, ColourValue(r, g, b, a), option);
 
 				// we can save it to disc for debug purposes:
