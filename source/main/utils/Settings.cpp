@@ -184,6 +184,7 @@ void Settings::loadSettings(String configFile, bool overwrite)
 		Ogre::StringUtil::trim(sname);
 		svalue = i.getNext();
 		if (!overwrite && settings[sname] != "") continue;
+		Ogre::StringUtil::trim(svalue);
 		settings[sname] = svalue;
 		//logfile->AddLine(conv("### ") + conv(sname) + conv(" : ") + conv(svalue));logfile->Write();
 	}
