@@ -5511,61 +5511,64 @@ void SerializedRig::serialize(Ogre::String targetFilename, ScopeLog *scope_log)
 		delete final_value;
 	} else if (out_ext == "txt") // Added retroactively in 2021; very verbose, intended for comparsion using diff tool.
 	{
-		// FIXME: won't work with Unicode paths on Windows, see https://github.com/only-a-ptr/filepaths4rigs
-		std::wofstream fo;
-		fo.open(targetFilename);
-		if (fo.is_open())
-		{
-			fo << "[nodes]" << std::endl;
-			for (int i = 0; i < free_node; i++)
-			{
-				fo 
-					<< "  pos:"              << std::setw(3) << nodes[i].pos // indicated pos in node buffer
-					                         << ((nodes[i].pos != i) ? " !!sync " : "") // warn if the indicated pos doesn't match
-					<< " (nodes)"
-					<< " id:"                << std::setw(3) << nodes[i].id
-					<< " name:"              << std::setw(dbg_node_names_top_length) << dbg_node_names[i]
-					<< ", buoyancy:"         << std::setw(8) << nodes[i].buoyancy
-					<< ", loaded:"           << (int)(nodes[i].masstype == NODE_LOADED)
-					<< " (wheels)"
-					<< " iswheel:"           << std::setw(2) << nodes[i].iswheel
-					<< ", wheelid:"          << std::setw(2) << nodes[i].wheelid
-					<< " (set_node_defaults)"
-					<< " mass:"              << std::setw(8) << nodes[i].mass // param 1 load weight
-					<< ", friction_coef:"    << std::setw(5) << nodes[i].friction_coef // param 2 friction coef
-					<< ", volume_coef:"      << nodes[i].volume_coef // param 3 volume coef
-					<< ", surface_coef:"     << nodes[i].surface_coef // param 4 surface coef
-					<< ", overrideMass:"     << nodes[i].overrideMass // depends on param 1 load weight
-					<< " (contacters)"
-					<< " "                   << nodes[i].contacter
-					<< std::endl;
-			}
+		std::stringstream buf;
 
-			fo << "[beams]" << std::endl;
-			for (int i = 0; i < free_beam; i++)
-			{
-				fo
-					<< "  "                  << std::setw(4) << i // actual pos in beam buffer
-					<< ", node1:"            << std::setw(3) << ((beams[i].p1) ? beams[i].p1->id : -1)
-					<< ", node2:"            << std::setw(3) << ((beams[i].p2) ? beams[i].p2->id : -1)
-					<< ", refLen:"           << std::setw(9) << beams[i].refL
-					<< " (set_beam_defaults/scale)"
-					<< " spring:"            << std::setw(8) << beams[i].k //param1 default_spring
-					<< ", damp:"             << std::setw(8) << beams[i].d //param2 default_damp
-					<< ", default_deform:"   << std::setw(8) << beams[i].default_deform //param3 default_deform
-					<< ", strength:"         << std::setw(8) << beams[i].strength //param4 default_break
-					                            //param5 default_beam_diameter ~ only visual
-					                            //param6 default_beam_material2 ~ only visual
-					<< ", plastic_coef:"     << std::setw(8) << beams[i].plastic_coef //param7 default_plastic_coef
-					<< std::endl;
-			}
-
-			fo.close();
-		}
-		else
+		buf << "[nodes]" << std::endl;
+		for (int i = 0; i < free_node; i++)
 		{
-			LOG("Failed to save TXT: " + targetFilename);
+			buf 
+				<< "  pos:"              << std::setw(3) << nodes[i].pos // indicated pos in node buffer
+					                        << ((nodes[i].pos != i) ? " !!sync " : "") // warn if the indicated pos doesn't match
+				<< " (nodes)"
+				<< " id:"                << std::setw(3) << nodes[i].id
+				<< " name:"              << std::setw(dbg_node_names_top_length) << dbg_node_names[i]
+				<< ", buoyancy:"         << std::setw(8) << nodes[i].buoyancy
+				<< ", loaded:"           << (int)(nodes[i].masstype == NODE_LOADED)
+				<< " (wheels)"
+				<< " iswheel:"           << std::setw(2) << nodes[i].iswheel
+				<< ", wheelid:"          << std::setw(2) << nodes[i].wheelid
+				<< " (set_node_defaults)"
+				<< " mass:"              << std::setw(8) << nodes[i].mass // param 1 load weight
+				<< ", friction_coef:"    << std::setw(5) << nodes[i].friction_coef // param 2 friction coef
+				<< ", volume_coef:"      << nodes[i].volume_coef // param 3 volume coef
+				<< ", surface_coef:"     << nodes[i].surface_coef // param 4 surface coef
+				<< ", overrideMass:"     << nodes[i].overrideMass // depends on param 1 load weight
+				<< " (contacters)"
+				<< " "                   << nodes[i].contacter
+				<< std::endl;
 		}
+
+		buf << "[beams]" << std::endl;
+		for (int i = 0; i < free_beam; i++)
+		{
+			buf
+				<< "  "                  << std::setw(4) << i // actual pos in beam buffer
+				<< ", node1:"            << std::setw(3) << ((beams[i].p1) ? beams[i].p1->id : -1)
+				<< ", node2:"            << std::setw(3) << ((beams[i].p2) ? beams[i].p2->id : -1)
+				<< ", refLen:"           << std::setw(9) << beams[i].refL
+				<< " (set_beam_defaults/scale)"
+				<< " spring:"            << std::setw(8) << beams[i].k //param1 default_spring
+				<< ", damp:"             << std::setw(8) << beams[i].d //param2 default_damp
+				<< ", default_deform:"   << std::setw(8) << beams[i].default_deform //param3 default_deform
+				<< ", strength:"         << std::setw(8) << beams[i].strength //param4 default_break
+				                            //param5 default_beam_diameter ~ only visual
+				                            //param6 default_beam_material2 ~ only visual
+				<< ", plastic_coef:"     << std::setw(8) << beams[i].plastic_coef //param7 default_plastic_coef
+				<< std::endl;
+		}
+
+		// Write out to 'logs' using OGRE resource system - complicated, but works with Unicode paths on Windows
+		Ogre::String rgName = "dumpRG";
+		Ogre::String fileName = out_basename + "." + out_ext;
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+			SSETTING("Log Path", ""), "FileSystem", rgName, /*recursive=*/false, /*readOnly=*/false);
+		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(rgName);
+		Ogre::DataStreamPtr outStream = Ogre::ResourceGroupManager::getSingleton().createResource(fileName, rgName, /*overwrite=*/true);
+		std::string text = buf.str();
+		outStream->write(text.c_str(), text.length());
+		outStream->close();
+		Ogre::ResourceGroupManager::getSingleton().destroyResourceGroup(rgName);
+		
 	} else
 	{
 		LOG("unsupported output file format: " + out_ext + ". Supported: json, txt");

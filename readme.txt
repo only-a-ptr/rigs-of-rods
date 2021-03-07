@@ -11,12 +11,14 @@ The purpose is to have a working instance of the original
 truck parser/spawner logic, for diagnosing defects
 in the current upstream parser.
 
-FEATURES
---------
+EXTRAS
+------
 
 RoR.cfg setting "vehicleOutputFile" now recognizes "txt" extension
-and dumps a detailed diagnostic output.
-
+and dumps a detailed diagnostic output. In this case, only filename
+in RoR.cfg is respected, path is overriden to
+Documents\Rigs of Rods 0.4\logs
+ 
 BUILDING
 --------
 
