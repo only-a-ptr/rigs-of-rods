@@ -53,6 +53,8 @@ along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 #include "TurboProp.h"
 #include "VideoCamera.h"
 
+#include <fstream>
+
 using namespace Ogre;
 
 const std::map<std::string, int> SerializedRig::truck_sections = init_truck_sections();
@@ -5488,20 +5490,24 @@ void SerializedRig::serialize(Ogre::String targetFilename, ScopeLog *scope_log)
 		JSONValue *final_value = new JSONValue(root);
 
 		// Print it
-		FILE *fo = fopen(targetFilename.c_str(), "w");
-#ifdef WIN32
-		fwprintf(fo, L"%ls", final_value->Stringify().c_str());
-#else
-		// TODO: FIX
-#endif
-		fclose(fo);
+		// FIXME: won't work with Unicode paths on Windows, see https://github.com/only-a-ptr/filepaths4rigs
+		std::wofstream fo;
+		fo.open(targetFilename);
+		if (fo.is_open())
+		{
+			fo << final_value->Stringify();
+			fo.close();
+		}
+		else
+		{
+			LOG("Failed to save JSON: " + targetFilename);
+		}
 
-		//LOG("vehicle serialized to json successfully: "+targetFilename);
 		// Clean up
 		delete final_value;
 	} else
 	{
-		LOG("unsupported output file format: " + out_ext);
+		LOG("unsupported output file format: " + out_ext + ". Supported: json");
 	}
 }
 
