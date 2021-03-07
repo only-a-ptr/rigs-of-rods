@@ -1064,6 +1064,10 @@ struct rig
 
 	std::vector<std::pair<Ogre::String, bool> > dashBoardLayouts;
 	Ogre::String beamHash;
+
+	// Added retroactively in 2021; keeping data outside `struct node` to avoid performance impact.
+	Ogre::String dbg_node_names[MAX_NODES];
+	int          dbg_node_names_top_length = 0; // for nice formatting of diagnostic output.
 };
 
 // some non-beam structs

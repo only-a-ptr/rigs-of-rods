@@ -1372,6 +1372,9 @@ int SerializedRig::loadTruck(Ogre::String filename, Ogre::SceneNode *parent, Ogr
 					id = free_node;
 					// add it to a dictionary
 					node_names[args[0]] = id;
+					// Diagnostic (added retroactively in 2021)
+					dbg_node_names[id] = args[0];
+					dbg_node_names_top_length = std::max(dbg_node_names_top_length, (int)args[0].length());
 				}
 				
 				x  = PARSEREAL(args[1]);
@@ -5521,6 +5524,7 @@ void SerializedRig::serialize(Ogre::String targetFilename, ScopeLog *scope_log)
 					                         << ((nodes[i].pos != i) ? " !!sync " : "") // warn if the indicated pos doesn't match
 					<< " (nodes)"
 					<< " id:"                << std::setw(3) << nodes[i].id
+					<< " name:"              << std::setw(dbg_node_names_top_length) << dbg_node_names[i]
 					<< ", buoyancy:"         << std::setw(8) << nodes[i].buoyancy
 					<< ", loaded:"           << (int)(nodes[i].masstype == NODE_LOADED)
 					<< " (wheels)"
