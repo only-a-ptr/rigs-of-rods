@@ -24,8 +24,6 @@ macro(add_ror_project BINNAME folder useWxWidgets)
 
   include_directories(${Ogre_INCLUDE_DIRS})
   link_directories   (${Ogre_LIBRARY_DIRS})
-  include_directories(${Boost_INCLUDE_DIRS})
-  link_directories   (${Boost_LIBRARY_DIRS})
   
   include_directories(${Ogre_Terrain_INCLUDE_DIRS})
   link_directories   (${Ogre_Terrain_LIBRARY_DIRS})
@@ -67,7 +65,6 @@ macro(add_ror_project BINNAME folder useWxWidgets)
   #add_definitions("-DFEAT_DEBUG_MUTEX")
 
 
-  add_definitions("-DBOOST_ALL_NO_LIB")
   add_definitions("-DUSE_RTSHADER_SYSTEM")
   
   include_directories(${RoR_Main_SOURCE_DIR})
@@ -130,7 +127,7 @@ macro(add_ror_project BINNAME folder useWxWidgets)
   ENDIF(WIN32)
 
   target_link_libraries(${BINNAME}
-		${Boost_LIBRARIES} ${Ogre_LIBRARIES} ${Ogre_Terrain_LIBRARIES} ${Ogre_Paging_LIBRARIES} ${Ogre_RTShader_LIBRARIES} ${Ois_LIBRARIES} ${OS_LIBS} ${optional_libs}
+		${Ogre_LIBRARIES} ${Ogre_Terrain_LIBRARIES} ${Ogre_Paging_LIBRARIES} ${Ogre_RTShader_LIBRARIES} ${Ois_LIBRARIES} ${OS_LIBS} ${optional_libs}
 	)
 	
 if(WIN32)

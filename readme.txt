@@ -38,7 +38,6 @@ Only tested on Windows10 + MSVC2019, needs a lot of manual adjustments.
     add AL_LIBTYPE_STATIC
 
 6. adjust linking:
-    remove boost libs
     rename ois_static.lib -> OIS.lib (from latest conan OGREDeps)
     rename freetype2311.lib -> freetype.lib" (from latest conan OGREDeps)
     rename MyGUIEngineStatic.lib -> MyGUIEngine.lib (from conan)
