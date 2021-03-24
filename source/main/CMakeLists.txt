@@ -125,8 +125,9 @@ macro(add_ror_project BINNAME folder useWxWidgets)
     add_executable(${BINNAME}       ${${BINNAME}_headers} ${${BINNAME}_sources})
   ENDIF(WIN32)
 
+    # always use ws2_32.lib (Winsock, needed by OutGauge protocol)
   target_link_libraries(${BINNAME}
-		${Ogre_LIBRARIES} ${Ogre_Terrain_LIBRARIES} ${Ogre_Paging_LIBRARIES} ${Ogre_RTShader_LIBRARIES} ${Ois_LIBRARIES} ${OS_LIBS} ${optional_libs}
+		${Ogre_LIBRARIES} ${Ogre_Terrain_LIBRARIES} ${Ogre_Overlay_LIBRARIES} ${Ogre_Paging_LIBRARIES} ${Ogre_RTShader_LIBRARIES} ${Ois_LIBRARIES} ${OS_LIBS} ${optional_libs} Ws2_32.lib
 	)
 	
 if(WIN32)

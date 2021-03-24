@@ -26,24 +26,30 @@ Only tested on Windows10 + MSVC2019, needs a lot of manual adjustments.
 
 1. run cmake; build outside the source tree
 
-2. set ROR_DEPENDENCIES dir; you'll need to manually assemble
-   the includes/libs to the expected layout
+2. set ROR_DEPENDENCIES dir; you'll need to manually assemble the includes/libs to the expected layout:
+    includes/x64:
+        AngelScript\
+        moFileReader\
+        MyGUI\
+        OGRE\
+        OIS\
+        OpenAL\
+        PagedGeometry\
+    libs/x64:
+        moFileReader\
+        MyGUI\ ~ MyGUIEngine.lib + MyGUI.OgrePlatform.lib (from conan), freetype.lib (from latest conan OGREDeps)
+        OGRE\
+        OIS\
+        OpenAL\
+        PagedGeometry\
+        pthread\ ~ pthreadVC3.lib (from vcpkg)
+    
    
 3. generate visual studio project
 
 4. select build config: RelWithDebInfo
-
-5. ~ now fixed ~
-
-6. adjust linking:
-    rename ois_static.lib -> OIS.lib (from latest conan OGREDeps)
-    rename freetype2311.lib -> freetype.lib" (from latest conan OGREDeps)
-    rename MyGUIEngineStatic.lib -> MyGUIEngine.lib (from conan)
-    rename moFileReader.static.lib -> moFileReader.lib (from conan)
-    add OgreOverlay.lib
-    add winmm.lib (Windows, needed by OpenAL)
-    add ws2_32.lib (Winsock, needed by OutGauge protocol)
-    use pthreadVC3.lib from vcpkg
+    
+    
 
 LICENSE
 -------
