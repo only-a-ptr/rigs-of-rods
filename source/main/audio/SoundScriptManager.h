@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifdef USE_OPENAL
+
 #ifndef __SoundScriptManager_H_
 #define __SoundScriptManager_H_
 
@@ -150,6 +150,8 @@ enum SoundLinkTypes {
 	SL_VIDEOCAMERA, 
 	SL_MAX
 };
+
+#ifdef USE_OPENAL
 
 class Sound;
 class SoundManager;
@@ -304,5 +306,6 @@ private:
 	SoundManager* sound_manager;
 };
 
-#endif // __SoundScriptManager_H_
 #endif // USE_OPENAL
+
+#endif // __SoundScriptManager_H_
