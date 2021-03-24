@@ -33,9 +33,7 @@ Only tested on Windows10 + MSVC2019, needs a lot of manual adjustments.
 
 4. select build config: RelWithDebInfo
 
-5. adjust preprocessor macros:
-    remove MYGUI_STATIC
-    add AL_LIBTYPE_STATIC
+5. ~ now fixed ~
 
 6. adjust linking:
     rename ois_static.lib -> OIS.lib (from latest conan OGREDeps)
@@ -66,6 +64,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Rigs of Rods.  If not, see <http://www.gnu.org/licenses/>.
-
-Please see also http://www.rigsofrods.com/wiki
 
