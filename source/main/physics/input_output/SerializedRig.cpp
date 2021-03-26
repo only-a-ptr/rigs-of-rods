@@ -5546,8 +5546,11 @@ void SerializedRig::writeDiagnosticDump(Ogre::String fileName)
 			<< ", volume_coef:"      << nodes[i].volume_coef // param 3 volume coef
 			<< ", surface_coef:"     << nodes[i].surface_coef // param 4 surface coef
 			<< ", overrideMass:"     << nodes[i].overrideMass // depends on param 1 load weight
-			<< " (contacters)"
-			<< " "                   << nodes[i].contacter
+
+			// only set by `Beam::updateContacterNodes()` based on collcabs!
+			// The upsteam equivalent is `nd_cab_node` set by `ActorSpawner::UpdateCollcabContacterNodes()`
+			<< " (collcabs)"
+			<< " "                   << nodes[i].contacter  
 			<< std::endl;
 	}
 
