@@ -455,6 +455,14 @@ Beam::Beam(int tnum, Ogre::Vector3 pos, Ogre::Quaternion rot, const char* fname,
 	{
 		sendStreamSetup();
 	}
+
+	// Added retroactively in 2021
+ 	if (BSETTING("diag_actor_dump", ""))
+	{
+		Ogre::String out_basename, out_ext, out_path;
+		Ogre::StringUtil::splitFullFilename(fname, out_basename, out_ext, out_path);
+		this->writeDiagnosticDump(out_basename + "_dump_recalc.txt");
+	}
 }
 
 Beam::~Beam()
