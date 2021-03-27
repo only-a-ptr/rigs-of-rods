@@ -5387,14 +5387,6 @@ int SerializedRig::loadTruck(Ogre::String filename, Ogre::SceneNode *parent, Ogr
 		serialize(fn, &scope_log);
 	}
 
-	// Added retroactively in 2021
- 	if (BSETTING("diag_actor_dump", ""))
-	{
-		Ogre::String out_basename, out_ext, out_path;
-		Ogre::StringUtil::splitFullFilename(filename, out_basename, out_ext, out_path);
-		this->writeDiagnosticDump(out_basename + "_dump_raw.txt");
-	}
-
 	parser_warning(c, "parsing done", PARSER_INFO);
 	return 0;
 }
@@ -5518,71 +5510,6 @@ void SerializedRig::serialize(Ogre::String targetFilename, ScopeLog *scope_log)
 	{
 		LOG("unsupported output file format: " + out_ext + ". Supported: json, txt");
 	}
-} 
-
-void SerializedRig::writeDiagnosticDump(Ogre::String fileName)
-{
-	// Added retroactively in 2021; very verbose, intended for comparsion using diff tool.
-
-	std::stringstream buf;
-
-	buf << "[nodes]" << std::endl;
-	for (int i = 0; i < free_node; i++)
-	{
-		buf 
-			<< "  pos:"              << std::setw(3) << nodes[i].pos // indicated pos in node buffer
-					                    << ((nodes[i].pos != i) ? " !!sync " : "") // warn if the indicated pos doesn't match
-			<< " (nodes)"
-			<< " id:"                << std::setw(3) << nodes[i].id
-			<< " name:"              << std::setw(dbg_node_names_top_length) << dbg_node_names[i]
-			<< ", buoyancy:"         << std::setw(8) << nodes[i].buoyancy
-			<< ", loaded:"           << (int)(nodes[i].masstype == NODE_LOADED)
-			<< " (wheels)"
-			<< " iswheel:"           << std::setw(2) << nodes[i].iswheel
-			<< ", wheelid:"          << std::setw(2) << nodes[i].wheelid
-			<< " (set_node_defaults)"
-			<< " mass:"              << std::setw(8) << nodes[i].mass // param 1 load weight
-			<< ", friction_coef:"    << std::setw(5) << nodes[i].friction_coef // param 2 friction coef
-			<< ", volume_coef:"      << nodes[i].volume_coef // param 3 volume coef
-			<< ", surface_coef:"     << nodes[i].surface_coef // param 4 surface coef
-			<< ", overrideMass:"     << nodes[i].overrideMass // depends on param 1 load weight
-
-			// only set by `Beam::updateContacterNodes()` based on collcabs!
-			// The upsteam equivalent is `nd_cab_node` set by `ActorSpawner::UpdateCollcabContacterNodes()`
-			<< " (collcabs)"
-			<< " "                   << nodes[i].contacter  
-			<< std::endl;
-	}
-
-	buf << "[beams]" << std::endl;
-	for (int i = 0; i < free_beam; i++)
-	{
-		buf
-			<< "  "                  << std::setw(4) << i // actual pos in beam buffer
-			<< ", node1:"            << std::setw(3) << ((beams[i].p1) ? beams[i].p1->id : -1)
-			<< ", node2:"            << std::setw(3) << ((beams[i].p2) ? beams[i].p2->id : -1)
-			<< ", refLen:"           << std::setw(9) << beams[i].refL
-			<< " (set_beam_defaults/scale)"
-			<< " spring:"            << std::setw(8) << beams[i].k //param1 default_spring
-			<< ", damp:"             << std::setw(8) << beams[i].d //param2 default_damp
-			<< ", default_deform:"   << std::setw(8) << beams[i].default_deform //param3 default_deform
-			<< ", strength:"         << std::setw(8) << beams[i].strength //param4 default_break
-				                        //param5 default_beam_diameter ~ only visual
-				                        //param6 default_beam_material2 ~ only visual
-			<< ", plastic_coef:"     << std::setw(8) << beams[i].plastic_coef //param7 default_plastic_coef
-			<< std::endl;
-	}
-
-	// Write out to 'logs' using OGRE resource system - complicated, but works with Unicode paths on Windows
-	Ogre::String rgName = "dumpRG";
-	Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-		SSETTING("Log Path", ""), "FileSystem", rgName, /*recursive=*/false, /*readOnly=*/false);
-	Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(rgName);
-	Ogre::DataStreamPtr outStream = Ogre::ResourceGroupManager::getSingleton().createResource(fileName, rgName, /*overwrite=*/true);
-	std::string text = buf.str();
-	outStream->write(text.c_str(), text.length());
-	outStream->close();
-	Ogre::ResourceGroupManager::getSingleton().destroyResourceGroup(rgName);
 }
 
 void SerializedRig::init_node(int pos, Real x, Real y, Real z, int type, Real m, int iswheel, Real friction, int id, int wheelid, Real nfriction, Real nvolume, Real nsurface, Real nloadweight)

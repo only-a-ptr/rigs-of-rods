@@ -487,6 +487,8 @@ protected:
     DustPool *splashp;
     DustPool *ripplep;
 
+	void writeDiagnosticDump(Ogre::String targetFilename); // Added retroactively in 2021
+
 	// SLIDE NODES /////////////////////////////////////////////////////////////
 	//! true if SlideNodes are locked, false if not
 	bool SlideNodesLocked;
