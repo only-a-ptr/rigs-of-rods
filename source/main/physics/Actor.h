@@ -63,8 +63,6 @@ public:
     ~Actor();
 
     void              ApplyNodeBeamScales();
-    void              PushNetwork(char* data, int size);   //!< Parses network data; fills actor's data buffers and flips them. Called by the network thread.
-    void              CalcNetwork();
     float             getRotation();
     Ogre::Vector3     getDirection();
     Ogre::Vector3     getPosition();
@@ -144,7 +142,6 @@ public:
     void              setBlinkType(BlinkType blink);
     void              setAirbrakeIntensity(float intensity);
     bool              getCustomParticleMode();
-    void              sendStreamData();
     bool              isTied();
     bool              isLocked(); 
     bool              hasSlidenodes() { return !m_slidenodes.empty(); };
@@ -180,6 +177,13 @@ public:
     float             getSpeed()                        { return m_avg_node_velocity.length(); };
     Ogre::Vector3     getVelocity() const               { return m_avg_node_velocity; }; //!< average actor velocity, calculated using the actor positions of the last two frames
     TyrePressure&     GetTyrePressure()                 { return m_tyre_pressure; }
+
+        // Netcode
+
+    void              sendStreamData();                    //!< Capture simulation state and queue for sending.
+    void              PushNetwork(char* data, int size);   //!< Parses network data; fills actor's data buffers and flips them. Called by the network thread.
+    void              CalcNetwork();                       //!< Process received net. data. Called by sim. thread.
+
 #ifdef USE_ANGELSCRIPT
     // we have to add this to be able to use the class as reference inside scripts
     void              addRef()                          {};

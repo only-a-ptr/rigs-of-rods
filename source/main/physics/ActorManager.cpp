@@ -243,7 +243,7 @@ void ActorManager::SetupActor(Actor* actor, ActorSpawnRequest rq, std::shared_pt
             actor->m_wheel_node_count++;
     }
 
-    // search m_net_first_wheel_node
+    // find first wheel node
     actor->m_net_first_wheel_node = actor->ar_num_nodes;
     for (int i = 0; i < actor->ar_num_nodes; i++)
     {

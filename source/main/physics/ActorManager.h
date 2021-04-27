@@ -57,8 +57,6 @@ public:
     int            GetNetTimeOffset(int sourceid);
     void           UpdateNetTimeOffset(int sourceid, int offset);
     void           AddStreamMismatch(int sourceid, int streamid) { m_stream_mismatches[sourceid].insert(streamid); };
-    int            CheckNetworkStreamsOk(int sourceid);
-    int            CheckNetRemoteStreamsOk(int sourceid);
     void           MuteAllActors();
     void           UnmuteAllActors();
     void           SetTrucksForcedAwake(bool forced)       { m_forced_awake = forced; };
@@ -96,6 +94,11 @@ public:
     bool           LoadScene(Ogre::String filename);
     bool           SaveScene(Ogre::String filename);
     void           RestoreSavedState(Actor* actor, rapidjson::Value const& j_entry);
+
+    // GUI helpers
+
+    int            CheckNetworkStreamsOk(int sourceid);
+    int            CheckNetRemoteStreamsOk(int sourceid);
 
     std::vector<Actor*> GetActors() const                  { return m_actors; };
     std::vector<Actor*> GetLocalActors();
