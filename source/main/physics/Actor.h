@@ -330,8 +330,6 @@ public:
     int               ar_net_source_id;               //!< Unique ID of remote player who spawned this actor
     int               ar_net_stream_id;
     std::map<int,int> ar_net_stream_results;
-    Ogre::Timer       ar_net_timer;
-    unsigned long     ar_net_last_update_time;
     DashBoardManager* ar_dashboard;
     SimState          ar_sim_state;                   //!< Sim state
     float             ar_collision_range;             //!< Physics attr
@@ -494,6 +492,11 @@ private:
     bool              m_ongoing_reset;         //!< Hack to prevent position/rotation creep during interactive truck reset
     bool              m_has_axles_section;     //!< Temporary (legacy parsing helper) until central diffs are implemented
     TyrePressure      m_tyre_pressure;
+
+        // Netcode
+
+    Ogre::Timer       m_net_update_timer;
+    unsigned long     m_net_last_update_time = 0;
 
         // Light states
 

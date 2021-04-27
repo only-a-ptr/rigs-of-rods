@@ -1887,10 +1887,10 @@ void Actor::sendStreamData()
 {
     using namespace RoRnet;
 #ifdef USE_SOCKETW
-    if (ar_net_timer.getMilliseconds() - ar_net_last_update_time < 100)
+    if (m_net_update_timer.getMilliseconds() - m_net_last_update_time < 100)
         return;
 
-    ar_net_last_update_time = ar_net_timer.getMilliseconds();
+    m_net_last_update_time = m_net_update_timer.getMilliseconds();
 
     //look if the packet is too big first
     if (m_net_buffer_size + sizeof(RoRnet::VehicleState) > 8192)
@@ -4383,7 +4383,6 @@ Actor::Actor(
     , ar_nb_wheels_d_interval(std::make_pair(1.0f, 1.0f))
     , m_inter_point_col_detector(nullptr)
     , m_intra_point_col_detector(nullptr)
-    , ar_net_last_update_time(0)
     , m_avg_node_position_prev(rq.asr_position)
     , ar_left_mirror_angle(0.52)
     , m_avg_node_velocity(Ogre::Vector3::ZERO)
