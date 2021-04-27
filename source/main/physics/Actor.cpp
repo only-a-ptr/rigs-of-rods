@@ -1893,13 +1893,13 @@ void Actor::sendStreamData()
     m_net_last_update_time = m_net_update_timer.getMilliseconds();
 
     //look if the packet is too big first
-    if (m_net_buffer_size + sizeof(RoRnet::VehicleState) > 8192)
+    if (m_net_buffer_size + sizeof(RoRnet::VehicleState) > RORNET_MAX_MESSAGE_LENGTH)
     {
         ErrorUtils::ShowError(_L("Actor is too big to be sent over the net."), _L("Network error!"));
         exit(126);
     }
 
-    char send_buffer[8192] = {0};
+    char send_buffer[RORNET_MAX_MESSAGE_LENGTH] = {0};
 
     unsigned int packet_len = 0;
 
