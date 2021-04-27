@@ -448,9 +448,6 @@ private:
     Ogre::Vector3     m_mouse_grab_pos;
     float             m_mouse_grab_move_force;
     float             m_spawn_rotation;
-    MovableText*      m_net_label_mt;
-    Ogre::SceneNode*  m_net_label_node;
-    Ogre::UTFString   m_net_username;
     Ogre::Timer       m_reset_timer;
     Ogre::Vector3     m_rotation_request_center;
     float             m_rotation_request;         //!< Accumulator
@@ -467,10 +464,6 @@ private:
     Differential*     m_wheel_diffs[MAX_WHEELS/2];//!< Physics
     int               m_num_wheel_diffs;          //!< Physics attr
     TransferCase*     m_transfer_case;            //!< Physics
-    float             m_net_node_compression;  //!< Sim attr;
-    int               m_net_first_wheel_node;  //!< Network attr; Determines data buffer layout
-    int               m_net_node_buf_size;     //!< Network attr; buffer size
-    int               m_net_buffer_size;       //!< Network attr; buffer size
     int               m_wheel_node_count;      //!< Static attr; filled at spawn
     int               m_previous_gear;         //!< Sim state; land vehicle shifting
     float             m_handbrake_force;       //!< Physics attr; defined in truckfile
@@ -495,12 +488,30 @@ private:
 
         // Netcode
 
+    struct NetUpdate
+    {
+        std::vector<char> veh_state;   //!< Actor properties (engine, brakes, lights, ...)
+        std::vector<char> node_data;   //!< Compressed node positions
+        std::vector<float> wheel_data; //!< Wheel rotations
+    };
+
+    int               m_net_first_wheel_node;                    //!< Constant; Determines data buffer layout.
+    float             m_net_node_compression;                    //!< Constant.
+    int               m_net_node_buf_size;                       //!< Constant; partial size of net. buffer.
+    int               m_net_buffer_size;                         //!< Constant.
+    Ogre::UTFString   m_net_username;                            //!< Constant. Only valid for NETWORKED_OK.
+
     Ogre::Timer       m_net_update_timer;
     unsigned long     m_net_last_update_time = 0;
+    std::deque<NetUpdate> m_net_updates;                         //!< Incoming stream of NetUpdates.
+
+    MovableText*      m_net_label_mt;                            //!< Visual.
+    Ogre::SceneNode*  m_net_label_node;                          //!< Visual.
 
         // Light states
 
-    GfxFlaresMode     m_flares_mode = GfxFlaresMode::NONE;       //!< Snapshot of cvar 'gfx_flares_mode' on spawn.
+    GfxFlaresMode     m_flares_mode = GfxFlaresMode::NONE;       //!< Constant: Snapshot of cvar 'gfx_flares_mode' on spawn.
+
     bool              m_headlight_on = true;                     //!< Headlights on/off state.
     bool              m_net_brake_light_on = false;
     bool              m_net_reverse_light_on = false;
@@ -540,14 +551,6 @@ private:
         float         out_hydros_forces;
     } m_force_sensors; //!< Data for ForceFeedback devices
 
-    struct NetUpdate
-    {
-        std::vector<char> veh_state;   //!< Actor properties (engine, brakes, lights, ...)
-        std::vector<char> node_data;   //!< Compressed node positions
-        std::vector<float> wheel_data; //!< Wheel rotations
-    };
-
-    std::deque<NetUpdate> m_net_updates; //!< Incoming stream of NetUpdates
 };
 
 } // namespace RoR
