@@ -452,6 +452,23 @@ int main(int argc, char *argv[])
                     App::GetGuiManager()->GetMpSelector()->DisplayRefreshFailed(m.description);
                     break;
 
+                case MSG_NET_NON_PHYSICS_DATA_RECEIVED:
+#ifdef USE_SOCKETW
+                {
+                    NetRecvPacket* packet = static_cast<NetRecvPacket*>(m.payload);
+
+                    // Pass to all objects, each picks what it needs.
+                    RoR::ChatSystem::ReceiveStreamData(packet->header.command, packet->header.source, packet->buffer);
+                    if (App::app_state->GetEnum<AppState>() == AppState::SIMULATION)
+                    {
+                        App::GetGameContext()->GetActorManager()->HandleStreamUpdates(packet);
+                        App::GetGameContext()->GetCharacterFactory()->handleStreamData(packet);
+                    }
+                    delete packet;
+                }
+#endif // USE_SOCKETW
+                    break;
+
                 // -- Gameplay events --
 
                 case MSG_SIM_PAUSE_REQUESTED:
@@ -735,23 +752,6 @@ int main(int argc, char *argv[])
             const auto now = std::chrono::high_resolution_clock::now();
             const float dt = std::chrono::duration<float>(now - start_time).count();
             start_time = now;
-
-#ifdef USE_SOCKETW
-            // Process incoming network traffic
-            if (App::mp_state->GetEnum<MpState>() == MpState::CONNECTED)
-            {
-                NetRecvPacketQueue packets = App::GetNetwork()->GetIncomingStreamData(); // Passes ownership
-                if (!packets.empty())
-                {
-                    RoR::ChatSystem::HandleStreamData(packets);
-                    if (App::app_state->GetEnum<AppState>() == AppState::SIMULATION)
-                    {
-                        App::GetGameContext()->GetActorManager()->HandleActorStreamData(packets);
-                        App::GetGameContext()->GetCharacterFactory()->handleStreamData(packets); // Update characters last (or else beam coupling might fail)
-                    }
-                }
-            }
-#endif // USE_SOCKETW
 
             // Process input events
             if (dt != 0.f)

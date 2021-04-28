@@ -78,6 +78,7 @@ enum MsgType
     MSG_NET_RECV_ERROR,
     MSG_NET_REFRESH_SERVERLIST_SUCCESS,    //!< Payload = GUI::MpServerInfoVec* (owner)
     MSG_NET_REFRESH_SERVERLIST_FAILURE,
+    MSG_NET_NON_PHYSICS_DATA_RECEIVED,     //!< Payload = NetRecvPacket* (owner)
     // Simulation
     MSG_SIM_PAUSE_REQUESTED,
     MSG_SIM_UNPAUSE_REQUESTED,

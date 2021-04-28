@@ -31,7 +31,7 @@ namespace ChatSystem {
 void SendStreamSetup();
 
 #ifdef USE_SOCKETW
-void HandleStreamData(NetRecvPacketQueue& packets);
+void ReceiveStreamData(unsigned int type, int source, char* buffer);
 #endif // USE_SOCKETW
 
 } // namespace Chatsystem

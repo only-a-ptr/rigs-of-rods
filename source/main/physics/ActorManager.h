@@ -81,7 +81,7 @@ public:
     std::shared_ptr<RigDef::File>   FetchActorDef(std::string filename, bool predefined_on_terrain = false);
 
 #ifdef USE_SOCKETW
-    void           HandleActorStreamData(NetRecvPacketQueue& packet);
+    void           HandleStreamUpdates(NetRecvPacket* packet);
 #endif
 
 #ifdef USE_ANGELSCRIPT

@@ -371,142 +371,120 @@ void ActorManager::RemoveStreamSource(int sourceid)
 }
 
 #ifdef USE_SOCKETW
-void ActorManager::HandleActorStreamData(NetRecvPacketQueue& packet_buffer)
+void ActorManager::HandleStreamUpdates(NetRecvPacket* packet)
 {
-    // Sort by stream source
-    std::stable_sort(packet_buffer.begin(), packet_buffer.end(),
-            [](const RoR::NetRecvPacket* a, const RoR::NetRecvPacket* b)
-            { return a->header.source > b->header.source; });
-    // Compress data stream by eliminating all but the last update from every consecutive group of stream data updates
-    auto it = std::unique(packet_buffer.rbegin(), packet_buffer.rend(),
-            [](const RoR::NetRecvPacket* a, const RoR::NetRecvPacket* b)
-            { return !memcmp(&a->header, &b->header, sizeof(RoRnet::Header)) &&
-            a->header.command == RoRnet::MSG2_STREAM_DATA; });
-    packet_buffer.erase(packet_buffer.begin(), it.base());
+    // This only handles stream-changing commands;
+    // actual stream data are processed by simulation thread;
+    // see ActorManager::UpdatePhysicsSimulation()
+    // ------------------------------------------------------
 
-    for (NetRecvPacket* packet : packet_buffer)
+    if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER)
     {
-        if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER)
+        RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
+        if (reg->type == 0)
         {
-            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
-            if (reg->type == 0)
-            {
-                reg->name[127] = 0;
-                std::string filename = Utils::SanitizeUtf8CString(reg->name);
+            reg->name[127] = 0;
+            std::string filename = Utils::SanitizeUtf8CString(reg->name);
 
-                RoRnet::UserInfo info;
-                if (!App::GetNetwork()->GetUserInfo(reg->origin_sourceid, info))
+            RoRnet::UserInfo info;
+            if (!App::GetNetwork()->GetUserInfo(reg->origin_sourceid, info))
+            {
+                RoR::LogFormat("[RoR] Invalid STREAM_REGISTER, user id %d does not exist", reg->origin_sourceid);
+                reg->status = -1;
+            }
+            else if (filename.empty())
+            {
+                RoR::LogFormat("[RoR] Invalid STREAM_REGISTER (user '%s', ID %d), filename is empty string", info.username, reg->origin_sourceid);
+                reg->status = -1;
+            }
+            else
+            {
+                Str<200> text;
+                text << _L("spawned a new vehicle: ") << filename;
+                App::GetConsole()->putNetMessage(
+                    reg->origin_sourceid, Console::CONSOLE_SYSTEM_NOTICE, text.ToCStr());
+
+                LOG("[RoR] Creating remote actor for " + TOSTRING(reg->origin_sourceid) + ":" + TOSTRING(reg->origin_streamid));
+
+                if (!App::GetCacheSystem()->CheckResourceLoaded(filename))
                 {
-                    RoR::LogFormat("[RoR] Invalid STREAM_REGISTER, user id %d does not exist", reg->origin_sourceid);
-                    reg->status = -1;
-                }
-                else if (filename.empty())
-                {
-                    RoR::LogFormat("[RoR] Invalid STREAM_REGISTER (user '%s', ID %d), filename is empty string", info.username, reg->origin_sourceid);
+                    App::GetConsole()->putMessage(
+                        Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_WARNING,
+                        _L("Mod not installed: ") + filename);
+                    RoR::LogFormat("[RoR] Cannot create remote actor (not installed), filename: '%s'", filename.c_str());
+                    AddStreamMismatch(reg->origin_sourceid, reg->origin_streamid);
                     reg->status = -1;
                 }
                 else
                 {
-                    Str<200> text;
-                    text << _L("spawned a new vehicle: ") << filename;
-                    App::GetConsole()->putNetMessage(
-                        reg->origin_sourceid, Console::CONSOLE_SYSTEM_NOTICE, text.ToCStr());
-
-                    LOG("[RoR] Creating remote actor for " + TOSTRING(reg->origin_sourceid) + ":" + TOSTRING(reg->origin_streamid));
-
-                    if (!App::GetCacheSystem()->CheckResourceLoaded(filename))
+                    auto actor_reg = reinterpret_cast<RoRnet::ActorStreamRegister*>(reg);
+                    if (m_stream_time_offsets.find(reg->origin_sourceid) == m_stream_time_offsets.end())
                     {
-                        App::GetConsole()->putMessage(
-                            Console::CONSOLE_MSGTYPE_INFO, Console::CONSOLE_SYSTEM_WARNING,
-                            _L("Mod not installed: ") + filename);
-                        RoR::LogFormat("[RoR] Cannot create remote actor (not installed), filename: '%s'", filename.c_str());
-                        AddStreamMismatch(reg->origin_sourceid, reg->origin_streamid);
-                        reg->status = -1;
+                        int offset = actor_reg->time - m_net_timer.getMilliseconds();
+                        m_stream_time_offsets[reg->origin_sourceid] = offset - 100;
                     }
-                    else
+                    ActorSpawnRequest* rq = new ActorSpawnRequest;
+                    rq->asr_origin = ActorSpawnRequest::Origin::NETWORK;
+                    // TODO: Look up cache entry early (eliminate asr_filename) and fetch skin by name+guid! ~ 03/2019
+                    rq->asr_filename = filename;
+                    if (strnlen(actor_reg->skin, 60) < 60 && actor_reg->skin[0] != '\0')
                     {
-                        auto actor_reg = reinterpret_cast<RoRnet::ActorStreamRegister*>(reg);
-                        if (m_stream_time_offsets.find(reg->origin_sourceid) == m_stream_time_offsets.end())
-                        {
-                            int offset = actor_reg->time - m_net_timer.getMilliseconds();
-                            m_stream_time_offsets[reg->origin_sourceid] = offset - 100;
-                        }
-                        ActorSpawnRequest* rq = new ActorSpawnRequest;
-                        rq->asr_origin = ActorSpawnRequest::Origin::NETWORK;
-                        // TODO: Look up cache entry early (eliminate asr_filename) and fetch skin by name+guid! ~ 03/2019
-                        rq->asr_filename = filename;
-                        if (strnlen(actor_reg->skin, 60) < 60 && actor_reg->skin[0] != '\0')
-                        {
-                            rq->asr_skin_entry = App::GetCacheSystem()->FetchSkinByName(actor_reg->skin);
-                        }
-                        if (strnlen(actor_reg->sectionconfig, 60) < 60)
-                        {
-                            rq->asr_config = actor_reg->sectionconfig;
-                        }
-                        rq->asr_net_username = tryConvertUTF(info.username);
-                        rq->asr_net_color    = info.colournum;
-                        rq->net_source_id    = reg->origin_sourceid;
-                        rq->net_stream_id    = reg->origin_streamid;
-
-                        App::GetGameContext()->PushMessage(Message(
-                            MSG_SIM_SPAWN_ACTOR_REQUESTED, (void*)rq));
-
-                        reg->status = 1;
+                        rq->asr_skin_entry = App::GetCacheSystem()->FetchSkinByName(actor_reg->skin);
                     }
+                    if (strnlen(actor_reg->sectionconfig, 60) < 60)
+                    {
+                        rq->asr_config = actor_reg->sectionconfig;
+                    }
+                    rq->asr_net_username = tryConvertUTF(info.username);
+                    rq->asr_net_color    = info.colournum;
+                    rq->net_source_id    = reg->origin_sourceid;
+                    rq->net_stream_id    = reg->origin_streamid;
+
+                    App::GetGameContext()->PushMessage(Message(
+                        MSG_SIM_SPAWN_ACTOR_REQUESTED, (void*)rq));
+
+                    reg->status = 1;
                 }
-
-                App::GetNetwork()->AddPacket(reg->origin_streamid, RoRnet::MSG2_STREAM_REGISTER_RESULT, sizeof(RoRnet::StreamRegister), (char *)reg);
             }
+
+            App::GetNetwork()->AddPacket(reg->origin_streamid, RoRnet::MSG2_STREAM_REGISTER_RESULT, sizeof(RoRnet::StreamRegister), (char *)reg);
         }
-        else if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER_RESULT)
+    }
+    else if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER_RESULT)
+    {
+        RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
+        for (auto actor : m_actors)
         {
-            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
-            for (auto actor : m_actors)
+            if (actor->ar_net_source_id == reg->origin_sourceid && actor->ar_net_stream_id == reg->origin_streamid)
             {
-                if (actor->ar_net_source_id == reg->origin_sourceid && actor->ar_net_stream_id == reg->origin_streamid)
+                int sourceid = packet->header.source;
+                actor->ar_net_stream_results[sourceid] = reg->status;
+
+                String message = "";
+                switch (reg->status)
                 {
-                    int sourceid = packet->header.source;
-                    actor->ar_net_stream_results[sourceid] = reg->status;
-
-                    String message = "";
-                    switch (reg->status)
-                    {
-                        case  1: message = "successfully loaded stream"; break;
-                        case -2: message = "detected mismatch stream"; break;
-                        default: message = "could not load stream"; break;
-                    }
-                    LOG("Client " + TOSTRING(sourceid) + " " + message + " " + TOSTRING(reg->origin_streamid) +
-                            " with name '" + reg->name + "', result code: " + TOSTRING(reg->status));
-                    break;
+                    case  1: message = "successfully loaded stream"; break;
+                    case -2: message = "detected mismatch stream"; break;
+                    default: message = "could not load stream"; break;
                 }
+                LOG("Client " + TOSTRING(sourceid) + " " + message + " " + TOSTRING(reg->origin_streamid) +
+                        " with name '" + reg->name + "', result code: " + TOSTRING(reg->status));
+                break;
             }
         }
-        else if (packet->header.command == RoRnet::MSG2_STREAM_UNREGISTER)
+    }
+    else if (packet->header.command == RoRnet::MSG2_STREAM_UNREGISTER)
+    {
+        Actor* b = this->GetActorByNetworkLinks(packet->header.source, packet->header.streamid);
+        if (b && b->ar_sim_state == Actor::SimState::NETWORKED_OK)
         {
-            Actor* b = this->GetActorByNetworkLinks(packet->header.source, packet->header.streamid);
-            if (b && b->ar_sim_state == Actor::SimState::NETWORKED_OK)
-            {
-                App::GetGameContext()->PushMessage(Message(MSG_SIM_DELETE_ACTOR_REQUESTED, (void*)b));
-            }
-            m_stream_mismatches[packet->header.source].erase(packet->header.streamid);
+            App::GetGameContext()->PushMessage(Message(MSG_SIM_DELETE_ACTOR_REQUESTED, (void*)b));
         }
-        else if (packet->header.command == RoRnet::MSG2_USER_LEAVE)
-        {
-            this->RemoveStreamSource(packet->header.source);
-        }
-        else if (packet->header.command == RoRnet::MSG2_STREAM_DATA)
-        {
-            for (auto actor : m_actors)
-            {
-                if (actor->ar_sim_state != Actor::SimState::NETWORKED_OK)
-                    continue;
-                if (packet->header.source == actor->ar_net_source_id && packet->header.streamid == actor->ar_net_stream_id)
-                {
-                    actor->PushNetwork(packet->buffer, packet->header.size);
-                    break;
-                }
-            }
-        }
+        m_stream_mismatches[packet->header.source].erase(packet->header.streamid);
+    }
+    else if (packet->header.command == RoRnet::MSG2_USER_LEAVE)
+    {
+        this->RemoveStreamSource(packet->header.source);
     }
 }
 #endif // USE_SOCKETW
@@ -1106,9 +1084,18 @@ void ActorManager::UpdatePhysicsSimulation()
         actor->UpdatePhysicsOrigin();
     }
 
+    NetRecvPacketQueue net_remaining; // Temp. store for unprocessed data - keep here to reuse allocated memory.
+
     // Advance physics in steps
     for (int i = 0; i < m_physics_steps; i++)
     {
+        // Fetch incoming network data
+        NetRecvPacketQueue net_incoming;
+        if (App::mp_state->GetEnum<MpState>() == RoR::MpState::CONNECTED)
+        {
+            net_incoming = App::GetNetwork()->GetIncomingStreamData();
+        }
+
         // First round of parallel processing
         {
             std::vector<std::function<void()>> tasks;
@@ -1127,6 +1114,46 @@ void ActorManager::UpdatePhysicsSimulation()
                             });
                         tasks.push_back(func);
                     }
+                }
+                else if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK)
+                {
+                    // Find stream data for this actor; only keep the last packet.
+                    NetRecvPacket* stream_data = nullptr; // Owner
+                    for (NetRecvPacket* packet: net_incoming)
+                    {
+                        if (packet->header.command == RoRnet::MSG2_STREAM_DATA &&
+                            packet->header.source == actor->ar_net_source_id &&
+                            packet->header.streamid == actor->ar_net_stream_id)
+                        {
+                            if (stream_data != nullptr)
+                            {
+                                delete stream_data;
+                                stream_data = nullptr;
+                            }
+                            stream_data = packet; // Transfer ownership
+                        }
+                        else
+                        {
+                            net_remaining.push_back(packet); // Transfer ownership
+                        }
+                    }
+
+                    if (stream_data)
+                    {
+                        // Remove processed packets from incoming queue.
+                        net_incoming.assign(net_remaining.begin(), net_remaining.end());
+
+                        // Queue parallel processing
+                        auto func = std::function<void()>([actor, stream_data]()
+                            {
+                                actor->PushNetwork(stream_data->buffer, stream_data->header.size); // Decode network state
+                                actor->CalcNetwork(); // Apply network state
+                                delete stream_data;
+                            });
+                        tasks.push_back(func);
+                    }
+
+                    net_remaining.clear(); // Always clean up.
                 }
             }
 
@@ -1171,6 +1198,13 @@ void ActorManager::UpdatePhysicsSimulation()
                 }
             }
             App::GetThreadPool()->Parallelize(tasks);
+        }
+
+        // Queue un-processed net packets for processing on main thread
+        for (NetRecvPacket* packet: net_incoming)
+        {
+            App::GetGameContext()->PushMessage(
+                Message(MSG_NET_NON_PHYSICS_DATA_RECEIVED, packet));
         }
     }
 
