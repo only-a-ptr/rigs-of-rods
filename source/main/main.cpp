@@ -704,6 +704,7 @@ int main(int argc, char *argv[])
                             failed_m = true;
                         }
                     }
+                    break;
 
                 default:;
                 }
