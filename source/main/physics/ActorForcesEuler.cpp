@@ -1097,8 +1097,6 @@ bool Actor::CalcForcesEulerPrepare(bool doUpdate)
         return false;
     if (ar_physics_paused)
         return false;
-    if (ar_sim_state != Actor::SimState::LOCAL_SIMULATED)
-        return false;
 
     if (doUpdate)
         this->ToggleHooks(-2, HOOK_LOCK, -1);

@@ -1096,26 +1096,44 @@ Actor* ActorManager::GetActorById(int actor_id)
 
 void ActorManager::UpdatePhysicsSimulation()
 {
+    // This is invoked every frame to advance physics.
+    // -----------------------------------------------
+
+    // Node positions are relative to origin which is fixed in world space.
     for (auto actor : m_actors)
     {
+        // Reset origin closer if too far.
         actor->UpdatePhysicsOrigin();
     }
+
+    // Advance physics in steps
     for (int i = 0; i < m_physics_steps; i++)
     {
+        // First round of parallel processing
         {
             std::vector<std::function<void()>> tasks;
             for (auto actor : m_actors)
             {
-                if (actor->ar_update_physics = actor->CalcForcesEulerPrepare(i == 0))
+                if (actor->ar_sim_state == Actor::SimState::LOCAL_SIMULATED)
                 {
-                    auto func = std::function<void()>([this, i, actor]()
-                        {
-                            actor->CalcForcesEulerCompute(i == 0, m_physics_steps);
-                        });
-                    tasks.push_back(func);
+                    // Synchronously check if physics should be updated; resolve hooks and locks (inter-actor).
+                    if (actor->ar_update_physics = actor->CalcForcesEulerPrepare(i == 0))
+                    {
+                        // Queue parallel processing
+                        auto func = std::function<void()>([this, i, actor]()
+                            {
+                                // Update forces, resolve ground and self collisions
+                                actor->CalcForcesEulerCompute(i == 0, m_physics_steps);
+                            });
+                        tasks.push_back(func);
+                    }
                 }
             }
+
+            // Run threaded tasks and wait for them to finish.
             App::GetThreadPool()->Parallelize(tasks);
+
+            // Process beams connected to different actors
             for (auto actor : m_actors)
             {
                 if (actor->ar_update_physics)
@@ -1124,6 +1142,8 @@ void ActorManager::UpdatePhysicsSimulation()
                 }
             }
         }
+
+        // Second round of parallel processing
         {
             std::vector<std::function<void()>> tasks;
             for (auto actor : m_actors)
@@ -1153,6 +1173,7 @@ void ActorManager::UpdatePhysicsSimulation()
             App::GetThreadPool()->Parallelize(tasks);
         }
     }
+
     for (auto actor : m_actors)
     {
         actor->m_ongoing_reset = false;
