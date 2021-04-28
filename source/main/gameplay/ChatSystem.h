@@ -31,7 +31,7 @@ namespace ChatSystem {
 void SendStreamSetup();
 
 #ifdef USE_SOCKETW
-void HandleStreamData(std::vector<RoR::NetRecvPacket> packet);
+void HandleStreamData(NetRecvPacketQueue& packets);
 #endif // USE_SOCKETW
 
 } // namespace Chatsystem

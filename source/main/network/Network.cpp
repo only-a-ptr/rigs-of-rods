@@ -162,9 +162,9 @@ bool Network::SendNetMessage(int type, unsigned int streamid, int len, char* con
 
 void Network::QueueStreamData(RoRnet::Header &header, char *buffer, size_t buffer_len)
 {
-    NetRecvPacket packet;
-    packet.header = header;
-    memcpy(packet.buffer, buffer, std::min(buffer_len, size_t(RORNET_MAX_MESSAGE_LENGTH)));
+    NetRecvPacket* packet = new NetRecvPacket;
+    packet->header = header;
+    memcpy(packet->buffer, buffer, std::min(buffer_len, size_t(RORNET_MAX_MESSAGE_LENGTH)));
 
     std::lock_guard<std::mutex> lock(m_recv_packetqueue_mutex);
     m_recv_packet_buffer.push_back(packet);
@@ -668,10 +668,10 @@ void Network::AddLocalStream(RoRnet::StreamRegister *reg, int size)
     m_stream_id++;
 }
 
-std::vector<NetRecvPacket> Network::GetIncomingStreamData()
+std::vector<NetRecvPacket*> Network::GetIncomingStreamData()
 {
     std::lock_guard<std::mutex> lock(m_recv_packetqueue_mutex);
-    std::vector<NetRecvPacket> buf_copy = m_recv_packet_buffer;
+    NetRecvPacketQueue buf_copy = m_recv_packet_buffer;
     m_recv_packet_buffer.clear();
     return buf_copy;
 }

@@ -104,27 +104,27 @@ void CharacterFactory::DeleteAllCharacters()
 }
 
 #ifdef USE_SOCKETW
-void CharacterFactory::handleStreamData(std::vector<RoR::NetRecvPacket> packet_buffer)
+void CharacterFactory::handleStreamData(NetRecvPacketQueue& packet_buffer)
 {
     for (auto packet : packet_buffer)
     {
-        if (packet.header.command == RoRnet::MSG2_STREAM_REGISTER)
+        if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER)
         {
-            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet.buffer;
+            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
             if (reg->type == 1)
             {
-                createRemoteInstance(packet.header.source, packet.header.streamid);
+                createRemoteInstance(packet->header.source, packet->header.streamid);
             }
         }
-        else if (packet.header.command == RoRnet::MSG2_USER_LEAVE)
+        else if (packet->header.command == RoRnet::MSG2_USER_LEAVE)
         {
-            removeStreamSource(packet.header.source);
+            removeStreamSource(packet->header.source);
         }
         else
         {
             for (auto& c : m_remote_characters)
             {
-                c->receiveStreamData(packet.header.command, packet.header.source, packet.header.streamid, packet.buffer);
+                c->receiveStreamData(packet->header.command, packet->header.source, packet->header.streamid, packet->buffer);
             }
         }
     }

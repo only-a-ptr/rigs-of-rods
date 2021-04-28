@@ -40,7 +40,7 @@ public:
     void UndoRemoteActorCoupling(Actor* actor);
     void Update(float dt);
 #ifdef USE_SOCKETW
-    void handleStreamData(std::vector<RoR::NetRecvPacket> packet);
+    void handleStreamData(NetRecvPacketQueue& packets);
 #endif // USE_SOCKETW
 
 private:

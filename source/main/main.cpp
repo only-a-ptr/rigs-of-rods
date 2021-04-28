@@ -740,7 +740,7 @@ int main(int argc, char *argv[])
             // Process incoming network traffic
             if (App::mp_state->GetEnum<MpState>() == MpState::CONNECTED)
             {
-                std::vector<RoR::NetRecvPacket> packets = App::GetNetwork()->GetIncomingStreamData();
+                NetRecvPacketQueue packets = App::GetNetwork()->GetIncomingStreamData(); // Passes ownership
                 if (!packets.empty())
                 {
                     RoR::ChatSystem::HandleStreamData(packets);

@@ -60,11 +60,11 @@ void ReceiveStreamData(unsigned int type, int source, char* buffer)
 #endif // USE_SOCKETW
 
 #ifdef USE_SOCKETW
-void HandleStreamData(std::vector<RoR::NetRecvPacket> packet_buffer)
+void HandleStreamData(NetRecvPacketQueue& packet_buffer)
 {
-    for (auto packet : packet_buffer)
+    for (NetRecvPacket* packet : packet_buffer)
     {
-        ReceiveStreamData(packet.header.command, packet.header.source, packet.buffer);
+        ReceiveStreamData(packet->header.command, packet->header.source, packet->buffer);
     }
 }
 #endif // USE_SOCKETW

@@ -87,6 +87,8 @@ struct NetRecvPacket
     char buffer[RORNET_MAX_MESSAGE_LENGTH];
 };
 
+typedef std::vector<NetRecvPacket*> NetRecvPacketQueue; //!< Owning pointers!
+
 #pragma pack(pop)
 
 // ------------------------ End of network messages --------------------------
@@ -101,7 +103,7 @@ public:
     void                 AddPacket(int streamid, int type, int len, const char *content);
     void                 AddLocalStream(RoRnet::StreamRegister *reg, int size);
 
-    std::vector<NetRecvPacket> GetIncomingStreamData();
+    NetRecvPacketQueue   GetIncomingStreamData();
 
     int                  GetUID();
     int                  GetNetQuality();
@@ -170,7 +172,7 @@ private:
 
     std::condition_variable m_send_packet_available_cv;
 
-    std::vector<NetRecvPacket> m_recv_packet_buffer;
+    NetRecvPacketQueue         m_recv_packet_buffer; //!< Owns the pointers! Filled by recv. thread.
     std::deque <NetSendPacket> m_send_packet_buffer;
 };
 

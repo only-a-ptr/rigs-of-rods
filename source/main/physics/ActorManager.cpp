@@ -371,23 +371,24 @@ void ActorManager::RemoveStreamSource(int sourceid)
 }
 
 #ifdef USE_SOCKETW
-void ActorManager::HandleActorStreamData(std::vector<RoR::NetRecvPacket> packet_buffer)
+void ActorManager::HandleActorStreamData(NetRecvPacketQueue& packet_buffer)
 {
     // Sort by stream source
     std::stable_sort(packet_buffer.begin(), packet_buffer.end(),
-            [](const RoR::NetRecvPacket& a, const RoR::NetRecvPacket& b)
-            { return a.header.source > b.header.source; });
+            [](const RoR::NetRecvPacket* a, const RoR::NetRecvPacket* b)
+            { return a->header.source > b->header.source; });
     // Compress data stream by eliminating all but the last update from every consecutive group of stream data updates
     auto it = std::unique(packet_buffer.rbegin(), packet_buffer.rend(),
-            [](const RoR::NetRecvPacket& a, const RoR::NetRecvPacket& b)
-            { return !memcmp(&a.header, &b.header, sizeof(RoRnet::Header)) &&
-            a.header.command == RoRnet::MSG2_STREAM_DATA; });
+            [](const RoR::NetRecvPacket* a, const RoR::NetRecvPacket* b)
+            { return !memcmp(&a->header, &b->header, sizeof(RoRnet::Header)) &&
+            a->header.command == RoRnet::MSG2_STREAM_DATA; });
     packet_buffer.erase(packet_buffer.begin(), it.base());
-    for (auto& packet : packet_buffer)
+
+    for (NetRecvPacket* packet : packet_buffer)
     {
-        if (packet.header.command == RoRnet::MSG2_STREAM_REGISTER)
+        if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER)
         {
-            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet.buffer;
+            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
             if (reg->type == 0)
             {
                 reg->name[127] = 0;
@@ -457,14 +458,14 @@ void ActorManager::HandleActorStreamData(std::vector<RoR::NetRecvPacket> packet_
                 App::GetNetwork()->AddPacket(reg->origin_streamid, RoRnet::MSG2_STREAM_REGISTER_RESULT, sizeof(RoRnet::StreamRegister), (char *)reg);
             }
         }
-        else if (packet.header.command == RoRnet::MSG2_STREAM_REGISTER_RESULT)
+        else if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER_RESULT)
         {
-            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet.buffer;
+            RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
             for (auto actor : m_actors)
             {
                 if (actor->ar_net_source_id == reg->origin_sourceid && actor->ar_net_stream_id == reg->origin_streamid)
                 {
-                    int sourceid = packet.header.source;
+                    int sourceid = packet->header.source;
                     actor->ar_net_stream_results[sourceid] = reg->status;
 
                     String message = "";
@@ -480,28 +481,28 @@ void ActorManager::HandleActorStreamData(std::vector<RoR::NetRecvPacket> packet_
                 }
             }
         }
-        else if (packet.header.command == RoRnet::MSG2_STREAM_UNREGISTER)
+        else if (packet->header.command == RoRnet::MSG2_STREAM_UNREGISTER)
         {
-            Actor* b = this->GetActorByNetworkLinks(packet.header.source, packet.header.streamid);
+            Actor* b = this->GetActorByNetworkLinks(packet->header.source, packet->header.streamid);
             if (b && b->ar_sim_state == Actor::SimState::NETWORKED_OK)
             {
                 App::GetGameContext()->PushMessage(Message(MSG_SIM_DELETE_ACTOR_REQUESTED, (void*)b));
             }
-            m_stream_mismatches[packet.header.source].erase(packet.header.streamid);
+            m_stream_mismatches[packet->header.source].erase(packet->header.streamid);
         }
-        else if (packet.header.command == RoRnet::MSG2_USER_LEAVE)
+        else if (packet->header.command == RoRnet::MSG2_USER_LEAVE)
         {
-            this->RemoveStreamSource(packet.header.source);
+            this->RemoveStreamSource(packet->header.source);
         }
-        else if (packet.header.command == RoRnet::MSG2_STREAM_DATA)
+        else if (packet->header.command == RoRnet::MSG2_STREAM_DATA)
         {
             for (auto actor : m_actors)
             {
                 if (actor->ar_sim_state != Actor::SimState::NETWORKED_OK)
                     continue;
-                if (packet.header.source == actor->ar_net_source_id && packet.header.streamid == actor->ar_net_stream_id)
+                if (packet->header.source == actor->ar_net_source_id && packet->header.streamid == actor->ar_net_stream_id)
                 {
-                    actor->PushNetwork(packet.buffer, packet.header.size);
+                    actor->PushNetwork(packet->buffer, packet->header.size);
                     break;
                 }
             }
