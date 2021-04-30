@@ -180,7 +180,9 @@ public:
 
         // Netcode
 
-    void              sendStreamData();                    //!< Capture simulation state and queue for sending.
+    void              sendStreamData();                    //!< Convenience - send stream data if applicable.
+    void              sendActorStreamData();               //!< Capture simulation state and queue for sending.
+    void              sendForcesStreamData();              //!< Send accumulated collision forces.
     void              PushNetwork(char* data, int size);   //!< Parses network data; fills actor's data buffers and flips them. Called by the network thread.
     void              CalcNetwork();                       //!< Process received net. data. Called by sim. thread.
 
@@ -341,6 +343,9 @@ public:
     int               ar_net_source_id;               //!< Unique ID of remote player who spawned this actor (equals local network ID for LOCAL_* actors).
     int               ar_net_stream_id;
     std::map<int,int> ar_net_stream_results;
+
+    Ogre::Vector3*    ar_net_coll_forces = nullptr;   //!< Accumulated correction forces from collision triangles.
+    int               ar_net_coll_num_samples = 0;    //!< Number of samples since last send.
 
     // Realtime node/beam structure editing helpers
     void                    SearchBeamDefaults();     //!< Searches for more stable beam defaults
@@ -505,10 +510,12 @@ private:
     float             m_net_node_compression;                    //!< Constant.
     int               m_net_node_buf_size;                       //!< Constant; partial size of net. buffer.
     int               m_net_buffer_size;                         //!< Constant.
+    int               m_net_forces_buffer_size;                  //!< Constant.
     Ogre::UTFString   m_net_username;                            //!< Constant. Only valid for NETWORKED_OK.
 
     Ogre::Timer       m_net_update_timer;
     unsigned long     m_net_last_update_time = 0;
+    unsigned long     m_net_last_forces_update_time = 0;
     std::deque<NetUpdate> m_net_updates;                         //!< Incoming stream of NetUpdates.
 
     MovableText*      m_net_label_mt;                            //!< Visual.

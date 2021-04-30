@@ -1863,27 +1863,48 @@ void Actor::HandleInputEvents(float dt)
 
 void Actor::sendStreamSetup()
 {
-    RoRnet::ActorStreamRegister reg;
-    memset(&reg, 0, sizeof(RoRnet::ActorStreamRegister));
-    reg.status = 0;
-    reg.type = 0;
-    reg.time = App::GetGameContext()->GetActorManager()->GetNetTime();
-    strncpy(reg.name, ar_filename.c_str(), 128);
-    if (m_used_skin_entry != nullptr)
-    {
-        strncpy(reg.skin, m_used_skin_entry->dname.c_str(), 60);
-    }
-    strncpy(reg.sectionconfig, m_section_config.c_str(), 60);
-
 #ifdef USE_SOCKETW
-    App::GetNetwork()->AddLocalStream((RoRnet::StreamRegister *)&reg, sizeof(RoRnet::ActorStreamRegister));
-#endif // USE_SOCKETW
+    if (ar_sim_state == Actor::SimState::LOCAL_SIMULATED ||
+        ar_sim_state == Actor::SimState::LOCAL_SLEEPING)
+    {
+        ROR_ASSERT(sizeof(RoRnet::ActorStreamRegister) == sizeof(RoRnet::StreamRegister));
 
-    ar_net_source_id = reg.origin_sourceid;
-    ar_net_stream_id = reg.origin_streamid;
+        RoRnet::ActorStreamRegister reg;
+        memset(&reg, 0, sizeof(RoRnet::ActorStreamRegister));
+        reg.status = 0;
+        reg.type = 0; // Actor positions
+        reg.time = App::GetGameContext()->GetActorManager()->GetNetTime();
+        strncpy(reg.name, ar_filename.c_str(), 128);
+        if (m_used_skin_entry != nullptr)
+        {
+            strncpy(reg.skin, m_used_skin_entry->dname.c_str(), 60);
+        }
+        strncpy(reg.sectionconfig, m_section_config.c_str(), 60);
+
+        App::GetNetwork()->AddLocalStream((RoRnet::StreamRegister *)&reg, sizeof(RoRnet::ActorStreamRegister));
+
+        ar_net_source_id = reg.origin_sourceid;
+        ar_net_stream_id = reg.origin_streamid;
+    }
+    else if (ar_sim_state == Actor::SimState::NETWORKED_OK && App::mp_pseudo_collisions->GetBool())
+    {
+        ROR_ASSERT(sizeof(RoRnet::ForcesStreamRegister) == sizeof(RoRnet::StreamRegister));
+
+        RoRnet::ForcesStreamRegister reg;
+        memset(&reg, 0, sizeof(RoRnet::ForcesStreamRegister));
+        reg.status = 0;
+        reg.type = 4; // Actor forces
+        sprintf_s(reg.name, "%s(Forces)", ar_filename);
+        reg.time = App::GetGameContext()->GetActorManager()->GetNetTime();
+        reg.player_sourceid = ar_net_source_id;
+        reg.player_streamid = ar_net_stream_id;
+
+        App::GetNetwork()->AddLocalStream((RoRnet::StreamRegister *)&reg, sizeof(RoRnet::ForcesStreamRegister));
+    }
+#endif // USE_SOCKETW
 }
 
-void Actor::sendStreamData()
+void Actor::sendActorStreamData()
 {
     using namespace RoRnet;
 #ifdef USE_SOCKETW
@@ -2036,6 +2057,53 @@ void Actor::sendStreamData()
     }
 
     App::GetNetwork()->AddPacket(ar_net_stream_id, MSG2_STREAM_DATA_DISCARDABLE, packet_len, send_buffer);
+#endif //SOCKETW
+}
+
+void Actor::sendForcesStreamData()
+{
+    using namespace RoRnet;
+#ifdef USE_SOCKETW
+    if (m_net_update_timer.getMilliseconds() - m_net_last_forces_update_time < 50)
+        return;
+
+    m_net_last_forces_update_time = m_net_update_timer.getMilliseconds();
+
+    //look if the packet is too big first
+    if (m_net_forces_buffer_size > RORNET_MAX_MESSAGE_LENGTH)
+    {
+        ErrorUtils::ShowError(_L("Actor is too big to be sent over the net."), _L("Network error!"));
+        exit(126);
+    }
+
+    // Just send the buffer as-is.
+    App::GetNetwork()->AddPacket(ar_net_stream_id, MSG2_STREAM_DATA_DISCARDABLE,
+        m_net_forces_buffer_size, (char*)ar_net_coll_forces);
+
+    // Reset the buffer
+    memset(ar_net_coll_forces, 0, m_net_forces_buffer_size);
+    ar_net_coll_num_samples = 0;
+#endif //SOCKETW
+}
+
+void Actor::sendStreamData()
+{
+    using namespace RoRnet;
+#ifdef USE_SOCKETW
+    switch (ar_sim_state)
+    {
+    case Actor::SimState::LOCAL_SIMULATED:
+    case Actor::SimState::LOCAL_SLEEPING:
+        this->sendActorStreamData();
+        break;
+    case Actor::SimState::NETWORKED_OK:
+        if (App::mp_pseudo_collisions->GetBool())
+        {
+            this->sendForcesStreamData();
+        }
+        break;
+    default:;
+    }
 #endif //SOCKETW
 }
 

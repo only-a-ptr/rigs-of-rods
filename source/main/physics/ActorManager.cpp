@@ -291,8 +291,6 @@ void ActorManager::SetupActor(Actor* actor, ActorSpawnRequest rq, std::shared_pt
         actor->GetTyrePressure().ModifyTyrePressure(0.f); // Initialize springiness of pressure-beams.
     }
 
-    actor->ar_sim_state = Actor::SimState::LOCAL_SLEEPING;
-
     if (App::mp_state->GetEnum<MpState>() == RoR::MpState::CONNECTED)
     {
         // network buffer layout (without RoRnet::VehicleState):
@@ -310,6 +308,15 @@ void ActorManager::SetupActor(Actor* actor, ActorSpawnRequest rq, std::shared_pt
             if (actor->ar_engine)
             {
                 actor->ar_engine->StartEngine();
+            }
+
+            if (App::mp_pseudo_collisions->GetBool())
+            {
+                actor->ar_net_coll_forces = new Ogre::Vector3[actor->ar_num_nodes];
+
+                actor->m_net_forces_buffer_size = sizeof(Ogre::Vector3) * actor->ar_num_nodes;
+
+                memset(actor->ar_net_coll_forces, 0, actor->m_net_forces_buffer_size);
             }
         }
 
@@ -341,9 +348,15 @@ Actor* ActorManager::CreateActorInstance(ActorSpawnRequest rq, std::shared_ptr<R
 {
     Actor* actor = new Actor(m_actor_counter++, static_cast<int>(m_actors.size()), def, rq);
     actor->SetUsedSkin(rq.asr_skin_entry);
+    actor->ar_sim_state = Actor::SimState::LOCAL_SLEEPING;
 
-    if (App::mp_state->GetEnum<MpState>() == MpState::CONNECTED && rq.asr_origin != ActorSpawnRequest::Origin::NETWORK)
+    if (App::mp_state->GetEnum<MpState>() == MpState::CONNECTED)
     {
+        if (rq.asr_origin == ActorSpawnRequest::Origin::NETWORK)
+        {
+            actor->ar_sim_state = Actor::SimState::NETWORKED_OK;
+        }
+
         actor->sendStreamSetup();
     }
 
@@ -1022,7 +1035,9 @@ void ActorManager::UpdateActors(Actor* player_actor)
             if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK)
                 actor->CalcNetwork();
             else
+            {
                 actor->sendStreamData();
+            }
         }
     }
 
@@ -1178,6 +1193,15 @@ void ActorManager::UpdatePhysicsSimulation()
                 if (actor->m_inter_point_col_detector != nullptr && (actor->ar_update_physics ||
                         (App::mp_pseudo_collisions->GetBool() && actor->ar_sim_state == Actor::SimState::NETWORKED_OK)))
                 {
+                    // Networked collisions: reset node forces to 0, results of collisions will be recorded below.
+                    if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK)
+                    {
+                        for (int i = 0; i < actor->ar_num_nodes; ++i)
+                        {
+                            actor->ar_nodes[i].Forces = Ogre::Vector3::ZERO;
+                        }
+                    }
+
                     auto func = std::function<void()>([this, actor]()
                         {
                             actor->m_inter_point_col_detector->UpdateInterPoint();
@@ -1192,6 +1216,29 @@ void ActorManager::UpdatePhysicsSimulation()
                                     actor->ar_nodes,
                                     actor->ar_collision_range,
                                     *actor->ar_submesh_ground_model);
+
+                                // Networked collisions: accumulate recorded collision forces.
+                                if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK)
+                                {
+                                    if (actor->ar_net_coll_num_samples == 0)
+                                    {
+                                        // Initial sample - no adjustments.
+                                        for (int i = 0; i < actor->ar_num_nodes; ++i)
+                                        {
+                                            actor->ar_net_coll_forces[i] = actor->ar_nodes[i].Forces;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Additional sample - average values.
+                                        for (int i = 0; i < actor->ar_num_nodes; ++i)
+                                        {
+                                            actor->ar_net_coll_forces[i] = 
+                                                actor->ar_net_coll_forces[i] * 0.5 + actor->ar_nodes[i].Forces * 0.5;
+                                        }
+                                    }
+                                    actor->ar_net_coll_num_samples++;
+                                }
                             }
                         });
                     tasks.push_back(func);

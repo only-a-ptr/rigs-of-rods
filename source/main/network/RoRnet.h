@@ -150,6 +150,22 @@ struct ActorStreamRegister         //!< Must preserve mem. layout of RoRnet::Str
     char    sectionconfig[60];     //!< section configuration
 };
 
+struct ForcesStreamRegister         //!< Must preserve mem. layout of RoRnet::StreamRegister
+{
+    // RoRnet::StreamRegister: Common
+    int32_t type;                  //!< 4
+    int32_t status;                //!< initial stream status
+    int32_t origin_sourceid;       //!< origin sourceid
+    int32_t origin_streamid;       //!< origin streamid
+    char    name[128];             //!< truck file name
+    // RoRnet::StreamRegister: Data buffer (128B)
+    int32_t bufferSize;            //!< initial stream status
+    int32_t time;                  //!< initial time stamp
+    int32_t player_sourceid;       //!< origin sourceid of the actor stream (type 0)
+    int32_t player_streamid;       //!< origin streamid of the actor stream (type 0)
+    char    unused[112];
+};
+
 struct StreamUnRegister            //< sent to remove a stream
 {
     uint32_t streamid;
