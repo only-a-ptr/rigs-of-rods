@@ -227,11 +227,6 @@ Actor* GameContext::SpawnActor(ActorSpawnRequest& rq)
             fresh_actor->ar_driveable = MACHINE;
         }
     }
-    else if (rq.asr_origin == ActorSpawnRequest::Origin::NETWORK)
-    {
-        fresh_actor->ar_net_source_id = rq.net_source_id;
-        fresh_actor->ar_net_stream_id = rq.net_stream_id;
-    }
     else if (rq.asr_origin == ActorSpawnRequest::Origin::SAVEGAME)
     {
         if (rq.asr_saved_state)

@@ -418,6 +418,20 @@ void Actor::PushNetwork(char* data, int size)
     m_net_updates.push_back(update);
 }
 
+void Actor::CalcNetForces(NetRecvPacket const& packet)
+{
+    // PROTOTYPE: Just stupidly apply the forces to local actor.
+
+    // TODO: account for time difference.
+
+    ROR_ASSERT(packet.header.size == (uint32_t)m_net_forces_buffer_size);
+    Ogre::Vector3* forces = (Ogre::Vector3*)packet.buffer;
+    for (int i = 0; i < ar_num_nodes; i++)
+    {
+        ar_nodes[i].Forces += forces[i];
+    }
+}
+
 void Actor::CalcNetwork()
 {
     using namespace RoRnet;
@@ -1894,7 +1908,7 @@ void Actor::sendStreamSetup()
         memset(&reg, 0, sizeof(RoRnet::ForcesStreamRegister));
         reg.status = 0;
         reg.type = 4; // Actor forces
-        sprintf_s(reg.name, "%s(Forces)", ar_filename);
+        snprintf(reg.name, 128, "%s(Forces)", ar_filename.c_str());
         reg.time = App::GetGameContext()->GetActorManager()->GetNetTime();
         reg.player_sourceid = ar_net_source_id;
         reg.player_streamid = ar_net_stream_id;

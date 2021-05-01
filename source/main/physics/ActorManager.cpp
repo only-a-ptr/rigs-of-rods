@@ -355,6 +355,8 @@ Actor* ActorManager::CreateActorInstance(ActorSpawnRequest rq, std::shared_ptr<R
         if (rq.asr_origin == ActorSpawnRequest::Origin::NETWORK)
         {
             actor->ar_sim_state = Actor::SimState::NETWORKED_OK;
+            actor->ar_net_source_id = rq.net_source_id;
+            actor->ar_net_stream_id = rq.net_stream_id;
         }
 
         actor->sendStreamSetup();
@@ -394,9 +396,16 @@ void ActorManager::HandleStreamUpdates(NetRecvPacket* packet)
     if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER)
     {
         RoRnet::StreamRegister* reg = (RoRnet::StreamRegister *)packet->buffer;
-        if (reg->type == 0)
+        reg->name[127] = 0; // Just to be sure.
+        switch (reg->type)
         {
+        case 0: // Actor
             this->HandleActorStreamRegister((RoRnet::ActorStreamRegister *)packet->buffer);
+            break;
+        case 4: // Forces
+            this->HandleForcesStreamRegister((RoRnet::ForcesStreamRegister *)packet->buffer);
+            break;
+        default:;
         }
     }
     else if (packet->header.command == RoRnet::MSG2_STREAM_REGISTER_RESULT)
@@ -440,7 +449,7 @@ void ActorManager::HandleStreamUpdates(NetRecvPacket* packet)
 
 void ActorManager::HandleActorStreamRegister(RoRnet::ActorStreamRegister* reg)
 {
-    reg->name[127] = 0;
+
     std::string filename = Utils::SanitizeUtf8CString(reg->name);
 
     RoRnet::UserInfo info;
@@ -505,6 +514,46 @@ void ActorManager::HandleActorStreamRegister(RoRnet::ActorStreamRegister* reg)
     }
 
     App::GetNetwork()->AddPacket(reg->origin_streamid, RoRnet::MSG2_STREAM_REGISTER_RESULT, sizeof(RoRnet::StreamRegister), (char *)reg);
+}
+
+void ActorManager::HandleForcesStreamRegister(RoRnet::ForcesStreamRegister* reg)
+{
+    if (!App::mp_pseudo_collisions->GetBool())
+    {
+        App::GetConsole()->putNetMessage(reg->origin_sourceid,
+            Console::MessageType::CONSOLE_SYSTEM_NOTICE,
+            fmt::format(_LC("Network",
+                "Created collision forces stream (ID {})"
+                " - ignored because net. collisions are disabled"), reg->origin_sourceid).c_str());
+        return;
+    }
+
+    // Find the source actor
+    for (Actor* actor: m_actors)
+    {
+        if ((actor->ar_sim_state == Actor::SimState::LOCAL_SIMULATED ||
+             actor->ar_sim_state == Actor::SimState::LOCAL_SLEEPING) &&
+            actor->ar_net_stream_id == reg->player_streamid &&
+            actor->ar_net_source_id == reg->player_sourceid)
+        {
+            // Register the incoming stream.
+            actor->ar_net_forces_source_id = reg->origin_sourceid;
+            actor->ar_net_forces_stream_id = reg->origin_streamid;
+
+            App::GetConsole()->putNetMessage(reg->origin_sourceid,
+                Console::MessageType::CONSOLE_SYSTEM_NOTICE,
+                fmt::format(_LC("Network", "Created collision forces stream (ID {}) - accepted"), reg->origin_sourceid).c_str());
+
+            return; // Done.
+        }
+    }
+
+    App::GetConsole()->putNetMessage(reg->origin_sourceid,
+        Console::MessageType::CONSOLE_SYSTEM_WARNING,
+        fmt::format(_LC("Network",
+            "Created collision forces stream (ID {})"
+            " - actor (stream: {}, source: {}) not found."),
+            reg->origin_sourceid, reg->player_streamid, reg->player_sourceid).c_str());
 }
 
 int ActorManager::GetNetTimeOffset(int sourceid)
@@ -1035,14 +1084,10 @@ void ActorManager::UpdateActors(Actor* player_actor)
                 actor->updateSkidmarks();
             }
         }
+
         if (App::mp_state->GetEnum<MpState>() == RoR::MpState::CONNECTED)
         {
-            if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK)
-                actor->CalcNetwork();
-            else
-            {
-                actor->sendStreamData();
-            }
+            actor->sendStreamData();
         }
     }
 
@@ -1126,13 +1171,57 @@ void ActorManager::UpdatePhysicsSimulation()
                     // Synchronously check if physics should be updated; resolve hooks and locks (inter-actor).
                     if (actor->ar_update_physics = actor->CalcForcesEulerPrepare(i == 0))
                     {
-                        // Queue parallel processing
-                        auto func = std::function<void()>([this, i, actor]()
+                        // Networked collisions - accumulate values from packets.
+                        NetRecvPacket net_forces_packet; // Accumulated values
+                        int net_forces_num_packets = 0;
+
+                        if (App::mp_pseudo_collisions->GetBool())
+                        {
+                            memset(&net_forces_packet, 0, sizeof(NetRecvPacket));
+
+                            for (NetRecvPacket* packet: net_incoming)
                             {
+                                if (packet->header.command == RoRnet::MSG2_STREAM_DATA &&
+                                    packet->header.source == actor->ar_net_source_id &&
+                                    packet->header.streamid == actor->ar_net_forces_stream_id)
+                                {
+                                    if (net_forces_num_packets == 0)
+                                    {
+                                        memcpy(net_forces_packet.buffer, packet->buffer, RORNET_MAX_MESSAGE_LENGTH);
+                                    }
+                                    else
+                                    {
+                                        for (int i = 0; i < RORNET_MAX_MESSAGE_LENGTH; i++)
+                                        {
+                                            net_forces_packet.buffer[i] += (packet->buffer[i] * 0.4);
+                                        }
+                                    }
+                                    net_forces_num_packets++;
+                                }
+                                else
+                                {
+                                    net_remaining.push_back(packet); // Transfer ownership
+                                }
+                            }
+                        }
+
+                        // Queue parallel processing
+                        const int num_steps = m_physics_steps;
+                        auto func = std::function<void()>([actor, i, num_steps, net_forces_packet, net_forces_num_packets]()
+                            {
+                                if (net_forces_num_packets > 0)
+                                {
+                                    actor->CalcNetForces(net_forces_packet);
+                                }
+
                                 // Update forces, resolve ground and self collisions
-                                actor->CalcForcesEulerCompute(i == 0, m_physics_steps);
+                                actor->CalcForcesEulerCompute(i == 0, num_steps);
                             });
                         tasks.push_back(func);
+
+                        // Net. collisions: Remove processed packets from incoming queue.
+                        net_incoming.assign(net_remaining.begin(), net_remaining.end());
+                        net_remaining.clear();
                     }
                 }
                 else if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK)
@@ -1160,9 +1249,6 @@ void ActorManager::UpdatePhysicsSimulation()
 
                     if (stream_data)
                     {
-                        // Remove processed packets from incoming queue.
-                        net_incoming.assign(net_remaining.begin(), net_remaining.end());
-
                         // Queue parallel processing
                         auto func = std::function<void()>([actor, stream_data]()
                             {
@@ -1173,7 +1259,9 @@ void ActorManager::UpdatePhysicsSimulation()
                         tasks.push_back(func);
                     }
 
-                    net_remaining.clear(); // Always clean up.
+                    // Remove processed packets from incoming queue.
+                    net_incoming.assign(net_remaining.begin(), net_remaining.end());
+                    net_remaining.clear();
                 }
             }
 
@@ -1223,7 +1311,8 @@ void ActorManager::UpdatePhysicsSimulation()
                                     *actor->ar_submesh_ground_model);
 
                                 // Networked collisions: accumulate recorded collision forces.
-                                if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK)
+                                if (actor->ar_sim_state == Actor::SimState::NETWORKED_OK &&
+                                    App::mp_pseudo_collisions->GetBool())
                                 {
                                     if (actor->ar_net_coll_num_samples == 0)
                                     {

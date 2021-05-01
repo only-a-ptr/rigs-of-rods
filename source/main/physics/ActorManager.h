@@ -83,6 +83,7 @@ public:
 #ifdef USE_SOCKETW
     void           HandleStreamUpdates(NetRecvPacket* packet);
     void           HandleActorStreamRegister(RoRnet::ActorStreamRegister* reg);
+    void           HandleForcesStreamRegister(RoRnet::ForcesStreamRegister* reg);
 #endif
 
 #ifdef USE_ANGELSCRIPT

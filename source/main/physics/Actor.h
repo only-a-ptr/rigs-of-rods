@@ -26,6 +26,7 @@
 #include "CmdKeyInertia.h"
 #include "GfxActor.h"
 #include "MovableText.h"
+#include "Network.h"
 #include "PerVehicleCameraContext.h"
 #include "RigDef_Prerequisites.h"
 #include "TyrePressure.h"
@@ -183,8 +184,10 @@ public:
     void              sendStreamData();                    //!< Convenience - send stream data if applicable.
     void              sendActorStreamData();               //!< Capture simulation state and queue for sending.
     void              sendForcesStreamData();              //!< Send accumulated collision forces.
-    void              PushNetwork(char* data, int size);   //!< Parses network data; fills actor's data buffers and flips them. Called by the network thread.
-    void              CalcNetwork();                       //!< Process received net. data. Called by sim. thread.
+    void              PushNetwork(char* data, int size);   //!< Parses actor stream (type 0); fills actor's data buffers and flips them.
+    void              CalcNetwork();                       //!< Apply actor stream (type 0); Called by sim. thread.
+    void              CalcNetForces(NetRecvPacket const&); //!< Apply forces stream (type 4); Called by sim. thread.
+    
 
 #ifdef USE_ANGELSCRIPT
     // we have to add this to be able to use the class as reference inside scripts
@@ -341,7 +344,9 @@ public:
 
     // Networking
     int               ar_net_source_id;               //!< Unique ID of remote player who spawned this actor (equals local network ID for LOCAL_* actors).
-    int               ar_net_stream_id;
+    int               ar_net_stream_id;               //!< Outgoing positions/states stream (type 0). Valid for LOCAL_*
+    int               ar_net_forces_source_id;       //!< Unique ID of remote player who sends forces to this actor. Always equal to actor source ID.
+    int               ar_net_forces_stream_id;       //!< Incoming collision forces stream (type 4). Valid for LOCAL_*
     std::map<int,int> ar_net_stream_results;
 
     Ogre::Vector3*    ar_net_coll_forces = nullptr;   //!< Accumulated correction forces from collision triangles.
