@@ -40,9 +40,11 @@
 #include <curl/easy.h>
 #endif //USE_CURL
 
+
 #include "Application.h"
 #include "Actor.h"
 #include "ActorManager.h"
+#include "AddonFileFormat.h"
 #include "Collisions.h"
 #include "Console.h"
 #include "GameContext.h"
@@ -56,6 +58,7 @@
 
 using namespace Ogre;
 using namespace RoR;
+using namespace AngelScript;
 
 const char *ScriptEngine::moduleName = "RoRScript";
 
@@ -372,6 +375,14 @@ void ScriptEngine::init()
     // now the global instances
     result = engine->RegisterGlobalProperty("GameScriptClass game", &m_game_script); ROR_ASSERT(result>=0);
 
+    // Script virtual machine for framestep logic (asynchronous with simulation)
+    m_engine_frame = AngelScript::asCreateScriptEngine(ANGELSCRIPT_VERSION);
+    m_engine_frame->SetMessageCallback(AngelScript::asMETHOD(ScriptEngine,msgCallback), this, AngelScript::asCALL_THISCALL);
+    AngelScript::RegisterStdString(m_engine_frame);
+    //AngelScript::RegisterStdStringUtils(m_engine_frame);
+    AngelScript::RegisterScriptMath(m_engine_frame);
+    m_engine_frame->RegisterGlobalFunction("void log(const string &in)", AngelScript::asFUNCTION(logString), AngelScript::asCALL_CDECL);
+    registerOgreObjects(m_engine_frame);
     SLOG("Type registrations done. If you see no error above everything should be working");
 }
 
@@ -702,6 +713,110 @@ void ScriptEngine::triggerEvent(int eventnum, int value)
         }
         return;
     }
+}
+
+bool ScriptEngine::loadAddon(CacheEntry* entry)
+{
+    try
+    {
+        App::GetCacheSystem()->LoadResource(*entry);
+        DataStreamPtr ds = ResourceGroupManager::getSingleton().openResource(entry->fname, entry->resource_group);
+        // ds closes automatically, so do _not_ close it explicitly below
+
+        AddonDef def;
+        AddonParser parser;
+        parser.LoadAddonFile(def, ds);
+
+        if (def.as_files.size() == 0)
+        {
+            App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_SCRIPT, Console::CONSOLE_SYSTEM_ERROR,
+                fmt::format("Could not load addon '{}' - no scripts defined.", entry->dname));
+            return false;
+        }
+
+        for (auto filename: def.as_files)
+        {
+            if (!this->loadAddonScript(entry, filename))
+            {
+                App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_SCRIPT, Console::CONSOLE_SYSTEM_ERROR,
+                    fmt::format("Could not load addon '{}', error processing script '{}'", entry->dname, filename));
+                return false;
+            }
+        }
+
+        App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_SCRIPT, Console::CONSOLE_SYSTEM_REPLY,
+            fmt::format("Addon '{}' loaded successfully", entry->dname));
+        return true;
+    }
+    catch (Ogre::Exception& e) // Already logged by OGRE
+    {
+        App::GetConsole()->putMessage(Console::CONSOLE_MSGTYPE_SCRIPT, Console::CONSOLE_SYSTEM_ERROR,
+            fmt::format("Could not load addon '{}', message: {}", entry->dname, e.getFullDescription()));
+        return false;
+    }
+}
+
+void ScriptEngine::frameStepAddonScripts()
+{
+    for (ScriptUnit& unit: m_addon_scripts)
+    {
+        unit.su_context->Prepare(unit.su_loop_fn);
+        unit.su_context->Execute();
+    }
+}
+
+bool ScriptEngine::loadAddonScript(CacheEntry* entry, String filename)
+{
+    asIScriptEngine* engine = m_engine_frame;
+    Str<100> module_name;
+    module_name << filename << "@" << entry->resource_group;
+    engine->SetEngineProperty(asEP_COPY_SCRIPT_SECTIONS, true); // TODO: needed?
+    asIScriptModule* module = engine->GetModule(module_name, asGM_ALWAYS_CREATE);
+    if (!module)
+        return false;
+
+    try
+    {
+        Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton()
+            .openResource(filename, entry->resource_group,
+            /*searchGroupsIfNotFound=*/false);
+        Ogre::String code = stream->getAsString();
+        if (module->AddScriptSection("section1", code.c_str(), code.length()) != asSUCCESS)
+            return false;
+    }
+    catch (Ogre::Exception& e)
+    {
+        RoR::LogFormat("[RoR|Scripting] Failed to load '%s', message: %s",
+            filename.c_str(), e.getFullDescription().c_str());
+        return false;
+    }
+    if (module->Build() != asSUCCESS)
+        return false;
+
+    asIScriptFunction* setup_fn = module->GetFunctionByDecl("int setup(string arg)");
+    asIScriptFunction* loop_fn = module->GetFunctionByDecl("int loop()");
+
+    if (!setup_fn || !loop_fn)
+        return false;
+
+    asIScriptContext* context = engine->CreateContext();
+    if (context->Prepare(setup_fn) != asSUCCESS)
+        return false;
+
+    std::string test_arg("demo arg");
+    if (context->SetArgObject(0, &test_arg) != asSUCCESS)
+        return false;
+
+    if (context->Execute() != asSUCCESS)
+        return false;
+
+    ScriptUnit unit;
+    unit.su_module = module;
+    unit.su_loop_fn = loop_fn;
+    unit.su_context = context;
+
+    m_addon_scripts.push_back(unit);
+    return true;
 }
 
 int ScriptEngine::loadScript(String _scriptName)

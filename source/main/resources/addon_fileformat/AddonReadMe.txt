@@ -13,4 +13,39 @@ All addons found during cache update are assembled under
 
 An <.addon> file lists script file names (.as) 
   and entry points (script function names).
+  
+Addon scripts are initialized once using builtin 'setup()'
+  function, the other builtin 'loop()' function is then
+  invoked on every rendered frame (in both menu and sim).
+  
+------------------- example.addon -------------------
+[General]
+Name = Example
+
+[Scripts]
+example.as
+
+------------------- example.as -------------------
+
+int setup(string arg)
+{
+    string msg;
+    msg = "setup() works! arg: " + arg;
+    log(msg);
+    return 0;
+}
+
+int frame_num = 0;
+
+int loop()
+{
+    if ((frame_num % 25) == 0)
+    {
+        string msg;
+        msg = "loop() frame: " + frame_num;
+        log(msg);
+    }
+    frame_num++;
+    return 0;
+}  
 

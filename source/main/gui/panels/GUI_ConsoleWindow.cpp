@@ -21,6 +21,8 @@
 
 
 #include "GUI_ConsoleWindow.h"
+
+#include "GameContext.h"
 #include "GUIManager.h"
 
 #include "Language.h"
@@ -204,7 +206,7 @@ void ConsoleWindow::DrawAddonSelector()
         // 2nd column - actions
         if (ImGui::Button(_LC("AddonSetup", "Load")))
         {
-            // MSG_APP_LOAD_ADDON_REQUESTED
+            App::GetGameContext()->PushMessage(Message(MSG_APP_LOAD_ADDON_REQUESTED, (void*)entry));
         }
         bool autoload = false; // TODO
         if (ImGui::Checkbox(_LC("AddonSetup", "AutoLoad"), &autoload))

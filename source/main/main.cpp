@@ -361,6 +361,11 @@ int main(int argc, char *argv[])
                     }
                     break;
 
+                case MSG_APP_LOAD_ADDON_REQUESTED:
+                    //TODO: check if already loaded
+                    App::GetScriptEngine()->loadAddon((CacheEntry*)m.payload);
+                    break;
+
                 // -- Network events --
 
                 case MSG_NET_CONNECT_REQUESTED:
@@ -857,6 +862,7 @@ int main(int argc, char *argv[])
             {
                 App::GetScriptEngine()->framestep(dt);
             }
+            App::GetScriptEngine()->frameStepAddonScripts();
 #endif // USE_ANGELSCRIPT
 
             if (App::io_ffb_enabled->GetBool() &&

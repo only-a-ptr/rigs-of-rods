@@ -29,16 +29,28 @@
 
 #define TRIGGER_EVENT(x, y) App::GetScriptEngine()->triggerEvent((x), (y))
 
+#include "AddonFileFormat.h"
 #include "Application.h"
 #include "GameScript.h"
 #include "InterThreadStoreVector.h"
 #include "ScriptEvents.h"
+#include "RigDef_File.h"
 
 #include <Ogre.h>
 #include "scriptdictionary/scriptdictionary.h"
 #include "scriptbuilder/scriptbuilder.h"
 
 namespace RoR {
+
+/**
+ *  @brief Utility wrapper for game scripts
+ */
+struct ScriptUnit
+{
+    AngelScript::asIScriptModule*   su_module   = nullptr; //!< Bytecode
+    AngelScript::asIScriptFunction* su_loop_fn  = nullptr;
+    AngelScript::asIScriptContext*  su_context  = nullptr; //!< Stack
+};
 
 /**
  *  @brief This class represents the angelscript scripting interface. It can load and execute scripts.
@@ -54,11 +66,23 @@ public:
     ~ScriptEngine();
 
     /**
-     * Loads a script
+     * Loads a script associated with terrn2
      * @param scriptname filename to load
      * @return 0 on success, everything else on error
      */
     int loadScript(Ogre::String scriptname);
+
+    /**
+     * Loads an addon - runs at least one script.
+     */
+    bool loadAddon(CacheEntry* entry);
+
+    /**
+     * Loads a script associated with addon
+     */
+    bool loadAddonScript(CacheEntry* entry, Ogre::String filename);
+
+    void frameStepAddonScripts();
 
     /**
      * Calls the script's framestep function to be able to use timed things inside the script
@@ -141,7 +165,8 @@ public:
 
 protected:
 
-    AngelScript::asIScriptEngine* engine; //!< instance of the scripting engine
+    AngelScript::asIScriptEngine* engine; //!< instance of the scripting engine - legacy framestep logic
+    AngelScript::asIScriptEngine* m_engine_frame; //!< instance of the scripting engine - framestep logic (asynchronous with simulation)
     AngelScript::asIScriptContext* context; //!< context in which all scripting happens
     AngelScript::asIScriptFunction* frameStepFunctionPtr; //!< script function pointer to the frameStep function
     AngelScript::asIScriptFunction* eventCallbackFunctionPtr; //!< script function pointer to the event callback function
@@ -150,6 +175,7 @@ protected:
     Ogre::String scriptHash;
     Ogre::Log* scriptLog;
     GameScript m_game_script;
+    std::vector<ScriptUnit> m_addon_scripts;
 
     InterThreadStoreVector<Ogre::String> stringExecutionQueue; //!< The string execution queue \see queueStringForExecution
 
