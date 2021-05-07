@@ -39,13 +39,11 @@ int frame_num = 0;
 
 int loop()
 {
-    if ((frame_num % 25) == 0)
-    {
-        string msg;
-        msg = "loop() frame: " + frame_num;
-        log(msg);
-    }
+    string msg;
+    msg = "Frame: " + frame_num;
+    // Opens window "Debug" (DearIMGUI feat)
+    ImGui::Text(msg);
     frame_num++;
     return 0;
-}  
+}
 
