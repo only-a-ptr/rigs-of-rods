@@ -385,6 +385,7 @@ void ScriptEngine::init()
     m_engine_frame->RegisterGlobalFunction("void log(const string &in)", AngelScript::asFUNCTION(logString), AngelScript::asCALL_CDECL);
     RegisterOgreObjects(m_engine_frame);
     RegisterImGuiBindings(m_engine_frame);
+    RegisterFrameStepInterface(m_engine_frame);
     SLOG("Type registrations done. If you see no error above everything should be working");
 }
 
@@ -794,7 +795,7 @@ bool ScriptEngine::loadAddonScript(CacheEntry* entry, String filename)
     if (module->Build() != asSUCCESS)
         return false;
 
-    asIScriptFunction* setup_fn = module->GetFunctionByDecl("int setup(string arg)");
+    asIScriptFunction* setup_fn = module->GetFunctionByDecl("int setup(string)");
     asIScriptFunction* loop_fn = module->GetFunctionByDecl("int loop()");
 
     if (!setup_fn || !loop_fn)

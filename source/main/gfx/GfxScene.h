@@ -75,6 +75,7 @@ public:
     void           BufferSimulationData(); //!< Run this when simulation is halted
     SimBuffer&     GetSimDataBuffer() { return m_simbuf; }
     GfxEnvmap&     GetEnvMap() { return m_envmap; }
+    GfxActor*      GetPlayerGfxActor();
     RoR::SkidmarkConfig* GetSkidmarkConf () { return &m_skidmark_conf; }
     Ogre::SceneManager* GetSceneManager() { return m_scene_manager; }
     std::vector<GfxActor*>& GetGfxActors() { return m_all_gfx_actors; }

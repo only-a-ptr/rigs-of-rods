@@ -329,3 +329,8 @@ void RoR::GfxScene::RemoveGfxCharacter(RoR::GfxCharacter* remove_me)
     m_all_gfx_characters.erase(itor, m_all_gfx_characters.end());
 }
 
+GfxActor* RoR::GfxScene::GetPlayerGfxActor()
+{
+    return App::GetGameContext()->GetPlayerActor()->GetGfxActor();
+}
+
