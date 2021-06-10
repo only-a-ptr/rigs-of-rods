@@ -626,6 +626,26 @@ int main(int argc, char *argv[])
                     }
                     break;
 
+                case MSG_SIM_HIDE_NET_ACTOR_REQUESTED:
+                    if (App::app_state->GetEnum<MpState>() == MpState::CONNECTED &&
+                        ((Actor*)m.payload)->ar_sim_state == Actor::SimState::NETWORKED_OK)
+                    {
+                        Actor* actor = (Actor*)m.payload;
+                        actor->ar_sim_state = Actor::SimState::NETWORKED_HIDDEN; // Stop net. updates
+                        App::GetGfxScene()->RemoveGfxActor(actor->GetGfxActor()); // Remove visuals
+                    }
+                    break;
+
+                case MSG_SIM_UNHIDE_NET_ACTOR_REQUESTED:
+                    if (App::app_state->GetEnum<MpState>() == MpState::CONNECTED &&
+                        ((Actor*)m.payload)->ar_sim_state == Actor::SimState::NETWORKED_HIDDEN)
+                    {
+                        Actor* actor = (Actor*)m.payload;
+                        actor->ar_sim_state = Actor::SimState::NETWORKED_OK; // Resume net. updates
+                        App::GetGfxScene()->RegisterGfxActor(actor->GetGfxActor()); // Restore visuals
+                    }
+                    break;
+
                 // -- GUI events ---
 
                 case MSG_GUI_OPEN_MENU_REQUESTED:
