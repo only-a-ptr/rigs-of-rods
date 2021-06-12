@@ -22,6 +22,7 @@
 
 #include "GUI_DirectionArrow.h"
 
+#include "Actor.h"
 #include "AppContext.h"
 #include "GfxActor.h"
 #include "GfxScene.h"
@@ -80,7 +81,8 @@ void GUI::DirectionArrow::Update(RoR::GfxActor* player_vehicle)
 
         // Update distance text
         float distance = 0.0f;
-        if (player_vehicle != nullptr && player_vehicle->GetSimDataBuffer().simbuf_live_local)
+        if (player_vehicle != nullptr &&
+            player_vehicle->GetSimDataBuffer().simbuf_actor_state == ActorState::LOCAL_SIMULATED)
         {
             distance = player_vehicle->GetSimDataBuffer().simbuf_pos.distance(data.simbuf_dir_arrow_target);
         }
